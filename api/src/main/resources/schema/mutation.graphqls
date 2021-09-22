@@ -1,0 +1,21 @@
+type Mutation{
+    #    Company
+    createCompany(company: CreateCompanyInput!) : Company!
+    updateCompany(company: UpdateCompanyInput!) : Company!
+    deleteCompany(id: ID!) : Boolean!
+
+    #    Industry
+    createIndustry(industry: CreateIndustryInput!) : Industry!
+    updateIndustry(industry: UpdateIndustryInput!) : Industry!
+    deleteIndustry(id: ID!) : Boolean!
+
+    #    KeyWord
+    createKeyWord(keyWord: CreateKeyWordInput!) : KeyWord!
+    updateKeyWord(keyWord: UpdateKeyWordInput!) : KeyWord!
+    deleteKeyWord(id: ID!) : Boolean!
+
+    #    User ( company Stuff)
+    createUser(user: CreateUserInput!) : User!
+    updateUser(user: UpdateUserInput!) : User!
+    deleteUser(id: ID!) : Boolean!
+}

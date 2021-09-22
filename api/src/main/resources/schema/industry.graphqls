@@ -1,0 +1,13 @@
+type Industry {
+    id: ID!
+    name: String!
+}
+
+input CreateIndustryInput {
+    name: String!
+}
+
+input UpdateIndustryInput {
+    id: ID!
+    name: String!
+}

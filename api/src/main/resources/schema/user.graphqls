@@ -1,0 +1,36 @@
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    jobPosition: String!
+    image: Image
+    created: Date
+    changed: Date
+}
+
+type UserList implements PaginatedList {
+    items: [User!]!
+    totalItems: Int!
+}
+
+input CreateUserInput {
+    name: String!
+    companyId: ID!
+    firstName: String!
+    lastName: String!
+    jobPosition: String!
+    image: Upload
+    created: Date
+    changed: Date
+}
+
+input UpdateUserInput {
+    id: ID!
+    companyId: ID
+    firstName: String
+    lastName: String
+    jobPosition: String
+    image: Upload
+    created: Date
+    changed: Date
+}

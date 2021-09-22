@@ -1,0 +1,201 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: oleg@briolink.com
+      changes:
+        - createTable:
+            tableName: industry
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: occupation
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: key_word
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: social_network_type
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: company
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: website
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: logo
+                  type: varchar(255)
+              - column:
+                  name: about
+                  type: varchar(10240)
+              - column:
+                  name: type
+                  type: tinyint
+              - column:
+                  name: country
+                  type: varchar(255)
+              - column:
+                  name: state
+                  type: varchar(255)
+              - column:
+                  name: city
+                  type: varchar(255)
+              - column:
+                  name: industry_id
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_company_industry_id
+                    references: industry(id)
+                    nullable: false
+              - column:
+                  name: occupation_id
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_company_occupation_id
+                    references: occupation(id)
+                    nullable: false
+        - createTable:
+            tableName: companies_key_words
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: company_id
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_company_key_word
+                    references: company(id)
+                    nullable: false
+              - column:
+                  name: key_word_id
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_key_word_company
+                    references: key_word(id)
+                    nullable: false
+        - createTable:
+            tableName: companiy_social_profiles
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: company_id
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_company_social_network_type
+                    references: company(id)
+                    nullable: false
+              - column:
+                  name: social_network_type
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_social_network_type_company
+                    references: social_network_type(id)
+                    nullable: false
+              - column:
+                  name: value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: user
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image
+                  type: varchar(255)
+              - column:
+                  name: company_id
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_emplyee_company_id
+                    references: company(id)
+                    nullable: false
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed
+                  type: timestamp
+                  constraints:
+                    nullable: true
+                  

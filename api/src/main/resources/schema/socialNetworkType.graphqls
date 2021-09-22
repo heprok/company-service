@@ -1,0 +1,13 @@
+type SocialNetworkType {
+    id: ID!
+    name: String!
+}
+
+input CreateSocialNetworkTypeInput {
+    name: String!
+}
+
+input UpdateSocialNetworkTypeInput {
+    id: ID!
+    name: String!
+}

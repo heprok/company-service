@@ -1,0 +1,33 @@
+type Company {
+    id: ID!
+    name: String!
+    website: Url!
+    logo: Image
+    about: String
+    type: Int
+    country: String
+    state: String
+    city: String
+    occupation: Occupation
+    industry: Industry
+    keyWords: [KeyWord]
+}
+
+input CreateCompanyInput {
+    name: String!
+    website: Url!
+}
+
+input UpdateCompanyInput {
+    id: ID!
+    name: String
+    website: Url
+    logo: Upload
+    about: String
+    type: Int
+    country: String
+    state: String
+    city: String
+    industryId: ID
+    keyWordIds: [ID]
+}

@@ -1,0 +1,19 @@
+type CompanySocialProfile {
+    id: ID!
+    company: Company!
+    socialNetworkType: SocialNetworkType!
+    value: String!
+}
+
+input CreateCompanySocialProfileInput {
+    companyId: ID!
+    socialNetworkTypeId: ID!
+    value: String!
+}
+
+input UpdateCompanySocialProfileInput {
+    id: ID!
+    companyId: ID
+    socialNetworkTypeId: ID
+    value: String
+}

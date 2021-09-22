@@ -1,0 +1,5 @@
+type Query {
+    getCompany(id: ID!): Company!
+    getUsers(companyId: ID!, limit: Int = 6, offset: Int = 0): [User]!
+
+}

@@ -1,0 +1,13 @@
+type Occupation {
+    id: ID!
+    name: String!
+}
+
+input CreateOccupationInput {
+    name: String!
+}
+
+input UpdateOccupationInput {
+    id: ID!
+    name: String!
+}

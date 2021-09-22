@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/
+    username: ok
+    password: ok
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_catalog: test_write_company
+        dialect: org.hibernate.dialect.MySQL57Dialect
+    generate-ddl: false
+    show-sql: true
+  liquibase:
+    change-log: migration/master.xml
+    default-schema: test_write_company
+    parameters:
+      readSchema: test_read_company
+      writeSchema: test_write_company
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://auth.test.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
+dgs:
+  graphql:
+    path: /

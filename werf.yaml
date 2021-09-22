@@ -1,0 +1,8 @@
+configVersion: 1
+project: user-service
+deploy:
+  helmRelease: "[[ project ]]-[[ env ]]"
+  namespace: "[[ project ]]-[[ env ]]"
+---
+image: app
+dockerfile: Dockerfile

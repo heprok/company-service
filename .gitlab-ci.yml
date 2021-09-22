@@ -1,0 +1,57 @@
+stages:
+  - build
+  - deploy
+  - cleanup
+
+Build and Publish:
+  stage: build
+  script:
+    ### -
+    - type multiwerf && . $(multiwerf use 1.2 ea --as-file)
+    - type werf && source $(werf ci-env gitlab --as-file --platform linux/amd64)
+    - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${WERF_REPO}
+    - werf build --platform linux/amd64
+  except:
+    - schedules
+  tags:
+    - briolink-devops
+
+.base_deploy: &base_deploy
+  stage: deploy
+  script:
+    - type multiwerf && . $(multiwerf use 1.2 ea --as-file)
+    - type werf && source $(werf ci-env gitlab --as-file --platform linux/amd64)
+    - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${WERF_REPO}
+    - werf converge --skip-build --set "global.env_url=$(echo ${CI_ENVIRONMENT_URL} | cut -d / -f 3)" --platform linux/amd64
+  dependencies:
+    - Build and Publish
+  tags:
+    - briolink-devops
+
+Deploy to Test:
+  <<: *base_deploy
+  environment:
+    name: test
+    url: https://example1.test.briolink.net
+  only:
+    - test
+
+Deploy to Production:
+  <<: *base_deploy
+  environment:
+    name: production
+    url: https://example.briolink.net
+  only:
+    - master
+
+Cleanup:
+  stage: cleanup
+  script:
+    - type multiwerf && . $(multiwerf use 1.2 ea --as-file)
+    - type werf && source $(werf ci-env gitlab --as-file --platform linux/amd64)
+    - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${WERF_REPO}
+    - werf cleanup --platform linux/amd64
+  only:
+    - schedules
+  tags:
+    - briolink-devops

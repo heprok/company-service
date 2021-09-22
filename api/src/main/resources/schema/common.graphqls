@@ -1,0 +1,22 @@
+scalar Date
+scalar Upload
+scalar Url
+
+directive @skipcodegen on FIELD_DEFINITION
+
+type Image {
+    url: Url
+}
+
+type Error {
+    code: String!
+    field: [String!]
+}
+
+interface ResultWithUserErrors {
+    userErrors: [Error]!
+}
+
+interface PaginatedList {
+    totalItems: Int!
+}

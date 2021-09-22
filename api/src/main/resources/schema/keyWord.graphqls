@@ -1,0 +1,13 @@
+type KeyWord {
+    id: ID!
+    name: String!
+}
+
+input CreateKeyWordInput {
+    name: String!
+}
+
+input UpdateKeyWordInput {
+    id: ID!
+    name: String!
+}
