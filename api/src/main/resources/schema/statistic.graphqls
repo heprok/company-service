@@ -1,0 +1,5 @@
+type Statistic {
+    serviceProvidedCount: Int
+    collaboratingCompanyCount: Int
+    collaboratingPeopleCount: Int
+}
