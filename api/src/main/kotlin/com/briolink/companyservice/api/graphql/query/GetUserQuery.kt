@@ -13,14 +13,13 @@ import java.util.UUID
 @DgsComponent
 class GetUserQuery(private val userQueryService: UserQueryService ) {
     @DgsQuery
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     fun getUsers(
         @InputArgument("limit") limit: Int,
         @InputArgument("offset") offset: Int,
         @InputArgument("companyId") companyId: String
     ): UserList {
         val page = userQueryService.getByCompanyId(UUID.fromString(companyId), limit, offset)
-
         return UserList(
                 items = page.content.map {
                     User.fromEntity(it)

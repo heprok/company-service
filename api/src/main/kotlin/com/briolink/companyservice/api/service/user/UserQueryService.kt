@@ -11,5 +11,5 @@ import java.util.UUID
 @Service
 class UserQueryService(private val userReadRepository: UserReadRepository) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<UserReadEntity> =
-        userReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit, Sort.by("created").descending()))
+        userReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
 }

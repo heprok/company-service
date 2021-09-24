@@ -37,6 +37,8 @@ class CompanyReadEntity {
         val country: String,
         @JsonProperty("state")
         val state: String,
+        @JsonProperty("isTypePublic")
+        val isTypePublic: Boolean?,
         @JsonProperty("city")
         val city: String,
         @JsonProperty("industry")
@@ -51,7 +53,7 @@ class CompanyReadEntity {
     data class Occupation(
         @JsonProperty("id")
         val id: String,
-        @JsonProperty("title")
+        @JsonProperty("name")
         val name: String,
     )
 

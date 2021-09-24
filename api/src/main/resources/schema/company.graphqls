@@ -4,13 +4,13 @@ type Company {
     website: Url!
     logo: Image
     about: String
-    type: Int
+    isTypePublic: Boolean
     country: String
     state: String
     city: String
     occupation: Occupation
     industry: Industry
-    keyWords: [KeyWord]
+    statistic: Statistic
 }
 
 input CreateCompanyInput {
@@ -24,7 +24,7 @@ input UpdateCompanyInput {
     website: Url
     logo: Upload
     about: String
-    type: Int
+    isTypePublic: Boolean
     country: String
     state: String
     city: String

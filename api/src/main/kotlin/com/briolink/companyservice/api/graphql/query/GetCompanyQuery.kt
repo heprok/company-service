@@ -13,7 +13,7 @@ import java.util.UUID
 class GetCompanyQuery(private val companyQueryService: CompanyQueryService) {
 
     @DgsQuery
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     fun getCompany(@InputArgument("id") companyId: String): Company {
         val company = companyQueryService.getCompanyById(UUID.fromString(companyId))
         return Company.fromEntity(company)

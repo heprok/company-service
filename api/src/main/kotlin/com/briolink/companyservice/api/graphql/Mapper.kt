@@ -4,6 +4,7 @@ import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Occupation
+import com.briolink.companyservice.api.types.Statistic
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
@@ -18,6 +19,8 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 country = entity.data.country,
                 state = entity.data.state,
                 city = entity.data.city,
+                about = entity.data.about,
+                isTypePublic = entity.data.isTypePublic ?: true,
                 industry = entity.data.industry?.let {
                     Industry(
                             id = it.id,
@@ -30,13 +33,20 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                             name = it.name,
                     )
                 },
+                statistic = entity.data.statistic?.let {
+                    Statistic(
+                            serviceProvidedCount = it.serviceProvidedCount,
+                            collaboratingCompanyCount = it.collaboratingCompanyCount,
+                            collaboratingPeopleCount = it.collaboratingPeopleCount,
+                    )
+                },
         )
 
-fun User.Companion.fromEntity(entity: UserReadEntity) =
-        User(
-                id = entity.id.toString(),
-                firstName = entity.data.firstName,
-                lastName = entity.data.lastName,
-                jobPosition = entity.data.jobPosition,
-                image = entity.data.image.let { Image(url = URL(entity.data.image)) },
-        )
+
+fun User.Companion.fromEntity(entity: UserReadEntity) = User(
+        id = entity.id.toString(),
+        firstName = entity.data.firstName,
+        lastName = entity.data.lastName,
+        jobPosition = entity.data.jobPosition,
+        image = entity.data.image.let { Image(url = URL(entity.data.image)) },
+)
