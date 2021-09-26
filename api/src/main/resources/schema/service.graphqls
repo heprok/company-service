@@ -1,0 +1,14 @@
+type Service {
+    id: ID!
+    name: String!
+    price: Float
+    image: Image
+    verifiedUses: Int
+    industriesUsed: [Industry]
+    created: Date!
+}
+
+type ServiceList implements PaginatedList {
+    items: [Service!]!
+    totalItems: Int!
+}

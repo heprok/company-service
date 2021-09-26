@@ -64,6 +64,16 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+              - column:
+                  name: url
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: logo
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: company
             schemaName: ${writeSchema}

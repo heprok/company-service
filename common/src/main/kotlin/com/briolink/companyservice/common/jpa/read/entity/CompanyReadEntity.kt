@@ -47,6 +47,10 @@ class CompanyReadEntity {
         val occupation: Occupation?,
         @JsonProperty("statistic")
         val statistic: Statistic,
+        @JsonProperty("keyWords")
+        val keyWords: List<KeyWord?>,
+        @JsonProperty("socialProfiles")
+        val socialProfiles: List<SocialProfile?>,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -66,6 +70,34 @@ class CompanyReadEntity {
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
+    data class KeyWord(
+        @JsonProperty("id")
+        val id: String,
+        @JsonProperty("name")
+        val name: String,
+    )
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class SocialProfile(
+        @JsonProperty("socialNetworkType")
+        val socialNetworkType: SocialNetworkType,
+        @JsonProperty("value")
+        val value: String,
+    )
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class SocialNetworkType(
+        @JsonProperty("id")
+        val id: String,
+        @JsonProperty("name")
+        val name: String,
+        @JsonProperty("url")
+        val url: String,
+        @JsonProperty("logo")
+        val logo: String,
+    )
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Statistic(
         @JsonProperty("serviceProvidedCount")
         val serviceProvidedCount: Int,
@@ -74,4 +106,6 @@ class CompanyReadEntity {
         @JsonProperty("collaboratingPeopleCount")
         val collaboratingPeopleCount: Int,
     )
+
+
 }

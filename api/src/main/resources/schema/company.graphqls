@@ -11,6 +11,8 @@ type Company {
     occupation: Occupation
     industry: Industry
     statistic: Statistic
+    socialProfile: [SocialProfile]
+    keyWord: [KeyWord]
 }
 
 input CreateCompanyInput {

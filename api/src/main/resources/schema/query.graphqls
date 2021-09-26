@@ -1,5 +1,5 @@
 type Query {
     getCompany(id: ID!): Company!
-    getUsers(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
-
+    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
+    getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList!
 }

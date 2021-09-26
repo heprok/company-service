@@ -11,10 +11,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
-class GetUserQuery(private val userQueryService: UserQueryService ) {
+class GetEmployeesQuery(private val userQueryService: UserQueryService ) {
     @DgsQuery
 //    @PreAuthorize("isAuthenticated()")
-    fun getUsers(
+    fun getEmployees(
         @InputArgument("limit") limit: Int,
         @InputArgument("offset") offset: Int,
         @InputArgument("companyId") companyId: String

@@ -1,6 +1,8 @@
 type SocialNetworkType {
     id: ID!
     name: String!
+    url: Url!
+    logo: Image
 }
 
 input CreateSocialNetworkTypeInput {
