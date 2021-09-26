@@ -26,6 +26,9 @@ dependencies {
     // Hibernate Types 55
     implementation("com.vladmihalcea:hibernate-types-55:2.12.1")
 
+    // IBM icu
+    implementation("com.ibm.icu:icu4j:69.1")
+
     // Querydsl
     api("com.querydsl:querydsl-jpa:5.0.0")
     api("com.querydsl:querydsl-core:5.0.0")
