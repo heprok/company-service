@@ -34,10 +34,10 @@ class ServiceReadEntity(
         val price: Double,
         @JsonProperty("image")
         val image: String,
-        @JsonProperty("verified_uses")
-        val verified_uses: Int,
-        @JsonProperty("industries_used")
-        val industries_used: List<Industry?>,
+        @JsonProperty("verifiedUses")
+        val verifiedUses: Int,
+        @JsonProperty("industriesUsed")
+        val industriesUsed: List<Industry?>,
         @JsonProperty("created")
         val created: LocalDate
     )

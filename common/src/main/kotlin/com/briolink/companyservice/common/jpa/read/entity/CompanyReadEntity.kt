@@ -37,6 +37,8 @@ class CompanyReadEntity {
         val country: String,
         @JsonProperty("state")
         val state: String,
+        @JsonProperty("slug")
+        val slug: String,
         @JsonProperty("isTypePublic")
         val isTypePublic: Boolean?,
         @JsonProperty("city")
@@ -48,7 +50,7 @@ class CompanyReadEntity {
         @JsonProperty("statistic")
         val statistic: Statistic,
         @JsonProperty("keyWords")
-        val keyWords: List<KeyWord?>,
+        val keywords: List<Keyword?>,
         @JsonProperty("socialProfiles")
         val socialProfiles: List<SocialProfile?>,
     )
@@ -70,7 +72,7 @@ class CompanyReadEntity {
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    data class KeyWord(
+    data class Keyword(
         @JsonProperty("id")
         val id: String,
         @JsonProperty("name")
@@ -90,11 +92,7 @@ class CompanyReadEntity {
         @JsonProperty("id")
         val id: String,
         @JsonProperty("name")
-        val name: String,
-        @JsonProperty("url")
-        val url: String,
-        @JsonProperty("logo")
-        val logo: String,
+        val name: String
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

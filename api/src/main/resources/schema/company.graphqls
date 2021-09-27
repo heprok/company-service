@@ -4,6 +4,7 @@ type Company {
     website: Url!
     logo: Image
     about: String
+    slug: String
     isTypePublic: Boolean
     country: String
     state: String
@@ -11,8 +12,8 @@ type Company {
     occupation: Occupation
     industry: Industry
     statistic: Statistic
-    socialProfile: [SocialProfile]
-    keyWord: [KeyWord]
+    socialProfiles: [SocialProfile]
+    keywords: [Keyword]
 }
 
 input CreateCompanyInput {

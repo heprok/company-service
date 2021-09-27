@@ -35,7 +35,7 @@ databaseChangeLog:
                     nullable: false
 
         - createTable:
-            tableName: key_word
+            tableName: keyword
             schemaName: ${writeSchema}
             columns:
               - column:
@@ -113,6 +113,9 @@ databaseChangeLog:
                   name: city
                   type: varchar(255)
               - column:
+                  name: slug
+                  type: varchar(36)
+              - column:
                   name: industry_id
                   type: varchar(36)
                   constraints:
@@ -127,22 +130,22 @@ databaseChangeLog:
                     references: occupation(id)
                     nullable: false
         - createTable:
-            tableName: companies_key_words
+            tableName: companies_keywords
             schemaName: ${writeSchema}
             columns:
               - column:
                   name: company_id
                   type: varchar(36)
                   constraints:
-                    foreignKeyName: fk_company_key_word
+                    foreignKeyName: fk_company_keyword
                     references: company(id)
                     nullable: false
               - column:
-                  name: key_word_id
+                  name: keyword_id
                   type: varchar(36)
                   constraints:
-                    foreignKeyName: fk_key_word_company
-                    references: key_word(id)
+                    foreignKeyName: fk_keyword_company
+                    references: keyword(id)
                     nullable: false
         - createTable:
             tableName: companiy_social_profiles

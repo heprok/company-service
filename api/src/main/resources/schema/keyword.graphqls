@@ -1,13 +1,13 @@
-type KeyWord {
+type Keyword {
     id: ID!
     name: String!
 }
 
-input CreateKeyWordInput {
+input CreateKeywordInput {
     name: String!
 }
 
-input UpdateKeyWordInput {
+input UpdateKeywordInput {
     id: ID!
     name: String!
 }

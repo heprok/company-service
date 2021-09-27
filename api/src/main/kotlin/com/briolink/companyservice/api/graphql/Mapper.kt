@@ -3,7 +3,7 @@ package com.briolink.companyservice.api.graphql
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
-import com.briolink.companyservice.api.types.KeyWord
+import com.briolink.companyservice.api.types.Keyword
 import com.briolink.companyservice.api.types.Occupation
 import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.SocialNetworkType
@@ -24,6 +24,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 country = entity.data.country,
                 state = entity.data.state,
                 city = entity.data.city,
+                slug = entity.data.slug,
                 about = entity.data.about,
                 isTypePublic = entity.data.isTypePublic ?: true,
                 industry = entity.data.industry?.let {
@@ -45,17 +46,17 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                             collaboratingPeopleCount = it.collaboratingPeopleCount,
                     )
                 },
-                keyWord = entity.data.keyWords.let { list ->
-                    list.map { keyWord ->
-                        keyWord?.let {
-                            KeyWord(
+                keywords = entity.data.keywords.let { list ->
+                    list.map { keyword ->
+                        keyword?.let {
+                            Keyword(
                                     id = it.id,
                                     name = it.name,
                             )
                         }
                     }
                 },
-                socialProfile = entity.data.socialProfiles.let { list ->
+                socialProfiles = entity.data.socialProfiles.let { list ->
                     list.map { profile ->
                         profile?.let {
                             SocialProfile(
@@ -64,8 +65,6 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                                         SocialNetworkType(
                                                 id = type.id,
                                                 name = type.name,
-                                                url = URL(type.url),
-                                                logo = type.logo.let { Image(url = URL(entity.data.logo)) },
                                         )
                                     },
                             )
@@ -87,10 +86,10 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         id = entity.id.toString(),
         name = entity.data.name,
         price = entity.data.price,
-        verifiedUses = entity.data.verified_uses,
+        verifiedUses = entity.data.verifiedUses,
         created = entity.data.created,
         image = entity.data.image.let { Image(url = URL(entity.data.image)) },
-        industriesUsed = entity.data.industries_used.let { list ->
+        industriesUsed = entity.data.industriesUsed.let { list ->
             list.map {
                 it?.let { industry ->
                     Industry(
