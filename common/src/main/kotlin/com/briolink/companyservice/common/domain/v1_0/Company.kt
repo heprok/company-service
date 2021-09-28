@@ -23,14 +23,16 @@ data class Company(
     val state: String? = null,
     @JsonProperty("city")
     val city: String? = null,
+    @JsonProperty("facebook")
+    val facebook: String? = null,
+    @JsonProperty("twitter")
+    val twitter: String? = null,
     @JsonProperty("occupation")
     val occupation: Occupation? = null,
     @JsonProperty("industry")
     val industry: Industry? = null,
     @JsonProperty("statistic")
     val statistic: Statistic? = null,
-    @JsonProperty("socialProfiles")
-    val socialProfiles: List<SocialProfile?>? = null,
     @JsonProperty("keywords")
     val keywords: List<Keyword?>? = null
 ) : Domain
