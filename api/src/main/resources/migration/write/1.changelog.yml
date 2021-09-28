@@ -50,31 +50,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - createTable:
-            tableName: social_network_type
-            schemaName: ${writeSchema}
-            columns:
-              - column:
-                  name: id
-                  type: varchar(36)
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: url
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: logo
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-        - createTable:
             tableName: company
             schemaName: ${writeSchema}
             columns:
@@ -96,6 +71,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: logo
+                  type: varchar(255)
+              - column:
+                  name: facebook
+                  type: varchar(255)
+              - column:
+                  name: twitter
                   type: varchar(255)
               - column:
                   name: about
@@ -146,29 +127,6 @@ databaseChangeLog:
                   constraints:
                     foreignKeyName: fk_keyword_company
                     references: keyword(id)
-                    nullable: false
-        - createTable:
-            tableName: companiy_social_profiles
-            schemaName: ${writeSchema}
-            columns:
-              - column:
-                  name: company_id
-                  type: varchar(36)
-                  constraints:
-                    foreignKeyName: fk_company_social_network_type
-                    references: company(id)
-                    nullable: false
-              - column:
-                  name: social_network_type
-                  type: varchar(36)
-                  constraints:
-                    foreignKeyName: fk_social_network_type_company
-                    references: social_network_type(id)
-                    nullable: false
-              - column:
-                  name: value
-                  type: varchar(255)
-                  constraints:
                     nullable: false
         - createTable:
             tableName: user

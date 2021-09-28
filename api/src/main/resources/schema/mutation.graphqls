@@ -10,12 +10,12 @@ type Mutation{
     deleteIndustry(id: ID!) : Boolean!
 
     #    KeyWord
-    createKeyWord(keyWord: CreateKeyWordInput!) : KeyWord!
-    updateKeyWord(keyWord: UpdateKeyWordInput!) : KeyWord!
+    createKeyWord(keyWord: CreateKeywordInput!) : Keyword!
+    updateKeyword(keyWord: UpdateKeywordInput!) : Keyword!
     deleteKeyWord(id: ID!) : Boolean!
 
     #    User ( company Stuff)
-    createUser(user: CreateUserInput!) : User!
-    updateUser(user: UpdateUserInput!) : User!
-    deleteUser(id: ID!) : Boolean!
+    createEmployee(user: CreateUserInput!) : User!
+    updateEmployee(user: UpdateUserInput!) : User!
+    deleteEmployee(id: ID!) : Boolean!
 }

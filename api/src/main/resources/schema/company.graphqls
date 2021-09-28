@@ -4,15 +4,16 @@ type Company {
     website: Url!
     logo: Image
     about: String
-    slug: String
+    slug: String!
     isTypePublic: Boolean
     country: String
     state: String
     city: String
+    facebook: String
+    twitter: String
     occupation: Occupation
     industry: Industry
     statistic: Statistic
-    socialProfiles: [SocialProfile]
     keywords: [Keyword]
 }
 
@@ -31,6 +32,8 @@ input UpdateCompanyInput {
     country: String
     state: String
     city: String
+    Facebook: String
+    Twitter: String
     industryId: ID
     keyWordIds: [ID]
 }
