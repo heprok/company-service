@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 
-@Table(name = "user", catalog = "test_write_company")
+@Table(name = "user", catalog = "dev_write_company")
 @Entity
 class UserWriteEntity : BaseWriteEntity() {
     @Column(name = "first_name", nullable = false)

@@ -14,25 +14,25 @@ allOpen {
 
 dependencies {
     // Spring Boot
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.4")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     // FasterXML
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Kotlin
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
 
     // Hibernate Types 55
-    implementation("com.vladmihalcea:hibernate-types-55:2.12.1")
-
-    // IBM icu
-    implementation("com.ibm.icu:icu4j:69.1")
+    implementation("com.vladmihalcea:hibernate-types-55:${Versions.HIBERNATE_TYPES_55}")
 
     // Querydsl
-    api("com.querydsl:querydsl-jpa:5.0.0")
-    api("com.querydsl:querydsl-core:5.0.0")
+    api("com.querydsl:querydsl-jpa")
+    api("com.querydsl:querydsl-core")
     kapt("com.querydsl", name = "querydsl-apt", classifier = "jpa")
+
+    // IBM ICU4J
+    implementation("com.ibm.icu:icu4j:${Versions.IBM_ICU4J}")
 }
 
 kapt {

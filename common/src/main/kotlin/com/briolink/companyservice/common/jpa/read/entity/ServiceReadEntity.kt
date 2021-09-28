@@ -10,7 +10,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "service", catalog = "test_read_company")
+@Table(name = "service", catalog = "dev_read_company")
 @Entity
 class ServiceReadEntity(
     @Id

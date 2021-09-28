@@ -11,7 +11,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "user", catalog = "test_read_company")
+@Table(name = "user", catalog = "dev_read_company")
 @Entity
 class UserReadEntity(
     @Id

@@ -1,5 +1,5 @@
 configVersion: 1
-project: user-service
+project: company-service
 deploy:
   helmRelease: "[[ project ]]-[[ env ]]"
   namespace: "[[ project ]]-[[ env ]]"

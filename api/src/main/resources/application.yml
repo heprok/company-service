@@ -8,16 +8,16 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        default_catalog: test_write_company
+        default_catalog: dev_write_company
         dialect: org.hibernate.dialect.MySQL57Dialect
     generate-ddl: false
     show-sql: true
   liquibase:
     change-log: migration/master.xml
-    default-schema: test_write_company
+    default-schema: dev_write_company
     parameters:
-      readSchema: test_read_company
-      writeSchema: test_write_company
+      readSchema: dev_read_company
+      writeSchema: dev_write_company
   security:
     oauth2:
       resourceserver:
@@ -26,3 +26,14 @@ spring:
 dgs:
   graphql:
     path: /
+cloud:
+  aws:
+    stack:
+      auto: false
+app:
+  aws:
+    s3:
+      name: briolink
+event:
+  publisher:
+    sns-name: bl-network-dev.fifo

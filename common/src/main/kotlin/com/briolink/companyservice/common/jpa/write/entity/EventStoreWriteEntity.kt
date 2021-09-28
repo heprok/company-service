@@ -8,14 +8,13 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 
-@Table(name = "event_store", catalog = "test_write_company")
+@Table(name = "event_store", catalog = "dev_write_company")
 @Entity
-class EventStoreWriteEntity : BaseWriteEntity() {
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonNodeStringType")
+class EventStoreWriteEntity(
     @Column(name = "data", nullable = false)
-    lateinit var data: JsonNode
-
-    @CreationTimestamp
+    val data: String,
     @Column(name = "created", nullable = false)
-    lateinit var created: Instant
+    var created: Instant
+
+) : BaseWriteEntity() {
 }

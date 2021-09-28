@@ -1,2 +1,2 @@
 rootProject.name = "company-service"
-include(":api", ":common")
+include(":api", ":common", ":updater")

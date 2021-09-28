@@ -1,21 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.5.21"
-    val springBootVersion = "2.5.4"
-    val springDependencyManagementVersion = "1.0.11.RELEASE"
-    val spotlessVersion = "5.14.1"
-    val dgsCodegen = "5.0.6"
-
-    id("org.springframework.boot") version springBootVersion apply false
-    id("io.spring.dependency-management") version springDependencyManagementVersion apply false
-    id("com.diffplug.spotless") version spotlessVersion apply false
-    id("com.netflix.dgs.codegen") version dgsCodegen apply false
-    kotlin("jvm") version kotlinVersion apply false
-    kotlin("kapt") version kotlinVersion apply false
-    kotlin("plugin.spring") version kotlinVersion apply false
-    kotlin("plugin.jpa") version kotlinVersion apply false
-    kotlin("plugin.allopen") version kotlinVersion apply false
+    id("org.springframework.boot") version Versions.SPRING_BOOT apply false
+    id("io.spring.dependency-management") version Versions.SPRING_DEPENDENCY_MANAGEMENT apply false
+    id("com.diffplug.spotless") version Versions.SPOTLESS apply false
+    id("com.netflix.dgs.codegen") version Versions.DGS_CODEGEN apply false
+    kotlin("jvm") version Versions.KOTLIN apply false
+    kotlin("kapt") version Versions.KOTLIN apply false
+    kotlin("plugin.spring") version Versions.KOTLIN apply false
+    kotlin("plugin.jpa") version Versions.KOTLIN apply false
+    kotlin("plugin.allopen") version Versions.KOTLIN apply false
 }
 
 buildscript {
@@ -28,19 +22,15 @@ allprojects {
     group = "com.briolink"
     version = "1.0.0-SNAPSHOT"
 
-    extra["springCloudVersion"] = "2.3.2"
-
-    val javaVersion = "11"
-
     tasks.withType<JavaCompile> {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = Versions.JAVA
+        targetCompatibility = Versions.JAVA
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = javaVersion
+            jvmTarget = Versions.JAVA
         }
     }
 }
@@ -48,10 +38,30 @@ allprojects {
 subprojects {
     repositories {
         mavenCentral()
+        maven {
+            url = uri("https://gitlab.com/api/v4/projects/29889174/packages/maven")
+
+            authentication {
+                create<HttpHeaderAuthentication>("header")
+            }
+
+            credentials(HttpHeaderCredentials::class) {
+                name = "Deploy-Token"
+                value = "oLyiwDVguKzJsnDjqZQF" // System.getenv("GITLAB_DEPLOY_TOKEN")
+            }
+        }
     }
 
     apply {
+        plugin("kotlin")
         plugin("io.spring.dependency-management")
+    }
+
+    val implementation by configurations
+
+    dependencies {
+        // Briolnik Event
+        implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
     }
 }
 
