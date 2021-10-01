@@ -6,7 +6,9 @@ import javax.persistence.Table
 
 @Table(name = "occupation", catalog = "dev_write_company")
 @Entity
-class OccupationWriteEntity : BaseWriteEntity() {
+class OccupationWriteEntity(
     @Column(name = "name", nullable = false)
-    var name: String? = null
+    var name: String
+) : BaseWriteEntity() {
+
 }

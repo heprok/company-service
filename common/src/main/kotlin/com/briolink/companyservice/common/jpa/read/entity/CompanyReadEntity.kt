@@ -13,15 +13,15 @@ import javax.persistence.Table
 
 @Table(name = "company", catalog = "dev_read_company")
 @Entity
-class CompanyReadEntity {
+class CompanyReadEntity(
     @Id
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
-    lateinit var id: UUID
-
+    val id: UUID
+) : BaseReadEntity() {
     @Type(type = "string")
     @Column(name = "slug", nullable = false)
-    val slug: String = ""
+    var slug: String = ""
 
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
@@ -30,33 +30,33 @@ class CompanyReadEntity {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty("name")
-        val name: String,
+        var name: String,
         @JsonProperty("website")
-        val website: String,
+        var website: String,
         @JsonProperty("about")
-        val about: String,
+        var about: String? = null,
         @JsonProperty("country")
-        val country: String,
+        var country: String? = null,
         @JsonProperty("state")
-        val state: String,
+        var state: String? = null,
         @JsonProperty("logo")
-        val logo: String,
+        var logo: String? = null,
         @JsonProperty("isTypePublic")
-        val isTypePublic: Boolean?,
+        var isTypePublic: Boolean = true,
         @JsonProperty("city")
-        val city: String,
+        var city: String? = null,
         @JsonProperty("facebook")
-        val facebook: String,
+        var facebook: String? = null,
         @JsonProperty("twitter")
-        val twitter: String,
+        var twitter: String? = null,
         @JsonProperty("industry")
-        val industry: Industry?,
+        var industry: Industry? = null,
         @JsonProperty("occupation")
-        val occupation: Occupation?,
+        var occupation: Occupation? = null,
         @JsonProperty("statistic")
-        val statistic: Statistic,
+        var statistic: Statistic = Statistic(),
         @JsonProperty("keyWords")
-        val keywords: List<Keyword?>,
+        var keywords: List<Keyword?> = mutableListOf<Keyword>(),
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -86,12 +86,12 @@ class CompanyReadEntity {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Statistic(
         @JsonProperty("serviceProvidedCount")
-        val serviceProvidedCount: Int,
+        val serviceProvidedCount: Int = 0,
         @JsonProperty("collaboratingCompanyCount")
-        val collaboratingCompanyCount: Int,
+        val collaboratingCompanyCount: Int = 0,
         @JsonProperty("collaboratingPeopleCount")
-        val collaboratingPeopleCount: Int,
+        val collaboratingPeopleCount: Int = 0,
+        @JsonProperty("totalConnectionCount")
+        val totalConnectionCount: Int = 0,
     )
-
-
 }

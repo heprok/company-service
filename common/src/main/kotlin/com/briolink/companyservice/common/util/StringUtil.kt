@@ -11,7 +11,7 @@ object StringUtil {
                     .replace("\\s+".toRegex(), "-")
                     .lowercase(Locale.getDefault())
                     .let {
-                        if (isRandom) word.take(length - 7) + '-' + randomString()
+                        if (isRandom) it.take(length - 7) + '-' + randomString()
                         else it.take(length)
                     }
 

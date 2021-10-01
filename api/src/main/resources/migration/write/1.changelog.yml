@@ -82,8 +82,9 @@ databaseChangeLog:
                   name: about
                   type: varchar(10240)
               - column:
-                  name: type
-                  type: tinyint
+                  name: is_type_public
+                  type: boolean
+                  defaultValue: true
               - column:
                   name: country
                   type: varchar(255)
@@ -102,14 +103,12 @@ databaseChangeLog:
                   constraints:
                     foreignKeyName: fk_company_industry_id
                     references: industry(id)
-                    nullable: false
               - column:
                   name: occupation_id
                   type: varchar(36)
                   constraints:
                     foreignKeyName: fk_company_occupation_id
                     references: occupation(id)
-                    nullable: false
         - createTable:
             tableName: companies_keywords
             schemaName: ${writeSchema}
@@ -169,4 +168,26 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: true
+        - createTable:
+            tableName: event_store
+            schemaName: ${writeSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: data
+                  type: json
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
                   

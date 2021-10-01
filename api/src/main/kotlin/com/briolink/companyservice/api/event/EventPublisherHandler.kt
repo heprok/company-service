@@ -5,15 +5,17 @@ import com.briolink.companyservice.common.jpa.write.repository.EventStoreWriteRe
 import com.briolink.event.AbstractEventPublisherHandler
 import org.springframework.stereotype.Component
 import com.amazonaws.services.sns.AmazonSNS
+import io.awspring.cloud.messaging.core.NotificationMessagingTemplate
 import java.time.Instant
 
 @Component
 class EventPublisherHandler(
-    amazonSns: AmazonSNS,
-    private val eventStoreWriteRepository: EventStoreWriteRepository
+    override val notificationMessagingTemplate: NotificationMessagingTemplate,
+    private val eventStoreWriteRepository: EventStoreWriteRepository,
 ) :
-    AbstractEventPublisherHandler(amazonSns) {
+    AbstractEventPublisherHandler() {
     override fun writeToEventStore(payload: String, timestamp: Long) {
+        // TODO: check for select
         eventStoreWriteRepository.saveAndFlush(EventStoreWriteEntity(payload, Instant.ofEpochMilli(timestamp)))
     }
 }

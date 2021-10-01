@@ -9,11 +9,11 @@ import javax.persistence.Table
 
 @Table(name = "company", catalog = "dev_read_company")
 @Entity
-class IndustryReadEntity {
+class IndustryReadEntity() : BaseReadEntity() {
     @Id
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
-    lateinit var id: UUID
+    val id: UUID? = null
 
     @Type(type = "string")
     @Column(name = "name", nullable = false, length = 128, columnDefinition = "string")

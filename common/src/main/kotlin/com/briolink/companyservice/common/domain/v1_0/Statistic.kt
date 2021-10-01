@@ -8,5 +8,7 @@ data class Statistic(
     @JsonProperty("collaboratingCompanyCount")
     val collaboratingCompanyCount: Int = 0,
     @JsonProperty("collaboratingPeopleCount")
-    val collaboratingPeopleCount: Int = 0
+    val collaboratingPeopleCount: Int = 0,
+    @JsonProperty("totalConnectionCount")
+    val totalConnectionCount: Int = 0
 ) : Domain

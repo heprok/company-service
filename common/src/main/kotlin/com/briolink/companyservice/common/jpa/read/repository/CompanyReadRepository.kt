@@ -6,8 +6,5 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import java.util.UUID
 
 interface CompanyReadRepository : JpaRepository<CompanyReadEntity, UUID>, QuerydslPredicateExecutor<CompanyReadEntity> {
-
-
     fun findBySlug(slug: String): CompanyReadEntity
-
 }

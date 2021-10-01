@@ -26,7 +26,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 facebook = entity.data.facebook,
                 twitter = entity.data.twitter,
                 about = entity.data.about,
-                isTypePublic = entity.data.isTypePublic ?: true,
+                isTypePublic = entity.data.isTypePublic,
                 industry = entity.data.industry?.let {
                     Industry(
                             id = it.id,
@@ -44,6 +44,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                             serviceProvidedCount = it.serviceProvidedCount,
                             collaboratingCompanyCount = it.collaboratingCompanyCount,
                             collaboratingPeopleCount = it.collaboratingPeopleCount,
+                            totalConnectionCount = it.totalConnectionCount,
                     )
                 },
                 keywords = entity.data.keywords.let { list ->

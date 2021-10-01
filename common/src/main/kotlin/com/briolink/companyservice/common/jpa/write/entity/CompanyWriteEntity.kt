@@ -1,6 +1,7 @@
 package com.briolink.companyservice.common.jpa.write.entity
 
 import com.briolink.companyservice.common.util.StringUtil
+import java.net.URL
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -24,13 +25,13 @@ class CompanyWriteEntity(
     var slug: String = "",
 
     @Column(name = "logo")
-    var logo: String? = null,
+    var logo: URL? = null,
 
     @Column(name = "about", length = 10240)
     var about: String? = null,
 
-    @Column(name = "type", columnDefinition = "TINYINT")
-    var type: Short? = null,
+    @Column(name = "isTypePublic")
+    var isTypePublic: Boolean = true,
 
     @Column(name = "country")
     var country: String? = null,
@@ -53,19 +54,20 @@ class CompanyWriteEntity(
 
     @ManyToOne(cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "occupation_id")
-    var ocuupation: OccupationWriteEntity? = null,
+    var occupation: OccupationWriteEntity? = null,
 
     @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
-            name = "company_key_words",
+            name = "companies_keywords",
             joinColumns = [JoinColumn(name = "company_id")],
-            inverseJoinColumns = [JoinColumn(name = "key_words_id")],
+            inverseJoinColumns = [JoinColumn(name = "keyword_id")],
     )
-    var keyWords: MutableList<KeyWordWriteEntity> = mutableListOf()
+    var keywords: MutableList<KeywordWriteEntity> = mutableListOf()
 ) : BaseWriteEntity() {
 
     @PrePersist
     fun prePersist() {
         slug = StringUtil.slugify(name)
     }
+
 }

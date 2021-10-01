@@ -26,7 +26,7 @@ class UserReadEntity(
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
     var data: Data
-) {
+) : BaseReadEntity() {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(

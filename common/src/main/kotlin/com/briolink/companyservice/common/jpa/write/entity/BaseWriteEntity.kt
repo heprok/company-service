@@ -15,5 +15,5 @@ abstract class BaseWriteEntity {
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
-    lateinit var id: UUID
+    var id: UUID? = null
 }

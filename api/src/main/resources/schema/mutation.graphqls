@@ -1,7 +1,8 @@
 type Mutation{
     #    Company
-    createCompany(company: CreateCompanyInput!) : Company!
-    updateCompany(company: UpdateCompanyInput!) : Company!
+    createCompany(company: CreateCompanyInput!) : CompanyResult
+    uploadCompanyImage(id: ID!, image: Upload) : Url
+    updateCompany(id: ID!, company: UpdateCompanyInput!) : CompanyResult
     deleteCompany(id: ID!) : Boolean!
 
     #    Industry

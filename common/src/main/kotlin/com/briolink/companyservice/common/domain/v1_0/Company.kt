@@ -1,10 +1,11 @@
 package com.briolink.companyservice.common.domain.v1_0
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.util.*
 
 data class Company(
     @JsonProperty("id")
-    val id: String,
+    val id: UUID,
     @JsonProperty("name")
     val name: String,
     @JsonProperty("slug")
@@ -16,7 +17,7 @@ data class Company(
     @JsonProperty("about")
     val about: String? = null,
     @JsonProperty("isTypePublic")
-    val isTypePublic: Boolean = true,
+    val isTypePublic: Boolean? = null,
     @JsonProperty("country")
     val country: String? = null,
     @JsonProperty("state")

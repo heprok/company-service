@@ -25,21 +25,21 @@ class ServiceReadEntity(
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
     var data: Data
-) {
+) : BaseReadEntity() {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty("name")
-        val name: String,
+        var name: String,
         @JsonProperty("price")
-        val price: Double,
+        var price: Double,
         @JsonProperty("image")
-        val image: String,
+        var image: String,
         @JsonProperty("verifiedUses")
-        val verifiedUses: Int,
+        var verifiedUses: Int,
         @JsonProperty("industriesUsed")
-        val industriesUsed: List<Industry?>,
+        var industriesUsed: List<Industry?>,
         @JsonProperty("created")
-        val created: LocalDate
+        var created: LocalDate
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

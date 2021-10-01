@@ -23,6 +23,13 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
 
+//    //mapstruct
+//    implementation("org.mapstruct:mapstruct:")
+//    annotationProcessor("org.mapstruct:mapstruct-processor:1.4.2.Final")
+
+    //
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE}")
+
     // Hibernate Types 55
     implementation("com.vladmihalcea:hibernate-types-55:${Versions.HIBERNATE_TYPES_55}")
 
