@@ -20,7 +20,7 @@ class CompanyReadEntity(
     val id: UUID
 ) : BaseReadEntity() {
     @Type(type = "string")
-    @Column(name = "slug", nullable = false)
+    @Column(name = "slug", nullable = false, length = 50)
     var slug: String = ""
 
     @Type(type = "json")

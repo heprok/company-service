@@ -65,7 +65,8 @@ fun User.Companion.fromEntity(entity: UserReadEntity) = User(
         firstName = entity.data.firstName,
         lastName = entity.data.lastName,
         jobPosition = entity.data.jobPosition,
-        image = entity.data.image.let { Image(url = URL(entity.data.image)) },
+        slug = entity.data.slug,
+        image = entity.data.image?.let { Image(url = it) },
 )
 
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(

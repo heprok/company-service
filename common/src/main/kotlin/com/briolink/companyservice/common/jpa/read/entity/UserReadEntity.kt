@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import org.hibernate.annotations.Type
+import java.net.URL
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Column
@@ -20,8 +21,8 @@ class UserReadEntity(
     var id: UUID,
 
     @Type(type = "uuid-char")
-    @Column(name = "company_id", nullable = false, length = 36)
-    var companyId: UUID,
+    @Column(name = "company_id", length = 36)
+    var companyId: UUID? = null,
 
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
@@ -32,12 +33,14 @@ class UserReadEntity(
     data class Data(
         @JsonProperty("firstName")
         var firstName: String,
+        @JsonProperty("slug")
+        var slug: String,
         @JsonProperty("lastName")
         var lastName: String,
         @JsonProperty("jobPosition")
-        var jobPosition: String,
+        var jobPosition: String? = null,
         @JsonProperty("image")
-        var image: String,
+        var image: URL? = null,
     )
 
 }

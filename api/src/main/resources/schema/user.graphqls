@@ -2,7 +2,8 @@ type User {
     id: ID!
     firstName: String!
     lastName: String!
-    jobPosition: String!
+    slug: String!
+    jobPosition: String
     image: Image
 }
 
@@ -16,7 +17,7 @@ input CreateUserInput {
     companyId: ID!
     firstName: String!
     lastName: String!
-    jobPosition: String!
+    jobPosition: String
     image: Upload
 }
 

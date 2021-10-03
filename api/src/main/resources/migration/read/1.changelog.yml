@@ -15,9 +15,8 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: slug
-                  type: varchar(100)
+                  type: varchar(50)
                   constraints:
-                    primaryKey: true
                     nullable: false
               - column:
                   name: data
@@ -38,8 +37,7 @@ databaseChangeLog:
                   name: company_id
                   type: varchar(36)
                   constraints:
-                    primaryKey: true
-                    nullable: false
+                    nullable: true
               - column:
                   name: data
                   type: json

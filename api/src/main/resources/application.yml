@@ -3,6 +3,7 @@ spring:
     url: jdbc:mariadb://localhost:3306/
     username: ok
     password: ok
+    initialization-mode: always
   jpa:
     hibernate:
       ddl-auto: none
@@ -13,7 +14,7 @@ spring:
     generate-ddl: false
     show-sql: true
   liquibase:
-    change-log: migration/master.xml
+    change-log: migration/master.yml
     default-schema: dev_write_company
     parameters:
       readSchema: dev_read_company
