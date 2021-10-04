@@ -79,3 +79,4 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.werf.name }}
                   key: dbPassword
+      serviceAccountName: {{ .Values.werf.name }}
