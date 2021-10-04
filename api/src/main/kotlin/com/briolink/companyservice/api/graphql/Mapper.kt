@@ -18,7 +18,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 id = entity.id.toString(),
                 name = entity.data.name,
                 website = URL(entity.data.website),
-                logo = entity.data.logo.let { Image(url = URL(entity.data.logo)) },
+                logo = entity.data.logo.let { Image(url = URL(it)) },
                 country = entity.data.country,
                 state = entity.data.state,
                 city = entity.data.city,
@@ -75,7 +75,7 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         price = entity.data.price,
         verifiedUses = entity.data.verifiedUses,
         created = entity.data.created,
-        image = entity.data.image.let { Image(url = URL(entity.data.image)) },
+        image = entity.data.image.let { Image(url = it) },
         industriesUsed = entity.data.industriesUsed.let { list ->
             list.map {
                 it?.let { industry ->

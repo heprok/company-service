@@ -5,10 +5,9 @@ import com.briolink.companyservice.common.jpa.write.entity.UserWriteEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import java.util.UUID
 
-interface UserWriteRepository : JpaRepository<UserWriteEntity, UUID>, QuerydslPredicateExecutor<UserWriteEntity>
+interface UserWriteRepository : JpaRepository<UserWriteEntity, UUID>
 {
     fun findByCompanyIdIs(companyId: UUID, pageable: Pageable? = null): Page<UserReadEntity>
 }

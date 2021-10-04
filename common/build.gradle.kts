@@ -16,6 +16,12 @@ dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
+    annotationProcessor("org.springframework.boot:spring-boot-autoconfigure-processor")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    kapt("org.springframework.boot:spring-boot-autoconfigure-processor:${Versions.SPRING_BOOT}")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}")
+
+
     // FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -33,15 +39,12 @@ dependencies {
     // Hibernate Types 55
     implementation("com.vladmihalcea:hibernate-types-55:${Versions.HIBERNATE_TYPES_55}")
 
-    // Querydsl
-    api("com.querydsl:querydsl-jpa")
-    api("com.querydsl:querydsl-core")
-    kapt("com.querydsl", name = "querydsl-apt", classifier = "jpa")
-
     // IBM ICU4J
     implementation("com.ibm.icu:icu4j:${Versions.IBM_ICU4J}")
 }
 
 kapt {
-    annotationProcessor("com.querydsl.apt.jpa.JPAAnnotationProcessor")
+    arguments {
+        arg("mapstruct.verbose", "true")
+    }
 }

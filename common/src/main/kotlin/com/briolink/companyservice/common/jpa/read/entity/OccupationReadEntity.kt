@@ -8,7 +8,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "occupation", catalog = "dev_read_company")
+@Table(name = "occupation", catalog = "schema_read")
 @Entity
 class OccupationReadEntity : BaseReadEntity() {
     @Id

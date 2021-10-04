@@ -13,6 +13,10 @@ type Error {
     field: [String!]
 }
 
+type BaseResult {
+    success: Boolean
+}
+
 interface ResultWithUserErrors {
     userErrors: [Error]!
 }

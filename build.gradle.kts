@@ -15,6 +15,7 @@ plugins {
 buildscript {
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 }
 
@@ -47,7 +48,7 @@ subprojects {
 
             credentials(HttpHeaderCredentials::class) {
                 name = "Deploy-Token"
-                value = "oLyiwDVguKzJsnDjqZQF" // System.getenv("GITLAB_DEPLOY_TOKEN")
+                value =  System.getenv("CI_DEPLOY_PASSWORD")
             }
         }
     }
@@ -62,6 +63,7 @@ subprojects {
     dependencies {
         // Briolnik Event
         implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
+        implementation("me.paulschwarz:spring-dotenv:${Versions.SPRING_DOTENV}")
     }
 }
 

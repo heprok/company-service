@@ -22,9 +22,6 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    // Spring Cloud
-    implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging")
-    implementation("io.awspring.cloud:spring-cloud-aws-autoconfigure")
 
     // FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -62,7 +59,6 @@ dependencyManagement {
 
 kapt {
     arguments {
-        arg("mapstruct.defaultComponentModel", "spring")
         arg("mapstruct.verbose", "true")
     }
 }

@@ -30,6 +30,4 @@ dependencies {
     // kotlin-logging
     implementation("io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_JVM}")
 
-    // Briolink Event
-    implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
 }

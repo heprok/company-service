@@ -1,24 +1,30 @@
 server:
-  port: 8086
+  port: 8085
 spring:
+  profiles:
+    active: ${env.spring_profiles_active:dev}
   datasource:
-    url: jdbc:mariadb://localhost:3306/
-    username: ok
-    password: ok
+    url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
+    username: ${env.DB_USER:root}
+    password: ${env.DB_PASSWORD:root}
   jpa:
     hibernate:
       ddl-auto: none
     properties:
       hibernate:
-        default_catalog: dev_read_company
         dialect: org.hibernate.dialect.MySQL57Dialect
+        jdbc:
+          batch_size: 60
     generate-ddl: false
-    show-sql: true
+    show-sql: false
 cloud:
   aws:
     stack:
       auto: false
+app:
+  db:
+    schema-prefix: ${env.spring_profiles_active}_company
 event:
   listener:
     enabled: true
-    sqs-name: bl-network-dev-company-service.fifo
+    sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo

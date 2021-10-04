@@ -32,17 +32,17 @@ Deploy to Test:
   <<: *base_deploy
   environment:
     name: test
-    url: https://example1.test.briolink.net
+    url: https://company-service.test.briolink.net
   only:
     - test
 
-Deploy to Production:
+Deploy to Development:
   <<: *base_deploy
   environment:
-    name: production
-    url: https://example.briolink.net
+    name: dev
+    url: https://company-service.dev.briolink.net
   only:
-    - master
+    - dev
 
 Cleanup:
   stage: cleanup

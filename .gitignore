@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Dotenv ###
+.env
+
 ### STS ###
 .apt_generated
 .classpath

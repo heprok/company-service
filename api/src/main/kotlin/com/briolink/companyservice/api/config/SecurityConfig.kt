@@ -21,7 +21,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 }
                 .authorizeRequests { reg ->
                     reg
-                            .antMatchers("/", "/actuator/**", "/graphiql").permitAll()
+                            .antMatchers("/", "/actuator/**", "/graphiql", "/mock-upload", "/api/v1/**/*").permitAll()
                             .anyRequest().authenticated()
                 }
                 .oauth2ResourceServer { configurer ->
