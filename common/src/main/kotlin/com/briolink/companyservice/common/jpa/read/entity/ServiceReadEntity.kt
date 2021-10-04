@@ -38,7 +38,7 @@ class ServiceReadEntity(
         @JsonProperty("verifiedUses")
         var verifiedUses: Int,
         @JsonProperty("industriesUsed")
-        var industriesUsed: List<Industry?>,
+        var industry: Industry,
         @JsonProperty("created")
         var created: LocalDate
     )

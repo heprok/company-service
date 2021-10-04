@@ -76,15 +76,5 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         verifiedUses = entity.data.verifiedUses,
         created = entity.data.created,
         image = entity.data.image.let { Image(url = it) },
-        industriesUsed = entity.data.industriesUsed.let { list ->
-            list.map {
-                it?.let { industry ->
-                    Industry(
-                            id = industry.id,
-                            name = industry.name,
-                    )
-                }
-            }
-        },
-
-        )
+        industry = entity.data.industry.name,
+)

@@ -7,12 +7,7 @@ import com.briolink.companyservice.api.service.OccupationService
 import com.briolink.companyservice.api.types.CompanyResult
 import com.briolink.companyservice.api.types.CreateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyInput
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
-import com.briolink.companyservice.common.jpa.write.entity.QCompanyWriteEntity.companyWriteEntity
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument

@@ -4,7 +4,7 @@ type Service {
     price: Float
     image: Image
     verifiedUses: Int
-    industriesUsed: [Industry]
+    industry: String
     created: Date!
 }
 

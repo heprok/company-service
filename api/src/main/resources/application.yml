@@ -22,7 +22,7 @@ spring:
     generate-ddl: false
     show-sql: false
   liquibase:
-    change-log: migration/master.xml
+    change-log: migration/master.yml
     default-schema: ${app.db.schema-prefix}_write
     parameters:
       readSchema: ${app.db.schema-prefix}_read
