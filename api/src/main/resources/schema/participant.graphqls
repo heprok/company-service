@@ -1,0 +1,7 @@
+type Participant {
+    name: String!
+    slug: String!
+    role: String!
+    image: Image
+    verifiedUser: User
+}

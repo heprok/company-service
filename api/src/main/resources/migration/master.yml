@@ -2,6 +2,8 @@ databaseChangeLog:
   - include:
       file: migration/read/1.changelog.yml
   - include:
+      file: migration/read/2.changelog.yml
+  - include:
       file: migration/write/1.changelog.yml
 #  - include:
 #      file: migration/fixtures/data.sql

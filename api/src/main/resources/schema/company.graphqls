@@ -17,7 +17,8 @@ type Company {
     keywords: [Keyword]!
 }
 
-type CompanyResult implements ResultWithUserErrors {
+type UpdateCompanyResult implements ResultWithUserErrors {
+    success: Boolean
     userErrors: [Error]!
 }
 
@@ -39,6 +40,8 @@ input UpdateCompanyInput {
     facebook: String
     twitter: String
     industryId: ID
+    industryName: String
+    occupationName: String
     occupationId: ID
     keyWordIds: [ID]
 }

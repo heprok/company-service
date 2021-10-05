@@ -7,7 +7,11 @@ input CreateKeywordInput {
     name: String!
 }
 
-input UpdateKeywordInput {
+type CreateKeywordResult implements ResultWithUserErrors {
+    data: KeywordResultData
+    userErrors: [Error]!
+}
+
+type KeywordResultData {
     id: ID!
-    name: String!
 }

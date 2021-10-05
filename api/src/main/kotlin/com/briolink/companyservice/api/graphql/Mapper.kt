@@ -9,6 +9,9 @@ import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.Statistic
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import java.net.URL
@@ -67,6 +70,21 @@ fun User.Companion.fromEntity(entity: UserReadEntity) = User(
         jobPosition = entity.data.jobPosition,
         slug = entity.data.slug,
         image = entity.data.image?.let { Image(url = it) },
+)
+
+fun Industry.Companion.fromEntity(entity: IndustryReadEntity) = Industry(
+        id = entity.id!!.toString(),
+        name = entity.name
+)
+
+fun Keyword.Companion.fromEntity(entity: KeywordReadEntity) = Keyword(
+        id = entity.id!!.toString(),
+        name = entity.name
+)
+
+fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
+        id = entity.id!!.toString(),
+        name = entity.name
 )
 
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(

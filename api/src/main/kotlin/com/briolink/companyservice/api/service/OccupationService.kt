@@ -1,21 +1,25 @@
 package com.briolink.companyservice.api.service
 
-import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.OccupationReadRepository
+import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
 import com.briolink.companyservice.common.jpa.write.entity.OccupationWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRepository
-import com.briolink.companyservice.common.util.PageRequest
-import org.springframework.data.domain.Page
+import com.briolink.companyservice.common.mapper.OccupationMapper
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
 class OccupationService(
-    private val occupationReadRepository: OccupationReadRepository,
-    private val occupationWriteRepository: OccupationWriteRepository
+    private val occupationWriteRepository: OccupationWriteRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
-    fun createOccupation(occupation: OccupationWriteEntity): OccupationWriteEntity = occupationWriteRepository.save(occupation)
-    fun updateOccupation(occupation: OccupationWriteEntity) = occupationWriteRepository.save(occupation)
-    fun deleteOccupation(id: UUID) = occupationWriteRepository.deleteById(id)
+    val mapper = OccupationMapper.INSTANCE
+
+    fun create(name: String) = OccupationWriteEntity().apply {
+        this.name = name
+        occupationWriteRepository.save(this)
+        applicationEventPublisher.publishEvent(OccupationCreatedEvent(mapper.toDomain(this)))
+    }
+
     fun findById(id: UUID) = occupationWriteRepository.findById(id)
 }

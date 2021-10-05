@@ -13,7 +13,7 @@ class IndustryReadEntity() : BaseReadEntity() {
     @Id
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
-    val id: UUID? = null
+    var id: UUID? = null
 
     @Type(type = "string")
     @Column(name = "name", nullable = false, length = 128, columnDefinition = "string")

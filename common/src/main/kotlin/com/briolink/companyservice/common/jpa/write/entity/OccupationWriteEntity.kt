@@ -4,11 +4,9 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 
-@Table(name = "occupation", catalog = "dev_write_company")
+@Table(name = "occupation", catalog = "schema_write")
 @Entity
-class OccupationWriteEntity(
+class OccupationWriteEntity() : BaseWriteEntity() {
     @Column(name = "name", nullable = false)
-    var name: String
-) : BaseWriteEntity() {
-
+    lateinit var name: String
 }

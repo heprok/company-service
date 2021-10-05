@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: oleg@briolink.com
+      changes:
+        - createTable:
+            tableName: connection
+            schemaName: ${readSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: participant_from
+                  type: varchar(36)
+              - column:
+                  name: participant_to
+                  type: varchar(36)
+              - column:
+                  name: participant_from_role
+                  type: varchar(36)
+              - column:
+                  name: participant_to_role
+                  type: varchar(36)
+              - column:
+                  name: service_ids
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dates_start_collaboration
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dates_end_collaboration
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: industry_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: verification_stage
+                  type: tinyint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data
+                  type: json
+                  constraints:
+                    nullable: false

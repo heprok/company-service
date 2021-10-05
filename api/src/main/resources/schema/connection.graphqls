@@ -1,0 +1,13 @@
+type Connection {
+    id: ID!
+    participantFrom: Participant
+    participantTo: Participant
+    verificationStage: VerificationStage!
+    services: [ConnectionService!]!
+}
+
+enum VerificationStage {
+    VERIFIED
+    PENDING
+    PROGRESS
+}

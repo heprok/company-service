@@ -7,7 +7,11 @@ input CreateIndustryInput {
     name: String!
 }
 
-input UpdateIndustryInput {
+type CreateIndustryResult implements ResultWithUserErrors {
+    data: IndustryResultData
+    userErrors: [Error]!
+}
+
+type IndustryResultData {
     id: ID!
-    name: String!
 }

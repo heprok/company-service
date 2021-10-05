@@ -1,22 +1,20 @@
 type Mutation{
     #    Company
-    createCompany(company: CreateCompanyInput!) : CompanyResult
+#    createCompany(input: CreateCompanyInput!) : CompanyResult
     uploadCompanyImage(id: ID!, image: Upload) : Url
-    updateCompany(id: ID!, company: UpdateCompanyInput!) : CompanyResult
-    deleteCompany(id: ID!) : Boolean!
+    updateCompany(id: ID!, company: UpdateCompanyInput!) : UpdateCompanyResult
+#    deleteCompany(id: ID!) : Boolean!
 
     #    Industry
-    createIndustry(industry: CreateIndustryInput!) : Industry!
-    updateIndustry(industry: UpdateIndustryInput!) : Industry!
-    deleteIndustry(id: ID!) : Boolean!
+    createIndustry(input: CreateIndustryInput!) : CreateIndustryResult!
+    #    deleteIndustry(id: ID!) : Boolean!
+
+    #    Occupation
+    createOccupation(input: CreateOccupationInput!) : CreateOccupationResult!
 
     #    KeyWord
-    createKeyWord(keyWord: CreateKeywordInput!) : Keyword!
-    updateKeyword(keyWord: UpdateKeywordInput!) : Keyword!
-    deleteKeyWord(id: ID!) : Boolean!
+    createKeyword(input: CreateKeywordInput!) : CreateKeywordResult!
 
     #    User ( company Stuff)
-    createEmployee(user: CreateUserInput!) : User!
-    updateEmployee(user: UpdateUserInput!) : User!
-    deleteEmployee(id: ID!) : Boolean!
+    createEmployee(input: CreateUserInput!) : User!
 }

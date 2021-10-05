@@ -29,11 +29,11 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
 
-//    //mapstruct
-//    implementation("org.mapstruct:mapstruct:")
-//    annotationProcessor("org.mapstruct:mapstruct-processor:1.4.2.Final")
+    // MapStruct
+    implementation("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
+    kapt("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
 
-    //
+    //FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE}")
 
     // Hibernate Types 55

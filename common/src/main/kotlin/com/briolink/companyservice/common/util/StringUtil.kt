@@ -25,5 +25,7 @@ object StringUtil {
                 .getInstance("NFD; Any-Latin; NFC; NFD; [:Nonspacing Mark:] Remove; NFC")
         return transliterator.transliterate(input)
     }
+
+    fun replaceNonWord(str: String, replaceSymbol: String = " "): String = str.replace("[^\\p{L}\\p{N}_]+", replaceSymbol)
 }
 

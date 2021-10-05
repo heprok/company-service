@@ -2,4 +2,8 @@ type Query {
     getCompany(slug: String!): Company!
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
     getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList!
+
+    getIndustries(query: String!): [Industry]!
+    getOccupations(query: String!): [Occupation]!
+    getKeywords(query: String!): [Keyword]!
 }

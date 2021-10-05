@@ -1,0 +1,7 @@
+type ConnectionService {
+    id: ID!
+    name: String!
+    industry: String!
+    startDate: Int!
+    endDate: Int
+}

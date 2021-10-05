@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne
 import javax.persistence.PrePersist
 import javax.persistence.Table
 
-@Table(name = "company", catalog = "dev_write_company")
+@Table(name = "company", catalog = "schema_write")
 @Entity
 class CompanyWriteEntity(
     @Column(name = "name", nullable = false)

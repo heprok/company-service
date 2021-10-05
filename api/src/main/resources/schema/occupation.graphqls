@@ -7,7 +7,11 @@ input CreateOccupationInput {
     name: String!
 }
 
-input UpdateOccupationInput {
+type CreateOccupationResult implements ResultWithUserErrors {
+    data: OccupationResultData
+    userErrors: [Error]!
+}
+
+type OccupationResultData {
     id: ID!
-    name: String!
 }

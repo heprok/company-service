@@ -10,7 +10,7 @@ import com.netflix.graphql.dgs.InputArgument
 import java.util.UUID
 
 @DgsComponent
-class GetServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
+class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
     @DgsQuery
 //    @PreAuthorize("isAuthenticated()")
     fun getServices(

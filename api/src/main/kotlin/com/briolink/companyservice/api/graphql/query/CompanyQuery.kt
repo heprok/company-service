@@ -8,7 +8,7 @@ import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 
 @DgsComponent
-class GetCompanyQuery(private val companyService: CompanyService) {
+class CompanyQuery(private val companyService: CompanyService) {
     @DgsQuery
 //    @PreAuthorize("isAuthenticated()")
     fun getCompany(@InputArgument("slug") slug: String): Company {
