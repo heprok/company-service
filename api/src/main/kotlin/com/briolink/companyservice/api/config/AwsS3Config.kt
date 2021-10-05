@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class AwsS3Config {
     @Bean
-    fun s3Client(): AmazonS3 = AmazonS3ClientBuilder.defaultClient()
+    fun s3Client(): AmazonS3 = AmazonS3ClientBuilder.standard().withCredentials(DefaultAWSCredentialsProviderChain.getInstance()).build()
 }
