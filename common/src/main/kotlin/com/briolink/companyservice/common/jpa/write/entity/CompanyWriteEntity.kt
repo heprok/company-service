@@ -59,6 +59,7 @@ class CompanyWriteEntity(
     @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
             name = "companies_keywords",
+            catalog = "schema_write",
             joinColumns = [JoinColumn(name = "company_id")],
             inverseJoinColumns = [JoinColumn(name = "keyword_id")],
     )
