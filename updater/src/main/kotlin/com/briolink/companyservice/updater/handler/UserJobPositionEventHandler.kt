@@ -15,7 +15,7 @@ class UserJobPositionCreatedEventHandler(
     override fun handle(event: UserJobPositionCreatedEvent) {
         val eventData = event.data
         if ( eventData.isCurrent ){
-            val user = userReadRepository.findById(eventData.id).orElseThrow{ throw EntityNotFoundException(eventData.id.toString() + " user not found") }
+            val user = userReadRepository.findById(eventData.userId).orElseThrow{ throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
             user.companyId = eventData.companyId
             user.data.jobPosition = eventData.title
             userReadRepository.save(user)
@@ -30,7 +30,7 @@ class UserJobPositionUpdatedEventHandler(
     override fun handle(event: UserJobPositionUpdatedEvent) {
         val eventData = event.data
         if ( eventData.isCurrent ){
-            val user = userReadRepository.findById(eventData.id).orElseThrow{ throw EntityNotFoundException(eventData.id.toString() + " user not found") }
+            val user = userReadRepository.findById(eventData.userId).orElseThrow{ throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
             user.companyId = eventData.companyId
             user.data.jobPosition = eventData.title
             userReadRepository.save(user)
@@ -45,7 +45,7 @@ class UserJobPositionDeletedEventHandler(
     override fun handle(event: UserJobPositionDeletedEvent) {
         val eventData = event.data
         if ( eventData.isCurrent ){
-            val user = userReadRepository.findById(eventData.id).orElseThrow{ throw EntityNotFoundException(eventData.id.toString() + " user not found") }
+            val user = userReadRepository.findById(eventData.userId).orElseThrow{ throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
             user.companyId = null
             user.data.jobPosition = null
             userReadRepository.save(user)
