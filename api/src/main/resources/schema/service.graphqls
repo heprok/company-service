@@ -5,7 +5,7 @@ type Service {
     image: Image
     verifiedUses: Int
     industry: String
-    created: Date!
+#    created: Date!
 }
 
 type ServiceList implements PaginatedList {

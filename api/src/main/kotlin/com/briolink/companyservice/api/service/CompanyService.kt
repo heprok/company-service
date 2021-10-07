@@ -72,12 +72,12 @@ class CompanyService(
                     listKeyword.map {
                         Keyword(
                                 it.id!!,
-                                it.name
+                                it.name,
                         )
                     }
-                }
+                },
         )
-            applicationEventPublisher.publishEvent(CompanyUpdatedEvent(domain))
+        applicationEventPublisher.publishEvent(CompanyUpdatedEvent(domain))
         return domain
     }
 

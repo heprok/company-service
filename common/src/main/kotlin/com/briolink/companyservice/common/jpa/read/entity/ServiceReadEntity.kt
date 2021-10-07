@@ -37,17 +37,17 @@ class ServiceReadEntity(
         var image: URL,
         @JsonProperty("verifiedUses")
         var verifiedUses: Int,
-        @JsonProperty("industriesUsed")
-        var industry: Industry,
-        @JsonProperty("created")
-        var created: LocalDate
+        @JsonProperty("industry")
+        var industry: String,
+//        @JsonProperty("created")
+//        var created: LocalDate
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Industry(
-        @JsonProperty("id")
-        val id: String,
-        @JsonProperty("name")
-        val name: String,
-    )
+//    @JsonIgnoreProperties(ignoreUnknown = true)
+//    data class Industry(
+//        @JsonProperty("id")
+//        val id: String,
+//        @JsonProperty("name")
+//        val name: String,
+//    )
 }
