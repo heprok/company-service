@@ -14,4 +14,5 @@ type CreateKeywordResult implements ResultWithUserErrors {
 
 type KeywordResultData {
     id: ID!
+    name: String
 }
