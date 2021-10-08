@@ -3,13 +3,15 @@ type Company {
     name: String!
     website: Url!
     logo: Image
-    about: String
+    description: String
     slug: String!
     isTypePublic: Boolean!
-    country: String
-    state: String
-    city: String
+#    country: String
+#    state: String
+#    city: String
     facebook: String
+    location: String
+
     twitter: String
     occupation: Occupation
     industry: Industry
@@ -32,11 +34,12 @@ input UpdateCompanyInput {
     website: Url
     logo: Upload
     slug: String
-    about: String
+    description: String
     isTypePublic: Boolean
-    country: String
-    state: String
-    city: String
+    location: String
+#    country: String
+#    state: String
+#    city: String
     facebook: String
     twitter: String
     industryId: ID

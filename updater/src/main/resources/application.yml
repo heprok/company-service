@@ -2,7 +2,7 @@ server:
   port: 8085
 spring:
   profiles:
-    active: ${env.spring_profiles_active:dev}
+    active: ${env.spring_profiles_active:local}
   datasource:
     url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
     username: ${env.DB_USER:root}

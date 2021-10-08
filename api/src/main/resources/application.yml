@@ -4,7 +4,7 @@ server:
     include-stacktrace: never
 spring:
   profiles:
-    active: ${env.spring_profiles_active:dev}
+    active: ${env.spring_profiles_active:local}
   servlet:
     multipart:
       max-file-size: 2MB

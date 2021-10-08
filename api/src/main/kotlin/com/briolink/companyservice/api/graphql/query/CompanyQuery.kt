@@ -6,11 +6,12 @@ import com.briolink.companyservice.api.types.Company
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.security.access.prepost.PreAuthorize
 
 @DgsComponent
 class CompanyQuery(private val companyService: CompanyService) {
     @DgsQuery
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     fun getCompany(@InputArgument("slug") slug: String): Company {
         val company = companyService.getCompanyBySlug(slug)
         return Company.fromEntity(company)

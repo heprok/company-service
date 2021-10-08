@@ -27,20 +27,20 @@ class CompanyWriteEntity(
     @Column(name = "logo")
     var logo: URL? = null,
 
-    @Column(name = "about", length = 10240)
-    var about: String? = null,
+    @Column(name = "description", length = 10240)
+    var description: String? = null,
 
     @Column(name = "isTypePublic")
     var isTypePublic: Boolean = true,
 
-    @Column(name = "country")
-    var country: String? = null,
+//    @Column(name = "country")
+//    var country: String? = null,
 
-    @Column(name = "city")
-    var city: String? = null,
+    @Column(name = "location")
+    var location: String? = null,
 
-    @Column(name = "state")
-    var state: String? = null,
+//    @Column(name = "state")
+//    var state: String? = null,
 
     @Column(name = "facebook")
     var facebook: String? = null,

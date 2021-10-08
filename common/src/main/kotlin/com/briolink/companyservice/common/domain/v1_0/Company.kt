@@ -1,6 +1,7 @@
 package com.briolink.companyservice.common.domain.v1_0
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.net.URL
 import java.util.*
 
 data class Company(
@@ -13,17 +14,19 @@ data class Company(
     @JsonProperty("website")
     val website: String,
     @JsonProperty("logo")
-    val logo: String? = null,
-    @JsonProperty("about")
-    val about: String? = null,
+    val logo: URL? = null,
+    @JsonProperty("description")
+    val description: String? = null,
     @JsonProperty("isTypePublic")
     val isTypePublic: Boolean? = null,
-    @JsonProperty("country")
-    val country: String? = null,
-    @JsonProperty("state")
-    val state: String? = null,
-    @JsonProperty("city")
-    val city: String? = null,
+    @JsonProperty("location")
+    val location: String? = null,
+//    @JsonProperty("country")
+//    val country: String? = null,
+//    @JsonProperty("state")
+//    val state: String? = null,
+//    @JsonProperty("city")
+//    val city: String? = null,
     @JsonProperty("facebook")
     val facebook: String? = null,
     @JsonProperty("twitter")
@@ -34,6 +37,6 @@ data class Company(
     val industry: Industry? = null,
     @JsonProperty("statistic")
     val statistic: Statistic? = null,
-    @JsonProperty("keywords")
-    val keywords: List<Keyword?>? = null
+//    @JsonProperty("keywords")
+//    val keywords: List<Keyword?>? = null
 ) : Domain

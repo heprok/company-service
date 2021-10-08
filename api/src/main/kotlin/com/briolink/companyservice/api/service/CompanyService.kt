@@ -47,13 +47,14 @@ class CompanyService(
                 id = companyWrite.id!!,
                 name = companyWrite.name,
                 website = companyWrite.website,
-                about = companyWrite.about,
+                description = companyWrite.description,
                 slug = companyWrite.slug,
-                country = companyWrite.country,
-                state = companyWrite.state,
-                logo = companyWrite.logo.toString(),
+//                country = companyWrite.country,
+//                state = companyWrite.state,
+                logo = companyWrite.logo,
                 isTypePublic = companyWrite.isTypePublic,
-                city = companyWrite.city,
+//                city = companyWrite.city,
+                location = companyWrite.location,
                 facebook = companyWrite.facebook,
                 twitter = companyWrite.twitter,
                 industry = companyWrite.industry?.let {
@@ -68,14 +69,14 @@ class CompanyService(
                             it.name,
                     )
                 },
-                keywords = company.keywords.let { listKeyword ->
-                    listKeyword.map {
-                        Keyword(
-                                it.id!!,
-                                it.name,
-                        )
-                    }
-                },
+//                keywords = company.keywords.let { listKeyword ->
+//                    listKeyword.map {
+//                        Keyword(
+//                                it.id!!,
+//                                it.name,
+//                        )
+//                    }
+//                },
         )
         applicationEventPublisher.publishEvent(CompanyUpdatedEvent(domain))
         return domain
@@ -86,10 +87,9 @@ class CompanyService(
     fun findById(id: UUID): Optional<CompanyWriteEntity> = companyWriteRepository.findById(id)
     fun uploadCompanyProfileImage(id: UUID, image: MultipartFile?): URL? {
         val company = findById(id).orElseThrow { throw EntityNotFoundException("company with $id not found") }
-        company.logo = image?.let {
-            awsS3Service.uploadImage("/uploads/company/profile-image", image)
-        }
-        companyWriteRepository.saveAndFlush(company)
-        return company.logo
+        val imageUrl: URL? = if (image != null) awsS3Service.uploadImage("uploads/company/profile-image", image) else null
+        company.logo = imageUrl
+        updateCompany(company)
+        return imageUrl
     }
 }

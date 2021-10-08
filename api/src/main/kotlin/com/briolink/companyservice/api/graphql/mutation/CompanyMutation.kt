@@ -10,6 +10,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
 import graphql.schema.DataFetchingEnvironment
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.util.*
@@ -22,11 +23,13 @@ class CompanyMutation(
     val industryService: IndustryService,
     val keywordService: KeywordService,
 ) {
+    @PreAuthorize("isAuthenticated()")
     @DgsMutation
     fun uploadCompanyImage(@InputArgument("id") id: String, @InputArgument("image") image: MultipartFile?): URL? {
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DgsMutation(field = "updateCompany")
     fun update(
         @InputArgument("id") id: String,
@@ -38,11 +41,12 @@ class CompanyMutation(
         company.slug = inputCompany.slug ?: company.slug
         company.name = inputCompany.name ?: company.name
         company.website = inputCompany.website?.toString() ?: company.website
-        company.about = inputCompany.about ?: company.about
+        company.description = inputCompany.description ?: company.description
         company.isTypePublic = inputCompany.isTypePublic ?: company.isTypePublic
-        company.country = inputCompany.country ?: company.country
-        company.state = inputCompany.state ?: company.state
-        company.city = inputCompany.city ?: company.city
+//        company.country = inputCompany.country ?: company.country
+//        company.state = inputCompany.state ?: company.state
+//        company.city = inputCompany.city ?: company.city
+        company.location = inputCompany.location ?: company.location
         company.facebook = inputCompany.facebook ?: company.facebook
         company.twitter = inputCompany.twitter ?: company.twitter
 

@@ -31,18 +31,18 @@ class CompanyReadEntity(
         var name: String,
         @JsonProperty("website")
         var website: String,
-        @JsonProperty("about")
-        var about: String? = null,
-        @JsonProperty("country")
-        var country: String? = null,
-        @JsonProperty("state")
-        var state: String? = null,
+        @JsonProperty("description")
+        var description: String? = null,
+//        @JsonProperty("country")
+//        var country: String? = null,
+//        @JsonProperty("state")
+//        var state: String? = null,
+        @JsonProperty("location")
+        var location: String? = null,
         @JsonProperty("logo")
         var logo: String? = null,
         @JsonProperty("isTypePublic")
         var isTypePublic: Boolean = true,
-        @JsonProperty("city")
-        var city: String? = null,
         @JsonProperty("facebook")
         var facebook: String? = null,
         @JsonProperty("twitter")

@@ -7,12 +7,13 @@ import com.briolink.companyservice.api.types.ServiceList
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
 class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
     @DgsQuery
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     fun getServices(
         @InputArgument("limit") limit: Int,
         @InputArgument("offset") offset: Int,

@@ -7,11 +7,12 @@ import com.briolink.companyservice.common.util.StringUtil
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.security.access.prepost.PreAuthorize
 
 @DgsComponent
 class IndustryQuery(private val industryReadRepository: IndustryReadRepository ) {
     @DgsQuery
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     fun getIndustries(@InputArgument("query") query: String): List<Industry> {
         val escapeQuery = StringUtil.replaceNonWord(query)
         val industries = if (query.isNotEmpty()) industryReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")") else listOf()

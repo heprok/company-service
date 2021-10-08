@@ -26,14 +26,16 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 id = entity.id.toString(),
                 name = entity.data.name,
                 website = URL(entity.data.website),
-                logo = entity.data.logo.let { Image(url = URL(it)) },
-                country = entity.data.country,
-                state = entity.data.state,
-                city = entity.data.city,
+
+                logo = if ( entity.data.logo == "null") null else { entity.data.logo?.let { Image(url = URL(it)) }},
+//                country = entity.data.country,
+//                state = entity.data.state,
+//                city = entity.data.city,
                 slug = entity.slug,
+                location = entity.data.location,
                 facebook = entity.data.facebook,
                 twitter = entity.data.twitter,
-                about = entity.data.about,
+                description = entity.data.description,
                 isTypePublic = entity.data.isTypePublic,
                 industry = entity.data.industry?.let {
                     Industry(
@@ -111,7 +113,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                 logo = entity.data.participantFromCompany.logo?.let {
                     Image(url = it)
                 },
-                verifiedUser = User(
+                verifyUser = User(
                         id = entity.data.participantFromCompany.verifyUser.id.toString(),
                         lastName = entity.data.participantFromCompany.verifyUser.lastName,
                         firstName = entity.data.participantFromCompany.verifyUser.firstName,
@@ -129,7 +131,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                 logo = entity.data.participantToCompany.logo?.let {
                     Image(url = it)
                 },
-                verifiedUser = User(
+                verifyUser = User(
                         id = entity.data.participantToCompany.verifyUser.id.toString(),
                         lastName = entity.data.participantToCompany.verifyUser.lastName,
                         firstName = entity.data.participantToCompany.verifyUser.firstName,
@@ -149,6 +151,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                     industry = it.industry.name,
             )
         },
+
         verificationStage = when (entity.verificationStage) {
             0 -> VerificationStage.PENDING
             1 -> VerificationStage.PROGRESS

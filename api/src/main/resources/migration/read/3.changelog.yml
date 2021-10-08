@@ -14,17 +14,25 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: participant_from
+                  name: participant_from_company_id
                   type: varchar(36)
+                  constraints:
+                    nullable: false
               - column:
-                  name: participant_to
+                  name: participant_to_company_id
                   type: varchar(36)
+                  constraints:
+                    nullable: false
               - column:
-                  name: participant_from_role
+                  name: participant_from_role_id
                   type: varchar(36)
+                  constraints:
+                    nullable: false
               - column:
-                  name: participant_to_role
+                  name: participant_to_role_id
                   type: varchar(36)
+                  constraints:
+                    nullable: false
               - column:
                   name: service_ids
                   type: text
@@ -48,6 +56,13 @@ databaseChangeLog:
               - column:
                   name: verification_stage
                   type: tinyint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
               - column:
@@ -55,3 +70,51 @@ databaseChangeLog:
                   type: json
                   constraints:
                     nullable: false
+        - createIndex:
+            columns:
+              - column:
+                  name: industry_id
+            indexName: idx_connection_industry_id
+            schemaName: ${readSchema}
+            tableName: connection
+        - createIndex:
+            columns:
+              - column:
+                  name: participant_from_company_id
+            indexName: idx_connection_participant_from_company_id
+            schemaName: ${readSchema}
+            tableName: connection
+        - createIndex:
+            columns:
+              - column:
+                  name: participant_to_company_id
+            indexName: idx_connection_participant_to_company_id
+            schemaName: ${readSchema}
+            tableName: connection
+        - createIndex:
+            columns:
+              - column:
+                  name: participant_to_role_id
+            indexName: idx_connection_participant_to_role_id
+            schemaName: ${readSchema}
+            tableName: connection
+        - createIndex:
+            columns:
+              - column:
+                  name: participant_from_role_id
+            indexName: idx_connection_participant_from_role_id
+            schemaName: ${readSchema}
+            tableName: connection
+        - sql:
+            comment: FULLTEXT index for ${readSchema}.connection table name field
+            sql: alter table ${readSchema}.connection add fulltext index idx_connection_dates_start_collaboration(dates_start_collaboration)
+            stripComments: true
+        - sql:
+            comment: FULLTEXT index for ${readSchema}.connection table name field
+            sql: alter table ${readSchema}.connection add fulltext index idx_connection_dates_end_collaboration(dates_end_collaboration)
+            stripComments: true
+        - sql:
+            comment: FULLTEXT index for ${readSchema}.connection table name field
+            sql: alter table ${readSchema}.connection add fulltext index idx_connection_service_ids(service_ids)
+            stripComments: true
+

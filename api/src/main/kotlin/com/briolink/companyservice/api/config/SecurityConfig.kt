@@ -12,10 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http
-                .cors {
-                    // TODO Enable CORS
-                    it.disable()
-                }
                 .csrf {
                     it.disable()
                 }
