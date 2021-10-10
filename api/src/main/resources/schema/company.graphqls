@@ -19,6 +19,11 @@ type Company {
     keywords: [Keyword]!
 }
 
+type CompanyAndUserRole {
+    company: Company
+    role: Role
+}
+
 type UpdateCompanyResult implements ResultWithUserErrors {
     success: Boolean
     userErrors: [Error]!

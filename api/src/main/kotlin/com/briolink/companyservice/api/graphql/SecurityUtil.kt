@@ -6,13 +6,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.util.UUID
 
 object SecurityUtil {
-    val currentUserAccountId: UUID?
+    val currentUserAccountId: UUID
         get() {
-            val authentication: Authentication = SecurityContextHolder.getContext().authentication
-            return if (authentication is JwtAuthenticationToken) {
-                UUID.fromString(authentication.token.subject)
-            } else {
-                null
-            }
+            val authentication: JwtAuthenticationToken = SecurityContextHolder.getContext().authentication as JwtAuthenticationToken
+            return UUID.fromString(authentication.token.subject)
         }
 }

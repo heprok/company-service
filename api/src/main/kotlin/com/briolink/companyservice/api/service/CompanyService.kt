@@ -11,6 +11,7 @@ import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,6 +26,7 @@ class CompanyService(
     private val companyReadRepository: CompanyReadRepository,
     private val companyWriteRepository: CompanyWriteRepository,
     val applicationEventPublisher: ApplicationEventPublisher,
+    private val userReadRepository: UserReadRepository,
     private val awsS3Service: AwsS3Service
 ) {
     fun createCompany(createCompany: CompanyWriteEntity): Company {
@@ -82,6 +84,9 @@ class CompanyService(
         return domain
     }
 
+    fun isUserEditCompany(idUser: UUID, companyId: UUID) : Boolean {
+        return userReadRepository.isEditCompany(idUser, companyId) == 1
+    }
     fun deleteCompany(id: UUID) = companyWriteRepository.deleteById(id)
     fun getCompanyBySlug(slug: String): CompanyReadEntity = companyReadRepository.findBySlug(slug)
     fun findById(id: UUID): Optional<CompanyWriteEntity> = companyWriteRepository.findById(id)

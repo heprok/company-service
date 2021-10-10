@@ -3,6 +3,7 @@ package com.briolink.companyservice.updater.handler
 import com.briolink.companyservice.common.event.v1_0.UserJobPositionCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.UserJobPositionDeletedEvent
 import com.briolink.companyservice.common.event.v1_0.UserJobPositionUpdatedEvent
+import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
@@ -14,8 +15,9 @@ class UserJobPositionCreatedEventHandler(
 ) : IEventHandler<UserJobPositionCreatedEvent> {
     override fun handle(event: UserJobPositionCreatedEvent) {
         val eventData = event.data
-        if ( eventData.isCurrent ){
-            val user = userReadRepository.findById(eventData.userId).orElseThrow{ throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
+        if (eventData.isCurrent) {
+            val user = userReadRepository.findById(eventData.userId)
+                    .orElseThrow { throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
             user.companyId = eventData.companyId
             user.data.jobPosition = eventData.title
             userReadRepository.save(user)
@@ -29,8 +31,9 @@ class UserJobPositionUpdatedEventHandler(
 ) : IEventHandler<UserJobPositionUpdatedEvent> {
     override fun handle(event: UserJobPositionUpdatedEvent) {
         val eventData = event.data
-        if ( eventData.isCurrent ){
-            val user = userReadRepository.findById(eventData.userId).orElseThrow{ throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
+        if (eventData.isCurrent) {
+            val user = userReadRepository.findById(eventData.userId)
+                    .orElseThrow { throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
             user.companyId = eventData.companyId
             user.data.jobPosition = eventData.title
             userReadRepository.save(user)
@@ -44,8 +47,9 @@ class UserJobPositionDeletedEventHandler(
 ) : IEventHandler<UserJobPositionDeletedEvent> {
     override fun handle(event: UserJobPositionDeletedEvent) {
         val eventData = event.data
-        if ( eventData.isCurrent ){
-            val user = userReadRepository.findById(eventData.userId).orElseThrow{ throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
+        if (eventData.isCurrent) {
+            val user = userReadRepository.findById(eventData.userId)
+                    .orElseThrow { throw EntityNotFoundException(eventData.userId.toString() + " user not found") }
             user.companyId = null
             user.data.jobPosition = null
             userReadRepository.save(user)

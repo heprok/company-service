@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: oleg@briolink.com
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: slug
+            indexName: idx_user_start_date
+            schemaName: ${rwriteSchema}
+            tableName: company
+            unique: true
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: idx_industry_name
+            schemaName: ${writeSchema}
+            tableName: industry
+            unique: true
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: idx_occupation_name
+            schemaName: ${writeSchema}
+            tableName: occupation
+            unique: true
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: idx_keyword_name
+            schemaName: ${writeSchema}
+            tableName: keyword
+            unique: true
