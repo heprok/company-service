@@ -45,6 +45,14 @@ class CompanyUpdatedEventHandler(private val companyReadRepository: CompanyReadR
                     totalConnectionCount = it.totalConnectionCount,
             )
         } ?: entity.data.statistic
+        entity.data.keywords = data.keywords?.let { list ->
+            list.map {
+                CompanyReadEntity.Keyword(
+                        it.id,
+                        it.name,
+                )
+            }
+        } ?: entity.data.keywords
         companyReadRepository.save(entity)
     }
 }

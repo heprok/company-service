@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.domain.v1_0
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.*
@@ -37,6 +38,14 @@ data class Company(
     val industry: Industry? = null,
     @JsonProperty("statistic")
     val statistic: Statistic? = null,
-//    @JsonProperty("keywords")
-//    val keywords: List<Keyword?>? = null
-) : Domain
+    @JsonProperty("keywords")
+    val keywords: ArrayList<Keyword>? = ArrayList()
+) : Domain {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class Keyword(
+        @JsonProperty("id")
+        val id: UUID,
+        @JsonProperty("name")
+        val name: String,
+    )
+}

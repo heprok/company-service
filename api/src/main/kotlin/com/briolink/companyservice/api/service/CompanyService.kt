@@ -2,12 +2,10 @@ package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
-import com.briolink.companyservice.common.domain.v1_0.Keyword
 import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -71,22 +69,23 @@ class CompanyService(
                             it.name,
                     )
                 },
-//                keywords = company.keywords.let { listKeyword ->
-//                    listKeyword.map {
-//                        Keyword(
-//                                it.id!!,
-//                                it.name,
-//                        )
-//                    }
-//                },
+                keywords = ArrayList<Company.Keyword>(
+                        company.keywords.map {
+                            Company.Keyword(
+                                    it.id!!,
+                                    it.name,
+                            )
+                        },
+                ),
         )
         applicationEventPublisher.publishEvent(CompanyUpdatedEvent(domain))
         return domain
     }
 
-    fun isUserEditCompany(idUser: UUID, companyId: UUID) : Boolean {
+    fun isUserEditCompany(idUser: UUID, companyId: UUID): Boolean {
         return userReadRepository.isEditCompany(idUser, companyId) == 1
     }
+
     fun deleteCompany(id: UUID) = companyWriteRepository.deleteById(id)
     fun getCompanyBySlug(slug: String): CompanyReadEntity = companyReadRepository.findBySlug(slug)
     fun findById(id: UUID): Optional<CompanyWriteEntity> = companyWriteRepository.findById(id)

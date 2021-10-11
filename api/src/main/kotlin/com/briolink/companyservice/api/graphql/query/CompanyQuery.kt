@@ -19,15 +19,15 @@ class CompanyQuery(private val companyService: CompanyService) {
     fun getCompany(@InputArgument("slug") slug: String): CompanyAndUserRole {
         val company = companyService.getCompanyBySlug(slug)
         return CompanyAndUserRole(
-          company = Company.fromEntity(company),
-          role = when (companyService.isUserEditCompany(
-                  SecurityUtil.currentUserAccountId,
-                  UUID.fromString(company.id.toString()),
-          )
-          ) {
-              true -> Role.ADMIN
-              false -> Role.EMPLOYEE
-          }
+                company = Company.fromEntity(company),
+                role = when (companyService.isUserEditCompany(
+                        SecurityUtil.currentUserAccountId,
+                        UUID.fromString(company.id.toString()),
+                )
+                ) {
+                    true -> Role.ADMIN
+                    false -> Role.EMPLOYEE
+                },
         )
 
     }

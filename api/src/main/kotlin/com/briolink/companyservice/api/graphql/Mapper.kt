@@ -61,7 +61,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                     list.map { keyword ->
                         keyword?.let {
                             Keyword(
-                                    id = it.id,
+                                    id = it.id.toString(),
                                     name = it.name,
                             )
                         }

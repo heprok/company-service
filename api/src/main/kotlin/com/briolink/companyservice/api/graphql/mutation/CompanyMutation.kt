@@ -81,7 +81,6 @@ class CompanyMutation(
                 keywordService.findById(UUID.fromString(it!!)).orElseThrow { throw EntityNotFoundException("$id keyword not found") }
             }
         }?.toMutableList() ?: company.keywords
-
         companyService.updateCompany(company)
         return UpdateCompanyResult(
                 success = true,

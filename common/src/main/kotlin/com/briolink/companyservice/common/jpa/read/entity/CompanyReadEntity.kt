@@ -76,7 +76,7 @@ class CompanyReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Keyword(
         @JsonProperty("id")
-        val id: String,
+        val id: UUID,
         @JsonProperty("name")
         val name: String,
     )
