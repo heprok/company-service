@@ -2,17 +2,13 @@ package com.briolink.companyservice.common.jpa.read.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import java.net.URL
-import java.time.Instant
 import java.time.LocalDate
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
-import javax.persistence.Index
-import javax.persistence.Lob
 import javax.persistence.Table
 
 @Table(
@@ -43,15 +39,12 @@ class ConnectionReadEntity(
     @Type(type = "uuid-char")
     var participantToRoleId: UUID? = null
 
-    @Lob
     @Column(name = "service_ids", nullable = false)
     var serviceIds: String? = null
 
-    @Lob
     @Column(name = "dates_start_collaboration", nullable = false)
     var datesStartCollaboration: String? = null
 
-    @Lob
     @Column(name = "dates_end_collaboration", nullable = false)
     var datesEndCollaboration: String? = null
 
@@ -62,9 +55,8 @@ class ConnectionReadEntity(
     @Column(name = "verification_stage", nullable = false)
     var verificationStage: Int = 0
 
-    @CreationTimestamp
     @Column(name = "created", nullable = false)
-    lateinit var created: Instant
+    lateinit var created: LocalDate
 
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")

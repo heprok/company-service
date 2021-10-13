@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 3
       author: oleg@briolink.com
       changes:
         - createIndex:
@@ -8,7 +8,7 @@ databaseChangeLog:
               - column:
                   name: slug
             indexName: idx_user_start_date
-            schemaName: ${rwriteSchema}
+            schemaName: ${writeSchema}
             tableName: company
             unique: true
         - createIndex:

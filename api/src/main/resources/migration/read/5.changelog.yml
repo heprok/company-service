@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: oleg@briolink.com
+      changes:
+        - createTable:
+              tableName: statistic
+              schemaName: ${readSchema}
+              columns:
+                - column:
+                    name: company_id
+                    type: varchar(100)
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: stats_by_industry
+                    type: json
+                    constraints:
+                      nullable: false
+                - column:
+                    name: stats_by_country
+                    type: json
+                    constraints:
+                      nullable: false
+                - column:
+                    name: stats_service_provided
+                    type: json
+                    constraints:
+                      nullable:
+                - column:
+                    name: stats_number_connection
+                    type: json
+                    constraints:
+                      nullable: false
