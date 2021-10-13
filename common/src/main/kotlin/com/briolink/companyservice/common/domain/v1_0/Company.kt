@@ -48,4 +48,15 @@ data class Company(
         @JsonProperty("name")
         val name: String,
     )
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class Statistic(
+        @JsonProperty("serviceProvidedCount")
+        val serviceProvidedCount: Int = 0,
+        @JsonProperty("collaboratingCompanyCount")
+        val collaboratingCompanyCount: Int = 0,
+        @JsonProperty("collaboratingPeopleCount")
+        val collaboratingPeopleCount: Int = 0,
+        @JsonProperty("totalConnectionCount")
+        val totalConnectionCount: Int = 0
+    )
 }
