@@ -50,13 +50,13 @@ databaseChangeLog:
                       nullable: false
         - sql:
             comment: FULLTEXT index for ${readSchema}.occupation table name field
-            sql: alter table ${readSchema}.occupation add fulltext index idx_occupation_name(name)
+            sql: alter table ${readSchema}.occupation add fulltext index idx_fulltext_occupation_name(name)
             stripComments: true
         - sql:
             comment: FULLTEXT index for ${readSchema}.industry table name field
-            sql: alter table ${readSchema}.industry add fulltext index idx_industry_name(name)
+            sql: alter table ${readSchema}.industry add fulltext index idx_fulltext_industry_name(name)
             stripComments: true
         - sql:
             comment: FULLTEXT index for ${readSchema}.keyword table name field
-            sql: alter table ${readSchema}.keyword add fulltext index idx_keyword_name(name)
+            sql: alter table ${readSchema}.keyword add fulltext index idx_fulltext_keyword_name(name)
             stripComments: true

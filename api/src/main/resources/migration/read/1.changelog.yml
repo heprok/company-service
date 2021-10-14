@@ -23,6 +23,14 @@ databaseChangeLog:
                   type: json
                   constraints:
                     nullable: false
+        - createIndex:
+            columns:
+              - column:
+                  name: slug
+            indexName: idx_company_slug
+            schemaName: ${readSchema}
+            tableName: company
+            unique: true
         - createTable:
             tableName: user
             schemaName: ${readSchema}

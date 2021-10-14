@@ -3,36 +3,33 @@ databaseChangeLog:
       id: 4
       author: oleg@briolink.com
       changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: slug
-            indexName: idx_company_slug
-            schemaName: ${readSchema}
-            tableName: company
-            unique: true
-        - createIndex:
-            columns:
-              - column:
-                  name: name
-            indexName: idx_industry_name
-            schemaName: ${readSchema}
-            tableName: industry
-            unique: true
-        - createIndex:
-            columns:
-              - column:
-                  name: name
-            indexName: idx_occupation_name
-            schemaName: ${readSchema}
-            tableName: occupation
-            unique: true
-        - createIndex:
-            columns:
-              - column:
-                  name: name
-            indexName: idx_keyword_name
-            schemaName: ${readSchema}
-            tableName: keyword
-            unique: true
-
+        - createTable:
+              tableName: statistic
+              schemaName: ${readSchema}
+              columns:
+                - column:
+                    name: company_id
+                    type: varchar(100)
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: stats_by_industry
+                    type: json
+                    constraints:
+                      nullable: false
+                - column:
+                    name: stats_by_country
+                    type: json
+                    constraints:
+                      nullable: false
+                - column:
+                    name: stats_service_provided
+                    type: json
+                    constraints:
+                      nullable:
+                - column:
+                    name: stats_number_connection
+                    type: json
+                    constraints:
+                      nullable: false
