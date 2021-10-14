@@ -3,6 +3,10 @@ package com.briolink.companyservice.api.graphql
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.Connection
 import com.briolink.companyservice.api.types.ConnectionService
+import com.briolink.companyservice.api.types.GraphCompany
+import com.briolink.companyservice.api.types.GraphService
+import com.briolink.companyservice.api.types.GraphicValueCompany
+import com.briolink.companyservice.api.types.GraphicValueService
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Keyword
@@ -18,6 +22,7 @@ import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import java.net.URL
 
@@ -27,7 +32,9 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 name = entity.data.name,
                 website = URL(entity.data.website),
 
-                logo = if ( entity.data.logo == "null") null else { entity.data.logo?.let { Image(url = URL(it)) }},
+                logo = if (entity.data.logo == "null") null else {
+                    entity.data.logo?.let { Image(url = URL(it)) }
+                },
 //                country = entity.data.country,
 //                state = entity.data.state,
 //                city = entity.data.city,
@@ -102,6 +109,33 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
 //        created = entity.data.created,
         image = entity.data.image.let { Image(url = it) },
         industry = entity.data.industry,
+)
+
+fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int = 3) =
+        GraphicValueCompany(
+                name = name,
+                value = companiesStats.totalCount.values.sum(),
+                companies = companiesStats.listCompanies.sortedBy { (_, name) -> name }.take(limit).map {
+                    GraphCompany.fromEntity(it)
+                },
+        )
+
+fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = GraphCompany(
+        name = entity.name,
+        id = entity.id.toString(),
+        slug = entity.slug,
+        logo = Image(entity.logo),
+)
+
+fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(
+        service = GraphService.fromEntity(entity.service),
+        value = entity.totalCount,
+)
+
+fun GraphService.Companion.fromEntity(entity: StatisticReadEntity.Service) = GraphService(
+        name = entity.name,
+        slug = entity.slug,
+        id = entity.id.toString(),
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(

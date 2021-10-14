@@ -7,4 +7,10 @@ type Query {
     getIndustries(query: String!): [Industry]!
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
+
+    getStatistic(companyId: ID!): GraphicStatistics!
+    getStatisticByCountry(companyId: ID!): GraphicStatsByCountry!
+    getStatisticByIndustry(companyId: ID!): GraphicStatsByIndustry!
+    getStatisticNumberConnection(companyId: ID!): GraphicStatsByNumberConnection!
+    getStatisticServicesProvided(companyId: ID!): GraphicStatsByServiceProvider!
 }

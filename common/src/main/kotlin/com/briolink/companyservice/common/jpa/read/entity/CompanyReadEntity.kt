@@ -84,12 +84,12 @@ class CompanyReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Statistic(
         @JsonProperty("serviceProvidedCount")
-        val serviceProvidedCount: Int = 0,
+        var serviceProvidedCount: Int = 0,
         @JsonProperty("collaboratingCompanyCount")
-        val collaboratingCompanyCount: Int = 0,
+        var collaboratingCompanyCount: Int = 0,
         @JsonProperty("collaboratingPeopleCount")
         val collaboratingPeopleCount: Int = 0,
         @JsonProperty("totalConnectionCount")
-        val totalConnectionCount: Int = 0,
+        var totalConnectionCount: Int = 0,
     )
 }

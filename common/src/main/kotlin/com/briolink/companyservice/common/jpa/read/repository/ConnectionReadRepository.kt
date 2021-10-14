@@ -9,4 +9,9 @@ import java.util.*
 interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, String> {
     fun findByParticipantToCompanyIdIs(companyId: UUID, pageable: Pageable? = null): Page<ConnectionReadEntity>
 
+    fun findByParticipantFromCompanyIdOrParticipantToCompanyId(
+        participantFromCompanyId: UUID,
+        participantToCompanyId: UUID
+    ): List<ConnectionReadEntity>
+
 }

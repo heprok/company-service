@@ -1,0 +1,47 @@
+type GraphicStatistics {
+    statsByCountry: GraphicStatsByCountry!,
+    statsByIndustry: GraphicStatsByIndustry!,
+    statsByNumberConnection: GraphicStatsByNumberConnection!,
+    statsByServiceProvided: GraphicStatsByServiceProvider!,
+}
+
+type GraphicStatsByCountry {
+    values: [GraphicValueCompany!]
+}
+
+type GraphicStatsByIndustry {
+    values: [GraphicValueCompany!]
+}
+
+type GraphicStatsByNumberConnection {
+    values: [GraphicValueCompany!]
+}
+
+type GraphicStatsByServiceProvider {
+    values: [GraphicValueService!]
+}
+
+type GraphicValueCompany{
+    name: String!
+    value: Int!
+    companies: [GraphCompany]
+}
+
+type GraphicValueService{
+    value: Int!
+    service: GraphService
+}
+
+type GraphService {
+    id: ID!
+    name: String!
+    slug: String!
+}
+
+type GraphCompany {
+    id: ID!
+    name: String!
+    slug: String!
+    logo: Image,
+
+}
