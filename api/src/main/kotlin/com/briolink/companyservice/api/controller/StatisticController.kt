@@ -1,6 +1,6 @@
 package com.briolink.companyservice.api.controller
 
-import com.briolink.companyservice.common.domain.v1_0.StatisticRefresh
+import com.briolink.companyservice.common.domain.v1_0.Statistic
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -17,7 +17,7 @@ class StatisticController(
     @GetMapping("/statistic/refresh")
     fun refreshStatistic(): ResponseEntity<Int> {
         applicationEventPublisher.publishEvent(
-                StatisticRefreshEvent(StatisticRefresh("refresh")),
+                StatisticRefreshEvent(Statistic("refresh")),
         )
         return ResponseEntity.ok(1)
     }
