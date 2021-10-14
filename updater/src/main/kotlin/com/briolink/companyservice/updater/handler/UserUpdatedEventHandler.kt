@@ -1,6 +1,6 @@
 package com.briolink.companyservice.updater.handler
 
-import com.briolink.companyservice.common.event.v1_0.UserUpdatedEvent
+import com.briolink.companyservice.updater.event.UserUpdatedEvent
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler

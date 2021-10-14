@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.domain.v1_0
+package com.briolink.companyservice.updater.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
@@ -19,5 +19,5 @@ data class UserJobPosition(
     val companyId: UUID,
     @JsonProperty("userId")
     val userId: UUID,
-) : Domain
+)
 

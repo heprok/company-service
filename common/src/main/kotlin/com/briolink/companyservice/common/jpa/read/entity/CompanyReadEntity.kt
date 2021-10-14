@@ -15,12 +15,12 @@ class CompanyReadEntity(
     @Id
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
-    val id: UUID
-) : BaseReadEntity() {
+    val id: UUID,
+
     @Type(type = "string")
     @Column(name = "slug", nullable = false, length = 50)
-    var slug: String = ""
-
+    var slug: String
+) : BaseReadEntity() {
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
     lateinit var data: Data

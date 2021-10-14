@@ -7,11 +7,11 @@ import java.util.*
 
 data class Company(
     @JsonProperty("id")
-    val id: UUID,
+    val id: UUID? = null,
     @JsonProperty("name")
     val name: String,
     @JsonProperty("slug")
-    val slug: String,
+    val slug: String? = null,
     @JsonProperty("website")
     val website: String,
     @JsonProperty("logo")
@@ -19,15 +19,15 @@ data class Company(
     @JsonProperty("description")
     val description: String? = null,
     @JsonProperty("isTypePublic")
-    val isTypePublic: Boolean? = null,
+    val isTypePublic: Boolean = true,
     @JsonProperty("location")
     val location: String? = null,
-//    @JsonProperty("country")
-//    val country: String? = null,
-//    @JsonProperty("state")
-//    val state: String? = null,
-//    @JsonProperty("city")
-//    val city: String? = null,
+    @JsonProperty("country")
+    val country: String? = null,
+    @JsonProperty("state")
+    val state: String? = null,
+    @JsonProperty("city")
+    val city: String? = null,
     @JsonProperty("facebook")
     val facebook: String? = null,
     @JsonProperty("twitter")
@@ -47,16 +47,5 @@ data class Company(
         val id: UUID,
         @JsonProperty("name")
         val name: String,
-    )
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Statistic(
-        @JsonProperty("serviceProvidedCount")
-        val serviceProvidedCount: Int = 0,
-        @JsonProperty("collaboratingCompanyCount")
-        val collaboratingCompanyCount: Int = 0,
-        @JsonProperty("collaboratingPeopleCount")
-        val collaboratingPeopleCount: Int = 0,
-        @JsonProperty("totalConnectionCount")
-        val totalConnectionCount: Int = 0
     )
 }

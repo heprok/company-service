@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.domain.v1_0
+package com.briolink.companyservice.updater.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
@@ -25,4 +25,4 @@ data class User(
     val twitter: String? = null,
     @JsonProperty("facebook")
     val facebook: String? = null,
-) : Domain
+)

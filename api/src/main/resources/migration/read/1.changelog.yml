@@ -32,26 +32,6 @@ databaseChangeLog:
             tableName: company
             unique: true
         - createTable:
-            tableName: user
-            schemaName: ${readSchema}
-            columns:
-              - column:
-                  name: id
-                  type: varchar(36)
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: company_id
-                  type: varchar(36)
-                  constraints:
-                    nullable: true
-              - column:
-                  name: data
-                  type: json
-                  constraints:
-                    nullable: false
-        - createTable:
             tableName: service
             schemaName: ${readSchema}
             columns:

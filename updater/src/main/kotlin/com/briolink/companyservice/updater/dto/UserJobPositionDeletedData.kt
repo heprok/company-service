@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.domain.v1_0
+package com.briolink.companyservice.updater.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
@@ -10,5 +10,5 @@ data class UserJobPositionDeletedData(
     val userId: UUID,
     @JsonProperty("isCurrent")
     val isCurrent: Boolean = false
-) : Domain
+)
 

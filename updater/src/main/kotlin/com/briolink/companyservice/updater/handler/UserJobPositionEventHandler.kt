@@ -1,9 +1,8 @@
 package com.briolink.companyservice.updater.handler
 
-import com.briolink.companyservice.common.event.v1_0.UserJobPositionCreatedEvent
-import com.briolink.companyservice.common.event.v1_0.UserJobPositionDeletedEvent
-import com.briolink.companyservice.common.event.v1_0.UserJobPositionUpdatedEvent
-import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
+import com.briolink.companyservice.updater.event.UserJobPositionCreatedEvent
+import com.briolink.companyservice.updater.event.UserJobPositionDeletedEvent
+import com.briolink.companyservice.updater.event.UserJobPositionUpdatedEvent
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler

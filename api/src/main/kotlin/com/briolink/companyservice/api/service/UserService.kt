@@ -2,8 +2,6 @@ package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.common.jpa.write.entity.UserWriteEntity
-import com.briolink.companyservice.common.jpa.write.repository.UserWriteRepository
 import com.briolink.companyservice.common.util.PageRequest
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
