@@ -12,5 +12,5 @@ class ConnectionService(
     private val connectionReadRepository: ConnectionReadRepository,
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ConnectionReadEntity> =
-            connectionReadRepository.findByParticipantToCompanyIdIs(id, PageRequest(offset, limit))
+            connectionReadRepository.findByBuyerIdIs(id, PageRequest(offset, limit))
 }

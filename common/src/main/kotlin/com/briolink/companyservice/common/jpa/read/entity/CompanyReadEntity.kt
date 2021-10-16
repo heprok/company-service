@@ -47,6 +47,8 @@ class CompanyReadEntity(
         var facebook: String? = null,
         @JsonProperty("twitter")
         var twitter: String? = null,
+        @JsonProperty("createdBy")
+        var createdBy: UUID? = null,
         @JsonProperty("industry")
         var industry: Industry? = null,
         @JsonProperty("occupation")

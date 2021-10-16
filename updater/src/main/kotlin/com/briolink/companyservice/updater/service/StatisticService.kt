@@ -1,11 +1,9 @@
 package com.briolink.companyservice.updater.service
 
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +19,7 @@ class StatisticService(
 ) {
     fun refreshByCompany(companyId: UUID) {
         val statisticByCompany: StatisticReadEntity = statisticReadRepository.findByCompanyId(companyId)
-                .orElse(StatisticReadEntity(companyId));
+                .orElse(StatisticReadEntity(companyId))
         val companyUpdated: CompanyReadEntity = companyReadRepository.findById(companyId)
                 .orElseThrow { throw EntityNotFoundException("$companyId not found") }
 
@@ -34,22 +32,22 @@ class StatisticService(
 //        val statsByCountry = statisticByCompany.statsByCountry ?: StatisticReadEntity.StatsByCountry()
 //        val statsByIndustry =  statisticByCompany.statsByIndustry ?: StatisticReadEntity.StatsByIndustry()
 //        val statsServiceProvided =  statisticByCompany.statsByCountry ?: StatisticReadEntity.StatsServiceProvided()
-        val connectionsByCompany = connectionReadRepository.findByParticipantFromCompanyIdOrParticipantToCompanyId(companyId, companyId)
+        val connectionsByCompany = connectionReadRepository.findBySellerIdOrBuyerId(companyId, companyId)
         val listCollaborator = mutableSetOf<UUID>()
         connectionsByCompany.forEach { connection ->
-            val collaborator = if (connection.participantFromCompanyId != companyId) {
+            val collaborator = if (connection.sellerId != companyId) {
                 StatisticReadEntity.Company(
-                        id = connection.data.participantToCompany.id,
-                        slug = connection.data.participantToCompany.slug,
-                        name = connection.data.participantToCompany.name,
-                        logo = connection.data.participantToCompany.logo,
+                        id = connection.data.buyerCompany.id,
+                        slug = connection.data.buyerCompany.slug,
+                        name = connection.data.buyerCompany.name,
+                        logo = connection.data.buyerCompany.logo,
                 )
             } else {
                 StatisticReadEntity.Company(
-                        id = connection.data.participantFromCompany.id,
-                        slug = connection.data.participantFromCompany.slug,
-                        name = connection.data.participantFromCompany.name,
-                        logo = connection.data.participantFromCompany.logo,
+                        id = connection.data.sellerCompany.id,
+                        slug = connection.data.sellerCompany.slug,
+                        name = connection.data.sellerCompany.name,
+                        logo = connection.data.sellerCompany.logo,
                 )
             }
             listCollaborator.add(collaborator.id)
@@ -94,15 +92,15 @@ class StatisticService(
                 this.listCompanies.add(collaborator)
             }
 
-            if (connection.participantFromCompanyId == companyId) {
+            if (connection.sellerId == companyId) {
                 connection.data.services.forEach {
-                    statsServiceProvided.services[it.id] = statsServiceProvided.services.getOrDefault(
+                    statsServiceProvided.services[it.id!!] = statsServiceProvided.services.getOrDefault(
                             it.id,
                             StatisticReadEntity.ServiceStats(
                                     service = StatisticReadEntity.Service(
-                                            id = it.id,
-                                            name = it.name,
-                                            slug = it.slug,
+                                            id = it.id!!,
+                                            name = it.name!!,
+                                            slug = it.slug!!,
                                     ),
                                     totalCount = 0,
                             ),

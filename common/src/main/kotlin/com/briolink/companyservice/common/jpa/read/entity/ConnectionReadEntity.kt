@@ -1,10 +1,12 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.time.LocalDate
+import java.time.Year
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -22,22 +24,26 @@ class ConnectionReadEntity(
     @Column(name = "id", nullable = false, length = 36)
     val id: UUID
 ) : BaseReadEntity() {
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    enum class ConnectionStatus {
+        Pending, InProgress, Verified, Rejected
+    }
 
-    @Column(name = "participant_from_company_id", nullable = false, length = 36)
+    @Column(name = "seller_id", nullable = false, length = 36)
     @Type(type = "uuid-char")
-    var participantFromCompanyId: UUID? = null
+    var sellerId: UUID? = null
 
-    @Column(name = "participant_to_company_id", nullable = false, length = 36)
+    @Column(name = "buyer_id", nullable = false, length = 36)
     @Type(type = "uuid-char")
-    var participantToCompanyId: UUID? = null
+    var buyerId: UUID? = null
 
-    @Column(name = "participant_from_role_id", nullable = false, length = 36)
+    @Column(name = "seller_role_id", nullable = false, length = 36)
     @Type(type = "uuid-char")
-    var participantFromRoleId: UUID? = null
+    var sellerRoleId: UUID? = null
 
-    @Column(name = "participant_to_role_id", nullable = false, length = 36)
+    @Column(name = "buyer_role_id", nullable = false, length = 36)
     @Type(type = "uuid-char")
-    var participantToRoleId: UUID? = null
+    var buyerRoleId: UUID? = null
 
     @Column(name = "service_ids", nullable = false)
     var serviceIds: String? = null
@@ -53,7 +59,8 @@ class ConnectionReadEntity(
     var industryId: UUID? = null
 
     @Column(name = "verification_stage", nullable = false)
-    var verificationStage: Int = 0
+    var verificationStage: ConnectionStatus = ConnectionStatus.Pending
+
 
     @Column(name = "created", nullable = false)
     lateinit var created: LocalDate
@@ -67,12 +74,14 @@ class ConnectionReadEntity(
         @JsonProperty("id")
         var id: UUID,
     ) {
-        @JsonProperty("participantToCompany")
-        lateinit var participantToCompany: ParticipantCompany
-        @JsonProperty("participantFromCompany")
-        lateinit var participantFromCompany: ParticipantCompany
+        @JsonProperty("buyerCompany")
+        lateinit var buyerCompany: ParticipantCompany
+        @JsonProperty("sellerCompany")
+        lateinit var sellerCompany: ParticipantCompany
         @JsonProperty("services")
         lateinit var services: List<Service>
+        @JsonProperty("industry")
+        lateinit var industry: Industry
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -87,9 +96,10 @@ class ConnectionReadEntity(
         var logo: URL?,
         @JsonProperty("verifyUser")
         var verifyUser: VerifyUser,
-    ) {
         @JsonProperty("role")
-        lateinit var role: Role
+        var role: Role
+    ) {
+
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -103,17 +113,15 @@ class ConnectionReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Service(
         @JsonProperty("id")
-        var id: UUID,
+        var id: UUID? = null,
         @JsonProperty("name")
-        var name: String,
+        var name: String?,
         @JsonProperty("slug")
-        var slug: String,
+        var slug: String? = null,
         @JsonProperty("endDate")
-        val endDate: LocalDate,
+        val endDate: Year?,
         @JsonProperty("startDate")
-        val startDate: LocalDate,
-        @JsonProperty("industry")
-        val industry: Industry
+        val startDate: Year,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

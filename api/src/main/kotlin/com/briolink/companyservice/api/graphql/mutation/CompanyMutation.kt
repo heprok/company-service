@@ -4,8 +4,11 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
+import com.briolink.companyservice.api.types.CompanyResultData
+import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -27,6 +30,16 @@ class CompanyMutation(
     @DgsMutation
     fun uploadCompanyImage(@InputArgument("id") id: String, @InputArgument("image") image: MultipartFile?): URL? {
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DgsMutation
+    fun createCompany(@InputArgument("name") name: String, @InputArgument("website") website: String): CreateCompanyResult {
+        val company = companyService.createCompany(CompanyWriteEntity(name = name, website = website))
+        return CreateCompanyResult(
+                userErrors = listOf(),
+                data = CompanyResultData(id = company.id.toString(), name = company.name),
+        )
     }
 
     @PreAuthorize("isAuthenticated()")

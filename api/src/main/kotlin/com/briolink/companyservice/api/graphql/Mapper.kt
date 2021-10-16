@@ -87,7 +87,7 @@ fun User.Companion.fromEntity(entity: UserReadEntity) = User(
 )
 
 fun Industry.Companion.fromEntity(entity: IndustryReadEntity) = Industry(
-        id = entity.id!!.toString(),
+        id = entity.id.toString(),
         name = entity.name,
 )
 
@@ -108,7 +108,6 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         verifiedUses = entity.data.verifiedUses,
 //        created = entity.data.created,
         image = entity.data.image.let { Image(url = it) },
-        industry = entity.data.industry,
 )
 
 fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int = 3) =
@@ -141,55 +140,54 @@ fun GraphService.Companion.fromEntity(entity: StatisticReadEntity.Service) = Gra
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
         id = entity.id.toString(),
         participantFrom = Participant(
-                id = entity.data.participantFromCompany.id.toString(),
-                name = entity.data.participantFromCompany.name,
-                slug = entity.data.participantFromCompany.slug,
-                logo = entity.data.participantFromCompany.logo?.let {
+                id = entity.data.sellerCompany.id.toString(),
+                name = entity.data.sellerCompany.name,
+                slug = entity.data.sellerCompany.slug,
+                logo = entity.data.sellerCompany.logo?.let {
                     Image(url = it)
                 },
                 verifyUser = User(
-                        id = entity.data.participantFromCompany.verifyUser.id.toString(),
-                        lastName = entity.data.participantFromCompany.verifyUser.lastName,
-                        firstName = entity.data.participantFromCompany.verifyUser.firstName,
-                        slug = entity.data.participantFromCompany.verifyUser.slug,
-                        image = entity.data.participantFromCompany.verifyUser.image?.let {
+                        id = entity.data.sellerCompany.verifyUser.id.toString(),
+                        lastName = entity.data.sellerCompany.verifyUser.lastName,
+                        firstName = entity.data.sellerCompany.verifyUser.firstName,
+                        slug = entity.data.sellerCompany.verifyUser.slug,
+                        image = entity.data.sellerCompany.verifyUser.image?.let {
                             Image(url = it)
                         },
                 ),
-                role = entity.data.participantFromCompany.role.name,
+                role = entity.data.sellerCompany.role.name,
         ),
         participantTo = Participant(
-                id = entity.data.participantToCompany.id.toString(),
-                name = entity.data.participantToCompany.name,
-                slug = entity.data.participantToCompany.slug,
-                logo = entity.data.participantToCompany.logo?.let {
+                id = entity.data.buyerCompany.id.toString(),
+                name = entity.data.buyerCompany.name,
+                slug = entity.data.buyerCompany.slug,
+                logo = entity.data.buyerCompany.logo?.let {
                     Image(url = it)
                 },
                 verifyUser = User(
-                        id = entity.data.participantToCompany.verifyUser.id.toString(),
-                        lastName = entity.data.participantToCompany.verifyUser.lastName,
-                        firstName = entity.data.participantToCompany.verifyUser.firstName,
-                        slug = entity.data.participantToCompany.verifyUser.slug,
-                        image = entity.data.participantToCompany.verifyUser.image?.let {
+                        id = entity.data.buyerCompany.verifyUser.id.toString(),
+                        lastName = entity.data.buyerCompany.verifyUser.lastName,
+                        firstName = entity.data.buyerCompany.verifyUser.firstName,
+                        slug = entity.data.buyerCompany.verifyUser.slug,
+                        image = entity.data.buyerCompany.verifyUser.image?.let {
                             Image(url = it)
                         },
                 ),
-                role = entity.data.participantToCompany.role.name,
+                role = entity.data.buyerCompany.role.name,
         ),
         services = entity.data.services.map {
             ConnectionService(
                     id = it.id.toString(),
-                    name = it.name,
-                    endDate = it.endDate.year,
-                    startDate = it.startDate.year,
-                    industry = it.industry.name,
+                    name = it.name!!,
+                    endDate = it.endDate?.value,
+                    startDate = it.startDate.value,
             )
         },
 
         verificationStage = when (entity.verificationStage) {
-            0 -> VerificationStage.PENDING
-            1 -> VerificationStage.PROGRESS
-            2 -> VerificationStage.VERIFIED
+            ConnectionReadEntity.ConnectionStatus.Pending -> VerificationStage.PENDING
+            ConnectionReadEntity.ConnectionStatus.InProgress -> VerificationStage.PROGRESS
+            ConnectionReadEntity.ConnectionStatus.Verified -> VerificationStage.VERIFIED
             else -> VerificationStage.REJECTED
         },
 )

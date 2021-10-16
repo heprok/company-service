@@ -14,22 +14,22 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: participant_from_company_id
+                  name: seller_id
                   type: varchar(36)
                   constraints:
                     nullable: false
               - column:
-                  name: participant_to_company_id
+                  name: buyer_id
                   type: varchar(36)
                   constraints:
                     nullable: false
               - column:
-                  name: participant_from_role_id
+                  name: seller_role_id
                   type: varchar(36)
                   constraints:
                     nullable: false
               - column:
-                  name: participant_to_role_id
+                  name: buyer_role_id
                   type: varchar(36)
                   constraints:
                     nullable: false
@@ -80,29 +80,29 @@ databaseChangeLog:
         - createIndex:
             columns:
               - column:
-                  name: participant_from_company_id
-            indexName: idx_connection_participant_from_company_id
+                  name: seller_id
+            indexName: idx_connection_seller_id
             schemaName: ${readSchema}
             tableName: connection
         - createIndex:
             columns:
               - column:
-                  name: participant_to_company_id
-            indexName: idx_connection_participant_to_company_id
+                  name: buyer_id
+            indexName: idx_connection_buyer_id
             schemaName: ${readSchema}
             tableName: connection
         - createIndex:
             columns:
               - column:
-                  name: participant_to_role_id
-            indexName: idx_connection_participant_to_role_id
+                  name: buyer_role_id
+            indexName: idx_connection_buyer_role_id
             schemaName: ${readSchema}
             tableName: connection
         - createIndex:
             columns:
               - column:
-                  name: participant_from_role_id
-            indexName: idx_connection_participant_from_role_id
+                  name: seller_role_id
+            indexName: idx_connection_seller_role_id
             schemaName: ${readSchema}
             tableName: connection
         - sql:

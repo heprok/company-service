@@ -24,6 +24,11 @@ type CompanyAndUserRole {
     role: Role
 }
 
+type CompanyResultData {
+    id: ID!
+    name: String
+}
+
 type UpdateCompanyResult implements ResultWithUserErrors {
     success: Boolean
     userErrors: [Error]!
@@ -32,6 +37,11 @@ type UpdateCompanyResult implements ResultWithUserErrors {
 input CreateCompanyInput {
     name: String!
     website: Url!
+}
+
+type CreateCompanyResult implements ResultWithUserErrors {
+    data: CompanyResultData
+    userErrors: [Error]!
 }
 
 input UpdateCompanyInput {

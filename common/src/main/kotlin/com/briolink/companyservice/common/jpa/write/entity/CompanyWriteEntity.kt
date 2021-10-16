@@ -1,7 +1,9 @@
 package com.briolink.companyservice.common.jpa.write.entity
 
 import com.briolink.companyservice.common.util.StringUtil
+import org.hibernate.annotations.Type
 import java.net.URL
+import java.util.*
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -47,6 +49,10 @@ class CompanyWriteEntity(
 
     @Column(name = "twitter")
     var twitter: String? = null,
+
+    @Column(name = "created_by", nullable = false, length = 36)
+    @Type(type = "uuid-char")
+    var createdBy: UUID? = null,
 
     @ManyToOne(cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "industry_id")

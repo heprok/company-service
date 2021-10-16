@@ -1,5 +1,4 @@
 enum Role {
-    ADMIN
-    EMPLOYEE
-    REDACTOR
+    Employee
+    Owner
 }

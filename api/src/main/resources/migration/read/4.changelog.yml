@@ -33,3 +33,49 @@ databaseChangeLog:
                     type: json
                     constraints:
                       nullable: false
+        - createTable:
+            tableName: user_permission_role
+            schemaName: ${readSchema}
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: role
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: access_object_uuid
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: access_object_type
+                  type: int
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: user_permission_role
+            schemaName: ${readSchema}
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_user_id
+            unique: false
+        - createIndex:
+            tableName: user_permission_role
+            schemaName: ${readSchema}
+            columns:
+              - column:
+                  name: access_object_uuid
+            indexName: idx_access_object_uuid
+            unique: false

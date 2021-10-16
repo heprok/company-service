@@ -6,6 +6,7 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyAndUserRole
 import com.briolink.companyservice.api.types.Role
+import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
@@ -18,15 +19,13 @@ class CompanyQuery(private val companyService: CompanyService) {
     @PreAuthorize("isAuthenticated()")
     fun getCompany(@InputArgument("slug") slug: String): CompanyAndUserRole {
         val company = companyService.getCompanyBySlug(slug)
+        val role = companyService.getPermission(company.id, SecurityUtil.currentUserAccountId)
         return CompanyAndUserRole(
                 company = Company.fromEntity(company),
-                role = when (companyService.isUserEditCompany(
-                        SecurityUtil.currentUserAccountId,
-                        UUID.fromString(company.id.toString()),
-                )
-                ) {
-                    true -> Role.ADMIN
-                    false -> Role.EMPLOYEE
+                role = when (role) {
+                    UserPermissionRoleReadEntity.RoleType.Employee -> Role.Employee
+                    UserPermissionRoleReadEntity.RoleType.Owner -> Role.Owner
+                    else -> null
                 },
         )
 

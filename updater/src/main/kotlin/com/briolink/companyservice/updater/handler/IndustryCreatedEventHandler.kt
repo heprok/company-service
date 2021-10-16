@@ -12,10 +12,8 @@ class IndustryCreatedEventHandler(
 ) : IEventHandler<IndustryCreatedEvent> {
     override fun handle(event: IndustryCreatedEvent) {
         val eventData = event.data
-        val industry = IndustryReadEntity().apply {
-            this.id = eventData.id
+        val industry = IndustryReadEntity(eventData.id).apply {
             this.name = eventData.name
-
         }
         industryReadRepository.save(industry)
     }

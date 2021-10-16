@@ -9,12 +9,12 @@ import javax.persistence.Table
 
 @Table(name = "company", catalog = "schema_read")
 @Entity
-class IndustryReadEntity() : BaseReadEntity() {
+class IndustryReadEntity(
     @Id
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
-    var id: UUID? = null
-
+    var id: UUID
+) : BaseReadEntity() {
     @Type(type = "string")
     @Column(name = "name", nullable = false, length = 128, columnDefinition = "string")
     lateinit var name: String

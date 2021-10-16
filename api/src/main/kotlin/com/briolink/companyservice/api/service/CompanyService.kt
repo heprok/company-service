@@ -6,9 +6,11 @@ import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -25,6 +27,7 @@ class CompanyService(
     private val companyWriteRepository: CompanyWriteRepository,
     val applicationEventPublisher: ApplicationEventPublisher,
     private val userReadRepository: UserReadRepository,
+    private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val awsS3Service: AwsS3Service
 ) {
     fun createCompany(createCompany: CompanyWriteEntity): Company {
@@ -82,10 +85,6 @@ class CompanyService(
         return domain
     }
 
-    fun isUserEditCompany(idUser: UUID, companyId: UUID): Boolean {
-        return userReadRepository.isEditCompany(idUser, companyId) == 1
-    }
-
     fun deleteCompany(id: UUID) = companyWriteRepository.deleteById(id)
     fun getCompanyBySlug(slug: String): CompanyReadEntity = companyReadRepository.findBySlug(slug)
     fun findById(id: UUID): Optional<CompanyWriteEntity> = companyWriteRepository.findById(id)
@@ -95,5 +94,9 @@ class CompanyService(
         company.logo = imageUrl
         updateCompany(company)
         return imageUrl
+    }
+
+        fun getPermission(companyId: UUID, userId: UUID) : UserPermissionRoleReadEntity.RoleType? {
+            return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(accessObjectUuid = companyId, accessObjectType = 1, userId = userId)?.role
     }
 }

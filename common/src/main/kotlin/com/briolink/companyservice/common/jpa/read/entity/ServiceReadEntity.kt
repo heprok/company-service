@@ -38,7 +38,7 @@ class ServiceReadEntity(
         @JsonProperty("verifiedUses")
         var verifiedUses: Int,
         @JsonProperty("industry")
-        var industry: String,
+        var slug: String,
 //        @JsonProperty("created")
 //        var created: LocalDate
     )
