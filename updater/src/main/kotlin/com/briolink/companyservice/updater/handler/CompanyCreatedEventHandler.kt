@@ -20,7 +20,7 @@ class CompanyCreatedEventHandler(
                     ).apply {
                         data = CompanyReadEntity.Data(
                                 name = company.name,
-                                website = company.website,
+                                website = company.website.toString(),
                         )
                     },
             )
