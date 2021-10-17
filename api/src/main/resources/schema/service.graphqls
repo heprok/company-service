@@ -1,13 +1,21 @@
 type Service {
     id: ID!
+    companyId: ID!
     name: String!
     price: Float
     image: Image
     verifiedUses: Int
-#    created: Date!
+    lastUsed: Date
 }
 
 type ServiceList implements PaginatedList {
     items: [Service!]!
     totalItems: Int!
+}
+
+input ServiceFilter {
+    companyId: ID!
+    numberUses: [Int],
+    cost: [Float],
+    lastUsed: [Date]
 }

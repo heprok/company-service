@@ -5,12 +5,12 @@ plugins {
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.spring")
+//    kotlin("com.ewerk.gradle.plugins.querydsl")
 }
 
 dependencies {
     // Project
     implementation(project(":common"))
-
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -49,6 +49,17 @@ dependencies {
     // MapStruct
     implementation("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
     kapt("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
+
+    kapt("jakarta.annotation:jakarta.annotation-api")
+
+    //querydsl
+//    implementation("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
+//    implementation("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}")
+////    compile("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
+//    kapt("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}:jpa")
+    // JSR-330 javax.inject annotations - required by querydsl
+
+//    annotationProcessor(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa", )
 }
 
 dependencyManagement {
@@ -76,3 +87,4 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
     )
     generatedSourcesDir = "${project.buildDir.absolutePath}/dgs-codegen"
 }
+

@@ -5,6 +5,7 @@ import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
 import com.briolink.companyservice.api.types.CompanyResultData
+import com.briolink.companyservice.api.types.CreateCompanyInput
 import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
@@ -34,8 +35,8 @@ class CompanyMutation(
 
     @PreAuthorize("isAuthenticated()")
     @DgsMutation
-    fun createCompany(@InputArgument("name") name: String, @InputArgument("website") website: String): CreateCompanyResult {
-        val company = companyService.createCompany(CompanyWriteEntity(name = name, website = website))
+    fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
+        val company = companyService.createCompany(CompanyWriteEntity(name = createInputCompany.name, website = createInputCompany.website))
         return CreateCompanyResult(
                 userErrors = listOf(),
                 data = CompanyResultData(id = company.id.toString(), name = company.name),
@@ -53,7 +54,7 @@ class CompanyMutation(
 
         company.slug = inputCompany.slug ?: company.slug
         company.name = inputCompany.name ?: company.name
-        company.website = inputCompany.website?.toString() ?: company.website
+        company.website = inputCompany.website ?: company.website
         company.description = inputCompany.description ?: company.description
         company.isTypePublic = inputCompany.isTypePublic ?: company.isTypePublic
 //        company.country = inputCompany.country ?: company.country

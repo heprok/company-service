@@ -3,7 +3,6 @@ package com.briolink.companyservice.common.jpa.read.entity
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
-import java.net.URL
 import java.time.LocalDate
 import java.util.*
 import javax.persistence.Column
@@ -23,6 +22,15 @@ class ServiceReadEntity(
     @Column(name = "company_id", nullable = false, length = 36)
     var companyId: UUID,
 
+    @Column(name = "verified_uses", nullable = false)
+    var verifiedUses: Int = 0,
+
+    @Column(name = "price", nullable = false)
+    var price: Double,
+
+    @Column(name = "last_used", )
+    var lastUsed: LocalDate? = null,
+
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
     var data: Data
@@ -31,13 +39,9 @@ class ServiceReadEntity(
     data class Data(
         @JsonProperty("name")
         var name: String,
-        @JsonProperty("price")
-        var price: Double,
         @JsonProperty("image")
-        var image: URL,
-        @JsonProperty("verifiedUses")
-        var verifiedUses: Int,
-        @JsonProperty("industry")
+        var image: String? = null,
+        @JsonProperty("slug")
         var slug: String,
 //        @JsonProperty("created")
 //        var created: LocalDate

@@ -45,10 +45,53 @@ databaseChangeLog:
                   name: company_id
                   type: varchar(36)
                   constraints:
-                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: verified_uses
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_used
+                  type: date
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price
+                  type: double
+                  constraints:
                     nullable: false
               - column:
                   name: data
                   type: json
                   constraints:
                     nullable: false
+        - createIndex:
+            columns:
+              - column:
+                  name: company_id
+            indexName: idx_service_company_id
+            schemaName: ${readSchema}
+            tableName: service
+        - createIndex:
+            columns:
+              - column:
+                  name: price
+            indexName: idx_service_price
+            schemaName: ${readSchema}
+            tableName: service
+        - createIndex:
+            columns:
+              - column:
+                  name: last_used
+            indexName: idx_service_last_used
+            schemaName: ${readSchema}
+            tableName: service
+        - createIndex:
+            columns:
+              - column:
+                  name: verified_uses
+            indexName: idx_service_verified_uses
+            schemaName: ${readSchema}
+            tableName: service

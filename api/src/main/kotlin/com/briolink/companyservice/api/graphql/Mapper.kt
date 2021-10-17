@@ -104,10 +104,11 @@ fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         id = entity.id.toString(),
         name = entity.data.name,
-        price = entity.data.price,
-        verifiedUses = entity.data.verifiedUses,
-//        created = entity.data.created,
-        image = entity.data.image.let { Image(url = it) },
+        price = entity.price,
+        companyId = entity.companyId.toString(),
+        verifiedUses = entity.verifiedUses,
+        lastUsed = entity.lastUsed,
+        image = entity.data.image.let { Image(url = URL(it)) },
 )
 
 fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int = 3) =

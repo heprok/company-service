@@ -13,7 +13,7 @@ data class Company(
     @JsonProperty("slug")
     val slug: String? = null,
     @JsonProperty("website")
-    val website: String,
+    val website: URL,
     @JsonProperty("logo")
     val logo: URL? = null,
     @JsonProperty("description")

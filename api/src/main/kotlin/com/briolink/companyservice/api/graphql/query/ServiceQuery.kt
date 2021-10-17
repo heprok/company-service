@@ -3,6 +3,7 @@ package com.briolink.companyservice.api.graphql.query
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.Service
+import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceList
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -12,10 +13,12 @@ import java.util.UUID
 
 @DgsComponent
 class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
+    @Deprecated("Not working filter")
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getServices(
         @InputArgument("limit") limit: Int,
+        @InputArgument("filter") filter: ServiceFilter,
         @InputArgument("offset") offset: Int,
         @InputArgument("companyId") companyId: String
     ): ServiceList {
@@ -26,5 +29,25 @@ class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
                 },
                 totalItems = page.totalElements.toInt()
         )
+
     }
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getServicesFilter(
+        @InputArgument("limit") limit: Int,
+        @InputArgument("filter") filter: ServiceFilter,
+        @InputArgument("offset") offset: Int,
+    ): ServiceList {
+        val page = serviceCompanyService.findAll(limit = limit, offset = offset, filter = filter)
+        return ServiceList(
+                items = page.content.map {
+                    Service.fromEntity(it)
+                },
+                totalItems = page.totalElements.toInt()
+        )
+
+    }
+
+
 }

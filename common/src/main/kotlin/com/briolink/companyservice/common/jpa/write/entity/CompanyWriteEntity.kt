@@ -21,7 +21,7 @@ class CompanyWriteEntity(
     var name: String,
 
     @Column(name = "website", nullable = false)
-    var website: String,
+    var website: URL,
 
     @Column(name = "slug", nullable = false)
     var slug: String = "",
