@@ -33,7 +33,7 @@ class CompanyMutation(
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @DgsMutation
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
         val company = companyService.createCompany(CompanyWriteEntity(name = createInputCompany.name, website = createInputCompany.website))
