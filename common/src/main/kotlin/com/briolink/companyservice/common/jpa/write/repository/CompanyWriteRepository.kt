@@ -4,4 +4,6 @@ import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID>
+interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
+    fun existsByWebsiteIsLike(website: String): Boolean
+}

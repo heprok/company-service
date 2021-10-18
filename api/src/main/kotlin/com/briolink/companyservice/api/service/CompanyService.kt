@@ -36,7 +36,7 @@ class CompanyService(
                 id = company.id!!,
                 name = company.name,
                 slug = company.slug,
-                website = company.website,
+                website = URL(company.website),
         )
         applicationEventPublisher.publishEvent(
                 CompanyCreatedEvent(companyDomain),
@@ -44,12 +44,16 @@ class CompanyService(
         return companyDomain
     }
 
+    fun isExistWebsite(website: String): Boolean {
+        return companyWriteRepository.existsByWebsiteIsLike(website)
+    }
+
     fun updateCompany(company: CompanyWriteEntity): Company {
         val companyWrite = companyWriteRepository.save(company)
         val domain = Company(
                 id = companyWrite.id!!,
                 name = companyWrite.name,
-                website = companyWrite.website,
+                website = URL(companyWrite.website),
                 description = companyWrite.description,
                 slug = companyWrite.slug,
 //                country = companyWrite.country,
