@@ -18,7 +18,6 @@ class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
     @PreAuthorize("isAuthenticated()")
     fun getServices(
         @InputArgument("limit") limit: Int,
-        @InputArgument("filter") filter: ServiceFilter,
         @InputArgument("offset") offset: Int,
         @InputArgument("companyId") companyId: String
     ): ServiceList {
@@ -35,11 +34,12 @@ class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getServicesFilter(
+        @InputArgument("companyId") companyId: String,
         @InputArgument("limit") limit: Int,
-        @InputArgument("filter") filter: ServiceFilter,
+        @InputArgument("filter") filter: ServiceFilter = ServiceFilter(),
         @InputArgument("offset") offset: Int,
     ): ServiceList {
-        val page = serviceCompanyService.findAll(limit = limit, offset = offset, filter = filter)
+        val page = serviceCompanyService.findAll(companyId = UUID.fromString(companyId), limit = limit, offset = offset, filter = filter)
         return ServiceList(
                 items = page.content.map {
                     Service.fromEntity(it)

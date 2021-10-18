@@ -14,7 +14,6 @@ type ServiceList implements PaginatedList {
 }
 
 input ServiceFilter {
-    companyId: ID!
     numberUses: [Int],
     cost: [Float],
     lastUsed: [Date]

@@ -19,10 +19,10 @@ class ServiceCompanyService(
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
             serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
 
-    fun findAll(limit: Int, offset: Int, filter: ServiceFilter): Page<ServiceReadEntity> {
+    fun findAll(companyId : UUID, limit: Int, offset: Int, filter: ServiceFilter): Page<ServiceReadEntity> {
         val spec = Specification<ServiceReadEntity> { root, query, builder ->
             builder.and(
-                    equalsCompanyId(UUID.fromString(filter.companyId))
+                    equalsCompanyId(companyId)
                             .and(isByPriceBetween(filter.cost?.get(0), filter.cost?.get(1)))
                             .and(isByLastUsedBetween(filter.lastUsed?.get(0), filter.lastUsed?.get(1)))
                             .and(isByNumberUsesBetween(filter.numberUses?.get(0), filter.numberUses?.get(1)))
@@ -40,7 +40,8 @@ class ServiceCompanyService(
     }
 
     fun isByPriceBetween(start: Double?, end: Double?): Specification<ServiceReadEntity>? {
-
+        println(start)
+        println(end)
         return if (start != null && end != null) {
             Specification<ServiceReadEntity> { root, _, builder ->
                 builder.between(root.get(ServiceReadEntity_.price), start, end)
