@@ -41,6 +41,7 @@ class StatisticService(
                         slug = connection.data.buyerCompany.slug,
                         name = connection.data.buyerCompany.name,
                         logo = connection.data.buyerCompany.logo,
+                        role = connection.data.buyerCompany.role.name
                 )
             } else {
                 StatisticReadEntity.Company(
@@ -48,7 +49,18 @@ class StatisticService(
                         slug = connection.data.sellerCompany.slug,
                         name = connection.data.sellerCompany.name,
                         logo = connection.data.sellerCompany.logo,
+                        role = connection.data.sellerCompany.role.name
                 )
+            }.apply {
+                val companyRead = companyReadRepository.findById(id).orElseThrow{throw EntityNotFoundException("$id company not found") }
+                industry = companyRead.data.industry?.let{
+                    StatisticReadEntity.Industry(
+                            id = it.id,
+                            name = it.name
+                    )
+                }
+                location = companyRead.data.location
+
             }
             listCollaborator.add(collaborator.id)
             statsNumberConnection.years[connection.created.year] = statsNumberConnection.years.getOrDefault(

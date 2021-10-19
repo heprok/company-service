@@ -1,9 +1,10 @@
 type Connection {
     id: ID!
-    participantFrom: Participant
-    participantTo: Participant
+    seller: Participant
+    buyer: Participant
     verificationStage: VerificationStage!
     services: [ConnectionService!]!
+    industry: Industry
 }
 
 enum VerificationStage {
@@ -13,7 +14,25 @@ enum VerificationStage {
     REJECTED
 }
 
+input ConnectionFilter {
+    companyId: ID!
+    collaboratorId: [ID]
+    collaboratorRoleId: [ID]
+    industryId: [ID]
+    location: String
+    datesOfCollaborators: [Date]
+    verificationStage: [VerificationStage]
+}
+
 type ConnectionList implements PaginatedList {
     items: [Connection]
     totalItems: Int!
 }
+
+type ConnectionService {
+    id: ID!
+    name: String!
+    startDate: Int!
+    endDate: Int
+}
+

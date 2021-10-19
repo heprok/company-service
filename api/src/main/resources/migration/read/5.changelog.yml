@@ -13,6 +13,9 @@ databaseChangeLog:
                     constraints:
                       primaryKey: true
                       nullable: false
+                - column:
+                    name: data
+                    type: json
         - createTable:
             tableName: user_job_position
             schemaName: ${readSchema}
@@ -30,7 +33,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: company_id
-                  type: int
+                  type: varchar(36)
                   constraints:
                     nullable: false
               - column:
@@ -44,13 +47,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-            indexName: idx_user_id
-            unique: false
-        - createIndex:
-            schemaName: ${readSchema}
-            tableName: user_job_position
-            columns:
               - column:
                   name: company_id
-            indexName: idx_company_id
-            unique: false
+            indexName: idx_user_company_id
+            unique: true

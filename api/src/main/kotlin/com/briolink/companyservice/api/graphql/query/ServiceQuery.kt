@@ -36,7 +36,7 @@ class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
     fun getServicesFilter(
         @InputArgument("companyId") companyId: String,
         @InputArgument("limit") limit: Int,
-        @InputArgument("filter") filter: ServiceFilter = ServiceFilter(),
+        @InputArgument("filter") filter: ServiceFilter,
         @InputArgument("offset") offset: Int,
     ): ServiceList {
         val page = serviceCompanyService.findAll(companyId = UUID.fromString(companyId), limit = limit, offset = offset, filter = filter)

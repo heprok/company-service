@@ -23,7 +23,7 @@ import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import java.net.URL
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
@@ -77,13 +77,13 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         )
 
 
-fun User.Companion.fromEntity(entity: UserReadEntity) = User(
-        id = entity.id.toString(),
-        firstName = entity.data.firstName,
-        lastName = entity.data.lastName,
-        jobPosition = entity.data.jobPosition,
-        slug = entity.data.slug,
-        image = entity.data.image?.let { Image(url = it) },
+fun User.Companion.fromEntity(entity: UserJobPositionReadEntity) = User(
+        id = entity.userId.toString(),
+        firstName = entity.data.user.firstName,
+        lastName = entity.data.user.lastName,
+        jobPosition = entity.data.title,
+        slug = entity.data.user.slug,
+        image = entity.data.user.image?.let { Image(url = it) },
 )
 
 fun Industry.Companion.fromEntity(entity: IndustryReadEntity) = Industry(
@@ -111,12 +111,20 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         image = entity.data.image.let { Image(url = URL(it)) },
 )
 
-fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int = 3) =
+fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int? = 3) =
         GraphicValueCompany(
                 name = name,
                 value = companiesStats.totalCount.values.sum(),
-                companies = companiesStats.listCompanies.sortedBy { (_, name) -> name }.take(limit).map {
-                    GraphCompany.fromEntity(it)
+                companies = companiesStats.listCompanies.let {
+                    it.sortedBy { (_, name) -> name }.take(
+                            if (limit == null) {
+                                it.count()
+                            } else {
+                                limit
+                            },
+                    ).map {
+                        GraphCompany.fromEntity(it)
+                    }
                 },
         )
 
@@ -140,7 +148,7 @@ fun GraphService.Companion.fromEntity(entity: StatisticReadEntity.Service) = Gra
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
         id = entity.id.toString(),
-        participantFrom = Participant(
+        buyer = Participant(
                 id = entity.data.sellerCompany.id.toString(),
                 name = entity.data.sellerCompany.name,
                 slug = entity.data.sellerCompany.slug,
@@ -158,7 +166,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                 ),
                 role = entity.data.sellerCompany.role.name,
         ),
-        participantTo = Participant(
+        seller = Participant(
                 id = entity.data.buyerCompany.id.toString(),
                 name = entity.data.buyerCompany.name,
                 slug = entity.data.buyerCompany.slug,
@@ -184,7 +192,9 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                     startDate = it.startDate.value,
             )
         },
-
+        industry = entity.data.industry.let {
+            Industry(id = it.id.toString(), name = it.name)
+        },
         verificationStage = when (entity.verificationStage) {
             ConnectionReadEntity.ConnectionStatus.Pending -> VerificationStage.PENDING
             ConnectionReadEntity.ConnectionStatus.InProgress -> VerificationStage.PROGRESS

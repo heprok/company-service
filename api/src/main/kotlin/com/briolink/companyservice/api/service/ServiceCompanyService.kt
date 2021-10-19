@@ -40,8 +40,6 @@ class ServiceCompanyService(
     }
 
     fun isByPriceBetween(start: Double?, end: Double?): Specification<ServiceReadEntity>? {
-        println(start)
-        println(end)
         return if (start != null && end != null) {
             Specification<ServiceReadEntity> { root, _, builder ->
                 builder.between(root.get(ServiceReadEntity_.price), start, end)

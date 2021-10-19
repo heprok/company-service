@@ -6,7 +6,7 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.dto.Connection
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,14 +23,14 @@ class ConnectionService(
     private val companyReadRepository: CompanyReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val industryReadRepository: IndustryReadRepository,
-    private val userReadRepository: UserReadRepository
+    private val userJobPositionReadRepository: UserJobPositionReadRepository
 ) {
     fun create(connection: Connection) {
         val industryRead = industryReadRepository.getById(connection.participantTo.companyId)
         val sellerRead = companyReadRepository.getById(connection.participantFrom.companyId)
         val buyerRead = companyReadRepository.getById(connection.participantTo.companyId)
-        val userBuyerRead = userReadRepository.getById(connection.participantTo.userId)
-        val userSellerRead = userReadRepository.getById(connection.participantFrom.userId)
+        val userBuyerRead = userJobPositionReadRepository.getById(connection.participantTo.userId)
+        val userSellerRead = userJobPositionReadRepository.getById(connection.participantFrom.userId)
 
         val connectionRead = ConnectionReadEntity(connection.id).apply {
 
@@ -82,11 +82,11 @@ class ConnectionService(
                         slug = buyerRead.slug,
                         logo = URL(buyerRead.data.logo),
                         verifyUser = ConnectionReadEntity.VerifyUser(
-                                id = userBuyerRead.id,
-                                firstName = userBuyerRead.data.firstName,
-                                lastName = userBuyerRead.data.lastName,
-                                image = userBuyerRead.data.image,
-                                slug = userBuyerRead.data.slug,
+                                id = userBuyerRead.userId,
+                                firstName = userBuyerRead.data.user.firstName,
+                                lastName = userBuyerRead.data.user.lastName,
+                                image = userBuyerRead.data.user.image,
+                                slug = userBuyerRead.data.user.slug,
                         ),
                         role = ConnectionReadEntity.Role(
                                 id = connection.participantTo.companyRole.id,
@@ -100,11 +100,11 @@ class ConnectionService(
                         slug = sellerRead.slug,
                         logo = URL(sellerRead.data.logo),
                         verifyUser = ConnectionReadEntity.VerifyUser(
-                                id = userSellerRead.id,
-                                firstName = userSellerRead.data.firstName,
-                                lastName = userSellerRead.data.lastName,
-                                image = userSellerRead.data.image,
-                                slug = userSellerRead.data.slug,
+                                id = userSellerRead.userId,
+                                firstName = userSellerRead.data.user.firstName,
+                                lastName = userSellerRead.data.user.lastName,
+                                image = userSellerRead.data.user.image,
+                                slug = userSellerRead.data.user.slug,
                         ),
                         role = ConnectionReadEntity.Role(
                                 id = connection.participantFrom.companyRole.id,

@@ -3,6 +3,7 @@ package com.briolink.companyservice.api.graphql.query
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.ConnectionService
 import com.briolink.companyservice.api.types.Connection
+import com.briolink.companyservice.api.types.ConnectionFilter
 import com.briolink.companyservice.api.types.ConnectionList
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -15,11 +16,11 @@ class ConnectionQuery(private val connectionService: ConnectionService) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getConnections(
+        @InputArgument("filter") filter: ConnectionFilter,
         @InputArgument("limit") limit: Int,
         @InputArgument("offset") offset: Int,
-        @InputArgument("companyId") companyId: String
     ): ConnectionList {
-        val page = connectionService.getByCompanyId(UUID.fromString(companyId), limit, offset)
+        val page = connectionService.findAll(filter = filter, limit = limit, offset = offset)
         return ConnectionList(
                 items = page.content.map {
                     Connection.fromEntity(it)

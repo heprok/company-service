@@ -43,5 +43,7 @@ type GraphCompany {
     name: String!
     slug: String!
     logo: Image,
-
+    industry: Industry
+    location: String
+    role: Role
 }

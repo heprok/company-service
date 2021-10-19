@@ -1,6 +1,7 @@
 scalar Date
 scalar Upload
 scalar Url
+scalar Year
 
 directive @skipcodegen on FIELD_DEFINITION
 

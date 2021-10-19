@@ -25,8 +25,12 @@ class ConnectionReadEntity(
     val id: UUID
 ) : BaseReadEntity() {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    enum class ConnectionStatus {
-        Pending, InProgress, Verified, Rejected
+    enum class ConnectionStatus(val value: Int) {
+        Draft(1),
+        Pending(2),
+        InProgress(3),
+        Verified(4),
+        Rejected(5)
     }
 
     @Column(name = "seller_id", nullable = false, length = 36)

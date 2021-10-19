@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.time.LocalDate
+import java.time.Year
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -86,7 +87,16 @@ class StatisticReadEntity(
         var logo: URL?,
         @JsonProperty("slug")
         var slug: String,
-    )
+        @JsonProperty("role")
+        var role: String
+    ) {
+        @JsonProperty("industry")
+        var industry: Industry? = null
+        @JsonProperty("location")
+        var location: String? = null
+        @JsonProperty("lastCollaborate")
+        val  lastCollaborate: Year = Year.now()
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Service(
@@ -96,5 +106,21 @@ class StatisticReadEntity(
         var name: String,
         @JsonProperty("slug")
         var slug: String,
+    )
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class Industry(
+        @JsonProperty("id")
+        val id: String,
+        @JsonProperty("name")
+        val name: String,
+    )
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class Role(
+        @JsonProperty("id")
+        val id: String,
+        @JsonProperty("name")
+        val name: String,
     )
 }

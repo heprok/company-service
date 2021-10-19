@@ -1,6 +1,0 @@
-type ConnectionService {
-    id: ID!
-    name: String!
-    startDate: Int!
-    endDate: Int
-}

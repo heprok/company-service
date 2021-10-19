@@ -24,43 +24,19 @@ class UserReadEntity(
     @Column(name = "id", nullable = false, length = 36)
     var id: UUID,
 
-    @Type(type = "uuid-char")
-    @Column(name = "company_id", length = 36)
-    var companyId: UUID? = null,
-
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
     var data: Data
 ) : BaseReadEntity() {
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    enum class VerifyStatus {
-        Pending, Verified, Rejected
-    }
-
-    @CreationTimestamp
-    @Column(name = "created", nullable = false)
-    lateinit var created: Instant
-
-    @UpdateTimestamp
-    @Column(name = "changed")
-    var changed: Instant? = null
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty("firstName")
         var firstName: String,
         @JsonProperty("slug")
         var slug: String,
-        @JsonProperty("status")
-        var status: VerifyStatus = VerifyStatus.Pending,
-        @JsonProperty("verifiedBy")
-        var verifiedBy: UUID? = null,
         @JsonProperty("lastName")
         var lastName: String,
-        @JsonProperty("jobPosition")
-        var jobPosition: String? = null,
         @JsonProperty("image")
         var image: URL? = null,
     )
-
 }

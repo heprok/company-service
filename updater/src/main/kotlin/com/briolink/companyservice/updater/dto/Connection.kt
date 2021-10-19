@@ -6,8 +6,12 @@ import java.time.Year
 import java.util.*
 
 @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-enum class ConnectionStatus {
-    Pending, InProgress, Verified, Rejected
+enum class ConnectionStatus(val value: Int) {
+    Draft(1),
+    Pending(2),
+    InProgress(3),
+    Verified(4),
+    Rejected(5)
 }
 
 @JsonFormat(shape = JsonFormat.Shape.NUMBER)
