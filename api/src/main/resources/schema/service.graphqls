@@ -9,12 +9,12 @@ type Service {
 }
 
 type ServiceList implements PaginatedList {
-    items: [Service!]!
+    items: [Service]!
     totalItems: Int!
 }
 
 input ServiceFilter {
-    numberUses: [Int],
-    cost: [Float],
-    lastUsed: [Date]
+    numberUses: RangeInt,
+    cost: RangeFloat,
+    lastUsed: RangeDate
 }

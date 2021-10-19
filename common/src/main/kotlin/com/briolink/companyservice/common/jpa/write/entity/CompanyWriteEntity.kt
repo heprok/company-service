@@ -20,10 +20,10 @@ class CompanyWriteEntity(
     @Column(name = "name", nullable = false)
     var name: String,
 
-    @Column(name = "website", nullable = false)
-    var website: String,
+    @Column(name = "website")
+    var website: String?,
 
-    @Column(name = "slug", nullable = false)
+    @Column(name = "slug", nullable = false, length = 255)
     var slug: String = "",
 
     @Column(name = "logo")

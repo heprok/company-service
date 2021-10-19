@@ -23,9 +23,9 @@ class ServiceCompanyService(
         val spec = Specification<ServiceReadEntity> { root, query, builder ->
             builder.and(
                     equalsCompanyId(companyId)
-                            .and(isByPriceBetween(filter.cost?.get(0), filter.cost?.get(1)))
-                            .and(isByLastUsedBetween(filter.lastUsed?.get(0), filter.lastUsed?.get(1)))
-                            .and(isByNumberUsesBetween(filter.numberUses?.get(0), filter.numberUses?.get(1)))
+                            .and(isByPriceBetween(filter.cost?.start, filter.cost?.end))
+                            .and(isByLastUsedBetween(filter.lastUsed?.start, filter.lastUsed?.end))
+                            .and(isByNumberUsesBetween(filter.numberUses?.start, filter.numberUses?.end))
                             .toPredicate(root, query, builder),
             )
         }

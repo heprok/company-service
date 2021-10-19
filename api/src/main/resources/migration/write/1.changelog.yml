@@ -67,8 +67,6 @@ databaseChangeLog:
               - column:
                   name: website
                   type: varchar(255)
-                  constraints:
-                    nullable: false
               - column:
                   name: logo
                   type: varchar(255)
@@ -96,7 +94,7 @@ databaseChangeLog:
                   type: varchar(255)
               - column:
                   name: slug
-                  type: varchar(36)
+                  type: varchar(255)
               - column:
                   name: created_by
                   type: varchar(36)

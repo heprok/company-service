@@ -1,7 +1,7 @@
 type Company {
     id: ID!
     name: String!
-    website: Url!
+    website: Url
     logo: Image
     description: String
     slug: String!
@@ -36,7 +36,7 @@ type UpdateCompanyResult implements ResultWithUserErrors {
 
 input CreateCompanyInput {
     name: String!
-    website: Url!
+    website: Url
 }
 
 type CreateCompanyResult implements ResultWithUserErrors {

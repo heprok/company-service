@@ -61,7 +61,7 @@ class CompanyMutation(
 
         company.slug = inputCompany.slug ?: company.slug
         company.name = inputCompany.name ?: company.name
-        company.website = inputCompany.website.toString()
+        company.website = inputCompany.website?.toString()
         company.description = inputCompany.description ?: company.description
         company.isTypePublic = inputCompany.isTypePublic ?: company.isTypePublic
 //        company.country = inputCompany.country ?: company.country

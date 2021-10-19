@@ -13,6 +13,21 @@ type Error {
     field: [String!]
 }
 
+input RangeInt {
+    start: Int
+    end: Int
+}
+
+input RangeDate {
+    start: Date
+    end: Date
+}
+
+input RangeFloat {
+    start: Float
+    end: Float
+}
+
 type BaseResult {
     success: Boolean
 }
