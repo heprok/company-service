@@ -21,14 +21,10 @@ class ConnectionCreatedEventHandler(
     override fun handle(event: ConnectionCreatedEvent) {
         val connection = event.data
 
-        println(connection.participantTo.companyId)
-        println(connection.participantFrom.companyId)
         if (connection.participantFrom.companyRole.type == RoleType.Buyer) {
             connection.participantTo = connection.participantFrom.also {
                 connection.participantFrom = connection.participantTo
             }
-            println(connection.participantTo.companyId)
-            println(connection.participantFrom.companyId)
             if (companyService.getPermission(
                         userId = connection.participantFrom.userId,
                         companyId = connection.participantFrom.companyId,

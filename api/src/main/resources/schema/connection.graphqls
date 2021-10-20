@@ -8,10 +8,10 @@ type Connection {
 }
 
 enum VerificationStage {
-    PENDING
-    PROGRESS
-    VERIFIED
-    REJECTED
+    Pending
+    Progress
+    Verified
+    Reject
 }
 
 input ConnectionFilter {
@@ -27,6 +27,16 @@ input ConnectionFilter {
 type ConnectionList implements PaginatedList {
     items: [Connection]
     totalItems: Int!
+}
+
+type ConnectionRole {
+    id: ID!
+    name: String!
+    type: ConnectionRoleType!
+}
+
+enum ConnectionRoleType {
+    Buyer, Seller
 }
 
 type ConnectionService {

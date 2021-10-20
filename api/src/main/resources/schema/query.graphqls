@@ -14,4 +14,7 @@ type Query {
     getStatisticByIndustry(companyId: ID!): GraphicStatsByIndustry!
     getStatisticNumberConnection(companyId: ID!): GraphicStatsByNumberConnection!
     getStatisticServicesProvided(companyId: ID!): GraphicStatsByServiceProvider!
+
+
+    getStatisticNumberConnectionOnYear(companyId: ID!, year: Year) : GraphicStatsByNumberConnection
 }

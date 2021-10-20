@@ -27,16 +27,17 @@ class UserJobPositionCreatedEventHandler(
                     id = eventData.id,
                     userId = eventData.userId,
                     companyId = eventData.companyId,
-                    data = UserJobPositionReadEntity.Data(
-                            user = UserJobPositionReadEntity.User(
-                                    lastName = user.data.lastName,
-                                    firstName = user.data.firstName,
-                                    slug = user.data.slug,
-                                    image = user.data.image,
-                            ),
-                            title = eventData.title,
-                    ),
-            )
+            ).apply {
+                data = UserJobPositionReadEntity.Data(
+                        user = UserJobPositionReadEntity.User(
+                                lastName = user.data.lastName,
+                                firstName = user.data.firstName,
+                                slug = user.data.slug,
+                                image = user.data.image,
+                        ),
+                        title = eventData.title,
+                )
+            }
             userJobPositionReadRepository.save(userJobPosition)
         }
     }
@@ -50,9 +51,21 @@ class UserJobPositionUpdatedEventHandler(
     override fun handle(event: UserJobPositionUpdatedEvent) {
         val eventData = event.data
         if (eventData.endDate == null) {
-            val jobPosition =
-                    userJobPositionReadRepository.findById(eventData.id)
-                            .orElseThrow { throw EntityNotFoundException(eventData.id.toString() + " job position not found") }
+            val jobPosition = userJobPositionReadRepository.findById(eventData.id).orElseGet {
+                UserJobPositionReadEntity(
+                        id = eventData.id,
+                        userId = eventData.userId,
+                        companyId = eventData.companyId,
+                ).apply {
+                    val user = userReadRepository.findById(eventData.userId).get()
+                    data.user = UserJobPositionReadEntity.User(
+                            firstName = user.data.firstName,
+                            lastName = user.data.lastName,
+                            slug = user.data.slug,
+                            image = user.data.image,
+                    )
+                }
+            }
             jobPosition.companyId = eventData.companyId
             jobPosition.data.title = eventData.title
             userJobPositionReadRepository.save(jobPosition)

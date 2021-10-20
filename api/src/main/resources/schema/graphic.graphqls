@@ -1,8 +1,8 @@
 type GraphicStatistics {
-    statsByCountry: GraphicStatsByCountry!,
-    statsByIndustry: GraphicStatsByIndustry!,
-    statsByNumberConnection: GraphicStatsByNumberConnection!,
-    statsByServiceProvided: GraphicStatsByServiceProvider!,
+    statsByCountry: GraphicStatsByCountry!
+    statsByIndustry: GraphicStatsByIndustry!
+    statsByNumberConnection: GraphicStatsByNumberConnection!
+    statsByServiceProvided: GraphicStatsByServiceProvider!
 }
 
 type GraphicStatsByCountry {
@@ -42,8 +42,8 @@ type GraphCompany {
     id: ID!
     name: String!
     slug: String!
-    logo: Image,
-    industry: Industry
+    logo: Image
+    industry: String
     location: String
-    role: Role
+    role: ConnectionRole
 }

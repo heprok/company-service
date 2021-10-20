@@ -112,6 +112,8 @@ class ConnectionReadEntity(
         var id: UUID,
         @JsonProperty("name")
         var name: String,
+        @JsonProperty("role")
+        var type: ConnectionRoleReadEntity.RoleType,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

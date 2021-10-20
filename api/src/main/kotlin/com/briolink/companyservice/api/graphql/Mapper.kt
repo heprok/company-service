@@ -2,6 +2,8 @@ package com.briolink.companyservice.api.graphql
 
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.Connection
+import com.briolink.companyservice.api.types.ConnectionRole
+import com.briolink.companyservice.api.types.ConnectionRoleType
 import com.briolink.companyservice.api.types.ConnectionService
 import com.briolink.companyservice.api.types.GraphCompany
 import com.briolink.companyservice.api.types.GraphService
@@ -18,6 +20,7 @@ import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.VerificationStage
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
@@ -117,11 +120,7 @@ fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStat
                 value = companiesStats.totalCount.values.sum(),
                 companies = companiesStats.listCompanies.let {
                     it.sortedBy { (_, name) -> name }.take(
-                            if (limit == null) {
-                                it.count()
-                            } else {
-                                limit
-                            },
+                            limit ?: it.count(),
                     ).map {
                         GraphCompany.fromEntity(it)
                     }
@@ -133,6 +132,19 @@ fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = Gra
         id = entity.id.toString(),
         slug = entity.slug,
         logo = Image(entity.logo),
+        role = ConnectionRole(
+                id = entity.role.id.toString(),
+                name = entity.role.name,
+                type = ConnectionRoleType.valueOf(entity.role.type.ordinal.toString())
+        ),
+        industry = entity.industry,
+        location = entity.location,
+)
+
+fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = ConnectionRole(
+        id = entity.id.toString(),
+        name = entity.name,
+        type = ConnectionRoleType.valueOf(entity.type.ordinal.toString())
 )
 
 fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(
@@ -196,9 +208,9 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
             Industry(id = it.id.toString(), name = it.name)
         },
         verificationStage = when (entity.verificationStage) {
-            ConnectionReadEntity.ConnectionStatus.Pending -> VerificationStage.PENDING
-            ConnectionReadEntity.ConnectionStatus.InProgress -> VerificationStage.PROGRESS
-            ConnectionReadEntity.ConnectionStatus.Verified -> VerificationStage.VERIFIED
-            else -> VerificationStage.REJECTED
+            ConnectionReadEntity.ConnectionStatus.Pending -> VerificationStage.Pending
+            ConnectionReadEntity.ConnectionStatus.InProgress -> VerificationStage.Progress
+            ConnectionReadEntity.ConnectionStatus.Verified -> VerificationStage.Verified
+            else -> VerificationStage.Reject
         },
 )

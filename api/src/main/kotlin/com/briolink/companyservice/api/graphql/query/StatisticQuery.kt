@@ -2,7 +2,6 @@ package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromCompaniesStats
 import com.briolink.companyservice.api.graphql.fromEntity
-import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.GraphCompany
 import com.briolink.companyservice.api.types.GraphService
 import com.briolink.companyservice.api.types.GraphicStatistics
@@ -21,6 +20,7 @@ import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
 import java.net.URL
+import java.time.Year
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -101,6 +101,21 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
         return GraphicStatsByNumberConnection(
                 values = statistic.statsNumberConnection!!.years.map { year ->
                     GraphicValueCompany.fromCompaniesStats(name = year.key.toString(), companiesStats = year.value, limit = 3)
+                },
+        )
+    }
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getStatisticNumberConnectionOnYear(
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("year") year: Year
+    ): GraphicStatsByNumberConnection {
+        val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+                .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
+        return GraphicStatsByNumberConnection(
+                values = statistic.statsNumberConnection!!.years[year.value]?.let {
+                    listOf(GraphicValueCompany.fromCompaniesStats(name = year.value.toString(), companiesStats = it, limit = null))
                 },
         )
     }

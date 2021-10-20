@@ -88,10 +88,10 @@ class StatisticReadEntity(
         @JsonProperty("slug")
         var slug: String,
         @JsonProperty("role")
-        var role: String
+        var role: Role,
     ) {
         @JsonProperty("industry")
-        var industry: Industry? = null
+        var industry: String? = null
         @JsonProperty("location")
         var location: String? = null
         @JsonProperty("lastCollaborate")
@@ -111,7 +111,7 @@ class StatisticReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Industry(
         @JsonProperty("id")
-        val id: String,
+        val id: UUID,
         @JsonProperty("name")
         val name: String,
     )
@@ -119,8 +119,10 @@ class StatisticReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Role(
         @JsonProperty("id")
-        val id: String,
+        val id: UUID,
         @JsonProperty("name")
         val name: String,
+        @JsonProperty("type")
+        val type: ConnectionRoleReadEntity.RoleType,
     )
 }

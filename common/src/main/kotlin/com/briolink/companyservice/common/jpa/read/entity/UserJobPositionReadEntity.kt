@@ -31,11 +31,11 @@ class UserJobPositionReadEntity(
     @Type(type = "uuid-char")
     @Column(name = "company_id", length = 36)
     var companyId: UUID? = null,
-
+) : BaseReadEntity() {
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
-    var data: Data
-) : BaseReadEntity() {
+    lateinit var data: Data
+
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     enum class VerifyStatus {
         Pending, Verified, Rejected

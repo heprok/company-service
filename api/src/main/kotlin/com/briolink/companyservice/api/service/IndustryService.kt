@@ -21,5 +21,12 @@ class IndustryService(
         applicationEventPublisher.publishEvent(IndustryCreatedEvent(mapper.toDomain(this)))
     }
 
+    fun create(entity: IndustryWriteEntity) = IndustryWriteEntity().apply {
+        id = entity.id
+        name = entity.name
+        industryWriteRepository.save(this)
+        applicationEventPublisher.publishEvent(IndustryCreatedEvent(mapper.toDomain(this)))
+    }
+
     fun findById(id: UUID) = industryWriteRepository.findById(id)
 }

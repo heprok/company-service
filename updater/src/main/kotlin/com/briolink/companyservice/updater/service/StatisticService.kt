@@ -1,6 +1,7 @@
 package com.briolink.companyservice.updater.service
 
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
@@ -18,8 +19,7 @@ class StatisticService(
     private val companyReadRepository: CompanyReadRepository,
 ) {
     fun refreshByCompany(companyId: UUID) {
-        val statisticByCompany: StatisticReadEntity = statisticReadRepository.findByCompanyId(companyId)
-                .orElse(StatisticReadEntity(companyId))
+        val statisticByCompany = StatisticReadEntity(companyId)
         val companyUpdated: CompanyReadEntity = companyReadRepository.findById(companyId)
                 .orElseThrow { throw EntityNotFoundException("$companyId not found") }
 
@@ -41,7 +41,11 @@ class StatisticService(
                         slug = connection.data.buyerCompany.slug,
                         name = connection.data.buyerCompany.name,
                         logo = connection.data.buyerCompany.logo,
-                        role = connection.data.buyerCompany.role.name
+                        role = StatisticReadEntity.Role(
+                                name = connection.data.buyerCompany.role.name,
+                                id = connection.data.buyerCompany.id,
+                                type = ConnectionRoleReadEntity.RoleType.valueOf(connection.data.buyerCompany.role.type.ordinal.toString()),
+                        ),
                 )
             } else {
                 StatisticReadEntity.Company(
@@ -49,18 +53,16 @@ class StatisticService(
                         slug = connection.data.sellerCompany.slug,
                         name = connection.data.sellerCompany.name,
                         logo = connection.data.sellerCompany.logo,
-                        role = connection.data.sellerCompany.role.name
+                        role = StatisticReadEntity.Role(
+                                name = connection.data.sellerCompany.role.name,
+                                id = connection.data.sellerCompany.id,
+                                type = ConnectionRoleReadEntity.RoleType.valueOf(connection.data.sellerCompany.role.type.ordinal.toString()),
+                        ),
                 )
             }.apply {
-                val companyRead = companyReadRepository.findById(id).orElseThrow{throw EntityNotFoundException("$id company not found") }
-                industry = companyRead.data.industry?.let{
-                    StatisticReadEntity.Industry(
-                            id = it.id,
-                            name = it.name
-                    )
-                }
+                val companyRead = companyReadRepository.findById(id).orElseThrow { throw EntityNotFoundException("$id company not found") }
+                industry = companyRead.data.industry?.name
                 location = companyRead.data.location
-
             }
             listCollaborator.add(collaborator.id)
             statsNumberConnection.years[connection.created.year] = statsNumberConnection.years.getOrDefault(
@@ -136,7 +138,5 @@ class StatisticService(
         statisticReadRepository.save(statisticByCompany)
         companyReadRepository.save(companyUpdated)
     }
-
-
 }
 

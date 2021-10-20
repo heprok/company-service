@@ -1,6 +1,7 @@
 package com.briolink.companyservice.updater.service
 
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
@@ -8,6 +9,7 @@ import com.briolink.companyservice.common.jpa.read.repository.ServiceReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.dto.Connection
+import com.briolink.companyservice.updater.dto.ConnectionRole
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.net.URL
@@ -91,6 +93,7 @@ class ConnectionService(
                         role = ConnectionReadEntity.Role(
                                 id = connection.participantTo.companyRole.id,
                                 name = connection.participantTo.companyRole.name,
+                                type = ConnectionRoleReadEntity.RoleType.valueOf(connection.participantTo.companyRole.type.ordinal.toString())
                         ),
                 )
 
@@ -109,6 +112,7 @@ class ConnectionService(
                         role = ConnectionReadEntity.Role(
                                 id = connection.participantFrom.companyRole.id,
                                 name = connection.participantFrom.companyRole.name,
+                                type = ConnectionRoleReadEntity.RoleType.valueOf(connection.participantFrom.companyRole.type.ordinal.toString())
                         ),
                 )
 

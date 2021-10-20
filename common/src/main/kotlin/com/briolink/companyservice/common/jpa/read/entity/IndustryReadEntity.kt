@@ -7,7 +7,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "company", catalog = "schema_read")
+@Table(name = "industry", catalog = "schema_read")
 @Entity
 class IndustryReadEntity(
     @Id
@@ -15,7 +15,6 @@ class IndustryReadEntity(
     @Column(name = "id", nullable = false, length = 36)
     var id: UUID
 ) : BaseReadEntity() {
-    @Type(type = "string")
-    @Column(name = "name", nullable = false, length = 128, columnDefinition = "string")
+    @Column(name = "name", nullable = false, length = 128)
     lateinit var name: String
 }

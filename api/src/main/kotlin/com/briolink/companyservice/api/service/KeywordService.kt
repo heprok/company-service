@@ -21,5 +21,12 @@ class KeywordService(
         applicationEventPublisher.publishEvent(KeywordCreatedEvent(mapper.toDomain(this)))
     }
 
+    fun create(entity: KeywordWriteEntity) = KeywordWriteEntity().apply {
+        this.id = entity.id
+        this.name = entity.name
+        keywordWriteRepository.save(this)
+        applicationEventPublisher.publishEvent(KeywordCreatedEvent(mapper.toDomain(this)))
+    }
+
     fun findById(id: UUID) = keywordWriteRepository.findById(id)
 }
