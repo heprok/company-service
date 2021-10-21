@@ -15,8 +15,6 @@ import kotlin.random.Random
 @Order(1)
 class UserDataLoader(
     var readRepository: UserReadRepository,
-    var companyReadRepository: CompanyReadRepository,
-    var industryWriteRepository: IndustryWriteRepository,
 ) : DataLoader() {
     val listFirstName: List<String> = listOf(
             "Lynch", "Kennedy", "Williams", "Evans", "Jones", "Burton", "Miller", "Smith", "Nelson", "Lucas",

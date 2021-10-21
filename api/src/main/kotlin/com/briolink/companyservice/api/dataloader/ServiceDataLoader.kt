@@ -15,7 +15,6 @@ import kotlin.random.Random
 class ServiceDataLoader(
     var readRepository: ServiceReadRepository,
     var companyReadRepository: CompanyReadRepository,
-    var industryWriteRepository: IndustryWriteRepository,
 ) : DataLoader() {
     val listName: List<String> = listOf(
             "Advertising on Google services",
@@ -30,7 +29,9 @@ class ServiceDataLoader(
     )
 
     override fun loadData() {
-        if (readRepository.count().toInt() == 0) {
+        if (readRepository.count().toInt() == 0 &&
+            companyReadRepository.count().toInt() != 0
+        ) {
             val companyList = companyReadRepository.findAll()
             for (i in 1..COUNT_SERVICE) {
                 readRepository.save(

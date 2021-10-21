@@ -45,7 +45,7 @@ data class ConnectionParticipant(
     @JsonProperty("userId")
     val userId: UUID,
     @JsonProperty("userJobPositionTitle")
-    val userJobPositionTitle: String,
+    val userJobPositionTitle: String?,
     @JsonProperty("companyId")
     val companyId: UUID,
     @JsonProperty("companyRole")

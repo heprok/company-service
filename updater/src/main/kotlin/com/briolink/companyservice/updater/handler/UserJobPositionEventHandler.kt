@@ -6,11 +6,8 @@ import com.briolink.companyservice.updater.event.UserJobPositionDeletedEvent
 import com.briolink.companyservice.updater.event.UserJobPositionUpdatedEvent
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.updater.dto.UserJobPosition
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
-import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.*
 import javax.persistence.EntityNotFoundException
 
 @EventHandler("UserJobPositionCreatedEvent", "1.0")

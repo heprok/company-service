@@ -23,4 +23,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
 //    )
     fun findByUserIdAndCompanyId(userId: UUID, companyId: UUID): Optional<UserJobPositionReadEntity>
 
+
+    fun existsByUserIdAndCompanyId(userId: UUID, companyId: UUID): Boolean
+
 }

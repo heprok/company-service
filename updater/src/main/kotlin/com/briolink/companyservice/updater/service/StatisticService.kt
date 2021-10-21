@@ -44,7 +44,7 @@ class StatisticService(
                         role = StatisticReadEntity.Role(
                                 name = connection.data.buyerCompany.role.name,
                                 id = connection.data.buyerCompany.id,
-                                type = ConnectionRoleReadEntity.RoleType.valueOf(connection.data.buyerCompany.role.type.ordinal.toString()),
+                                type = ConnectionRoleReadEntity.RoleType.values()[connection.data.buyerCompany.role.type.ordinal],
                         ),
                 )
             } else {
@@ -56,7 +56,7 @@ class StatisticService(
                         role = StatisticReadEntity.Role(
                                 name = connection.data.sellerCompany.role.name,
                                 id = connection.data.sellerCompany.id,
-                                type = ConnectionRoleReadEntity.RoleType.valueOf(connection.data.sellerCompany.role.type.ordinal.toString()),
+                                type = ConnectionRoleReadEntity.RoleType.values()[connection.data.sellerCompany.role.type.ordinal],
                         ),
                 )
             }.apply {

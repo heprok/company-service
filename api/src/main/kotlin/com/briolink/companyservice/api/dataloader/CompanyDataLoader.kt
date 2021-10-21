@@ -23,7 +23,11 @@ class CompanyDataLoader(
     var service: CompanyService
 ) : DataLoader() {
     override fun loadData() {
-        if (companyReadRepository.count().toInt() == 0) {
+        if (companyReadRepository.count().toInt() == 0 &&
+            industryWriteRepository.count().toInt() != 0 &&
+            occupationWriteRepository.count().toInt() != 0 &&
+            keywordWriteRepository.count().toInt() != 0
+        ) {
             val industryList = industryWriteRepository.findAll()
             val occupationList = occupationWriteRepository.findAll()
             val keywordList = keywordWriteRepository.findAll()
@@ -115,10 +119,12 @@ class CompanyDataLoader(
             )
 
             companyWriteEntityList.forEach {
+                val keyWords = mutableListOf<KeywordWriteEntity>()
+                keyWords.addAll(keywordList.shuffled().take(Random.nextInt(0, 10)))
                 it.apply {
                     industry = industryList.random()
                     occupation = occupationList.random()
-                    keywords = keywordList.shuffled().take(Random.nextInt(0, 10)) as MutableList<KeywordWriteEntity>
+                    keywords = keyWords
                 }
                 service.createCompany(it)
 

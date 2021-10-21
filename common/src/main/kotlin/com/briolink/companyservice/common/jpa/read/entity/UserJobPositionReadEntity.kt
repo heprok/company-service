@@ -42,10 +42,10 @@ class UserJobPositionReadEntity(
     }
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
-        @JsonProperty("status")
+        @JsonProperty("User")
         var user: User,
         @JsonProperty("status")
-        var status: VerifyStatus = VerifyStatus.Pending,
+        var status: VerifyStatus = VerifyStatus.Verified,
         @JsonProperty("verifiedBy")
         var verifiedBy: UUID? = null,
         @JsonProperty("jobPosition")

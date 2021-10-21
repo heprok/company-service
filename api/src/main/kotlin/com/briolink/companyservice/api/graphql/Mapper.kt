@@ -135,7 +135,7 @@ fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = Gra
         role = ConnectionRole(
                 id = entity.role.id.toString(),
                 name = entity.role.name,
-                type = ConnectionRoleType.valueOf(entity.role.type.ordinal.toString())
+                type = ConnectionRoleType.values()[entity.role.type.ordinal]
         ),
         industry = entity.industry,
         location = entity.location,
@@ -144,7 +144,7 @@ fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = Gra
 fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = ConnectionRole(
         id = entity.id.toString(),
         name = entity.name,
-        type = ConnectionRoleType.valueOf(entity.type.ordinal.toString())
+        type = ConnectionRoleType.values()[entity.type.ordinal]
 )
 
 fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(
