@@ -14,14 +14,18 @@ type Error {
     field: [String!]
 }
 
+enum SortDirection{
+    ASC, DESC
+}
+
 input RangeInt {
     start: Int
     end: Int
 }
 
-input RangeDate {
-    start: Date
-    end: Date
+input RangeYear {
+    start: Year
+    end: Year
 }
 
 input RangeFloat {
