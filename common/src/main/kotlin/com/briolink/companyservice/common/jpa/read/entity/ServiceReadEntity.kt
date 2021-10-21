@@ -22,14 +22,20 @@ class ServiceReadEntity(
     @Column(name = "company_id", nullable = false, length = 36)
     var companyId: UUID,
 
+    @Column(name = "name", nullable = false, length = 255)
+    var name: String,
+
     @Column(name = "verified_uses", nullable = false)
     var verifiedUses: Int = 0,
 
     @Column(name = "price", nullable = false)
     var price: Double,
 
-    @Column(name = "last_used", )
+    @Column(name = "last_used")
     var lastUsed: LocalDate? = null,
+
+    @Column(name = "created")
+    var created: LocalDate? = null,
 
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
@@ -37,8 +43,6 @@ class ServiceReadEntity(
 ) : BaseReadEntity() {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
-        @JsonProperty("name")
-        var name: String,
         @JsonProperty("image")
         var image: String? = null,
         @JsonProperty("slug")

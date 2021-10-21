@@ -19,27 +19,30 @@ class UserCreatedEventHandler(
                 data = UserReadEntity.Data(
                         lastName = eventData.lastName,
                         firstName = eventData.firstName,
-                        slug = eventData.slug,
                         image = eventData.image,
-                ),
-                )
+                ).apply {
+                    slug = eventData.slug
+                },
+        )
         userReadRepository.save(user)
     }
 }
 
 @EventHandler("UserUpdatedEvent", "1.0")
 class UserUpdatedEventHandler(
-   private val userReadRepository: UserReadRepository
+    private val userReadRepository: UserReadRepository
 ) : IEventHandler<UserUpdatedEvent> {
     override fun handle(event: UserUpdatedEvent) {
         val eventData = event.data
-        val user = userReadRepository.findById(eventData.id).orElseThrow{ throw EntityNotFoundException(eventData.id.toString() + " user not found") }
+        val user = userReadRepository.findById(eventData.id)
+                .orElseThrow { throw EntityNotFoundException(eventData.id.toString() + " user not found") }
         user.data = UserReadEntity.Data(
                 lastName = eventData.lastName,
-                slug = eventData.slug,
                 firstName = eventData.firstName,
                 image = eventData.image,
-        )
+        ).apply {
+            slug = eventData.slug
+        }
         userReadRepository.save(user)
     }
 }

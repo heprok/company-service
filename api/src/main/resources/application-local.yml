@@ -1,16 +1,16 @@
-#server:
-#  error:
-#    include-stacktrace: always
-#spring:
-#  jpa:
-#    show-sql: true
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          jwk-set-uri: https://auth.dev.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
-#  datasource:
-#    url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
-#    username: ${env.DB_USER:ok}
-#    password: ${env.DB_PASSWORD:ok}
-#    allowPublicKeyRetrieval: true
+server:
+  error:
+    include-stacktrace: always
+spring:
+  jpa:
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://auth.dev.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
+  datasource:
+    url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
+    username: ${env.DB_USER:ok}
+    password: ${env.DB_PASSWORD:ok}
+    allowPublicKeyRetrieval: true

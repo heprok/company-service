@@ -32,11 +32,12 @@ class UserReadEntity(
     data class Data(
         @JsonProperty("firstName")
         var firstName: String,
-        @JsonProperty("slug")
-        var slug: String,
         @JsonProperty("lastName")
         var lastName: String,
         @JsonProperty("image")
         var image: URL? = null,
-    )
+    ) {
+        @JsonProperty("slug")
+        lateinit var slug: String
+    }
 }

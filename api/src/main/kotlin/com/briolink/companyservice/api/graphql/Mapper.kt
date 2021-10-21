@@ -106,7 +106,7 @@ fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
 
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         id = entity.id.toString(),
-        name = entity.data.name,
+        name = entity.name,
         price = entity.price,
         companyId = entity.companyId.toString(),
         verifiedUses = entity.verifiedUses,

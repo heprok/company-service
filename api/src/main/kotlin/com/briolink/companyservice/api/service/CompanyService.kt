@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.util.*
 import javax.persistence.EntityNotFoundException
+import kotlin.collections.ArrayList
 
 @Service
 @Transactional
@@ -36,7 +37,35 @@ class CompanyService(
                 name = company.name,
                 slug = company.slug,
                 website = URL(company.website),
-        )
+                description = company.description,
+                isTypePublic = company.isTypePublic,
+                twitter = company.twitter,
+                facebook = company.facebook,
+                location = company.location,
+                industry = company.industry?.let {
+                    Industry(
+                            id = it.id!!,
+                            name = it.name,
+                    )
+                },
+                occupation = company.occupation?.let {
+                    Occupation(
+                            id = it.id!!,
+                            name = it.name,
+                    )
+                },
+        ).apply {
+            keywords!!.addAll(
+                    company.keywords.let { it ->
+                        it.map {
+                            Company.Keyword(
+                                    id = it.id!!,
+                                    name = it.name,
+                            )
+                        }
+                    }
+            )
+        }
         applicationEventPublisher.publishEvent(
                 CompanyCreatedEvent(companyDomain),
         )
@@ -75,7 +104,7 @@ class CompanyService(
                             it.name,
                     )
                 },
-                keywords = ArrayList<Company.Keyword>(
+                keywords = ArrayList(
                         company.keywords.map {
                             Company.Keyword(
                                     it.id!!,
@@ -99,7 +128,11 @@ class CompanyService(
         return imageUrl
     }
 
-        fun getPermission(companyId: UUID, userId: UUID) : UserPermissionRoleReadEntity.RoleType? {
-            return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(accessObjectUuid = companyId, accessObjectType = 1, userId = userId)?.role
+    fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity.RoleType? {
+        return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
+                accessObjectUuid = companyId,
+                accessObjectType = 1,
+                userId = userId,
+        )?.role
     }
 }

@@ -8,13 +8,11 @@ data class User(
     @JsonProperty("id")
     val id: UUID,
     @JsonProperty("slug")
-    val slug: String,
+    var slug: String,
     @JsonProperty("firstName")
     val firstName: String,
     @JsonProperty("lastName")
     val lastName: String,
-    @JsonProperty("personalEmail")
-    val personalEmail: String,
     @JsonProperty("description")
     val description: String? = null,
     @JsonProperty("location")

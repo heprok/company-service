@@ -62,7 +62,7 @@ class ConnectionService(
                         serviceReadEntity.get().let{
                             ConnectionReadEntity.Service(
                                     id = it.id,
-                                    name = it.data.name,
+                                    name = it.name,
                                     slug = it.data.slug,
                                     endDate = connectionService.endDate,
                                     startDate = connectionService.startDate
