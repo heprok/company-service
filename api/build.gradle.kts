@@ -84,7 +84,7 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
     typeMapping = mutableMapOf(
             "Url" to "java.net.URL",
             "Upload" to "org.springframework.web.multipart.MultipartFile",
-            "Year" to "Year",
+            "Year" to "java.time.Year",
     )
     generatedSourcesDir = "${project.buildDir.absolutePath}/dgs-codegen"
 }

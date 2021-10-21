@@ -12,4 +12,6 @@ import java.util.UUID
 interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpecificationExecutor<ServiceReadEntity> {
     fun findByCompanyIdIs(companyId: UUID, pageable: Pageable? = null): Page<ServiceReadEntity>
 
+    fun existsByCompanyId(companyId: UUID): Boolean
+
 }

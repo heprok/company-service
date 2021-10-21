@@ -1,14 +1,17 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.api.types.ServiceFilter
+import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity_
 import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
 import com.briolink.companyservice.common.util.PageRequest
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.Year
 import java.util.UUID
 import javax.persistence.criteria.Predicate
 
@@ -19,17 +22,20 @@ class ServiceCompanyService(
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
             serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
 
-    fun findAll(companyId : UUID, limit: Int, offset: Int, filter: ServiceFilter): Page<ServiceReadEntity> {
+    fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter): Page<ServiceReadEntity> {
+
         val spec = Specification<ServiceReadEntity> { root, query, builder ->
             builder.and(
                     equalsCompanyId(companyId)
                             .and(isByPriceBetween(filter.cost?.start, filter.cost?.end))
                             .and(isByLastUsedBetween(filter.lastUsed?.start, filter.lastUsed?.end))
-                            .and(isByNumberUsesBetween(filter.numberUses?.start, filter.numberUses?.end))
                             .toPredicate(root, query, builder),
             )
         }
-        return serviceReadRepository.findAll(spec, PageRequest(offset, limit))
+        return serviceReadRepository.findAll(
+                spec,
+                PageRequest(offset, limit, Sort.by(Sort.Direction.fromString(sort.direction.name), sort.sortBy.name)),
+        )
     }
 
 
@@ -58,7 +64,6 @@ class ServiceCompanyService(
     }
 
     fun isByNumberUsesBetween(start: Int?, end: Int?): Specification<ServiceReadEntity>? {
-
         return if (start != null && end != null) {
             Specification<ServiceReadEntity> { root, _, builder ->
                 builder.between(root.get(ServiceReadEntity_.verifiedUses), start, end)
@@ -76,21 +81,32 @@ class ServiceCompanyService(
         }
     }
 
-    fun isByLastUsedBetween(start: LocalDate?, end: LocalDate?): Specification<ServiceReadEntity>? {
+    fun isByLastUsedBetween(start: Year?, end: Year?): Specification<ServiceReadEntity>? {
+        val startDate = start?.let {
+            LocalDate.of(it.value, 1, 1)
+        }
+        val endDate = end?.let {
+            LocalDate.of(it.value, 12, 31)
+        }
         return if (start != null && end != null) {
             Specification<ServiceReadEntity> { root, _, builder ->
-                builder.between(root.get(ServiceReadEntity_.lastUsed), start, end)
+                builder.between(root.get(ServiceReadEntity_.lastUsed), startDate, endDate)
             }
         } else if (start != null && end == null) {
             Specification<ServiceReadEntity> { root, _, builder ->
-                builder.greaterThanOrEqualTo(root.get(ServiceReadEntity_.lastUsed), start)
+                builder.greaterThanOrEqualTo(root.get(ServiceReadEntity_.lastUsed), startDate)
             }
         } else if (start == null && end != null) {
             Specification<ServiceReadEntity> { root, _, builder ->
-                builder.lessThanOrEqualTo(root.get(ServiceReadEntity_.lastUsed), end)
+                builder.lessThanOrEqualTo(root.get(ServiceReadEntity_.lastUsed), endDate)
             }
         } else {
             null
         }
     }
+
+    fun countServiceByCompany(companyId: UUID): Boolean {
+        return serviceReadRepository.existsByCompanyId(companyId)
+    }
+
 }

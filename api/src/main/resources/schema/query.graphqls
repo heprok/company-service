@@ -2,7 +2,7 @@ type Query {
     getCompany(slug: String!): CompanyAndUserRole!
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
     getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList! @deprecated(reason: "Use new Filter")
-    getServicesFilter(companyId: ID!, filter: ServiceFilter, limit: Int = 10, offset: Int = 0): ServiceList!
+    getServicesFilter(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
     getConnections(filter: ConnectionFilter!, limit: Int = 10, offset: Int = 0): ConnectionList!
 
     getIndustries(query: String!): [Industry]!

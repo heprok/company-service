@@ -13,8 +13,16 @@ type ServiceList implements PaginatedList {
     totalItems: Int!
 }
 
+enum ServiceSortBy {
+    Name, Created, Price, VerifiedUses, LastUsed
+}
+
+input ServiceSort{
+    sortBy: ServiceSortBy!
+    direction: SortDirection!
+}
+
 input ServiceFilter {
-    numberUses: RangeInt,
     cost: RangeFloat,
-    lastUsed: RangeDate
+    lastUsed: RangeYear
 }
