@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            tableName: connection
+            schemaName: ${readSchema}
+            columns:
+              - column:
+                  name: seller_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  defaultValue: ""
+              - column:
+                  name: buyer_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: varchar(255)
+                  defaultValue:
+        - sql:
+            comment: FULLTEXT index for ${readSchema}.connection table name field
+            sql: alter table ${readSchema}.connection add fulltext index idx_connection_location(location)
+            stripComments: true
+        - createIndex:
+            columns:
+              - column:
+                  name: seller_name
+            indexName: idx_connection_seller_name
+            schemaName: ${readSchema}
+            tableName: connection
+        - createIndex:
+            columns:
+              - column:
+                  name: buyer_name
+            indexName: idx_connection_buyer_name
+            schemaName: ${readSchema}
+            tableName: connection

@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.dataloader
 
+import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -15,6 +16,7 @@ import kotlin.random.Random
 @Order(1)
 class UserDataLoader(
     var readRepository: UserReadRepository,
+    var companyService: CompanyService
 ) : DataLoader() {
     val listFirstName: List<String> = listOf(
             "Lynch", "Kennedy", "Williams", "Evans", "Jones", "Burton", "Miller", "Smith", "Nelson", "Lucas",
@@ -40,6 +42,18 @@ class UserDataLoader(
                         ),
                 )
             }
+            readRepository.save(
+                    UserReadEntity(
+                            id = UUID.fromString("4753e3ca-aefc-4e6c-981e-2833c37171fb"),
+                            data = UserReadEntity.Data(
+                                    firstName = "Denis",
+                                    lastName = "Nikonov",
+                                    image = URL("https://briolink.s3.us-east-2.amazonaws.com/uploads/user/profile-image/fa33cc305b75476684333434ed464668.jpg"),
+                            ).apply {
+                                slug = "denis-nikonov"
+                            }
+                    )
+            )
         }
     }
 

@@ -5,6 +5,7 @@ import com.briolink.companyservice.api.service.ConnectionService
 import com.briolink.companyservice.api.types.Connection
 import com.briolink.companyservice.api.types.ConnectionFilter
 import com.briolink.companyservice.api.types.ConnectionList
+import com.briolink.companyservice.api.types.ConnectionRoleSorting
 import com.briolink.companyservice.api.types.ConnectionSort
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -41,4 +42,14 @@ class ConnectionQuery(private val connectionService: ConnectionService) {
             ConnectionList(items = listOf(), totalItems = -1)
         }
     }
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getConnectionRoleSorting(
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("filter") filter: ConnectionFilter?,
+    ): List<ConnectionRoleSorting> {
+        return listOf()
+    }
+
 }

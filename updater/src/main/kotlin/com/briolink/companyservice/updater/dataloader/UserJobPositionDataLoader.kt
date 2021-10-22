@@ -6,6 +6,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.dto.UserJobPosition
 import com.briolink.companyservice.updater.event.UserJobPositionCreatedEvent
+import com.briolink.companyservice.updater.service.CompanyService
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.annotation.Order
@@ -20,6 +21,7 @@ class UserJobPositionDataLoader(
     var readRepository: UserJobPositionReadRepository,
     var userReadRepository: UserReadRepository,
     var companyReadRepository: CompanyReadRepository,
+    var companyService: CompanyService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 
     ) : DataLoader() {
@@ -67,6 +69,10 @@ class UserJobPositionDataLoader(
                                 )
                             },
                     )
+                }
+
+                listCompany.forEach{
+                    companyService.setOwner(it.id, UUID.fromString("4753e3ca-aefc-4e6c-981e-2833c37171fb"))
                 }
 
 

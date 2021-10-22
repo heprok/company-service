@@ -49,6 +49,15 @@ class ConnectionReadEntity(
     @Type(type = "uuid-char")
     var buyerRoleId: UUID? = null
 
+    @Column(name = "seller_name", nullable = false, length = 255)
+    var sellerName: String? = null
+
+    @Column(name = "buyer_name", nullable = false, length = 255)
+    var buyerName: String? = null
+
+    @Column(name = "location", nullable = false, length = 255)
+    var location: String? = null
+
     @Column(name = "service_ids", nullable = false)
     var serviceIds: String? = null
 

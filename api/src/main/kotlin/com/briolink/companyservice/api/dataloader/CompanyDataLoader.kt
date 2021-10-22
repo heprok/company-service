@@ -36,7 +36,7 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Pay Pal",
-                            website = "https://www.paypal.com",
+                            website = URL("https://www.paypal.com"),
                             logo = URL("https://www.paypalobjects.com/webstatic/icon/pp258.png"),
                             location = "USA, California, San-Mateo",
                             facebook = "paypal",
@@ -50,7 +50,7 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Amazon",
-                            website = "https://www.amazon.com/",
+                            website = URL("https://www.amazon.com/"),
                             logo = URL("https://regnum.ru/uploads/pictures/news/2018/11/30/regnum_picture_154356037138044_normal.png"),
                             location = "USA, Texas, Houston",
                             facebook = "amazon",
@@ -64,7 +64,7 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Notion Labs INC",
-                            website = "https://www.notion.so/",
+                            website = URL("https://www.notion.so/"),
                             logo = URL("https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png"),
                             location = "USA, California, Los Angeles",
                             facebook = "notion-labs-inc",
@@ -78,7 +78,7 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Google",
-                            website = "https://www.google.com/",
+                            website = URL("https://www.google.com/"),
                             logo = URL("https://w7.pngwing.com/pngs/760/624/png-transparent-google-logo-google-search-advertising-google-company-text-trademark.png"),
                             location = "USA, Texas, Dallas",
                             facebook = "google",
@@ -92,7 +92,7 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Twitter",
-                            website = "https://twitter.com/",
+                            website = URL("https://twitter.com/"),
                             logo = URL("https://upload.wikimedia.org/wikipedia/ru/thumb/9/9f/Twitter_bird_logo_2012.svg/1261px-Twitter_bird_logo_2012.svg.png"),
                             location = "USA, Utah, Moscow",
                             facebook = "twitter",
@@ -106,7 +106,7 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Git Hub",
-                            website = "https://github.com/",
+                            website = URL("https://github.com/"),
                             logo = URL("https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"),
                             location = "USA, California, San Francisco",
                             facebook = "github",

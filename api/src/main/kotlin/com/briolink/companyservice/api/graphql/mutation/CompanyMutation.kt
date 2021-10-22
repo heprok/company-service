@@ -38,7 +38,7 @@ class CompanyMutation(
     @DgsMutation
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
     return if(!companyService.isExistWebsite(createInputCompany.website.toString())){
-        val company = companyService.createCompany(CompanyWriteEntity(name = createInputCompany.name, website = createInputCompany.website.toString()))
+        val company = companyService.createCompany(CompanyWriteEntity(name = createInputCompany.name, website = createInputCompany.website))
         CreateCompanyResult(
                 userErrors = listOf(),
                 data = CompanyResultData(id = company.id.toString(), name = company.name),
@@ -61,7 +61,7 @@ class CompanyMutation(
 
         company.slug = inputCompany.slug ?: company.slug
         company.name = inputCompany.name ?: company.name
-        company.website = inputCompany.website?.toString()
+        company.website = inputCompany.website
         company.description = inputCompany.description ?: company.description
         company.isTypePublic = inputCompany.isTypePublic ?: company.isTypePublic
 //        company.country = inputCompany.country ?: company.country

@@ -21,7 +21,7 @@ class CompanyWriteEntity(
     var name: String,
 
     @Column(name = "website")
-    var website: String?,
+    var website: URL?,
 
     @Column(name = "slug", nullable = false, length = 255)
     var slug: String = "",
@@ -74,7 +74,7 @@ class CompanyWriteEntity(
 
     @PrePersist
     fun prePersist() {
-        slug = StringUtil.slugify(name)
+        slug = StringUtil.slugify(name, false)
     }
 
 }

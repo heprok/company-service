@@ -24,7 +24,7 @@ input ConnectionFilter {
 }
 
 enum ConnectionSortBy {
-    Created
+    Created, NameSeller, NameBuyer
 }
 
 input ConnectionSort{
@@ -41,6 +41,13 @@ type ConnectionRole {
     id: ID!
     name: String!
     type: ConnectionRoleType!
+}
+
+type ConnectionRoleSorting {
+    id: ID!
+    name: String!
+    type: ConnectionRoleType!
+    count: Int!
 }
 
 enum ConnectionRoleType {

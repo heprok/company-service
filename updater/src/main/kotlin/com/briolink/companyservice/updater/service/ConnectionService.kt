@@ -44,11 +44,14 @@ class ConnectionService(
 
             sellerId = connection.participantFrom.companyId
             buyerId = connection.participantTo.companyId
+            buyerName = buyerRead.data.name
+            sellerName = sellerRead.data.name
+            location = buyerRead.data.location
             buyerRoleId = connection.participantTo.companyRole.id
             sellerRoleId = connection.participantFrom.companyRole.id
             industryId = UUID.fromString(buyerRead.data.industry!!.id)
-            verificationStage = ConnectionReadEntity.ConnectionStatus.Pending
-            created = if(System.getenv("SPRING_PROFILE") == "local") randomDate(2014, 2021) else LocalDate.now()
+            verificationStage = ConnectionReadEntity.ConnectionStatus.values()[connection.status.ordinal]
+            created = if(System.getenv("spring_profiles_active") == "dev" || System.getenv("spring_profiles_active") == "local") randomDate(2016, 2021) else LocalDate.now()
             data = ConnectionReadEntity.Data(connection.id).apply {
                 val endDateMutableList = mutableListOf<String>()
                 val startDateMutableList = mutableListOf<String>()

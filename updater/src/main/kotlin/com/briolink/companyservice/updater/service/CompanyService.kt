@@ -29,15 +29,29 @@ class CompanyService(
                             accessObjectUuid = companyId,
                     ),
             )
-
             true
         } else {
             false
         }
     }
 
-    fun getPermission(companyId: UUID, userId: UUID) : UserPermissionRoleReadEntity.RoleType? {
-        return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(accessObjectUuid = companyId, accessObjectType = 1, userId = userId)?.role
+    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleReadEntity.RoleType) {
+        userPermissionRoleReadRepository.save(
+                userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
+                        accessObjectUuid = companyId,
+                        userId = userId,
+                )?.apply {
+                    role = roleType
+                } ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId, role = roleType),
+        )
+    }
+
+    fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity.RoleType? {
+        return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
+                accessObjectUuid = companyId,
+                accessObjectType = 1,
+                userId = userId,
+        )?.role
     }
 }
 

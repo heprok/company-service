@@ -36,7 +36,8 @@ class CompanyService(
                 id = company.id!!,
                 name = company.name,
                 slug = company.slug,
-                website = URL(company.website),
+                logo = company.logo,
+                website = company.website,
                 description = company.description,
                 isTypePublic = company.isTypePublic,
                 twitter = company.twitter,
@@ -81,7 +82,7 @@ class CompanyService(
         val domain = Company(
                 id = companyWrite.id!!,
                 name = companyWrite.name,
-                website = URL(companyWrite.website),
+                website = companyWrite.website,
                 description = companyWrite.description,
                 slug = companyWrite.slug,
 //                country = companyWrite.country,
@@ -135,4 +136,36 @@ class CompanyService(
                 userId = userId,
         )?.role
     }
+
+    fun setOwner(companyId: UUID, userId: UUID): Boolean {
+        val company =
+                companyReadRepository.findById(companyId).orElseThrow { throw EntityNotFoundException("$companyId company not found") }
+        return if (company.data.createdBy == null) {
+            company.data.createdBy = userId
+            companyReadRepository.save(company)
+            userPermissionRoleReadRepository.save(
+                    UserPermissionRoleReadEntity(
+                            userId = userId,
+                            role = UserPermissionRoleReadEntity.RoleType.Owner,
+                            accessObjectUuid = companyId,
+                    ),
+            )
+            true
+        } else {
+            false
+        }
+    }
+
+    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleReadEntity.RoleType) {
+        userPermissionRoleReadRepository.save(
+                userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
+                        accessObjectUuid = companyId,
+                        userId = userId,
+                )?.apply {
+                    role = roleType
+                } ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId, role = roleType),
+        )
+    }
+
+
 }

@@ -15,7 +15,7 @@ type ServiceList implements PaginatedList {
 }
 
 enum ServiceSortBy {
-    Name, Created, Price, VerifiedUses, LastUsed, isHide
+    Name, Created, Price, VerifiedUses, LastUsed
 }
 type HideCompanyServiceResult {
     success: Boolean!,
