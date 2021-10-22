@@ -3,6 +3,7 @@ package com.briolink.companyservice.api.dataloader
 import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
+import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.write.repository.IndustryWriteRepository
 import com.briolink.companyservice.common.util.StringUtil
 import org.springframework.core.annotation.Order
@@ -14,7 +15,7 @@ import kotlin.random.Random
 @Order(3)
 class ServiceDataLoader(
     var readRepository: ServiceReadRepository,
-    var companyReadRepository: CompanyReadRepository,
+    var companyWriteRepository: CompanyWriteRepository,
 ) : DataLoader() {
     val listName: List<String> = listOf(
             "Advertising on Google services",
@@ -30,14 +31,14 @@ class ServiceDataLoader(
 
     override fun loadData() {
         if (readRepository.count().toInt() == 0 &&
-            companyReadRepository.count().toInt() != 0
+            companyWriteRepository.count().toInt() != 0
         ) {
-            val companyList = companyReadRepository.findAll()
+            val companyList = companyWriteRepository.findAll()
             for (i in 1..COUNT_SERVICE) {
                 readRepository.save(
                         ServiceReadEntity(
                                 id = UUID.randomUUID(),
-                                companyId = companyList.random().id,
+                                companyId = companyList.random().id!!,
                                 verifiedUses = Random.nextInt(0, 600),
                                 price = Random.nextDouble(0.0, 6000000.0),
                                 lastUsed = randomDate(2010, 2021),
