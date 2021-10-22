@@ -18,6 +18,7 @@ import java.net.URL
 import java.time.LocalDate
 import java.util.*
 import javax.persistence.EntityNotFoundException
+import kotlin.random.Random
 
 @Transactional
 @Service
@@ -47,7 +48,7 @@ class ConnectionService(
             sellerRoleId = connection.participantFrom.companyRole.id
             industryId = UUID.fromString(buyerRead.data.industry!!.id)
             verificationStage = ConnectionReadEntity.ConnectionStatus.Pending
-            created = LocalDate.now()
+            created = if(System.getenv("SPRING_PROFILE") == "local") randomDate(2014, 2021) else LocalDate.now()
             data = ConnectionReadEntity.Data(connection.id).apply {
                 val endDateMutableList = mutableListOf<String>()
                 val startDateMutableList = mutableListOf<String>()
@@ -138,6 +139,13 @@ class ConnectionService(
                             verificationStage = status
                         },
         )
+    }
+
+    fun randomDate(startYear: Int, endYear: Int): LocalDate {
+        val day: Int = Random.nextInt(1, 28)
+        val month: Int = Random.nextInt(1, 12)
+        val year: Int = Random.nextInt(startYear, endYear)
+        return LocalDate.of(year, month, day)
     }
 }
 

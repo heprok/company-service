@@ -31,15 +31,8 @@ class ConnectionDataLoader(
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
     private var service: com.briolink.companyservice.updater.service.ConnectionService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : DataLoader() {
     override fun loadData() {
-        println(readRepository.count().toInt())
-        println(userReadRepository.count().toInt())
-        println(serviceReadRepository.count().toInt())
-        println(companyReadRepository.count().toInt())
-        println(userJobPositionReadRepository.count().toInt())
-        println(connectionRoleReadRepository.count().toInt())
         if (
             readRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&
@@ -99,7 +92,7 @@ class ConnectionDataLoader(
                                     participantTo = ConnectionParticipant(
                                             userId = listUser.random().id,
                                             userJobPositionTitle = null,
-                                            companyId = from.id,
+                                            companyId = to.id,
                                             companyRole = listConnectionRole.shuffled()
                                                     .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Buyer }!!
                                                     .let {

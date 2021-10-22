@@ -35,7 +35,7 @@ class StatisticService(
         val connectionsByCompany = connectionReadRepository.findBySellerIdOrBuyerId(companyId, companyId)
         val listCollaborator = mutableSetOf<UUID>()
         connectionsByCompany.forEach { connection ->
-            val collaborator = if (connection.sellerId != companyId) {
+            val collaborator = if (connection.sellerId == companyId) {
                 StatisticReadEntity.Company(
                         id = connection.data.buyerCompany.id,
                         slug = connection.data.buyerCompany.slug,

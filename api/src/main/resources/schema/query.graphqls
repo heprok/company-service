@@ -3,17 +3,17 @@ type Query {
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
     getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList! @deprecated(reason: "Use new Filter")
     getServicesFilter(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
-    getConnections(filter: ConnectionFilter!, limit: Int = 10, offset: Int = 0): ConnectionList!
+    getConnections(companyId: ID!, filter: ConnectionFilter, sort: ConnectionSort, limit: Int = 10, offset: Int = 0): ConnectionList!
 
     getIndustries(query: String!): [Industry]!
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
 
-    getStatistic(companyId: ID!): GraphicStatistics!
-    getStatisticByCountry(companyId: ID!): GraphicStatsByCountry!
-    getStatisticByIndustry(companyId: ID!): GraphicStatsByIndustry!
+    getStatistic(companyId: ID!, offset: Int = 5): GraphicStatistics!
+    getStatisticByCountry(companyId: ID!,offset: Int = 5): GraphicStatsByCountry!
+    getStatisticByIndustry(companyId: ID!, offset: Int = 5): GraphicStatsByIndustry!
     getStatisticNumberConnection(companyId: ID!): GraphicStatsByNumberConnection!
-    getStatisticServicesProvided(companyId: ID!): GraphicStatsByServiceProvider!
+    getStatisticServicesProvided(companyId: ID!,offset: Int = 5): GraphicStatsByServiceProvider!
 
 
     getStatisticNumberConnectionOnYear(companyId: ID!, year: Year) : GraphicStatsByNumberConnection

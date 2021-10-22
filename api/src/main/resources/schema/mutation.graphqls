@@ -17,4 +17,8 @@ type Mutation{
 
     #    User ( company Stuff)
     createEmployee(input: CreateUserInput!) : User!
+
+    # Service
+    hideCompanyService(companyId: ID!, serviceId: ID!, isHide: Boolean!): HideCompanyServiceResult
+    deleteCompanyService(companyId: ID!, serviceId: ID!) : Boolean
 }

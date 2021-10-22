@@ -111,6 +111,7 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         companyId = entity.companyId.toString(),
         verifiedUses = entity.verifiedUses,
         lastUsed = entity.lastUsed,
+        isHide = entity.isHide,
         image = entity.data.image.let { Image(url = URL(it)) },
 )
 
@@ -118,7 +119,7 @@ fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStat
         GraphicValueCompany(
                 name = name,
                 value = companiesStats.totalCount.values.sum(),
-                companies = companiesStats.listCompanies.let {
+                companies = companiesStats.listCompanies.distinctBy { company -> company.name }.let {
                     it.sortedBy { (_, name) -> name }.take(
                             limit ?: it.count(),
                     ).map {
@@ -135,7 +136,7 @@ fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = Gra
         role = ConnectionRole(
                 id = entity.role.id.toString(),
                 name = entity.role.name,
-                type = ConnectionRoleType.values()[entity.role.type.ordinal]
+                type = ConnectionRoleType.values()[entity.role.type.ordinal],
         ),
         industry = entity.industry,
         location = entity.location,
@@ -144,7 +145,7 @@ fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = Gra
 fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = ConnectionRole(
         id = entity.id.toString(),
         name = entity.name,
-        type = ConnectionRoleType.values()[entity.type.ordinal]
+        type = ConnectionRoleType.values()[entity.type.ordinal],
 )
 
 fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(

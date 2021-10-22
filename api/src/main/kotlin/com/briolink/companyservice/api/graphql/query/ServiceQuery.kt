@@ -37,7 +37,7 @@ class ServiceQuery(private val serviceCompanyService: ServiceCompanyService) {
         @InputArgument("companyId") companyId: String,
         @InputArgument("sort") sort: ServiceSort,
         @InputArgument("limit") limit: Int,
-        @InputArgument("filter") filter: ServiceFilter,
+        @InputArgument("filter") filter: ServiceFilter?,
         @InputArgument("offset") offset: Int,
 
     ): ServiceList {

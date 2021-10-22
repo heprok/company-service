@@ -10,25 +10,28 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 import javax.persistence.criteria.Predicate
 
 @Service
+@Transactional
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
             serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
 
-    fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter): Page<ServiceReadEntity> {
+    fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter?): Page<ServiceReadEntity> {
 
         val spec = Specification<ServiceReadEntity> { root, query, builder ->
             builder.and(
                     equalsCompanyId(companyId)
-                            .and(isByPriceBetween(filter.cost?.start, filter.cost?.end))
-                            .and(isByLastUsedBetween(filter.lastUsed?.start, filter.lastUsed?.end))
+                            .and(isByPriceBetween(filter?.cost?.start, filter?.cost?.end))
+                            .and(isHide(filter?.isHide))
+                            .and(isByLastUsedBetween(filter?.lastUsed?.start, filter?.lastUsed?.end))
                             .toPredicate(root, query, builder),
             )
         }
@@ -38,11 +41,19 @@ class ServiceCompanyService(
         )
     }
 
-
     fun equalsCompanyId(companyId: UUID): Specification<ServiceReadEntity> {
         return Specification<ServiceReadEntity> { root, _, builder ->
             builder.equal(root.get(ServiceReadEntity_.companyId), companyId)
         }
+    }
+
+    fun isHide(hide: Boolean?): Specification<ServiceReadEntity>? {
+        return if (hide != null) {
+            Specification<ServiceReadEntity> { root, _, builder ->
+                builder.equal(root.get(ServiceReadEntity_.isHide), hide)
+            }
+        } else null
+
     }
 
     fun isByPriceBetween(start: Double?, end: Double?): Specification<ServiceReadEntity>? {
@@ -105,8 +116,9 @@ class ServiceCompanyService(
         }
     }
 
-    fun countServiceByCompany(companyId: UUID): Boolean {
-        return serviceReadRepository.existsByCompanyId(companyId)
-    }
+    fun hideInCompany(companyId: UUID, serviceId: UUID, isHide: Boolean) =
+            serviceReadRepository.hideServiceByIdAndCompanyId(companyId = companyId, id = serviceId, isHide = isHide)
+
+    fun countServiceByCompany(companyId: UUID) = serviceReadRepository.existsByCompanyId(companyId)
 
 }

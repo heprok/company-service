@@ -37,6 +37,9 @@ class ServiceReadEntity(
     @Column(name = "created")
     var created: LocalDate? = null,
 
+    @Column(name = "is_hide")
+    var isHide: Boolean = false,
+
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
     var data: Data

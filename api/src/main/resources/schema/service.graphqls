@@ -6,6 +6,7 @@ type Service {
     image: Image
     verifiedUses: Int
     lastUsed: Date
+    isHide: Boolean!
 }
 
 type ServiceList implements PaginatedList {
@@ -14,9 +15,12 @@ type ServiceList implements PaginatedList {
 }
 
 enum ServiceSortBy {
-    Name, Created, Price, VerifiedUses, LastUsed
+    Name, Created, Price, VerifiedUses, LastUsed, isHide
 }
-
+type HideCompanyServiceResult {
+    success: Boolean!,
+    error: Error,
+}
 input ServiceSort{
     sortBy: ServiceSortBy!
     direction: SortDirection!
@@ -24,5 +28,6 @@ input ServiceSort{
 
 input ServiceFilter {
     cost: RangeFloat,
-    lastUsed: RangeYear
+    lastUsed: RangeYear,
+    isHide: Boolean
 }

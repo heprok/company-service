@@ -29,19 +29,26 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getStatistic(
-        @InputArgument("companyId") companyId: String
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("offset") offset: Int,
+
     ): GraphicStatistics {
         val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
                 .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
 
+
         val statsByCountry = GraphicStatsByCountry(
                 values = statistic.statsByCountry!!.countries.map { country ->
-                    GraphicValueCompany.fromCompaniesStats(name = country.key.toString(), companiesStats = country.value, limit = 3)
+                    GraphicValueCompany.fromCompaniesStats(name = country.key, companiesStats = country.value, limit = 3)
+                }.sortedByDescending { graphicValueCompany -> graphicValueCompany.value }.let { list ->
+                    getSortingList(list, offset)
                 },
         )
         val statsByIndustry = GraphicStatsByIndustry(
                 values = statistic.statsByIndustry!!.industries.map { industry ->
-                    GraphicValueCompany.fromCompaniesStats(name = industry.key.toString(), companiesStats = industry.value, limit = 3)
+                    GraphicValueCompany.fromCompaniesStats(name = industry.key, companiesStats = industry.value, limit = 3)
+                }.sortedByDescending { graphicValueCompany -> graphicValueCompany.value }.let { list ->
+                    getSortingList(list, offset)
                 },
         )
         val statsByNumberConnection = GraphicStatsByNumberConnection(
@@ -53,7 +60,7 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
         val statsByServiceProvided = GraphicStatsByServiceProvider(
                 values = statistic.statsServiceProvided!!.services.map {
                     GraphicValueService.fromEntity(it.value)
-                },
+                }.sortedByDescending { graphicValueService -> graphicValueService.value }.take(offset),
         )
         return GraphicStatistics(
                 statsByCountry = statsByCountry,
@@ -63,45 +70,77 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
         )
     }
 
+    private fun getSortingList(list: List<GraphicValueCompany>, limit: Int = 2): MutableList<GraphicValueCompany> {
+        val sortingList = mutableListOf<GraphicValueCompany>()
+        if (limit < list.count()) {
+            val otherValue = list.subList(limit, list.count()).sumOf {
+                it.value
+            }
+            val otherCompanies = list.subList(limit, list.count()).map {
+                it.companies?.distinctBy { graphCompany -> graphCompany?.name }
+            }.let {
+                it.map {
+                  it?.get(0)
+                }
+            }
+
+            sortingList.addAll(list.take(limit))
+            if (list.count() > limit) {
+                sortingList.add(
+                        GraphicValueCompany(
+                                name = "Other",
+                                value = otherValue,
+                                companies = otherCompanies.take(3),
+                        ),
+                )
+            }
+        } else {
+            sortingList.addAll(list)
+        }
+        return sortingList
+    }
+
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getStatisticByCountry(
-        @InputArgument("companyId") companyId: String
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("offset") offset: Int,
     ): GraphicStatsByCountry {
         val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
                 .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
         return GraphicStatsByCountry(
                 values = statistic.statsByCountry!!.countries.map { country ->
                     GraphicValueCompany.fromCompaniesStats(name = country.key.toString(), companiesStats = country.value, limit = 3)
-                },
+                }.sortedByDescending { graphicValueService -> graphicValueService.value }.take(offset),
         )
     }
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getStatisticByIndustry(
-        @InputArgument("companyId") companyId: String
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("offset") offset: Int,
     ): GraphicStatsByIndustry {
         val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
                 .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
         return GraphicStatsByIndustry(
                 values = statistic.statsByIndustry!!.industries.map { industry ->
                     GraphicValueCompany.fromCompaniesStats(name = industry.key.toString(), companiesStats = industry.value, limit = 3)
-                },
+                }.sortedByDescending { graphicValueService -> graphicValueService.value }.take(offset),
         )
     }
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getStatisticNumberConnection(
-        @InputArgument("companyId") companyId: String
+        @InputArgument("companyId") companyId: String,
     ): GraphicStatsByNumberConnection {
         val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
                 .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
         return GraphicStatsByNumberConnection(
                 values = statistic.statsNumberConnection!!.years.map { year ->
                     GraphicValueCompany.fromCompaniesStats(name = year.key.toString(), companiesStats = year.value, limit = 3)
-                },
+                }
         )
     }
 
@@ -123,7 +162,8 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getStatisticServicesProvided(
-        @InputArgument("companyId") companyId: String
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("offset") offset: Int,
     ): GraphicStatsByServiceProvider {
         val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
                 .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
@@ -131,7 +171,7 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
         return GraphicStatsByServiceProvider(
                 values = statistic.statsServiceProvided!!.services.map {
                     GraphicValueService.fromEntity(it.value)
-                }.take(7),
+                }.sortedByDescending { graphicValueService -> graphicValueService.value }.take(offset),
         )
     }
 }

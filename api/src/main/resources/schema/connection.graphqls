@@ -15,13 +15,21 @@ enum VerificationStage {
 }
 
 input ConnectionFilter {
-    companyId: ID!
     collaboratorId: [ID]
     collaboratorRoleId: [ID]
     industryId: [ID]
     location: String
     datesOfCollaborators: [Date]
     verificationStage: [VerificationStage]
+}
+
+enum ConnectionSortBy {
+    Created
+}
+
+input ConnectionSort{
+    sortBy: ConnectionSortBy!
+    direction: SortDirection!
 }
 
 type ConnectionList implements PaginatedList {
