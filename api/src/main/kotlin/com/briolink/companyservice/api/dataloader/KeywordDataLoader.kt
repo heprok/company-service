@@ -2,9 +2,8 @@ package com.briolink.companyservice.api.dataloader
 
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.common.jpa.read.repository.KeywordReadRepository
-import com.briolink.companyservice.common.jpa.write.entity.IndustryWriteEntity
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
-import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
+import com.briolink.companyservice.common.jpa.write.repository.KeywordWriteRepository
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.*
@@ -13,7 +12,7 @@ import java.util.*
 @Order(1)
 class KeywordDataLoader(
     var readRepository: KeywordReadRepository,
-    var writeRepository: CompanyWriteRepository,
+    var writeRepository: KeywordWriteRepository,
     var service: KeywordService
 ) : DataLoader() {
     override fun loadData() {

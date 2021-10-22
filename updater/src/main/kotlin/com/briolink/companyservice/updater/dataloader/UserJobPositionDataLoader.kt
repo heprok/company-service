@@ -72,7 +72,7 @@ class UserJobPositionDataLoader(
                 }
 
                 listCompany.forEach{
-                    companyService.setOwner(it.id, UUID.fromString("4753e3ca-aefc-4e6c-981e-2833c37171fb"))
+                    companyService.setOwner(it.id, UUID.fromString("e0983f0e-68ad-4a5a-8968-7406f915ff90"))
                 }
 
 
