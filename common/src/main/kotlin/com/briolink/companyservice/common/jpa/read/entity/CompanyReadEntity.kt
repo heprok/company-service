@@ -3,6 +3,7 @@ package com.briolink.companyservice.common.jpa.read.entity
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
+import java.net.URL
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -30,7 +31,7 @@ class CompanyReadEntity(
         @JsonProperty("name")
         var name: String,
         @JsonProperty("website")
-        var website: String,
+        var website: URL? = null,
         @JsonProperty("description")
         var description: String? = null,
 //        @JsonProperty("country")
@@ -40,7 +41,7 @@ class CompanyReadEntity(
         @JsonProperty("location")
         var location: String? = null,
         @JsonProperty("logo")
-        var logo: String? = null,
+        var logo: URL? = null,
         @JsonProperty("isTypePublic")
         var isTypePublic: Boolean = true,
         @JsonProperty("facebook")
@@ -55,7 +56,7 @@ class CompanyReadEntity(
         var occupation: Occupation? = null,
         @JsonProperty("statistic")
         var statistic: Statistic = Statistic(),
-        @JsonProperty("keyWords")
+        @JsonProperty("keywords")
         var keywords: List<Keyword?> = mutableListOf<Keyword>(),
     )
 

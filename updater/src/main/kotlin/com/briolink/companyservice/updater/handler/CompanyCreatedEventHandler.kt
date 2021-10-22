@@ -21,12 +21,12 @@ class CompanyCreatedEventHandler(
                 ).apply {
                     data = CompanyReadEntity.Data(
                             name = company.name,
-                            website = company.website.toString(),
+                            website = company.website,
                             location = company.location,
                             facebook = company.facebook,
                             twitter = company.twitter,
                             isTypePublic = company.isTypePublic,
-                            logo = company.logo.toString(),
+                            logo = company.logo,
                             description = company.description,
                             statistic = CompanyReadEntity.Statistic(),
                             industry = company.industry?.let { CompanyReadEntity.Industry(it.id.toString(), it.name) },

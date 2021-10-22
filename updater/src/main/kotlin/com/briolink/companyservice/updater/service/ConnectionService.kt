@@ -88,7 +88,7 @@ class ConnectionService(
                         id = buyerRead.id,
                         name = buyerRead.data.name,
                         slug = buyerRead.slug,
-                        logo = buyerRead.data.logo?.let { if (it == "null") null else URL(it) },
+                        logo = buyerRead.data.logo,
                         verifyUser = ConnectionReadEntity.VerifyUser(
                                 id = userBuyerRead.id,
                                 firstName = userBuyerRead.data.firstName,
@@ -107,7 +107,7 @@ class ConnectionService(
                         id = sellerRead.id,
                         name = sellerRead.data.name,
                         slug = sellerRead.slug,
-                        logo = sellerRead.data.logo?.let { if (it == "null") null else URL(it) },
+                        logo = sellerRead.data.logo,
                         verifyUser = ConnectionReadEntity.VerifyUser(
                                 id = userSellerRead.id,
                                 firstName = userSellerRead.data.firstName,

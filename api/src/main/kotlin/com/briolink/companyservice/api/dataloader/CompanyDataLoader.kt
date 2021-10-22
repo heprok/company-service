@@ -119,12 +119,12 @@ class CompanyDataLoader(
             )
 
             companyWriteEntityList.forEach {
-                val keyWords = mutableListOf<KeywordWriteEntity>()
-                keyWords.addAll(keywordList.shuffled().take(Random.nextInt(0, 10)))
+                val keywordsList = mutableListOf<KeywordWriteEntity>()
+                keywordsList.addAll(keywordList.shuffled().take(Random.nextInt(0, 10)))
                 it.apply {
                     industry = industryList.random()
                     occupation = occupationList.random()
-                    keywords = keyWords
+                    keywords = keywordsList
                 }
                 service.createCompany(it)
 

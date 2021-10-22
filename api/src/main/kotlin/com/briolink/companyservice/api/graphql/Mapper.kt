@@ -33,11 +33,8 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         Company(
                 id = entity.id.toString(),
                 name = entity.data.name,
-                website = URL(entity.data.website),
-
-                logo = if (entity.data.logo == "null") null else {
-                    entity.data.logo?.let { Image(url = URL(it)) }
-                },
+                website = entity.data.website,
+                logo = Image(entity.data.logo),
 //                country = entity.data.country,
 //                state = entity.data.state,
 //                city = entity.data.city,

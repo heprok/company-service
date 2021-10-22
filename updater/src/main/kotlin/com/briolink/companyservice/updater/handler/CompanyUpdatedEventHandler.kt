@@ -20,9 +20,9 @@ class CompanyUpdatedEventHandler(private val companyReadRepository: CompanyReadR
 
         entity.slug = data.slug!!
         entity.data.name = data.name
-        entity.data.website = data.website.toString()
+        entity.data.website = data.website
         entity.data.description = data.description
-        entity.data.logo = data.logo?.toString()
+        entity.data.logo = data.logo
         entity.data.isTypePublic = data.isTypePublic
 //        entity.data.country = data.country ?: entity.data.country
 //        entity.data.state = data.state ?: entity.data.state
