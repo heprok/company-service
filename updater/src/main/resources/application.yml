@@ -7,6 +7,10 @@ spring:
     url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
     username: ${env.DB_USER:root}
     password: ${env.DB_PASSWORD:root}
+    hikari:
+      idle-timeout: 20000
+      minimum-idle: 1
+      maximum-pool-size: 2
   jpa:
     hibernate:
       ddl-auto: none
