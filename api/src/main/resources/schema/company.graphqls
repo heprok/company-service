@@ -47,7 +47,6 @@ type CreateCompanyResult implements ResultWithUserErrors {
 input UpdateCompanyInput {
     name: String
     website: Url
-    logo: Upload
     slug: String
     description: String
     isTypePublic: Boolean
