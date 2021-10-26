@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.dataloader
 
+import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -16,6 +17,7 @@ import kotlin.random.Random
 class ServiceDataLoader(
     var readRepository: ServiceReadRepository,
     var companyWriteRepository: CompanyWriteRepository,
+    var serviceCompanyService: ServiceCompanyService
 ) : DataLoader() {
     val listName: List<String> = listOf(
             "Advertising on Google services",
@@ -35,7 +37,7 @@ class ServiceDataLoader(
         ) {
             val companyList = companyWriteRepository.findAll()
             for (i in 1..COUNT_SERVICE) {
-                readRepository.save(
+                serviceCompanyService.createService(
                         ServiceReadEntity(
                                 id = UUID.randomUUID(),
                                 companyId = companyList.random().id!!,
@@ -55,6 +57,6 @@ class ServiceDataLoader(
     }
 
     companion object {
-        const val COUNT_SERVICE = 2000
+        const val COUNT_SERVICE = 500
     }
 }

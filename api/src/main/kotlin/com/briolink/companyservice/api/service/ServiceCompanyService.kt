@@ -2,10 +2,18 @@ package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
+import com.briolink.companyservice.common.domain.v1_0.Company
+import com.briolink.companyservice.common.domain.v1_0.CompanyService
+import com.briolink.companyservice.common.domain.v1_0.Industry
+import com.briolink.companyservice.common.domain.v1_0.Occupation
+import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
+import com.briolink.companyservice.common.event.v1_0.CompanyServiceCreatedEvent
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity_
 import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.util.PageRequest
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
@@ -20,9 +28,24 @@ import javax.persistence.criteria.Predicate
 @Transactional
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
             serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
+
+    fun createService(createService: ServiceReadEntity): CompanyService {
+        val service = serviceReadRepository.save(createService)
+        val serviceDomain = CompanyService(
+                id = service.id,
+                name = service.name,
+                slug = service.data.slug,
+                companyId = service.companyId,
+        )
+        applicationEventPublisher.publishEvent(
+                CompanyServiceCreatedEvent(serviceDomain),
+        )
+        return serviceDomain
+    }
 
     fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter?): Page<ServiceReadEntity> {
 
