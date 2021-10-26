@@ -84,12 +84,20 @@ class ConnectionCreatedEventHandler(
 
 
                 }
+                try {
+
                 if (connection.status == ConnectionStatus.InProgress) {
+                    connectionService.setStatus(ConnectionReadEntity.ConnectionStatus.InProgress, connection.id)
 
                 }
                 if (connection.status == ConnectionStatus.Pending) {
-
+                    connectionService.setStatus(ConnectionReadEntity.ConnectionStatus.Pending, connection.id)
                 }
+                } catch (e: Exception) {
+                    println(e)
+                }
+
+
             }
         }
     }

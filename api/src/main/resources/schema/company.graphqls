@@ -37,6 +37,7 @@ type UpdateCompanyResult implements ResultWithUserErrors {
 input CreateCompanyInput {
     name: String!
     website: Url
+    createBy: ID
 }
 
 type CreateCompanyResult implements ResultWithUserErrors {
