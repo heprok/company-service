@@ -15,7 +15,7 @@ data class UserJobPosition(
     val endDate: LocalDate? = null,
     @JsonProperty("isCurrent")
     val isCurrent: Boolean = false,
-    @JsonProperty("company")
+    @JsonProperty("companyId")
     val companyId: UUID,
     @JsonProperty("userId")
     val userId: UUID,
