@@ -5,62 +5,68 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Year
 import java.util.*
 
-@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class ConnectionStatus(val value: Int) {
+    @JsonProperty("1")
     Draft(1),
+    @JsonProperty("2")
     Pending(2),
+    @JsonProperty("3")
     InProgress(3),
+    @JsonProperty("4")
     Verified(4),
-    Rejected(5)
+    @JsonProperty("5")
+    Rejected(5);
 }
 
-@JsonFormat(shape = JsonFormat.Shape.NUMBER)
-enum class RoleType {
-    Buyer, Seller
+enum class ConnectionCompanyRoleType(val value: Int) {
+    @JsonProperty("0")
+    Buyer(0),
+    @JsonProperty("1")
+    Seller(1)
 }
 
 data class ConnectionCompanyRole(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("name")
+    @JsonProperty
     val name: String,
-    @JsonProperty("type")
-    val type: RoleType,
+    @JsonProperty
+    val type: ConnectionCompanyRoleType
 )
 
 data class ConnectionService(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("serviceId")
-    val serviceId: UUID,
-    @JsonProperty("serviceName")
+    @JsonProperty
+    val serviceId: UUID? = null,
+    @JsonProperty
     val serviceName: String,
-    @JsonProperty("startDate")
-    val startDate: Year,
-    @JsonProperty("endDate")
+    @JsonProperty
+    val startDate: Year? = null,
+    @JsonProperty
     val endDate: Year? = null,
 )
 
 data class ConnectionParticipant(
-    @JsonProperty("userId")
-    val userId: UUID,
-    @JsonProperty("userJobPositionTitle")
-    val userJobPositionTitle: String?,
-    @JsonProperty("companyId")
-    val companyId: UUID,
-    @JsonProperty("companyRole")
-    val companyRole: ConnectionCompanyRole
+    @JsonProperty
+    val userId: UUID? = null,
+    @JsonProperty
+    val userJobPositionTitle: String? = null,
+    @JsonProperty
+    val companyId: UUID? = null,
+    @JsonProperty
+    val companyRole: ConnectionCompanyRole? = null,
 )
 
 data class Connection(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("participantFrom")
+    @JsonProperty
     var participantFrom: ConnectionParticipant,
-    @JsonProperty("participantTo")
+    @JsonProperty
     var participantTo: ConnectionParticipant,
-    @JsonProperty("services")
-    val services: ArrayList<ConnectionService>,
-    @JsonProperty("status")
+    @JsonProperty
+    val services: ArrayList<ConnectionService> = arrayListOf(),
+    @JsonProperty
     val status: ConnectionStatus,
 )

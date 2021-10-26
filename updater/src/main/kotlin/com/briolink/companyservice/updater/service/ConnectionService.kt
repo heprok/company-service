@@ -31,10 +31,10 @@ class ConnectionService(
     private val userReadRepository: UserReadRepository,
 ) {
     fun create(connection: Connection) {
-        val sellerRead = companyReadRepository.getById(connection.participantFrom.companyId)
-        val buyerRead = companyReadRepository.getById(connection.participantTo.companyId)
-        val userBuyerRead = userReadRepository.getById(connection.participantTo.userId)
-        val userSellerRead = userReadRepository.getById(connection.participantFrom.userId)
+        val sellerRead = companyReadRepository.getById(connection.participantFrom.companyId!!)
+        val buyerRead = companyReadRepository.getById(connection.participantTo.companyId!!)
+        val userBuyerRead = userReadRepository.getById(connection.participantTo.userId!!)
+        val userSellerRead = userReadRepository.getById(connection.participantFrom.userId!!)
         val industryRead = IndustryReadEntity(
                 id = UUID.fromString(buyerRead.data.industry!!.id),
         ).apply {
@@ -47,19 +47,19 @@ class ConnectionService(
             buyerName = buyerRead.data.name
             sellerName = sellerRead.data.name
             location = buyerRead.data.location
-            buyerRoleId = connection.participantTo.companyRole.id
-            sellerRoleId = connection.participantFrom.companyRole.id
+            buyerRoleId = connection.participantTo.companyRole!!.id
+            sellerRoleId = connection.participantFrom.companyRole!!.id
             industryId = UUID.fromString(buyerRead.data.industry!!.id)
             verificationStage = ConnectionReadEntity.ConnectionStatus.values()[connection.status.ordinal]
             created = if(System.getenv("spring_profiles_active") == "dev" || System.getenv("spring_profiles_active") == "local") randomDate(2016, 2021) else LocalDate.now()
             data = ConnectionReadEntity.Data(connection.id).apply {
                 val endDateMutableList = mutableListOf<String>()
                 val startDateMutableList = mutableListOf<String>()
-                val idMutableList = mutableListOf<String>()
+                val idServiceMutableList = mutableListOf<String>()
                 val servicesConnection = mutableListOf<ConnectionReadEntity.Service>()
 
                 connection.services.forEach { connectionService ->
-                    val serviceReadEntity = serviceReadRepository.findById(connectionService.serviceId)
+                    val serviceReadEntity = serviceReadRepository.findById(connectionService.serviceId!!)
                     val serviceConnection = if (serviceReadEntity.isEmpty) {
                         ConnectionReadEntity.Service(
                                 id = connectionService.serviceId,
@@ -79,7 +79,7 @@ class ConnectionService(
                         }
                     }
                     servicesConnection.add(serviceConnection)
-                    idMutableList.add(connectionService.serviceId.toString())
+                    idServiceMutableList.add(connectionService.serviceId.toString())
                     startDateMutableList.add(connectionService.startDate.toString())
                     endDateMutableList.add(connectionService.endDate.toString())
                 }
@@ -100,9 +100,9 @@ class ConnectionService(
                                 slug = userBuyerRead.data.slug,
                         ),
                         role = ConnectionReadEntity.Role(
-                                id = connection.participantTo.companyRole.id,
-                                name = connection.participantTo.companyRole.name,
-                                type = ConnectionRoleReadEntity.RoleType.values()[connection.participantTo.companyRole.type.ordinal],
+                                id = connection.participantTo.companyRole!!.id,
+                                name = connection.participantTo.companyRole!!.name,
+                                type = ConnectionRoleReadEntity.RoleType.values()[connection.participantTo.companyRole!!.type.ordinal],
                         ),
                 )
 
@@ -119,15 +119,15 @@ class ConnectionService(
                                 slug = userSellerRead.data.slug,
                         ),
                         role = ConnectionReadEntity.Role(
-                                id = connection.participantFrom.companyRole.id,
-                                name = connection.participantFrom.companyRole.name,
-                                type = ConnectionRoleReadEntity.RoleType.values()[connection.participantFrom.companyRole.type.ordinal],
+                                id = connection.participantFrom.companyRole!!.id,
+                                name = connection.participantFrom.companyRole!!.name,
+                                type = ConnectionRoleReadEntity.RoleType.values()[connection.participantFrom.companyRole!!.type.ordinal],
                         ),
                 )
 
-                datesEndCollaboration = endDateMutableList.joinToString { ";" }
-                datesStartCollaboration = startDateMutableList.joinToString { ";" }
-                serviceIds = idMutableList.joinToString { ";" }
+                datesEndCollaboration = endDateMutableList.joinToString(";")
+                datesStartCollaboration = startDateMutableList.joinToString ( ";" )
+                serviceIds = idServiceMutableList.joinToString (";" )
                 services = servicesConnection
 
             }

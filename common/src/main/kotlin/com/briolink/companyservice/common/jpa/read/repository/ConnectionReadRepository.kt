@@ -16,4 +16,11 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
 
     fun existsBySellerIdAndBuyerId(sellerId: UUID, buyerId: UUID): Boolean
 
+
+    fun findBySellerIdOrBuyerIdAndVerificationStage(
+        sellerRoleId: UUID,
+        buyerRoleId: UUID,
+        verificationStage: ConnectionReadEntity.ConnectionStatus
+    ): List<ConnectionReadEntity>
+
 }

@@ -1,6 +1,5 @@
 package com.briolink.companyservice.updater.dataloader
 
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -13,8 +12,7 @@ import com.briolink.companyservice.updater.dto.ConnectionCompanyRole
 import com.briolink.companyservice.updater.dto.ConnectionParticipant
 import com.briolink.companyservice.updater.dto.ConnectionService
 import com.briolink.companyservice.updater.dto.ConnectionStatus
-import com.briolink.companyservice.updater.dto.RoleType
-import org.springframework.context.ApplicationEventPublisher
+import com.briolink.companyservice.updater.dto.ConnectionCompanyRoleType
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.Year
@@ -85,7 +83,7 @@ class ConnectionDataLoader(
                                                         ConnectionCompanyRole(
                                                                 name = it.name,
                                                                 id = it.id,
-                                                                type = RoleType.valueOf(it.type.name),
+                                                                type = ConnectionCompanyRoleType.valueOf(it.type.name),
                                                         )
                                                     },
                                     ),
@@ -99,12 +97,12 @@ class ConnectionDataLoader(
                                                         ConnectionCompanyRole(
                                                                 name = it.name,
                                                                 id = it.id,
-                                                                type = RoleType.valueOf(it.type.name),
+                                                                type = ConnectionCompanyRoleType.valueOf(it.type.name),
                                                         )
                                                     },
                                     ),
                                     services = ArrayList(services),
-                                    status = ConnectionStatus.values()[Random.nextInt(2, 5)],
+                                    status = ConnectionStatus.values().random(),
                             ),
                     )
                 }
@@ -112,6 +110,6 @@ class ConnectionDataLoader(
     }
 
     companion object {
-        const val COUNT_CONNECTION = 300
+        const val COUNT_CONNECTION = 1000
     }
 }

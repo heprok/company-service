@@ -9,5 +9,5 @@ data class ConnectionRole(
     @JsonProperty("name")
     val name: String,
     @JsonProperty("type")
-    val type: RoleType,
+    val type: ConnectionCompanyRoleType,
 )

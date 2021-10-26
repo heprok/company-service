@@ -3,8 +3,7 @@ package com.briolink.companyservice.updater.dataloader
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionRoleReadRepository
 import com.briolink.companyservice.updater.dto.ConnectionRole
-import com.briolink.companyservice.updater.dto.RoleType
-import com.briolink.companyservice.updater.event.ConnectionRoleCreatedEvent
+import com.briolink.companyservice.updater.dto.ConnectionCompanyRoleType
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -20,12 +19,12 @@ class ConnectionRoleDataLoader(
     override fun loadData() {
         if (readRepository.count().toInt() == 0) {
             val roleList = mutableListOf<ConnectionRole>()
-            roleList.add(ConnectionRole(UUID.randomUUID(), "Customer", RoleType.Seller))
-            roleList.add(ConnectionRole(UUID.randomUUID(), "Supplier", RoleType.Buyer))
-            roleList.add(ConnectionRole(UUID.randomUUID(), "Investor", RoleType.Seller))
-            roleList.add(ConnectionRole(UUID.randomUUID(), "Investor", RoleType.Buyer))
-            roleList.add(ConnectionRole(UUID.randomUUID(), "Client", RoleType.Buyer))
-            roleList.add(ConnectionRole(UUID.randomUUID(), "Vendor", RoleType.Seller))
+            roleList.add(ConnectionRole(UUID.randomUUID(), "Customer", ConnectionCompanyRoleType.Seller))
+            roleList.add(ConnectionRole(UUID.randomUUID(), "Supplier", ConnectionCompanyRoleType.Buyer))
+            roleList.add(ConnectionRole(UUID.randomUUID(), "Investor", ConnectionCompanyRoleType.Seller))
+            roleList.add(ConnectionRole(UUID.randomUUID(), "Investor", ConnectionCompanyRoleType.Buyer))
+            roleList.add(ConnectionRole(UUID.randomUUID(), "Client", ConnectionCompanyRoleType.Buyer))
+            roleList.add(ConnectionRole(UUID.randomUUID(), "Vendor", ConnectionCompanyRoleType.Seller))
 
             roleList.forEach {
                 readRepository.save(

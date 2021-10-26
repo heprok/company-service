@@ -136,7 +136,7 @@ class ConnectionReadEntity(
         @JsonProperty("endDate")
         val endDate: Year?,
         @JsonProperty("startDate")
-        val startDate: Year,
+        val startDate: Year?,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
