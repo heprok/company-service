@@ -40,26 +40,32 @@ class StatisticReadEntity(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class StatsNumberConnection(
-        @JsonProperty("years")
-        var years: MutableMap<Int, CompaniesStats> = mutableMapOf()
+        @JsonProperty("companiesStatsByYear")
+        var companiesStatsByYear: MutableMap<Int, CompaniesStats> = mutableMapOf()
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class StatsByIndustry(
-        @JsonProperty("industries")
-        var industries: MutableMap<String, CompaniesStats> = mutableMapOf(),
+        @JsonProperty("companiesStatsByIndustry")
+        var companiesStatsByIndustry: MutableMap<String, CompaniesStats> = mutableMapOf(),
+        @JsonProperty("totalCountByIndustry")
+        var totalCountByIndustry: MutableMap<String, Int> = mutableMapOf(),
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class StatsByCountry(
-        @JsonProperty("countries")
-        var countries: MutableMap<String, CompaniesStats> = mutableMapOf(),
+        @JsonProperty("companiesStatsByCountry")
+        var companiesStatsByCountry: MutableMap<String, CompaniesStats> = mutableMapOf(),
+        @JsonProperty("totalCountByCountry")
+        var totalCountByCountry: MutableMap<String, Int> = mutableMapOf(),
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class StatsServiceProvided(
-        @JsonProperty("services")
-        var services: MutableMap<UUID, ServiceStats> = mutableMapOf(),
+        @JsonProperty("companiesStatsByService")
+        var companiesStatsByService: MutableMap<String, CompaniesStats> = mutableMapOf(),
+        @JsonProperty("totalCountByService")
+        var totalCountByService: MutableMap<String, Int> = mutableMapOf(),
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -69,6 +75,7 @@ class StatisticReadEntity(
         @JsonProperty("totalCount")
         var totalCount: MutableMap<UUID, Int> = mutableMapOf(),
     )
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class ServiceStats(
         @JsonProperty("service")
@@ -88,14 +95,14 @@ class StatisticReadEntity(
         @JsonProperty("slug")
         var slug: String,
         @JsonProperty("role")
-        var role: Role,
+        var role: MutableSet<Role> = mutableSetOf(),
     ) {
         @JsonProperty("industry")
         var industry: String? = null
         @JsonProperty("location")
         var location: String? = null
-        @JsonProperty("lastCollaborate")
-        val  lastCollaborate: Year = Year.now()
+        @JsonProperty("countService")
+        var countService: Int = 0
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

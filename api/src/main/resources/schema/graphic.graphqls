@@ -1,8 +1,48 @@
-type GraphicStatistics {
-    statsByCountry: GraphicStatsByCountry!
-    statsByIndustry: GraphicStatsByIndustry!
-    statsByNumberConnection: GraphicStatsByNumberConnection!
-    statsByServiceProvided: GraphicStatsByServiceProvider!
+type Charts {
+    statsByCountry: ChartByCountry
+    statsByIndustry: ChartByIndustry
+    statsByNumberConnection: ChartByNumberConnection
+    statsByServiceProvided: ChartByServicesProvider
+}
+
+type ChartByNumberConnection {
+    values: [Year]
+    data: [Int]
+    tooltip: [Tooltip]
+}
+
+type ChartByCountry {
+    values: [String]
+    data: [Int]
+    tooltip: [Tooltip]
+}
+
+type ChartByIndustry {
+    values: [String]
+    data: [Int]
+    tooltip: [Tooltip]
+}
+
+type ChartByServicesProvider {
+    values: [String]
+    data: [Int]
+    tooltip: [Tooltip]
+}
+
+type Tooltip {
+    key: String
+    value: [ChartCompany]
+}
+
+type ChartCompany {
+    id: ID!
+    name: String!
+    slug: String!
+    logo: Image
+    industry: String
+    location: String
+    role: [ConnectionRole!]
+    countService: Int
 }
 
 type GraphicStatsByCountry {
@@ -18,6 +58,7 @@ type GraphicStatsByNumberConnection {
 }
 
 type GraphicStatsByServiceProvider {
+    totalCount: Int
     values: [GraphicValueService!]
 }
 
@@ -29,7 +70,7 @@ type GraphicValueCompany{
 
 type GraphicValueService{
     value: Int!
-    service: GraphService
+    service: String
 }
 
 type GraphService {
@@ -45,5 +86,6 @@ type GraphCompany {
     logo: Image
     industry: String
     location: String
-    role: ConnectionRole
+    role: [ConnectionRole!]!
+    countService: Int!
 }

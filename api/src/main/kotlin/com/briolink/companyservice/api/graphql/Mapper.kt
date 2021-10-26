@@ -130,13 +130,16 @@ fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = Gra
         id = entity.id.toString(),
         slug = entity.slug,
         logo = Image(entity.logo),
-        role = ConnectionRole(
-                id = entity.role.id.toString(),
-                name = entity.role.name,
-                type = ConnectionRoleType.values()[entity.role.type.ordinal],
-        ),
+        role = entity.role.map {
+            ConnectionRole(
+                    id = it.id.toString(),
+                    name = it.name,
+                    type = ConnectionRoleType.values()[it.type.ordinal],
+            )
+        },
         industry = entity.industry,
         location = entity.location,
+        countService = entity.countService,
 )
 
 fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = ConnectionRole(
@@ -145,10 +148,10 @@ fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = Conn
         type = ConnectionRoleType.values()[entity.type.ordinal],
 )
 
-fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(
-        service = GraphService.fromEntity(entity.service),
-        value = entity.totalCount,
-)
+//fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(
+//        service = GraphService.fromEntity(entity.service),
+//        value = entity.totalCount,
+//)
 
 fun GraphService.Companion.fromEntity(entity: StatisticReadEntity.Service) = GraphService(
         name = entity.name,
@@ -199,7 +202,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                     id = it.id.toString(),
                     name = it.name!!,
                     endDate = it.endDate?.value,
-                    startDate = it.startDate.value,
+                    startDate = it.startDate?.value ?: 2021 ,
             )
         },
         industry = entity.data.industry.let {

@@ -9,11 +9,11 @@ type Query {
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
 
-    getStatistic(companyId: ID!, offset: Int = 5): GraphicStatistics!
-    getStatisticByCountry(companyId: ID!,offset: Int = 5): GraphicStatsByCountry!
-    getStatisticByIndustry(companyId: ID!, offset: Int = 5): GraphicStatsByIndustry!
-    getStatisticNumberConnection(companyId: ID!): GraphicStatsByNumberConnection!
-    getStatisticServicesProvided(companyId: ID!,offset: Int = 5): GraphicStatsByServiceProvider!
+    getStatistic(companyId: ID!, offset: Int = 5): Charts
+#    getStatisticByCountry(companyId: ID!,offset: Int = 5): ChartByCountry
+#    getStatisticByIndustry(companyId: ID!, offset: Int = 5): ChartByIndustry
+#    getStatisticNumberConnection(companyId: ID!): ChartByNumberConnection
+#    getStatisticServicesProvided(companyId: ID!,offset: Int = 5): ChartByServicesProvider
 
 
 #    sorting
