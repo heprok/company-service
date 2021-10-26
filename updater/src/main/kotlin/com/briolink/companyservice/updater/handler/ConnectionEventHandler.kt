@@ -12,7 +12,7 @@ import com.briolink.companyservice.updater.service.ConnectionService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 
-@EventHandler("UserJobPositionCreatedEvent", "1.0")
+//@EventHandler("UserJobPositionCreatedEvent", "1.0")
 class ConnectionCreatedEventHandler(
     private val connectionReadRepository: ConnectionReadRepository,
     private val companyService: CompanyService,
@@ -20,7 +20,6 @@ class ConnectionCreatedEventHandler(
 ) : IEventHandler<ConnectionCreatedEvent> {
     override fun handle(event: ConnectionCreatedEvent) {
         val connection = event.data
-        if (connection.status != ConnectionStatus.Draft) {
             if (connection.participantFrom.companyRole!!.type == ConnectionCompanyRoleType.Buyer) {
                 connection.participantTo = connection.participantFrom.also {
                     connection.participantFrom = connection.participantTo
@@ -36,11 +35,10 @@ class ConnectionCreatedEventHandler(
                     connectionService.create(connection)
                 }
             }
-        }
 
     }
 
-    @EventHandler("ConnectionUpdatedEvent", "1.0")
+//    @EventHandler("ConnectionUpdatedEvent", "1.0")
     class ConnectionUpdatedEventHandler(
         private val connectionReadRepository: ConnectionReadRepository,
         private val connectionService: ConnectionService,
