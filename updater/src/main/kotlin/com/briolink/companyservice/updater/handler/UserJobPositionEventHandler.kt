@@ -53,13 +53,13 @@ class UserJobPositionUpdatedEventHandler(
     override fun handle(event: UserJobPositionUpdatedEvent) {
         val eventData = event.data
         if (eventData.endDate == null) {
-            val jobPosition = userJobPositionReadRepository.findById(eventData.id).orElseGet {
+            val jobPosition = userJobPositionReadRepository.findById(eventData.id).orElse(
                 UserJobPositionReadEntity(
                         id = eventData.id,
                         userId = eventData.userId,
                         companyId = eventData.companyId,
                 ).apply {
-                    val user = userReadRepository.findById(eventData.userId).get()
+                    val user = userReadRepository.findById(eventData.userId).orElseThrow { throw EntityNotFoundException(eventData.userId.toString() + " user not found")}
                     data.user = UserJobPositionReadEntity.User(
                             firstName = user.data.firstName,
                             lastName = user.data.lastName,
@@ -68,7 +68,7 @@ class UserJobPositionUpdatedEventHandler(
                     )
                     companyService.setPermission(companyId = eventData.companyId, userId = eventData.userId, roleType = UserPermissionRoleReadEntity.RoleType.Employee)
                 }
-            }
+            )
             jobPosition.companyId = eventData.companyId
             jobPosition.data.title = eventData.title
             userJobPositionReadRepository.save(jobPosition)
