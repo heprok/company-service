@@ -60,11 +60,13 @@ class UserJobPositionUpdatedEventHandler(
                         companyId = eventData.companyId,
                 ).apply {
                     val user = userReadRepository.findById(eventData.userId).orElseThrow { throw EntityNotFoundException(eventData.userId.toString() + " user not found")}
-                    data.user = UserJobPositionReadEntity.User(
-                            firstName = user.data.firstName,
-                            lastName = user.data.lastName,
-                            slug = user.data.slug,
-                            image = user.data.image,
+                    data = UserJobPositionReadEntity.Data(
+                            user = UserJobPositionReadEntity.User(
+                                    firstName = user.data.firstName,
+                                    lastName = user.data.lastName,
+                                    slug = user.data.slug,
+                                    image = user.data.image,
+                            ),
                     )
                     companyService.setPermission(companyId = eventData.companyId, userId = eventData.userId, roleType = UserPermissionRoleReadEntity.RoleType.Employee)
                 }
