@@ -6,12 +6,8 @@ type Company {
     description: String
     slug: String!
     isTypePublic: Boolean!
-#    country: String
-#    state: String
-#    city: String
     facebook: String
     location: String
-
     twitter: String
     occupation: Occupation
     industry: Industry
@@ -62,4 +58,11 @@ input UpdateCompanyInput {
     occupationName: String
     occupationId: ID
     keyWordIds: [ID]
+}
+
+type Statistic {
+    serviceProvidedCount: Int!
+    collaboratingCompanyCount: Int!
+    collaboratingPeopleCount: Int!
+    totalConnectionCount: Int!
 }

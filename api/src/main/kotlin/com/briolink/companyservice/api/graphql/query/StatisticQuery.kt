@@ -1,22 +1,20 @@
 package com.briolink.companyservice.api.graphql.query
 
-import com.briolink.companyservice.api.graphql.fromCompaniesStats
+import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.types.ChartByCountry
 import com.briolink.companyservice.api.types.ChartByIndustry
 import com.briolink.companyservice.api.types.ChartByNumberConnection
 import com.briolink.companyservice.api.types.ChartByServicesProvider
 import com.briolink.companyservice.api.types.ChartCompany
 import com.briolink.companyservice.api.types.Charts
-import com.briolink.companyservice.api.types.GraphicStatsByNumberConnection
-import com.briolink.companyservice.api.types.GraphicValueCompany
 import com.briolink.companyservice.api.types.Image
+import com.briolink.companyservice.api.types.TabItemsCount
 import com.briolink.companyservice.api.types.Tooltip
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import org.apache.logging.log4j.util.Chars
 import org.springframework.security.access.prepost.PreAuthorize
 import java.time.Year
 import java.util.UUID
@@ -26,61 +24,29 @@ import javax.persistence.EntityNotFoundException
 class StatisticQuery(private val statisticReadRepository: StatisticReadRepository) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getStatistic(
+    fun getCharts(
         @InputArgument("companyId") companyId: String,
         @InputArgument("offset") offset: Int,
-
-        ): Charts? {
+    ): Charts? {
         try {
             val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
                     .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
 
+            val chartByCountry = getChartsByCountry(statistic.statsByCountry)
+            val chartByIndustry = getChartsByIndustry(statistic.statsByIndustry)
+            val chartByNumberConnection = getChartsNumberConnection(statistic.statsNumberConnection)
 
-            val statsByCountry = statistic.statsByCountry?.let { getStatisticByCountry(it) }
-            val statsByIndustry = statistic.statsByIndustry?.let { getStatisticByIndustry(it) }
-            val statsByNumberConnection = statistic.statsNumberConnection?.let { getStatisticNumberConnection(it) }
-
-            val statsByServiceProvided = statistic.statsServiceProvided?.let { getStatisticServicesProvided(it) }
+            val chartByServiceProvided = getChartsServicesProvided(statistic.statsServiceProvided)
             return Charts(
-                    statsByCountry = statsByCountry,
-                    statsByIndustry = statsByIndustry,
-                    statsByNumberConnection = statsByNumberConnection,
-                    statsByServiceProvided = statsByServiceProvided,
+                    chartByCountry = chartByCountry,
+                    chartByIndustry = chartByIndustry,
+                    chartByNumberConnection = chartByNumberConnection,
+                    chartByServiceProvided = chartByServiceProvided,
             )
         } catch (e: EntityNotFoundException) {
             return null
         }
     }
-
-//    private fun getSortingList(list: List<GraphicValueCompany>, limit: Int = 2): MutableList<GraphicValueCompany> {
-//        val sortingList = mutableListOf<GraphicValueCompany>()
-//        if (limit < list.count()) {
-//            val otherValue = list.subList(limit, list.count()).sumOf {
-//                it.value
-//            }
-//            val otherCompanies = list.subList(limit, list.count()).map {
-//                it.companies?.distinctBy { graphCompany -> graphCompany?.name }
-//            }.let {
-//                it.map {
-//                    it?.get(0)
-//                }
-//            }
-//
-//            sortingList.addAll(list.take(limit))
-//            if (list.count() > limit) {
-//                sortingList.add(
-//                        GraphicValueCompany(
-//                                name = "Other",
-//                                value = otherValue,
-//                                companies = otherCompanies.take(3),
-//                        ),
-//                )
-//            }
-//        } else {
-//            sortingList.addAll(list)
-//        }
-//        return sortingList
-//    }
 
     private fun getSortingListChart(list: List<Pair<String, Int>>, offset: Int = 3): List<Pair<String, Int>> {
         val sortingListValues = mutableListOf<Int>()
@@ -101,19 +67,6 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
             sortingList.add(Pair(key, sortingListValues[index]))
         }
         return sortingList
-//        sortingListKey.forEach { country ->
-//            val sortingChartCompany = statistic.statsByCountry!!.companiesStatsByCountry[country]?.let { companiesStats ->
-//                companiesStats.listCompanies.sortedByDescending { pair -> pair.name }.map {
-//                    ChartCompany(
-//                            name = it.name,
-//                            slug = it.slug,
-//                            logo = Image(it.logo),
-//                            id = it.id.toString(),
-//                    )
-//                }
-//            }
-//            tooltipList.add(Tooltip(key = country, value = sortingChartCompany))
-//        }
     }
 
     private fun getTooltip(companiesStats: MutableMap<String, StatisticReadEntity.CompaniesStats>, offset: Int = 3): MutableList<Tooltip> {
@@ -129,22 +82,6 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
             }
             tooltipList.add(Tooltip(key = key, value = sortingChartCompany))
         }
-//        if (offset < companiesStats.count())
-//            tooltipList.add(
-//                    Tooltip(
-//                            key = "Other",
-//                            value = companiesStats.toList().subList(offset + 1, offset + 1).map {
-//                                it.second.listCompanies.map {
-//                                    ChartCompany(
-//                                            name = it.name,
-//                                            slug = it.slug,
-//                                            logo = Image(it.logo),
-//                                            id = it.id.toString(),
-//                                    )
-//                                }
-//                            },
-//                    ),
-//            )
         return tooltipList
     }
 
@@ -164,50 +101,12 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
             }
             tooltipList.add(Tooltip(key = key.toString(), value = sortingChartCompany))
         }
-//        if (offset < companiesStats.count())
-//            tooltipList.add(
-//                    Tooltip(
-//                            key = "Other",
-//                            value = companiesStats.toList().subList(offset + 1, offset + 1).map {
-//                                it.second.listCompanies.map {
-//                                    ChartCompany(
-//                                            name = it.name,
-//                                            slug = it.slug,
-//                                            logo = Image(it.logo),
-//                                            id = it.id.toString(),
-//                                    )
-//                                }
-//                            },
-//                    ),
-//            )
         return tooltipList
     }
 
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getStatisticByCountry(
-        @InputArgument("companyId") companyId: String,
-        @InputArgument("offset") offset: Int,
-    ): ChartByCountry? {
-        val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-                .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
+    // ============= country stats ================
 
-        val statisticByCountry = statistic.statsByCountry?.totalCountByCountry?.toList()?.sortedByDescending { pair -> pair.second }
-
-        return if (statisticByCountry != null) {
-            val sortingList = getSortingListChart(statisticByCountry, offset)
-            val tooltipList = getTooltip(statistic.statsByCountry!!.companiesStatsByCountry)
-            ChartByCountry(
-                    values = sortingList.map { it.first },
-                    data = sortingList.map { it.second },
-                    tooltip = tooltipList,
-            )
-        } else {
-            null
-        }
-    }
-
-    fun getStatisticByCountry(
+    fun getChartsByCountry(
         statsByCountry: StatisticReadEntity.StatsByCountry,
         offset: Int = 3
     ): ChartByCountry {
@@ -224,28 +123,48 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getStatisticByIndustry(
+    fun getCompanyStatsByCountry(
         @InputArgument("companyId") companyId: String,
-        @InputArgument("offset") offset: Int,
-    ): ChartByIndustry? {
-        val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-                .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
+        @InputArgument("country") country: String
+    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByCountry.companiesStatsByCountry[country]?.let { companiesStats ->
+                companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
+            }
 
-        val statisticByIndustry = statistic.statsByIndustry?.totalCountByIndustry?.toList()?.sortedByDescending { pair -> pair.second }
-        return if (statisticByIndustry != null) {
-            val sortingList = getSortingListChart(statisticByIndustry, offset)
-            val tooltipList = getTooltip(statistic.statsByIndustry!!.companiesStatsByIndustry)
-            ChartByIndustry(
-                    values = sortingList.map { it.first },
-                    data = sortingList.map { it.second },
-                    tooltip = tooltipList,
-            )
-        } else {
-            null
-        }
-    }
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getTabsStatsByCountry(
+        @InputArgument("companyId") companyId: String,
+    ): List<TabItemsCount>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByCountry.totalCountByCountry.let { totalCount ->
+                totalCount.map { (country, count) ->
+                    TabItemsCount(key = country, count = count)
+                }
+            }
 
-    private fun getStatisticByIndustry(
+    // ============= industry stats ================
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getCompanyStatsByIndustry(
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("industryName") industryName: String
+    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByIndustry.companiesStatsByIndustry[industryName]?.let { companiesStats ->
+                companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
+            }
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getTabsStatsByIndustry(
+        @InputArgument("companyId") companyId: String,
+    ): List<TabItemsCount>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByIndustry.totalCountByIndustry.let { totalCount ->
+                totalCount.map { (industryName, count) ->
+                    TabItemsCount(key = industryName, count = count)
+                }
+            }
+
+    private fun getChartsByIndustry(
         statsByIndustry: StatisticReadEntity.StatsByIndustry,
         offset: Int = 3
     ): ChartByIndustry {
@@ -257,33 +176,12 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
                 data = sortingList.map { it.second },
                 tooltip = tooltipList,
         )
-
     }
 
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getStatisticNumberConnection(
-        @InputArgument("companyId") companyId: String,
-    ): ChartByNumberConnection? {
-        val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-                .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
+    // ============= number connections stats ================
 
-        val statisticByYear = statistic.statsNumberConnection
 
-        return if (statisticByYear != null) {
-            ChartByNumberConnection(
-                    values = statisticByYear.companiesStatsByYear.map { Year.of(it.key) },
-                    data = statisticByYear.companiesStatsByYear.values.map {
-                        it.totalCount.values.sum()
-                    },
-                    tooltip = getTooltipOnInt(statisticByYear.companiesStatsByYear),
-            )
-        } else {
-            null
-        }
-    }
-
-    fun getStatisticNumberConnection(
+    fun getChartsNumberConnection(
         statsByNumberConnection: StatisticReadEntity.StatsNumberConnection
     ): ChartByNumberConnection {
         return ChartByNumberConnection(
@@ -297,45 +195,28 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getStatisticNumberConnectionOnYear(
+    fun getCompanyStatsByNumberConnectionOnYear(
         @InputArgument("companyId") companyId: String,
         @InputArgument("year") year: Year
-    ): GraphicStatsByNumberConnection {
-        val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-                .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
-        return GraphicStatsByNumberConnection(
-                values = statistic.statsNumberConnection!!.companiesStatsByYear[year.value]?.let {
-                    listOf(GraphicValueCompany.fromCompaniesStats(name = year.value.toString(), companiesStats = it, limit = null))
-                },
-        )
-    }
+    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsNumberConnection.companiesStatsByYear[year.value]?.let { companiesStats ->
+                companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
+            }
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getStatisticServicesProvided(
+    fun getTabsStatsByNumberConnection(
         @InputArgument("companyId") companyId: String,
-        @InputArgument("offset") offset: Int,
-    ): ChartByServicesProvider? {
-        val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-                .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
+    ): List<TabItemsCount>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsNumberConnection.companiesStatsByYear.let {
+                it.map { (year, companiesStats) ->
+                    TabItemsCount(key = year.toString(), count = companiesStats.totalCount.values.sum())
+                }
+            }
 
-        val statisticByServicesProvider =
-                statistic.statsServiceProvided?.totalCountByService?.toList()?.sortedByDescending { pair -> pair.second }
+    // ============= service provided stats ================
 
-        return if (statisticByServicesProvider != null) {
-            val sortingList = getSortingListChart(statisticByServicesProvider, offset)
-            val tooltipList = getTooltip(statistic.statsServiceProvided!!.companiesStatsByService)
-            ChartByServicesProvider(
-                    values = sortingList.map { it.first },
-                    data = sortingList.map { it.second },
-                    tooltip = tooltipList,
-            )
-        } else {
-            null
-        }
-    }
-
-    fun getStatisticServicesProvided(
+    fun getChartsServicesProvided(
         statsByServiceProvided: StatisticReadEntity.StatsServiceProvided,
         offset: Int = 5,
     ): ChartByServicesProvider {
@@ -349,4 +230,14 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
                 tooltip = tooltipList,
         )
     }
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getCompanyStatsByService(
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("serviceName") serviceName: String
+    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsServiceProvided.companiesStatsByService[serviceName]?.let { companiesStats ->
+                companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
+            }
 }

@@ -1,13 +1,11 @@
 package com.briolink.companyservice.api.graphql
 
+import com.briolink.companyservice.api.types.ChartCompany
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.Connection
 import com.briolink.companyservice.api.types.ConnectionRole
 import com.briolink.companyservice.api.types.ConnectionRoleType
 import com.briolink.companyservice.api.types.ConnectionService
-import com.briolink.companyservice.api.types.GraphCompany
-import com.briolink.companyservice.api.types.GraphService
-import com.briolink.companyservice.api.types.GraphicValueCompany
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Keyword
@@ -112,35 +110,19 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         image = entity.data.logo.let { Image(url = it) },
 )
 
-fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int? = 3) =
-        GraphicValueCompany(
-                name = name,
-                value = companiesStats.totalCount.values.sum(),
-                companies = companiesStats.listCompanies.distinctBy { company -> company.name }.let {
-                    it.sortedBy { (_, name) -> name }.take(
-                            limit ?: it.count(),
-                    ).map {
-                        GraphCompany.fromEntity(it)
-                    }
-                },
+
+fun ChartCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) =
+        ChartCompany(
+                name = entity.name,
+                countService = entity.countService,
+                logo = Image(entity.logo),
+                slug = entity.slug,
+                role = entity.role.map { ConnectionRole.fromEntity(it) },
+                industry = entity.industry,
+                location = entity.location,
+                id = entity.id.toString(),
         )
 
-fun GraphCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) = GraphCompany(
-        name = entity.name,
-        id = entity.id.toString(),
-        slug = entity.slug,
-        logo = Image(entity.logo),
-        role = entity.role.map {
-            ConnectionRole(
-                    id = it.id.toString(),
-                    name = it.name,
-                    type = ConnectionRoleType.values()[it.type.ordinal],
-            )
-        },
-        industry = entity.industry,
-        location = entity.location,
-        countService = entity.countService,
-)
 
 fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = ConnectionRole(
         id = entity.id.toString(),
@@ -148,15 +130,10 @@ fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = Conn
         type = ConnectionRoleType.values()[entity.type.ordinal],
 )
 
-//fun GraphicValueService.Companion.fromEntity(entity: StatisticReadEntity.ServiceStats) = GraphicValueService(
-//        service = GraphService.fromEntity(entity.service),
-//        value = entity.totalCount,
-//)
-
-fun GraphService.Companion.fromEntity(entity: StatisticReadEntity.Service) = GraphService(
-        name = entity.name,
-        slug = entity.slug,
+fun ConnectionRole.Companion.fromEntity(entity: StatisticReadEntity.Role) = ConnectionRole(
         id = entity.id.toString(),
+        name = entity.name,
+        type = ConnectionRoleType.values()[entity.type.ordinal],
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(

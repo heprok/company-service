@@ -28,11 +28,7 @@ class StatisticHandlerService(
         val statsByCountry = StatisticReadEntity.StatsByCountry()
         val statsByIndustry = StatisticReadEntity.StatsByIndustry()
         val statsServiceProvided = StatisticReadEntity.StatsServiceProvided()
-//
-//        val statsNumberConnection = statisticByCompany.statsNumberConnection ?: StatisticReadEntity.StatsNumberConnection()
-//        val statsByCountry = statisticByCompany.statsByCountry ?: StatisticReadEntity.StatsByCountry()
-//        val statsByIndustry =  statisticByCompany.statsByIndustry ?: StatisticReadEntity.StatsByIndustry()
-//        val statsServiceProvided =  statisticByCompany.statsByCountry ?: StatisticReadEntity.StatsServiceProvided()
+
         val connectionsByCompany = connectionReadRepository.findBySellerIdOrBuyerIdAndVerificationStage(
                 companyId,
                 companyId,
@@ -127,21 +123,6 @@ class StatisticHandlerService(
                 statsByCountry.totalCountByCountry[it.key] = it.value.listCompanies.count()
             }
             if (connection.sellerId == companyId) {
-//                connection.data.services.forEach {
-//                    statsServiceProvided.services[it.id!!] = statsServiceProvided.services.getOrDefault(
-//                            it.id,
-//                            StatisticReadEntity.ServiceStats(
-//                                    service = StatisticReadEntity.Service(
-//                                            id = it.id!!,
-//                                            name = it.name!!,
-//                                            slug = it.slug!!,
-//                                    ),
-//                                    totalCount = 0,
-//                            ),
-//                    ).apply {
-//                        this.totalCount = this.totalCount + 1
-//                    }
-//                }
                 connection.data.services.forEach {
                     statsServiceProvided.companiesStatsByService[it.name!!] = statsServiceProvided.companiesStatsByService.getOrDefault(
                             it.name!!,

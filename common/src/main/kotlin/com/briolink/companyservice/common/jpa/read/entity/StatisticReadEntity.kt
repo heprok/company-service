@@ -23,20 +23,20 @@ class StatisticReadEntity(
 ) : BaseReadEntity() {
 
     @Type(type = "json")
-    @Column(name = "statsNumberConnection", columnDefinition = "json")
-    var statsNumberConnection: StatsNumberConnection? = null
+    @Column(name = "statsNumberConnection", columnDefinition = "json", nullable = false)
+    lateinit var statsNumberConnection: StatsNumberConnection
 
     @Type(type = "json")
-    @Column(name = "statsByIndustry", columnDefinition = "json")
-    var statsByIndustry: StatsByIndustry? = null
+    @Column(name = "statsByIndustry", columnDefinition = "json", nullable = false)
+    lateinit var statsByIndustry: StatsByIndustry
 
     @Type(type = "json")
-    @Column(name = "statsByCountry", columnDefinition = "json")
-    var statsByCountry: StatsByCountry? = null
+    @Column(name = "statsByCountry", columnDefinition = "json", nullable = false)
+    lateinit var statsByCountry: StatsByCountry
 
     @Type(type = "json")
-    @Column(name = "statsServiceProvided", columnDefinition = "json")
-    var statsServiceProvided: StatsServiceProvided? = null
+    @Column(name = "statsServiceProvided", columnDefinition = "json", nullable = false)
+    lateinit var statsServiceProvided: StatsServiceProvided
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class StatsNumberConnection(

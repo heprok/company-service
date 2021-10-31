@@ -1,28 +1,36 @@
 type Query {
     getCompany(slug: String!): CompanyAndUserRole!
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
-    getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList! @deprecated(reason: "Use new Filter")
-    getServicesFilter(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
-    getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
-    getConnections(companyId: ID!, filter: ConnectionFilter, sort: ConnectionSort, limit: Int = 10, offset: Int = 0): ConnectionList!
-    getConnectionsCount(companyId: ID!, filter: ConnectionFilter): Int!
-
     getIndustries(query: String!, companyId: ID): [Industry]!
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
 
-    getStatistic(companyId: ID!, offset: Int = 5): Charts
-#    getStatisticByCountry(companyId: ID!,offset: Int = 5): ChartByCountry
-#    getStatisticByIndustry(companyId: ID!, offset: Int = 5): ChartByIndustry
-#    getStatisticNumberConnection(companyId: ID!): ChartByNumberConnection
-#    getStatisticServicesProvided(companyId: ID!,offset: Int = 5): ChartByServicesProvider
+#    ================= services ================
+    getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList! @deprecated(reason: "Use new Filter")
+    getServicesFilter(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
+    getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
 
-
-#    sorting
+#    ================ sorting filter for connection ===============
+    getConnections(companyId: ID!, filter: ConnectionFilter, sort: ConnectionSort, limit: Int = 10, offset: Int = 0): ConnectionList!
+    getConnectionsCount(companyId: ID!, filter: ConnectionFilter): Int!
+#    -------------------------- filters ----------------------
     getConnectionTabsRole(companyId: ID!) : [ConnectionRole]!
     getCollaborators(companyId: ID!, query: String!): [Collaborator]!
     getCollaboratorRoles(companyId: ID!, query: String!): [ConnectionRole]!
     getServicesProvided(companyId: ID!, query: String!): [ServiceProvided]!
 
-    getStatisticNumberConnectionOnYear(companyId: ID!, year: Year) : GraphicStatsByNumberConnection
+#    =============== statistic ===================
+    getCharts(companyId: ID!, offset: Int = 5): Charts
+
+    #    ------------------- number Connection -----------------------
+    getCompanyStatsByNumberConnectionOnYear(companyId: ID!, year: Year) : [ChartCompany]
+    getTabsStatsByNumberConnection(companyId: ID!) : [TabItemsCount]
+#    ------------------------ industry ----------------
+    getCompanyStatsByIndustry(companyId: ID!, industryName: String!) : [ChartCompany]
+    getTabsStatsByIndustry(companyId: ID!): [TabItemsCount]
+#    ------------------ country -----------------
+    getCompanyStatsByCountry(companyId: ID!, country: String!) : [ChartCompany]
+    getTabsStatsByCountry(companyId: ID!): [TabItemsCount]
+#    -------------------------- service ----------------
+    getCompanyStatsByService(companyId: ID!, serviceName: String!) : [ChartCompany]
 }

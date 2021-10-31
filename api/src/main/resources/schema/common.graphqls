@@ -18,6 +18,12 @@ enum SortDirection{
     ASC, DESC
 }
 
+
+type TabItemsCount {
+    key: String!
+    count: Int!
+}
+
 input RangeInt {
     start: Int
     end: Int
