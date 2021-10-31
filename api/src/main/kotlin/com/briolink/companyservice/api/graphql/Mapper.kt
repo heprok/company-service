@@ -8,7 +8,6 @@ import com.briolink.companyservice.api.types.ConnectionService
 import com.briolink.companyservice.api.types.GraphCompany
 import com.briolink.companyservice.api.types.GraphService
 import com.briolink.companyservice.api.types.GraphicValueCompany
-import com.briolink.companyservice.api.types.GraphicValueService
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Keyword
@@ -28,6 +27,7 @@ import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import java.net.URL
+import java.time.Year
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         Company(
@@ -109,7 +109,7 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         verifiedUses = entity.verifiedUses,
         lastUsed = entity.lastUsed,
         isHide = entity.isHide,
-        image = entity.data.image.let { Image(url = URL(it)) },
+        image = entity.data.logo.let { Image(url = it) },
 )
 
 fun GraphicValueCompany.Companion.fromCompaniesStats(name: String, companiesStats: StatisticReadEntity.CompaniesStats, limit: Int? = 3) =
@@ -201,8 +201,8 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
             ConnectionService(
                     id = it.id.toString(),
                     name = it.name!!,
-                    endDate = it.endDate?.value,
-                    startDate = it.startDate?.value ?: 2021 ,
+                    endDate = it.endDate,
+                    startDate = it.startDate,
             )
         },
         industry = entity.data.industry.let {

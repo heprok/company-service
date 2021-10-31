@@ -1,11 +1,12 @@
 package com.briolink.companyservice.updater.dataloader
 
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionRoleReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionRoleReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.dto.Connection
 import com.briolink.companyservice.updater.dto.ConnectionCompanyRole
@@ -22,7 +23,7 @@ import kotlin.random.Random
 @Component
 @Order(3)
 class ConnectionDataLoader(
-    private var readRepository: ConnectionReadRepository,
+    private var connectionReadRepository: ConnectionReadRepository,
     private var userReadRepository: UserReadRepository,
     private var userJobPositionReadRepository: UserJobPositionReadRepository,
     private var connectionRoleReadRepository: ConnectionRoleReadRepository,
@@ -32,7 +33,7 @@ class ConnectionDataLoader(
 ) : DataLoader() {
     override fun loadData() {
         if (
-            readRepository.count().toInt() == 0 &&
+            connectionReadRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&
             serviceReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0 &&
@@ -110,6 +111,6 @@ class ConnectionDataLoader(
     }
 
     companion object {
-        const val COUNT_CONNECTION = 1000
+        const val COUNT_CONNECTION = 2000
     }
 }

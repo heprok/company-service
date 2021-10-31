@@ -5,7 +5,7 @@ import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

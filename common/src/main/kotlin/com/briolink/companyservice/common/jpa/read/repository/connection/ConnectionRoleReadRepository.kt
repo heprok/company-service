@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.jpa.read.repository
+package com.briolink.companyservice.common.jpa.read.repository.connection
 
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import org.springframework.data.jpa.repository.JpaRepository

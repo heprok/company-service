@@ -15,12 +15,19 @@ enum VerificationStage {
 }
 
 input ConnectionFilter {
+    role: InputConnectionRole
     collaboratorId: [ID]
     collaboratorRoleId: [ID]
     industryId: [ID]
     location: String
-    datesOfCollaborators: [Date]
+    datesOfCollaborators: RangeYear
     verificationStage: [VerificationStage]
+    serviceIds: [ID]
+}
+
+type Collaborator {
+    id: ID!,
+    name: String!,
 }
 
 enum ConnectionSortBy {
@@ -33,8 +40,14 @@ input ConnectionSort{
 }
 
 type ConnectionList implements PaginatedList {
-    items: [Connection]
+    items: [Connection]!
+    itemsCountByRole: [ConnectionTabItemsCount]!
     totalItems: Int!
+}
+
+type ConnectionTabItemsCount {
+    id: ID!
+    value: Int!
 }
 
 type ConnectionRole {
@@ -43,11 +56,10 @@ type ConnectionRole {
     type: ConnectionRoleType!
 }
 
-type ConnectionRoleSorting {
+input InputConnectionRole {
     id: ID!
-    name: String!
+    name: String
     type: ConnectionRoleType!
-    count: Int!
 }
 
 enum ConnectionRoleType {
@@ -57,7 +69,7 @@ enum ConnectionRoleType {
 type ConnectionService {
     id: ID!
     name: String!
-    startDate: Int!
-    endDate: Int
+    startDate: Year!
+    endDate: Year
 }
 

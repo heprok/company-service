@@ -1,7 +1,7 @@
 package com.briolink.companyservice.updater.handler
 
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
 import com.briolink.companyservice.updater.dto.Connection
 import com.briolink.companyservice.updater.dto.ConnectionStatus
 import com.briolink.companyservice.updater.dto.ConnectionCompanyRoleType
@@ -10,7 +10,6 @@ import com.briolink.companyservice.updater.event.ConnectionUpdatedEvent
 import com.briolink.companyservice.updater.service.CompanyService
 import com.briolink.companyservice.updater.service.ConnectionService
 import com.briolink.event.IEventHandler
-import com.briolink.event.annotation.EventHandler
 
 //@EventHandler("UserJobPositionCreatedEvent", "1.0")
 class ConnectionCreatedEventHandler(
@@ -40,9 +39,8 @@ class ConnectionCreatedEventHandler(
 
 //    @EventHandler("ConnectionUpdatedEvent", "1.0")
     class ConnectionUpdatedEventHandler(
-        private val connectionReadRepository: ConnectionReadRepository,
-        private val connectionService: ConnectionService,
-        private val companyService: CompanyService,
+    private val connectionService: ConnectionService,
+    private val companyService: CompanyService,
     ) : IEventHandler<ConnectionUpdatedEvent> {
         override fun handle(event: ConnectionUpdatedEvent) {
             val connection: Connection = event.data

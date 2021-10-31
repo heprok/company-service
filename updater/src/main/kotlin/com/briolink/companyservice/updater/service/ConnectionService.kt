@@ -4,18 +4,16 @@ import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.dto.Connection
-import com.briolink.companyservice.updater.dto.ConnectionRole
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.net.URL
 import java.time.LocalDate
+import java.time.Year
 import java.util.*
 import javax.persistence.EntityNotFoundException
 import kotlin.random.Random
@@ -29,6 +27,7 @@ class ConnectionService(
     private val serviceReadRepository: ServiceReadRepository,
     private val industryReadRepository: IndustryReadRepository,
     private val userReadRepository: UserReadRepository,
+    private val serviceConnectionService: ServiceConnectionService
 ) {
     fun create(connection: Connection) {
         val sellerRead = companyReadRepository.getById(connection.participantFrom.companyId!!)
@@ -37,13 +36,12 @@ class ConnectionService(
         val userSellerRead = userReadRepository.getById(connection.participantFrom.userId!!)
         val industryRead = IndustryReadEntity(
                 id = UUID.fromString(buyerRead.data.industry!!.id),
-        ).apply {
-            name = buyerRead.data.industry!!.name
-        }
+                name = buyerRead.data.industry!!.name,
+        )
         val connectionRead = ConnectionReadEntity(connection.id).apply {
 
-            sellerId = connection.participantFrom.companyId
-            buyerId = connection.participantTo.companyId
+            sellerId = connection.participantFrom.companyId!!
+            buyerId = connection.participantTo.companyId!!
             buyerName = buyerRead.data.name
             sellerName = sellerRead.data.name
             location = buyerRead.data.location
@@ -51,38 +49,17 @@ class ConnectionService(
             sellerRoleId = connection.participantFrom.companyRole!!.id
             industryId = UUID.fromString(buyerRead.data.industry!!.id)
             verificationStage = ConnectionReadEntity.ConnectionStatus.values()[connection.status.ordinal]
-            created = if(System.getenv("spring_profiles_active") == "dev" || System.getenv("spring_profiles_active") == "local") randomDate(2016, 2021) else LocalDate.now()
+            created =
+                    if (System.getenv("spring_profiles_active") == "dev" || System.getenv("spring_profiles_active") == "local") randomDate(
+                            2016,
+                            2021,
+                    ) else LocalDate.now()
             data = ConnectionReadEntity.Data(connection.id).apply {
-                val endDateMutableList = mutableListOf<String>()
-                val startDateMutableList = mutableListOf<String>()
+                val endDateMutableList = mutableListOf<Year?>()
+                val startDateMutableList = mutableListOf<Year>()
                 val idServiceMutableList = mutableListOf<String>()
                 val servicesConnection = mutableListOf<ConnectionReadEntity.Service>()
 
-                connection.services.forEach { connectionService ->
-                    val serviceReadEntity = serviceReadRepository.findById(connectionService.serviceId!!)
-                    val serviceConnection = if (serviceReadEntity.isEmpty) {
-                        ConnectionReadEntity.Service(
-                                id = connectionService.serviceId,
-                                name = connectionService.serviceName,
-                                endDate = connectionService.endDate,
-                                startDate = connectionService.startDate,
-                        )
-                    } else {
-                        serviceReadEntity.get().let {
-                            ConnectionReadEntity.Service(
-                                    id = it.id,
-                                    name = it.name,
-                                    slug = it.data.slug,
-                                    endDate = connectionService.endDate,
-                                    startDate = connectionService.startDate,
-                            )
-                        }
-                    }
-                    servicesConnection.add(serviceConnection)
-                    idServiceMutableList.add(connectionService.serviceId.toString())
-                    startDateMutableList.add(connectionService.startDate.toString())
-                    endDateMutableList.add(connectionService.endDate.toString())
-                }
                 industry = ConnectionReadEntity.Industry(
                         id = industryRead.id,
                         name = industryRead.name,
@@ -125,9 +102,39 @@ class ConnectionService(
                         ),
                 )
 
-                datesEndCollaboration = endDateMutableList.joinToString(";")
-                datesStartCollaboration = startDateMutableList.joinToString ( ";" )
-                serviceIds = idServiceMutableList.joinToString (";" )
+                connection.services.forEach { connectionService ->
+                    val serviceReadEntity = connectionService.serviceId?.let { serviceReadRepository.findById(it) }
+                    val connectionServiceRead = serviceReadEntity?.get()?.let {
+
+                        ConnectionReadEntity.Service(
+                                id = it.id,
+                                name = it.name,
+                                slug = it.data.slug,
+                                endDate = connectionService.endDate,
+                                startDate = connectionService.startDate!!,
+                        )
+                    }
+                        ?: ConnectionReadEntity.Service(
+                                id = connectionService.serviceId,
+                                name = connectionService.serviceName,
+                                endDate = connectionService.endDate,
+                                startDate = connectionService.startDate!!,
+                        )
+                    servicesConnection.add(connectionServiceRead)
+                    serviceConnectionService.addConnectionService(
+                            buyerCompanyId = buyerCompany.id,
+                            sellerCompanyId = sellerCompany.id,
+                            connectionService = connectionService,
+                            connectionId = connection.id,
+                    )
+                    idServiceMutableList.add(connectionService.serviceId.toString())
+                    startDateMutableList.add(connectionService.startDate!!)
+                    endDateMutableList.add(connectionService.endDate)
+                }
+
+                startCollaboration = startDateMutableList.maxOrNull()!!
+                endCollaboration = if(endDateMutableList.contains(null)) null else endDateMutableList.maxByOrNull { year -> year!! }
+                serviceIds = idServiceMutableList.joinToString(";")
                 services = servicesConnection
 
             }

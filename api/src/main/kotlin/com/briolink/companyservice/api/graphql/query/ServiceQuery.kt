@@ -71,4 +71,12 @@ class ServiceQuery(
             ServiceList(items = listOf(), totalItems = -1)
         }
     }
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getServicesCount(
+        @InputArgument("companyId") companyId: String,
+        @InputArgument("filter") filter: ServiceFilter?
+    ): Int = serviceCompanyService.count(companyId = UUID.fromString(companyId), filter = filter).toInt()
+
 }

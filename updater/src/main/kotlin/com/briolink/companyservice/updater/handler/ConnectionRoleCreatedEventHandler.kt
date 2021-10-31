@@ -3,7 +3,7 @@ package com.briolink.companyservice.updater.handler
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionRoleReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionRoleReadRepository
 import com.briolink.companyservice.updater.event.ConnectionRoleCreatedEvent
 
 @EventHandler("ConnectionRoleCreatedEvent", "1.0")

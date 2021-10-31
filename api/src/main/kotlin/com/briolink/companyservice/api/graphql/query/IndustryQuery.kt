@@ -1,21 +1,36 @@
 package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromEntity
+import com.briolink.companyservice.api.service.ConnectionService
 import com.briolink.companyservice.api.types.Industry
+import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
 import com.briolink.companyservice.common.util.StringUtil
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
+import java.util.*
 
 @DgsComponent
-class IndustryQuery(private val industryReadRepository: IndustryReadRepository ) {
+class IndustryQuery(
+    private val industryReadRepository: IndustryReadRepository,
+    private val connectionService: ConnectionService
+) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getIndustries(@InputArgument("query") query: String): List<Industry> {
+    fun getIndustries(
+        @InputArgument("query") query: String,
+        @InputArgument("companyId") companyId: String?
+    ): List<Industry> {
         val escapeQuery = StringUtil.replaceNonWord(query)
-        val industries = if (query.isNotEmpty()) industryReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")") else listOf()
+        val industries = if (companyId == null && query.isNotEmpty()) {
+            industryReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")")
+        } else if (companyId != null) {
+            connectionService.getIndustriesInConnectionFromCompany(UUID.fromString(companyId), query )
+        } else {
+            listOf()
+        }
 
         return industries.map {
             Industry.fromEntity(it)

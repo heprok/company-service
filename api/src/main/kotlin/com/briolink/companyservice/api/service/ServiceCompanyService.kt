@@ -2,16 +2,15 @@ package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
-import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.CompanyService
-import com.briolink.companyservice.common.domain.v1_0.Industry
-import com.briolink.companyservice.common.domain.v1_0.Occupation
-import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyServiceCreatedEvent
+import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity_
-import com.briolink.companyservice.common.jpa.read.repository.ServiceReadRepository
-import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.service.companyIdEqual
+import com.briolink.companyservice.common.jpa.read.repository.service.betweenLastUsed
+import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
+import com.briolink.companyservice.common.jpa.read.repository.service.equalHide
 import com.briolink.companyservice.common.util.PageRequest
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
@@ -19,10 +18,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import java.time.Year
 import java.util.UUID
-import javax.persistence.criteria.Predicate
 
 @Service
 @Transactional
@@ -47,97 +43,23 @@ class ServiceCompanyService(
         return serviceDomain
     }
 
-    fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter?): Page<ServiceReadEntity> {
+    fun getSpecification(filter: ServiceFilter?): Specification<ServiceReadEntity> =
+            initSpec<ServiceReadEntity>()
+                    .and(betweenPrice(filter?.cost?.start, filter?.cost?.end))
+                    .and(equalHide(filter?.isHide))
+                    .and(betweenLastUsed(filter?.lastUsed?.start, filter?.lastUsed?.end))
 
-        val spec = Specification<ServiceReadEntity> { root, query, builder ->
-            builder.and(
-                    equalsCompanyId(companyId)
-                            .and(isByPriceBetween(filter?.cost?.start, filter?.cost?.end))
-                            .and(isHide(filter?.isHide))
-                            .and(isByLastUsedBetween(filter?.lastUsed?.start, filter?.lastUsed?.end))
-                            .toPredicate(root, query, builder),
+
+    fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter?): Page<ServiceReadEntity> =
+            serviceReadRepository.findAll(
+                    getSpecification(filter).and(companyIdEqual(companyId)),
+                    PageRequest(offset, limit, Sort.by(Sort.Direction.fromString(sort.direction.name), sort.sortBy.name)),
             )
-        }
-        return serviceReadRepository.findAll(
-                spec,
-                PageRequest(offset, limit, Sort.by(Sort.Direction.fromString(sort.direction.name), sort.sortBy.name)),
-        )
-    }
 
-    fun equalsCompanyId(companyId: UUID): Specification<ServiceReadEntity> {
-        return Specification<ServiceReadEntity> { root, _, builder ->
-            builder.equal(root.get(ServiceReadEntity_.companyId), companyId)
-        }
-    }
 
-    fun isHide(hide: Boolean?): Specification<ServiceReadEntity>? {
-        return if (hide != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.equal(root.get(ServiceReadEntity_.isHide), hide)
-            }
-        } else null
+    fun count(companyId: UUID, filter: ServiceFilter?): Long =
+            serviceReadRepository.count(getSpecification(filter).and(companyIdEqual(companyId)))
 
-    }
-
-    fun isByPriceBetween(start: Double?, end: Double?): Specification<ServiceReadEntity>? {
-        return if (start != null && end != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.between(root.get(ServiceReadEntity_.price), start, end)
-            }
-        } else if (start != null && end == null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.greaterThanOrEqualTo(root.get(ServiceReadEntity_.price), start)
-            }
-        } else if (start == null && end != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.lessThanOrEqualTo(root.get(ServiceReadEntity_.price), end)
-            }
-        } else {
-            null
-        }
-    }
-
-    fun isByNumberUsesBetween(start: Int?, end: Int?): Specification<ServiceReadEntity>? {
-        return if (start != null && end != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.between(root.get(ServiceReadEntity_.verifiedUses), start, end)
-            }
-        } else if (start != null && end == null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.greaterThanOrEqualTo(root.get(ServiceReadEntity_.verifiedUses), start)
-            }
-        } else if (start == null && end != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.lessThanOrEqualTo(root.get(ServiceReadEntity_.verifiedUses), end)
-            }
-        } else {
-            null
-        }
-    }
-
-    fun isByLastUsedBetween(start: Year?, end: Year?): Specification<ServiceReadEntity>? {
-        val startDate = start?.let {
-            LocalDate.of(it.value, 1, 1)
-        }
-        val endDate = end?.let {
-            LocalDate.of(it.value, 12, 31)
-        }
-        return if (start != null && end != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.between(root.get(ServiceReadEntity_.lastUsed), startDate, endDate)
-            }
-        } else if (start != null && end == null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.greaterThanOrEqualTo(root.get(ServiceReadEntity_.lastUsed), startDate)
-            }
-        } else if (start == null && end != null) {
-            Specification<ServiceReadEntity> { root, _, builder ->
-                builder.lessThanOrEqualTo(root.get(ServiceReadEntity_.lastUsed), endDate)
-            }
-        } else {
-            null
-        }
-    }
 
     fun hideInCompany(companyId: UUID, serviceId: UUID, isHide: Boolean) =
             serviceReadRepository.hideServiceByIdAndCompanyId(companyId = companyId, id = serviceId, isHide = isHide)

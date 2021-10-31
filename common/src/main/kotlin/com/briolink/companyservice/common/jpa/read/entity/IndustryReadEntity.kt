@@ -13,8 +13,10 @@ class IndustryReadEntity(
     @Id
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
-    var id: UUID
-) : BaseReadEntity() {
+    var id: UUID,
     @Column(name = "name", nullable = false, length = 128)
-    lateinit var name: String
+    var name: String
+
+) : BaseReadEntity() {
+
 }

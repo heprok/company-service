@@ -9,6 +9,11 @@ type Service {
     isHide: Boolean!
 }
 
+type ServiceProvided {
+    id: ID!
+    name: String!
+}
+
 type ServiceList implements PaginatedList {
     items: [Service]!
     totalItems: Int!

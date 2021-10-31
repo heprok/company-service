@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.jpa.read.repository
+package com.briolink.companyservice.common.jpa.read.repository.service
 
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import org.springframework.data.domain.Page

@@ -2,8 +2,6 @@ package com.briolink.companyservice.updater.service
 
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
