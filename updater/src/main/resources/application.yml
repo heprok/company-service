@@ -30,5 +30,4 @@ app:
     schema-prefix: ${env.spring_profiles_active}_company
 event:
   listener:
-    enabled: true
     sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo

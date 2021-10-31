@@ -12,7 +12,7 @@ import com.briolink.companyservice.common.jpa.read.repository.service.betweenLas
 import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
 import com.briolink.companyservice.common.jpa.read.repository.service.equalHide
 import com.briolink.companyservice.common.util.PageRequest
-import org.springframework.context.ApplicationEventPublisher
+import com.briolink.event.publisher.EventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
@@ -24,7 +24,7 @@ import java.util.UUID
 @Transactional
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val eventPublisher: EventPublisher
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
             serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
@@ -37,7 +37,7 @@ class ServiceCompanyService(
                 slug = service.data.slug,
                 companyId = service.companyId,
         )
-        applicationEventPublisher.publishEvent(
+        eventPublisher.publishAsync(
                 CompanyServiceCreatedEvent(serviceDomain),
         )
         return serviceDomain

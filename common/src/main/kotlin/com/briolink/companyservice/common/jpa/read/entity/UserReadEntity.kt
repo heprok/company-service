@@ -1,15 +1,9 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
-import org.hibernate.annotations.UpdateTimestamp
 import java.net.URL
-import java.time.Instant
-import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity

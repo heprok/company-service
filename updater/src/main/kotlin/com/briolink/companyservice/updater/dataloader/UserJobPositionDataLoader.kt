@@ -8,7 +8,6 @@ import com.briolink.companyservice.updater.dto.UserJobPosition
 import com.briolink.companyservice.updater.event.UserJobPositionCreatedEvent
 import com.briolink.companyservice.updater.service.CompanyService
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.net.URL
@@ -22,7 +21,6 @@ class UserJobPositionDataLoader(
     var userReadRepository: UserReadRepository,
     var companyReadRepository: CompanyReadRepository,
     var companyService: CompanyService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 
     ) : DataLoader() {
     private val listJobPosition: List<String> = listOf(
@@ -86,7 +84,7 @@ class UserJobPositionDataLoader(
 //                        companyId = listCompany.random().id,
 //                        userId = listUser.random().id,
 //                ).apply {
-//                    applicationEventPublisher.publishEvent(
+//                    eventPublisher.publishAsync(
 //                            UserJobPositionCreatedEvent(this),
 //                    )
 //                }

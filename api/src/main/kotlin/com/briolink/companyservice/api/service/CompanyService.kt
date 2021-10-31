@@ -11,7 +11,7 @@ import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
-import org.springframework.context.ApplicationEventPublisher
+import com.briolink.event.publisher.EventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -25,7 +25,7 @@ import kotlin.collections.ArrayList
 class CompanyService(
     private val companyReadRepository: CompanyReadRepository,
     private val companyWriteRepository: CompanyWriteRepository,
-    val applicationEventPublisher: ApplicationEventPublisher,
+    val eventPublisher: EventPublisher,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val awsS3Service: AwsS3Service
 ) {
@@ -66,7 +66,7 @@ class CompanyService(
                     }
             )
         }
-        applicationEventPublisher.publishEvent(
+        eventPublisher.publishAsync(
                 CompanyCreatedEvent(companyDomain),
         )
         return companyDomain
@@ -113,7 +113,7 @@ class CompanyService(
                         },
                 ),
         )
-        applicationEventPublisher.publishEvent(CompanyUpdatedEvent(domain))
+        eventPublisher.publishAsync(CompanyUpdatedEvent(domain))
         return domain
     }
 
