@@ -7,7 +7,7 @@ import com.briolink.companyservice.updater.event.UserJobPositionDeletedEvent
 import com.briolink.companyservice.updater.event.UserJobPositionUpdatedEvent
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.updater.service.CompanyService
+import com.briolink.companyservice.updater.handler.service.CompanyHandlerService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import javax.persistence.EntityNotFoundException
@@ -16,7 +16,7 @@ import javax.persistence.EntityNotFoundException
 class UserJobPositionCreatedEventHandler(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val companyService: CompanyService
+    private val companyHandlerService: CompanyHandlerService
 ) : IEventHandler<UserJobPositionCreatedEvent> {
     override fun handle(event: UserJobPositionCreatedEvent) {
         val eventData = event.data
@@ -38,7 +38,7 @@ class UserJobPositionCreatedEventHandler(
                         title = eventData.title,
                 )
             }
-            companyService.setOwner(eventData.companyId, eventData.userId)
+            companyHandlerService.setOwner(eventData.companyId, eventData.userId)
             userJobPositionReadRepository.save(userJobPosition)
         }
     }
@@ -48,7 +48,7 @@ class UserJobPositionCreatedEventHandler(
 class UserJobPositionUpdatedEventHandler(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val companyService: CompanyService
+    private val companyHandlerService: CompanyHandlerService
 ) : IEventHandler<UserJobPositionUpdatedEvent> {
     override fun handle(event: UserJobPositionUpdatedEvent) {
         val eventData = event.data
@@ -68,7 +68,7 @@ class UserJobPositionUpdatedEventHandler(
                                     image = user.data.image,
                             ),
                     )
-                    companyService.setPermission(companyId = eventData.companyId, userId = eventData.userId, roleType = UserPermissionRoleReadEntity.RoleType.Employee)
+                    companyHandlerService.setPermission(companyId = eventData.companyId, userId = eventData.userId, roleType = UserPermissionRoleReadEntity.RoleType.Employee)
                 }
             )
             jobPosition.companyId = eventData.companyId

@@ -1,6 +1,5 @@
 package com.briolink.companyservice.updater.dataloader
 
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -14,6 +13,7 @@ import com.briolink.companyservice.updater.dto.ConnectionParticipant
 import com.briolink.companyservice.updater.dto.ConnectionService
 import com.briolink.companyservice.updater.dto.ConnectionStatus
 import com.briolink.companyservice.updater.dto.ConnectionCompanyRoleType
+import com.briolink.companyservice.updater.handler.service.ConnectionHandlerService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.Year
@@ -29,7 +29,7 @@ class ConnectionDataLoader(
     private var connectionRoleReadRepository: ConnectionRoleReadRepository,
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
-    private var service: com.briolink.companyservice.updater.service.ConnectionService,
+    private var connectionServiceHandler: ConnectionHandlerService,
 ) : DataLoader() {
     override fun loadData() {
         if (
@@ -42,7 +42,6 @@ class ConnectionDataLoader(
         ) {
             val listCompany = companyReadRepository.findAll()
             val listUser = userReadRepository.findAll()
-//            val listJobPosition = userJobPositionReadRepository.findAll()
             val listConnectionRole = connectionRoleReadRepository.findAll()
             val listService = serviceReadRepository.findAll()
             for (i in 1..COUNT_CONNECTION) {
@@ -50,10 +49,6 @@ class ConnectionDataLoader(
                 val to = listCompany.random().let {
                     if (it.id == from.id) listCompany.random() else it
                 }
-//                val fromUserJobPosition =
-//                        listJobPosition.shuffled().find { jobPositionReadEntity -> jobPositionReadEntity.companyId == from.id }
-//                val toUserJobPosition =
-//                        listJobPosition.shuffled().find { jobPositionReadEntity -> jobPositionReadEntity.companyId == to.id }
                 val services = mutableListOf<ConnectionService>()
                 for (j in 0..Random.nextInt(1, 4)) {
                     services.add(
@@ -68,10 +63,7 @@ class ConnectionDataLoader(
                             },
                     )
                 }
-//                readRepository.save(ConnectionReadEntity(UUID.randomUUID()).apply {
-//
-//                })
-                    service.create(
+                    connectionServiceHandler.createOrUpdate(
                             Connection(
                                     id = UUID.randomUUID(),
                                     participantFrom = ConnectionParticipant(

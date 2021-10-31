@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.service
+package com.briolink.companyservice.updater.handler.service
 
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -10,7 +10,7 @@ import javax.persistence.EntityNotFoundException
 
 @Transactional
 @Service
-class CompanyService(
+class CompanyHandlerService(
     private val companyReadRepository: CompanyReadRepository,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
 ) {

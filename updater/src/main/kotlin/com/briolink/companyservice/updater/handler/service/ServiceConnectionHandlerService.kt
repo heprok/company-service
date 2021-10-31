@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.service
+package com.briolink.companyservice.updater.handler.service
 
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.connection.service.ConnectionServiceReadRepository
@@ -9,7 +9,7 @@ import java.util.*
 
 @Transactional
 @Service
-class ServiceConnectionService(
+class ServiceConnectionHandlerService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository
 ) {
     fun addConnectionService(buyerCompanyId: UUID, sellerCompanyId: UUID, connectionId: UUID, connectionService: ConnectionService) {

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.net.URL
-import java.time.LocalDate
 import java.time.Year
 import java.util.*
 import javax.persistence.Column
@@ -83,8 +82,9 @@ class ConnectionReadEntity(
     @Column(name = "verification_stage", nullable = false)
     var verificationStage: ConnectionStatus = ConnectionStatus.Pending
 
+    @Type(type = "com.vladmihalcea.hibernate.type.basic.YearType")
     @Column(name = "created", nullable = false)
-    lateinit var created: LocalDate
+    lateinit var created: Year
 
     @Type(type = "json")
     @Column(name = "seller_role", columnDefinition = "json")

@@ -1,35 +1,29 @@
-package com.briolink.companyservice.updater.service
+package com.briolink.companyservice.updater.handler.service
 
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.dto.Connection
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import java.time.Year
 import java.util.*
 import javax.persistence.EntityNotFoundException
-import kotlin.random.Random
 
 @Transactional
 @Service
-class ConnectionService(
-    private val statisticReadRepository: StatisticReadRepository,
+class ConnectionHandlerService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val companyReadRepository: CompanyReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
-    private val industryReadRepository: IndustryReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val serviceConnectionService: ServiceConnectionService
+    private val serviceConnectionService: ServiceConnectionHandlerService
 ) {
-    fun create(connection: Connection) {
+    fun createOrUpdate(connection: Connection) {
         val sellerRead = companyReadRepository.getById(connection.participantFrom.companyId!!)
         val buyerRead = companyReadRepository.getById(connection.participantTo.companyId!!)
         val userBuyerRead = userReadRepository.getById(connection.participantTo.userId!!)
@@ -38,7 +32,7 @@ class ConnectionService(
                 id = UUID.fromString(buyerRead.data.industry!!.id),
                 name = buyerRead.data.industry!!.name,
         )
-        val connectionRead = ConnectionReadEntity(connection.id).apply {
+        val connectionRead = connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
 
             sellerId = connection.participantFrom.companyId!!
             buyerId = connection.participantTo.companyId!!
@@ -48,12 +42,8 @@ class ConnectionService(
             buyerRoleId = connection.participantTo.companyRole!!.id
             sellerRoleId = connection.participantFrom.companyRole!!.id
             industryId = UUID.fromString(buyerRead.data.industry!!.id)
-            verificationStage = ConnectionReadEntity.ConnectionStatus.values()[connection.status.ordinal]
-            created =
-                    if (System.getenv("spring_profiles_active") == "dev" || System.getenv("spring_profiles_active") == "local") randomDate(
-                            2016,
-                            2021,
-                    ) else LocalDate.now()
+            verificationStage = ConnectionReadEntity.ConnectionStatus.valueOf(connection.status.name)
+
             data = ConnectionReadEntity.Data(connection.id).apply {
                 val endDateMutableList = mutableListOf<Year?>()
                 val startDateMutableList = mutableListOf<Year>()
@@ -132,8 +122,9 @@ class ConnectionService(
                     endDateMutableList.add(connectionService.endDate)
                 }
 
-                startCollaboration = startDateMutableList.maxOrNull()!!
-                endCollaboration = if(endDateMutableList.contains(null)) null else endDateMutableList.maxByOrNull { year -> year!! }
+                startCollaboration = startDateMutableList.minOrNull()!!
+                created = startCollaboration
+                endCollaboration = if (endDateMutableList.contains(null)) null else endDateMutableList.maxByOrNull { year -> year!! }
                 serviceIds = idServiceMutableList.joinToString(";")
                 services = servicesConnection
 
@@ -151,11 +142,5 @@ class ConnectionService(
         )
     }
 
-    fun randomDate(startYear: Int, endYear: Int): LocalDate {
-        val day: Int = Random.nextInt(1, 28)
-        val month: Int = Random.nextInt(1, 12)
-        val year: Int = Random.nextInt(startYear, endYear)
-        return LocalDate.of(year, month, day)
-    }
 }
 

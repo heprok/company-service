@@ -11,6 +11,8 @@ databaseChangeLog:
                   name: dates_start_collaboration
               - column:
                   name: dates_end_collaboration
+              - column:
+                  name: created
         - addColumn:
             tableName: connection
             schemaName: ${readSchema}
@@ -42,6 +44,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  afterColumn: buyer_role_name
+                  name: created
+                  type: Year
+                  constraints:
+                    nullable: false
+              - column:
                   afterColumn: created
                   name: start_collaboration
                   type: Year
@@ -51,15 +59,6 @@ databaseChangeLog:
                   afterColumn: start_collaboration
                   name: end_collaboration
                   type: Year
-
-#        - sql:
-#            comment: VIRTUAL ROLE seller
-#            sql: ALTER TABLE ${readSchema}.connection ADD COLUMN `seller_role` JSON GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.sellerCompany.role')) NOT NULL AFTER `data`
-#            stripComments: true
-#        - sql:
-#            comment: VIRTUAL ROLE buyer
-#            sql: ALTER TABLE ${readSchema}.connection ADD COLUMN `buyer_role` JSON GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.buyerCompany.role')) NOT NULL AFTER `data`
-#            stripComments: true
         - sql:
             comment: FULLTEXT index for ${readSchema}.connection table name field
             sql: alter table ${readSchema}.connection add fulltext index idx_fulltext_connection_buyer_name(buyer_name)

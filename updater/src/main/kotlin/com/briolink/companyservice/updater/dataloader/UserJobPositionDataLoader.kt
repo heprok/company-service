@@ -4,23 +4,18 @@ import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEnt
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
-import com.briolink.companyservice.updater.dto.UserJobPosition
-import com.briolink.companyservice.updater.event.UserJobPositionCreatedEvent
-import com.briolink.companyservice.updater.service.CompanyService
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.briolink.companyservice.updater.handler.service.CompanyHandlerService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import java.net.URL
 import java.util.*
-import kotlin.random.Random
 
 @Component
 @Order(2)
 class UserJobPositionDataLoader(
-    var readRepository: UserJobPositionReadRepository,
+    var userJobPositionReadRepository: UserJobPositionReadRepository,
     var userReadRepository: UserReadRepository,
     var companyReadRepository: CompanyReadRepository,
-    var companyService: CompanyService,
+    var companyHandlerService: CompanyHandlerService,
 
     ) : DataLoader() {
     private val listJobPosition: List<String> = listOf(
@@ -39,7 +34,7 @@ class UserJobPositionDataLoader(
     override fun loadData() {
 
         if (
-            readRepository.count().toInt() == 0 &&
+            userJobPositionReadRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0
         ) {
@@ -49,8 +44,8 @@ class UserJobPositionDataLoader(
             for (i in 1..COUNT_JOB_POSITION) {
                 val userRandom = listUser.random()
                 val companyRandom = listCompany.random()
-                if (!readRepository.existsByUserIdAndCompanyId(userId = userRandom.id, companyId = companyRandom.id)) {
-                    readRepository.save(
+                if (!userJobPositionReadRepository.existsByUserIdAndCompanyId(userId = userRandom.id, companyId = companyRandom.id)) {
+                    userJobPositionReadRepository.save(
                             UserJobPositionReadEntity(
                                     id = UUID.randomUUID(),
                                     companyId = companyRandom.id,
@@ -70,7 +65,7 @@ class UserJobPositionDataLoader(
                 }
 
                 listCompany.forEach{
-                    companyService.setOwner(it.id, UUID.fromString("e0983f0e-68ad-4a5a-8968-7406f915ff90"))
+                    companyHandlerService.setOwner(it.id, UUID.fromString("e0983f0e-68ad-4a5a-8968-7406f915ff90"))
                 }
 
 

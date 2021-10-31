@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.service
+package com.briolink.companyservice.updater.handler.service
 
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
@@ -14,7 +14,7 @@ import javax.persistence.EntityNotFoundException
 
 @Transactional
 @Service
-class StatisticService(
+class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
     private val companyReadRepository: CompanyReadRepository,
@@ -75,8 +75,8 @@ class StatisticService(
                 countService = connection.data.services.count()
             }
             listCollaborator.add(collaborator.id)
-            statsNumberConnection.companiesStatsByYear[connection.created.year] = statsNumberConnection.companiesStatsByYear.getOrDefault(
-                    connection.created.year,
+            statsNumberConnection.companiesStatsByYear[connection.created.value] = statsNumberConnection.companiesStatsByYear.getOrDefault(
+                    connection.created.value,
                     StatisticReadEntity.CompaniesStats(
                             listCompanies = mutableSetOf(),
                             totalCount = mutableMapOf(),
