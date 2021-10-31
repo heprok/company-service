@@ -18,33 +18,34 @@ class ServiceReadEntity(
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
     var id: UUID,
+) : BaseReadEntity() {
 
     @Type(type = "uuid-char")
     @Column(name = "company_id", nullable = false, length = 36)
-    var companyId: UUID,
-
-    @Column(name = "name", nullable = false, length = 255)
-    var name: String,
-
-    @Column(name = "verified_uses", nullable = false)
-    var verifiedUses: Int = 0,
-
-    @Column(name = "price", nullable = false)
-    var price: Double? = null,
-
-    @Column(name = "last_used")
-    var lastUsed: LocalDate? = null,
-
-    @Column(name = "created")
-    var created: LocalDate? = null,
-
-    @Column(name = "is_hide")
-    var isHide: Boolean = false,
+    lateinit var companyId: UUID
 
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
-    var data: Data
-) : BaseReadEntity() {
+    lateinit var data: Data
+
+    @Column(name = "name", nullable = false, length = 255)
+    lateinit var name: String
+
+    @Column(name = "verified_uses", nullable = false)
+    var verifiedUses: Int = 0
+
+    @Column(name = "price")
+    var price: Double? = null
+
+    @Column(name = "last_used")
+    var lastUsed: LocalDate? = null
+
+    @Column(name = "created")
+    var created: LocalDate? = LocalDate.now()
+
+    @Column(name = "is_hide")
+    var isHide: Boolean = false
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty("logo")

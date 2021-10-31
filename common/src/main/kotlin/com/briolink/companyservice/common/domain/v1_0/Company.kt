@@ -7,11 +7,11 @@ import java.util.*
 
 data class Company(
     @JsonProperty("id")
-    val id: UUID? = null,
+    val id: UUID,
     @JsonProperty("name")
     val name: String,
     @JsonProperty("slug")
-    val slug: String? = null,
+    val slug: String,
     @JsonProperty("website")
     val website: URL? = null,
     @JsonProperty("logo")

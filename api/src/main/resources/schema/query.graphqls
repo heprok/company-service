@@ -6,8 +6,7 @@ type Query {
     getKeywords(query: String!): [Keyword]!
 
 #    ================= services ================
-    getServices(companyId: ID!, limit: Int = 10, offset: Int = 0): ServiceList! @deprecated(reason: "Use new Filter")
-    getServicesFilter(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
+    getServices(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
     getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
 
 #    ================ sorting filter for connection ===============

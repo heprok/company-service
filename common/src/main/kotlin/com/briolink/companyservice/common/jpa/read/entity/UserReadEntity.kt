@@ -17,11 +17,11 @@ class UserReadEntity(
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, length = 36)
     var id: UUID,
-
+) : BaseReadEntity() {
     @Type(type = "json")
     @Column(name = "data", nullable = false, columnDefinition = "json")
-    var data: Data
-) : BaseReadEntity() {
+    lateinit var data: Data
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty("firstName")

@@ -28,16 +28,17 @@ class UserDataLoader(
                 userReadRepository.save(
                         UserReadEntity(
                                 id = UUID.randomUUID(),
-                                data = UserReadEntity.Data(
-                                        firstName = listFirstName.random(),
-                                        lastName = listLastName.random(),
-                                        image = URL("https://placeimg.com/148/148/people"),
-                                ).apply {
-                                    slug = StringUtil.slugify(
-                                            listFirstName.random() + " " + listLastName.random() + " " + UUID.randomUUID().toString(),
-                                    )
-                                },
-                        ),
+                        ).apply {
+                            data = UserReadEntity.Data(
+                                    firstName = listFirstName.random(),
+                                    lastName = listLastName.random(),
+                                    image = URL("https://placeimg.com/148/148/people"),
+                            ).apply {
+                                slug = StringUtil.slugify(
+                                        listFirstName.random() + " " + listLastName.random() + " " + UUID.randomUUID().toString(),
+                                )
+                            }
+                        },
                 )
             }
         }

@@ -20,26 +20,9 @@ class ServiceQuery(
     private val serviceCompanyService: ServiceCompanyService,
     private val companyService: CompanyService,
 ) {
-    @Deprecated("Not working filter")
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getServices(
-        @InputArgument("limit") limit: Int,
-        @InputArgument("offset") offset: Int,
-        @InputArgument("companyId") companyId: String
-    ): ServiceList {
-        val page = serviceCompanyService.getByCompanyId(UUID.fromString(companyId), limit, offset)
-        return ServiceList(
-                items = page.content.map {
-                    Service.fromEntity(it)
-                },
-                totalItems = page.totalElements.toInt(),
-        )
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getServicesFilter(
         @InputArgument("companyId") companyId: String,
         @InputArgument("sort") sort: ServiceSort,
         @InputArgument("limit") limit: Int,
