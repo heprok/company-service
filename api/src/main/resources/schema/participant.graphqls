@@ -1,8 +1,0 @@
-type Participant {
-    id: ID!
-    name: String!
-    slug: String!
-    logo: Image
-    role: String!
-    verifyUser: User!
-}

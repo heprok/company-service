@@ -72,3 +72,11 @@ type ConnectionService {
     endDate: Year
 }
 
+type Participant {
+    id: ID!
+    name: String!
+    slug: String!
+    logo: Image
+    role: String!
+    verifyUser: User!
+}
