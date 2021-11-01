@@ -8,11 +8,9 @@ type Connection {
 }
 
 enum VerificationStage {
-    Draft
     Pending
     InProgress
     Verified
-    Rejected
 }
 
 input ConnectionFilter {

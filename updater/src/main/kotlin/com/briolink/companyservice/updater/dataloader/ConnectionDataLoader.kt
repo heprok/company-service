@@ -44,10 +44,13 @@ class ConnectionDataLoader(
             val listUser = userReadRepository.findAll()
             val listConnectionRole = connectionRoleReadRepository.findAll()
             val listService = serviceReadRepository.findAll()
+            val connectionStatusList = listOf(ConnectionStatus.Verified, ConnectionStatus.Pending, ConnectionStatus.InProgress)
             for (i in 1..COUNT_CONNECTION) {
                 val from = listCompany.random()
                 val to = listCompany.random().let {
-                    if (it.id == from.id) listCompany.random() else it
+                    if (it.id == from.id) listCompany.random().let {
+                        if (it.id == from.id) listCompany.random() else it
+                    } else it
                 }
                 val services = mutableListOf<ConnectionService>()
                 for (j in 0..Random.nextInt(1, 4)) {
@@ -63,42 +66,42 @@ class ConnectionDataLoader(
                             },
                     )
                 }
-                    connectionServiceHandler.createOrUpdate(
-                            Connection(
-                                    id = UUID.randomUUID(),
-                                    participantFrom = ConnectionParticipant(
-                                            userId = listUser.random().id,
-                                            userJobPositionTitle = null,
-                                            companyId = from.id,
-                                            companyRole = listConnectionRole.shuffled()
-                                                    .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Seller }!!
-                                                    .let {
-                                                        ConnectionCompanyRole(
-                                                                name = it.name,
-                                                                id = it.id,
-                                                                type = ConnectionCompanyRoleType.valueOf(it.type.name),
-                                                        )
-                                                    },
-                                    ),
-                                    participantTo = ConnectionParticipant(
-                                            userId = listUser.random().id,
-                                            userJobPositionTitle = null,
-                                            companyId = to.id,
-                                            companyRole = listConnectionRole.shuffled()
-                                                    .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Buyer }!!
-                                                    .let {
-                                                        ConnectionCompanyRole(
-                                                                name = it.name,
-                                                                id = it.id,
-                                                                type = ConnectionCompanyRoleType.valueOf(it.type.name),
-                                                        )
-                                                    },
-                                    ),
-                                    services = ArrayList(services),
-                                    status = ConnectionStatus.values().random(),
-                            ),
-                    )
-                }
+                connectionServiceHandler.createOrUpdate(
+                        Connection(
+                                id = UUID.randomUUID(),
+                                participantFrom = ConnectionParticipant(
+                                        userId = listUser.random().id,
+                                        userJobPositionTitle = null,
+                                        companyId = from.id,
+                                        companyRole = listConnectionRole.shuffled()
+                                                .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Seller }!!
+                                                .let {
+                                                    ConnectionCompanyRole(
+                                                            name = it.name,
+                                                            id = it.id,
+                                                            type = ConnectionCompanyRoleType.valueOf(it.type.name),
+                                                    )
+                                                },
+                                ),
+                                participantTo = ConnectionParticipant(
+                                        userId = listUser.random().id,
+                                        userJobPositionTitle = null,
+                                        companyId = to.id,
+                                        companyRole = listConnectionRole.shuffled()
+                                                .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Buyer }!!
+                                                .let {
+                                                    ConnectionCompanyRole(
+                                                            name = it.name,
+                                                            id = it.id,
+                                                            type = ConnectionCompanyRoleType.valueOf(it.type.name),
+                                                    )
+                                                },
+                                ),
+                                services = ArrayList(services),
+                                status = connectionStatusList.random(),
+                        ),
+                )
+            }
         }
     }
 
