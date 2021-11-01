@@ -19,7 +19,7 @@ type Query {
     getServicesProvided(companyId: ID!, query: String!): [ServiceProvided]!
 
 #    =============== statistic ===================
-    getCharts(companyId: ID!, offset: Int = 5): Charts
+    getCharts(companyId: ID!): Charts
 
     #    ------------------- number Connection -----------------------
     getCompanyStatsByNumberConnectionOnYear(companyId: ID!, year: Year) : [ChartCompany]
