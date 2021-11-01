@@ -24,8 +24,6 @@ import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import java.net.URL
-import java.time.Year
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         Company(
@@ -108,6 +106,7 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         lastUsed = entity.lastUsed,
         isHide = entity.isHide,
         image = entity.data.logo.let { Image(url = it) },
+        slug = entity.data.slug
 )
 
 

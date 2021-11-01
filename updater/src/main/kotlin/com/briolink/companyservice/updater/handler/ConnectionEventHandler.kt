@@ -21,7 +21,7 @@ class ConnectionEventHandler(
 ) : IEventHandler<ConnectionCreatedEvent> {
     override fun handle(event: ConnectionCreatedEvent) {
         val connection = event.data
-        if (connection.status != ConnectionStatus.Draft || connection.status != ConnectionStatus.Rejected) {
+        if (connection.status != ConnectionStatus.Draft && connection.status != ConnectionStatus.Rejected) {
             if (connection.participantFrom.companyRole!!.type == ConnectionCompanyRoleType.Buyer) {
                 connection.participantTo = connection.participantFrom.also {
                     connection.participantFrom = connection.participantTo

@@ -213,9 +213,9 @@ class StatisticQuery(private val statisticReadRepository: StatisticReadRepositor
     @PreAuthorize("isAuthenticated()")
     fun getCompanyStatsByNumberConnectionOnYear(
         @InputArgument("companyId") companyId: String,
-        @InputArgument("year") year: Year
+        @InputArgument("year") year: Year?
     ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsNumberConnection.companiesStatsByYear[year.value]?.let { companiesStats ->
+            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsNumberConnection.companiesStatsByYear[year?.value]?.let { companiesStats ->
         companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
     }
 
