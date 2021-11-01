@@ -39,7 +39,7 @@ class ConnectionQuery(
                     limit = limit,
                     offset = offset,
             )
-            val itemsCountByRole = connectionService.getRolesAndCountForCompany(UUID.fromString(companyId)).map {
+            val itemsCountByRole = connectionService.getRolesAndCountForCompany(UUID.fromString(companyId), filter = filter).map {
                 ConnectionTabItemsCount(
                         id = it.key.toString(),
                         value = it.value,

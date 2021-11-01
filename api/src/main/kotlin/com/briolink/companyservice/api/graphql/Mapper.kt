@@ -185,10 +185,5 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
         industry = entity.data.industry.let {
             Industry(id = it.id.toString(), name = it.name)
         },
-        verificationStage = when (entity.verificationStage) {
-            ConnectionReadEntity.ConnectionStatus.Pending -> VerificationStage.Pending
-            ConnectionReadEntity.ConnectionStatus.InProgress -> VerificationStage.Progress
-            ConnectionReadEntity.ConnectionStatus.Verified -> VerificationStage.Verified
-            else -> VerificationStage.Reject
-        },
+        verificationStage = VerificationStage.valueOf(entity.verificationStage.name)
 )

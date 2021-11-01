@@ -8,20 +8,21 @@ type Connection {
 }
 
 enum VerificationStage {
+    Draft
     Pending
-    Progress
+    InProgress
     Verified
-    Reject
+    Rejected
 }
 
 input ConnectionFilter {
     role: InputConnectionRole
-    collaboratorId: [ID]
-    collaboratorRoleId: [ID]
-    industryId: [ID]
+    collaboratorIds: [ID]
+    collaboratorRoleIds: [ID]
+    industryIds: [ID]
     location: String
     datesOfCollaborators: RangeYear
-    verificationStage: [VerificationStage]
+    verificationStages: [VerificationStage]
     serviceIds: [ID]
 }
 

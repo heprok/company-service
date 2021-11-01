@@ -137,19 +137,19 @@ class ConnectionService(
 
     fun getSpecification(filter: ConnectionFilter?) = Specification<ConnectionReadEntity> { _, _, _ -> null }
             .and(inServiceIds(filter?.serviceIds?.map { UUID.fromString(it) }))
-            .and(inIndustryIds(filter?.industryId?.map { UUID.fromString(it) }))
+            .and(inIndustryIds(filter?.industryIds?.map { UUID.fromString(it) }))
             .and(
-                    inBuyerRoleIds(filter?.collaboratorRoleId?.map { UUID.fromString(it) })?.or(
-                            inSellerRoleIds(filter?.collaboratorRoleId?.map { UUID.fromString(it) }),
+                    inBuyerRoleIds(filter?.collaboratorRoleIds?.map { UUID.fromString(it) })?.or(
+                            inSellerRoleIds(filter?.collaboratorRoleIds?.map { UUID.fromString(it) }),
                     ),
             )
             .and(
-                    inBuyerIds(filter?.collaboratorId?.map { UUID.fromString(it) })?.or(
-                            inSellerIds(filter?.collaboratorId?.map { UUID.fromString(it) }),
+                    inBuyerIds(filter?.collaboratorIds?.map { UUID.fromString(it) })?.or(
+                            inSellerIds(filter?.collaboratorIds?.map { UUID.fromString(it) }),
                     ),
             )
             .and(betweenDateCollab(start = filter?.datesOfCollaborators?.start, end = filter?.datesOfCollaborators?.end))
-            .and(inVerificationStage(filter?.verificationStage?.map { ConnectionReadEntity.ConnectionStatus.valueOf(it!!.name) }))
+            .and(inVerificationStage(filter?.verificationStages?.map { ConnectionReadEntity.ConnectionStatus.valueOf(it!!.name) }))
             .and(fullTextSearchByLocation(filter?.location))
 
     fun existsConnectionByCompany(companyId: UUID): Boolean {

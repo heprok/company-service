@@ -142,5 +142,9 @@ class ConnectionHandlerService(
         )
     }
 
+    fun delete(connectionId: UUID) {
+        connectionReadRepository.deleteById(connectionId)
+    }
+
 }
 
