@@ -42,7 +42,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 isTypePublic = entity.data.isTypePublic,
                 industry = entity.data.industry?.let {
                     Industry(
-                            id = it.id,
+                            id = it.id.toString(),
                             name = it.name,
                     )
                 },

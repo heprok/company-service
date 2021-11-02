@@ -71,7 +71,7 @@ class CompanyReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Industry(
         @JsonProperty("id")
-        val id: String,
+        val id: UUID,
         @JsonProperty("name")
         val name: String,
     )

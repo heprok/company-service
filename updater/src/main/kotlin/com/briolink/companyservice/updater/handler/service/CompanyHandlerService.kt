@@ -30,7 +30,7 @@ class CompanyHandlerService(
                     isTypePublic = company.isTypePublic,
                     logo = company.logo,
                     description = company.description,
-                    industry = company.industry?.let { CompanyReadEntity.Industry(it.id.toString(), it.name) },
+                    industry = company.industry?.let { CompanyReadEntity.Industry(it.id, it.name) },
                     keywords = company.keywords?.let { list ->
                         list.map {
                             CompanyReadEntity.Keyword(

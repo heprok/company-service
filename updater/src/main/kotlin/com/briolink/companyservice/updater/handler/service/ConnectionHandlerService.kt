@@ -29,7 +29,7 @@ class ConnectionHandlerService(
         val userBuyerRead = userReadRepository.getById(connection.participantTo.userId!!)
         val userSellerRead = userReadRepository.getById(connection.participantFrom.userId!!)
         val industryRead = IndustryReadEntity(
-                id = UUID.fromString(buyerRead.data.industry!!.id),
+                id = buyerRead.data.industry!!.id,
                 name = buyerRead.data.industry!!.name,
         )
         val connectionRead = connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
@@ -41,7 +41,7 @@ class ConnectionHandlerService(
             location = buyerRead.data.location
             buyerRoleId = connection.participantTo.companyRole!!.id
             sellerRoleId = connection.participantFrom.companyRole!!.id
-            industryId = UUID.fromString(buyerRead.data.industry!!.id)
+            industryId = buyerRead.data.industry!!.id
             verificationStage = ConnectionReadEntity.ConnectionStatus.valueOf(connection.status.name)
 
             data = ConnectionReadEntity.Data(connection.id).apply {
