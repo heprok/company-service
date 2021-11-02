@@ -51,8 +51,8 @@ class ConnectionService(
     fun findAll(companyId: UUID, limit: Int, offset: Int, sort: ConnectionSort?, filter: ConnectionFilter?): Page<ConnectionReadEntity> {
         var spec = getSpecification(filter)
         spec = when (filter?.role?.type) {
-            ConnectionRoleType.Buyer -> spec.and(equalsBuyerId(companyId))
-            ConnectionRoleType.Seller -> spec.and(equalsSellerId(companyId))
+            ConnectionRoleType.Buyer -> spec.and(equalsBuyerId(companyId)).and(inBuyerRoleIds(listOf(UUID.fromString(filter.role.id))))
+            ConnectionRoleType.Seller -> spec.and(equalsSellerId(companyId).and(inSellerRoleIds(listOf(UUID.fromString(filter.role.id)))))
             else -> spec.and(equalsSellerIdOrBuyerId(companyId))
         }
         val sortBy = if (sort != null) Sort.by(Sort.Direction.fromString(sort.direction.name), sort.sortBy.name) else Sort.unsorted()

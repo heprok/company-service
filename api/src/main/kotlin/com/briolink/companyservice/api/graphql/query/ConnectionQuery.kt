@@ -46,8 +46,14 @@ class ConnectionQuery(
                 )
             }
             ConnectionList(
-                    items = page.content.map {
-                        Connection.fromEntity(it)
+                    items = page.content.map { entity ->
+                        Connection.fromEntity(entity).let {
+                            if (it.seller!!.id == companyId) {
+                                it.copy(buyer = it.seller, seller = it.buyer)
+                            } else {
+                                it
+                            }
+                        }
                     },
                     itemsCountByRole = itemsCountByRole,
                     totalItems = itemsCountByRole.sumOf { connectionTabItemsCount -> connectionTabItemsCount.value },

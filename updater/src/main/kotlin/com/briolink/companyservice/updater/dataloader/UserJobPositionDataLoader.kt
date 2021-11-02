@@ -88,6 +88,6 @@ class UserJobPositionDataLoader(
     }
 
     companion object {
-        const val COUNT_JOB_POSITION = 300
+        const val COUNT_JOB_POSITION = 20
     }
 }
