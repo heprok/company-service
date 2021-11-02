@@ -32,7 +32,6 @@ class ConnectionDataLoader(
     private var connectionServiceHandler: ConnectionHandlerService,
 ) : DataLoader() {
     override fun loadData() {
-        connectionReadRepository.deleteAll()
         if (
             connectionReadRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&
