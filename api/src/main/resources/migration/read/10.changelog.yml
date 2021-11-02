@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10
+      author: oleg@briolink.com
+      changes:
+        - dropNotNullConstraint:
+            columnDataType: double
+            columnName: price
+            schemaName: ${readSchema}
+            tableName: service
