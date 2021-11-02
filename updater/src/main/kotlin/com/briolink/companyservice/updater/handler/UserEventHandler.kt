@@ -29,6 +29,7 @@ class UserCreatedEventHandler(
             ).apply {
                 slug = user.slug
             }
+            userReadRepository.save(this)
         }
     }
 }
