@@ -15,8 +15,8 @@ enum VerificationStage {
 
 input ConnectionFilter {
     role: InputConnectionRole
-    collaboratorIds: [ID]
-    collaboratorRoleIds: [ID]
+    collaborators: [InputCollaborator]
+    collaboratorRoles: [InputCollaboratorRole]
     industryIds: [ID]
     location: String
     datesOfCollaborators: RangeYear
@@ -27,6 +27,17 @@ input ConnectionFilter {
 type Collaborator {
     id: ID!,
     name: String!,
+    type: ConnectionRoleType!
+}
+
+input InputCollaborator {
+    id: ID!,
+    type: ConnectionRoleType!
+}
+
+input InputCollaboratorRole {
+    id: ID!,
+    type: ConnectionRoleType!
 }
 
 enum ConnectionSortBy {
@@ -77,6 +88,6 @@ type Participant {
     name: String!
     slug: String!
     logo: Image
-    role: String!
+    role: ConnectionRole!
     verifyUser: User!
 }

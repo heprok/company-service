@@ -2,8 +2,10 @@ package com.briolink.companyservice.common.jpa.read.repository.connection
 
 import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.matchBoolMode
+import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity_
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import org.springframework.data.jpa.domain.Specification
 import java.time.Year
 import java.util.*
@@ -17,6 +19,18 @@ fun equalsBuyerId(companyId: UUID): Specification<ConnectionReadEntity> {
 fun equalsSellerId(companyId: UUID): Specification<ConnectionReadEntity> {
     return Specification<ConnectionReadEntity> { root, _, builder ->
         builder.equal(root.get(ConnectionReadEntity_.sellerId), companyId)
+    }
+}
+
+fun equalsBuyerRoleId(roleId: UUID): Specification<ConnectionReadEntity> {
+    return Specification<ConnectionReadEntity> { root, _, builder ->
+        builder.equal(root.get(ConnectionReadEntity_.buyerRoleId), roleId)
+    }
+}
+
+fun equalsSellerRoleId(roleId: UUID): Specification<ConnectionReadEntity> {
+    return Specification<ConnectionReadEntity> { root, _, builder ->
+        builder.equal(root.get(ConnectionReadEntity_.sellerRoleId), roleId)
     }
 }
 
@@ -35,11 +49,13 @@ fun betweenDateCollab(start: Year?, end: Year?): Specification<ConnectionReadEnt
             builder.greaterThanOrEqualTo(root.get(ConnectionReadEntity_.startCollaboration), start)
         }.and { root, _, builder ->
             builder.lessThanOrEqualTo(root.get(ConnectionReadEntity_.endCollaboration), start)
-        }.or { root, _, builder ->
-            builder.isNull(root.get(ConnectionReadEntity_.endCollaboration))
         }
     } else if (start != null && end != null) {
-        initSpec<ConnectionReadEntity>().and(betweenStartCollaboration(start, end)).or(betweenEndCollaboration(start, end))
+        Specification<ConnectionReadEntity> { root, _, builder ->
+            builder.greaterThanOrEqualTo(root.get(ConnectionReadEntity_.startCollaboration), start)
+        }.and { root, _, builder ->
+            builder.lessThanOrEqualTo(root.get(ConnectionReadEntity_.endCollaboration), end)
+        }
     } else {
         null
     }
@@ -110,6 +126,36 @@ fun inIndustryIds(industryIds: List<UUID>?): Specification<ConnectionReadEntity>
         Specification<ConnectionReadEntity> { root, _, builder ->
             builder.and(root.get(ConnectionReadEntity_.industryId).`in`(industryIds))
         }
+    } else {
+        null
+    }
+}
+
+fun inCollaboratorRoles(collaboratorRoles: MutableMap<UUID, ConnectionRoleReadEntity.RoleType>?): Specification<ConnectionReadEntity>? {
+    return if (!collaboratorRoles.isNullOrEmpty()) {
+        var spec = Specification<ConnectionReadEntity> { _, _, _ -> null }
+        collaboratorRoles.forEach { (id, type) ->
+            spec = spec.or(
+                    if (type == ConnectionRoleReadEntity.RoleType.Buyer)
+                        equalsBuyerId(id) else equalsSellerId(id),
+            )
+        }
+        spec
+    } else {
+        null
+    }
+}
+
+fun inCollaborators(collaborators: Map<UUID, ConnectionRoleReadEntity.RoleType>?): Specification<ConnectionReadEntity>? {
+    return if (!collaborators.isNullOrEmpty()) {
+        var spec = Specification<ConnectionReadEntity> { _, _, _ -> null }
+        collaborators.forEach { (id, type) ->
+            spec = spec.or(
+                    if (type == ConnectionRoleReadEntity.RoleType.Buyer)
+                        equalsBuyerId(id) else equalsSellerId(id),
+            )
+        }
+        spec
     } else {
         null
     }

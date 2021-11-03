@@ -4,8 +4,6 @@ import com.briolink.companyservice.api.types.Collaborator
 import com.briolink.companyservice.api.types.ConnectionFilter
 import com.briolink.companyservice.api.types.ConnectionRoleType
 import com.briolink.companyservice.api.types.ConnectionSort
-import com.briolink.companyservice.common.jpa.projection.CollaboratorProjection
-import com.briolink.companyservice.common.jpa.projection.CollaboratorRoleProjection
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
@@ -17,10 +15,10 @@ import com.briolink.companyservice.common.jpa.read.repository.connection.equalsB
 import com.briolink.companyservice.common.jpa.read.repository.connection.equalsSellerId
 import com.briolink.companyservice.common.jpa.read.repository.connection.equalsSellerIdOrBuyerId
 import com.briolink.companyservice.common.jpa.read.repository.connection.fullTextSearchByLocation
-import com.briolink.companyservice.common.jpa.read.repository.connection.inBuyerIds
 import com.briolink.companyservice.common.jpa.read.repository.connection.inBuyerRoleIds
+import com.briolink.companyservice.common.jpa.read.repository.connection.inCollaboratorRoles
+import com.briolink.companyservice.common.jpa.read.repository.connection.inCollaborators
 import com.briolink.companyservice.common.jpa.read.repository.connection.inIndustryIds
-import com.briolink.companyservice.common.jpa.read.repository.connection.inSellerIds
 import com.briolink.companyservice.common.jpa.read.repository.connection.inSellerRoleIds
 import com.briolink.companyservice.common.jpa.read.repository.connection.inServiceIds
 import com.briolink.companyservice.common.jpa.read.repository.connection.inVerificationStage
@@ -71,10 +69,6 @@ class ConnectionService(
         }
         return connectionReadRepository.count(spec)
     }
-
-    fun getIndustriesInConnectionFromCompany(companyId: UUID, query: String, limit: Int = 10): List<IndustryReadEntity> =
-            connectionReadRepository.getIndustriesUsesCompany(companyId = companyId, query = query)
-                    .map { IndustryReadEntity(it.id, it.name) }
 
     fun getRolesAndCountForCompany(companyId: UUID, filter: ConnectionFilter? = null): Map<UUID, Int> {
         val resultRolesAndCount = mutableListOf<Tuple>()
@@ -139,60 +133,111 @@ class ConnectionService(
             .and(inServiceIds(filter?.serviceIds?.map { UUID.fromString(it) }))
             .and(inIndustryIds(filter?.industryIds?.map { UUID.fromString(it) }))
             .and(
-                    inBuyerRoleIds(filter?.collaboratorRoleIds?.map { UUID.fromString(it) })?.or(
-                            inSellerRoleIds(filter?.collaboratorRoleIds?.map { UUID.fromString(it) }),
+                    inCollaboratorRoles(
+                            filter?.collaboratorRoles.let { listCollaboratorRoles ->
+                                val list = mutableMapOf<UUID, ConnectionRoleReadEntity.RoleType>().apply {
+                                    listCollaboratorRoles?.forEach {
+                                        if (it != null) {
+                                            this[UUID.fromString(it.id)] = ConnectionRoleReadEntity.RoleType.valueOf(it.type.name)
+                                        }
+                                    }
+                                }
+                                list
+                            },
                     ),
+//                    when (filter?.collaboratorRoles?.type) {
+//                        ConnectionRoleType.Buyer -> inSellerRoleIds(filter.collaboratorRoles?.map { UUID.fromString(it.id) })
+//                        ConnectionRoleType.Seller -> inBuyerRoleIds(filter.collaboratorRoles?.map { UUID.fromString(it.id) })
+//                        else -> inBuyerRoleIds(filter?.collaboratorRoles?.map { UUID.fromString(it.id) })?.or(
+//                                inSellerRoleIds(filter?.collaboratorRoles?.map { UUID.fromString(it.id) }),
+//                        )
+//                    },
             )
             .and(
-                    inBuyerIds(filter?.collaboratorIds?.map { UUID.fromString(it) })?.or(
-                            inSellerIds(filter?.collaboratorIds?.map { UUID.fromString(it) }),
+                    inCollaborators(
+                            filter?.collaborators.let { listCollaborators ->
+                                val list = mutableMapOf<UUID, ConnectionRoleReadEntity.RoleType>().apply {
+                                    listCollaborators?.forEach {
+                                        if (it != null) {
+                                            this[UUID.fromString(it.id)] = ConnectionRoleReadEntity.RoleType.valueOf(it.type.name)
+                                        }
+                                    }
+                                }
+                                list
+                            },
                     ),
+
+//                    when (filter?.role?.type) {
+//                        ConnectionRoleType.Buyer -> inSellerIds(filter.collaboratorIds?.map { UUID.fromString(it) })
+//                        ConnectionRoleType.Seller -> inBuyerIds(filter.collaboratorIds?.map { UUID.fromString(it) })
+//                        else -> inBuyerIds(filter?.collaboratorIds?.map { UUID.fromString(it) })?.or(
+//                                inSellerIds(filter?.collaboratorIds?.map { UUID.fromString(it) }),
+//                        )
+//                    },
             )
             .and(betweenDateCollab(start = filter?.datesOfCollaborators?.start, end = filter?.datesOfCollaborators?.end))
             .and(inVerificationStage(filter?.verificationStages?.map { ConnectionReadEntity.ConnectionStatus.valueOf(it!!.name) }))
             .and(fullTextSearchByLocation(filter?.location))
+
 
     fun existsConnectionByCompany(companyId: UUID): Boolean {
         return connectionReadRepository.existsBySellerIdAndBuyerId(companyId, companyId)
     }
 
     fun getCollaboratorsUsedForCompany(companyId: UUID, query: String, limit: Int = 10): List<Collaborator> {
-        return mutableListOf<CollaboratorProjection>().apply {
+        return mutableListOf<Collaborator>().apply {
             addAll(
                     connectionReadRepository.getCollaboratorsBuyerUsedForCompany(
                             sellerCompanyId = companyId,
                             query = query,
-                    ),
+                    ).map {
+                        Collaborator(id = it.id.toString(), name = it.name, type = ConnectionRoleType.Buyer)
+                    },
             )
             addAll(
                     connectionReadRepository.getCollaboratorsSellerUsedForCompany(
                             buyerCompanyId = companyId,
                             query = query,
-                    ),
+                    ).map {
+                        Collaborator(id = it.id.toString(), name = it.name, type = ConnectionRoleType.Seller)
+                    },
             )
-        }.take(limit).map { Collaborator(id = it.id.toString(), name = it.name) }.toList()
+
+        }.distinct().take(limit).toList()
     }
 
     fun getConnectionRoleUsedForCompany(companyId: UUID, query: String, limit: Int = 10): List<ConnectionRoleReadEntity> {
-        val mutableListCollaborator = mutableListOf<CollaboratorRoleProjection>()
+        val mutableListCollaborator = mutableListOf<ConnectionRoleReadEntity>()
         mutableListCollaborator.addAll(
-                connectionReadRepository.getCollaboratorsRolesBuyerUsedForCompany(
+                connectionReadRepository.getCollaboratorsBuyerRolesUsedForCompany(
                         sellerCompanyId = companyId,
                         query = query,
-                ),
+                ).map {
+                    ConnectionRoleReadEntity(it.id, it.name, ConnectionRoleReadEntity.RoleType.Buyer)
+                },
         )
         mutableListCollaborator.addAll(
                 connectionReadRepository.getCollaboratorsSellerRolesUsedForCompany(
                         buyerCompanyId = companyId,
                         query = query,
-                ),
+                ).map {
+                    ConnectionRoleReadEntity(it.id, it.name, ConnectionRoleReadEntity.RoleType.Seller)
+                },
         )
-        return mutableListCollaborator.take(limit).map { ConnectionRoleReadEntity(id = it.id, name = it.name, type = it.type) }.toList()
+        return mutableListCollaborator.distinct().take(limit).toList()
     }
 
     fun getServicesProvided(companyId: UUID, query: String): List<ConnectionServiceReadEntity> {
-        return connectionServiceReadRepository.findAll(
-                fullTextSearchByConnectionServiceName(query).and(equalsCompanyId(companyId)),
-        ).take(10)
+        return if (query.isEmpty()) {
+            connectionServiceReadRepository.findAll(equalsCompanyId(companyId)).distinct().take(10)
+        } else {
+            connectionServiceReadRepository.findAll(
+                    fullTextSearchByConnectionServiceName(query).and(equalsCompanyId(companyId)),
+            ).distinct().take(10)
+        }
     }
+
+    fun getIndustriesInConnectionFromCompany(companyId: UUID, query: String): List<IndustryReadEntity> =
+            connectionReadRepository.getIndustriesUsesCompany(companyId = companyId, query = query)
+                    .map { IndustryReadEntity(it.id, it.name) }
 }

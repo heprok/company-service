@@ -51,7 +51,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
                 ConnectionReadEntity c
             WHERE 
                 sellerId = :companyId AND
-                buyerName LIKE %:query%
+                industryName LIKE %:query%
         """,
     )
     fun getCollaboratorsBuyerUsedForCompany(
@@ -78,7 +78,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
     @Query(
             value = """
             SELECT 
-                distinct c.buyerRole
+                distinct c.buyerRoleId as id, c.buyerRoleName as name
             FROM 
                 ConnectionReadEntity c
             WHERE 
@@ -86,7 +86,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
                 buyerRoleName LIKE %:query%
         """,
     )
-    fun getCollaboratorsRolesBuyerUsedForCompany(
+    fun getCollaboratorsBuyerRolesUsedForCompany(
         @Param("query") query: String,
         @Param("companyId") sellerCompanyId: UUID,
     ): List<CollaboratorRoleProjection>
@@ -94,7 +94,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
     @Query(
             value = """
             SELECT 
-                distinct c.sellerId as id, c.sellerName as name
+                distinct c.sellerRoleId as id, c.sellerRoleName as name
             FROM 
                 ConnectionReadEntity c
             WHERE 
