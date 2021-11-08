@@ -163,21 +163,19 @@ fun inCollaborators(collaborators: Map<UUID, ConnectionRoleReadEntity.RoleType>?
 
 fun fullTextSearchByService(serviceId: UUID): Specification<ConnectionReadEntity> {
     return Specification { root, _, criteriaBuilder ->
-        val match = criteriaBuilder.matchBoolMode(
+        criteriaBuilder.like(
                 root.get(ConnectionReadEntity_.serviceIds),
-                criteriaBuilder.literal(serviceId),
+                "%$serviceId%",
         )
-        criteriaBuilder.greaterThan(match, 0.0)
     }
 }
 
 fun fullTextSearchByLocation(location: String?): Specification<ConnectionReadEntity>? {
-    return if (location != null) Specification { root, _, criteriaBuilder ->
-        val match = criteriaBuilder.matchBoolMode(
+    return if (!location.isNullOrEmpty()) Specification { root, _, criteriaBuilder ->
+        criteriaBuilder.like(
                 root.get(ConnectionReadEntity_.location),
-                criteriaBuilder.literal(location),
+                "%$location%",
         )
-        criteriaBuilder.greaterThan(match, 0.0)
     } else {
         null
     }

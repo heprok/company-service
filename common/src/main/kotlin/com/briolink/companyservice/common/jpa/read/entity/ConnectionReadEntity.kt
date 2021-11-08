@@ -58,7 +58,7 @@ class ConnectionReadEntity(
     @Column(name = "buyer_role_name", nullable = false, length = 255)
     var buyerRoleName: String? = null
 
-    @Column(name = "location", nullable = false, length = 255)
+    @Column(name = "location", length = 255)
     var location: String? = null
 
     @Column(name = "service_ids", nullable = false)
@@ -72,12 +72,12 @@ class ConnectionReadEntity(
     @Column(name = "end_collaboration")
     var endCollaboration: Year? = null
 
-    @Column(name = "industry_id", nullable = false, length = 36)
+    @Column(name = "industry_id", length = 36)
     @Type(type = "uuid-char")
-    lateinit var industryId: UUID
+    var industryId: UUID? = null
 
-    @Column(name = "industry_name", nullable = false, length = 255)
-    lateinit var industryName: String
+    @Column(name = "industry_name", length = 255)
+    var industryName: String? = null
 
     @Column(name = "verification_stage", nullable = false)
     var verificationStage: ConnectionStatus = ConnectionStatus.Pending
@@ -114,10 +114,13 @@ class ConnectionReadEntity(
     ) {
         @JsonProperty("buyerCompany")
         lateinit var buyerCompany: ParticipantCompany
+
         @JsonProperty("sellerCompany")
         lateinit var sellerCompany: ParticipantCompany
+
         @JsonProperty("services")
         lateinit var services: List<Service>
+
         @JsonProperty("industry")
         lateinit var industry: Industry
     }
