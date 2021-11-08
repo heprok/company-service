@@ -5,11 +5,11 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: industry
-            schemaName: ${writeSchema}
+            schemaName: write
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -18,13 +18,15 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+                    unique: true
+                    uniqueNameConstraint: unique_industry_name
         - createTable:
             tableName: occupation
-            schemaName: ${writeSchema}
+            schemaName: write
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -33,14 +35,15 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
-
+                    unique: true
+                    uniqueNameConstraint: unique_occupation_name
         - createTable:
             tableName: keyword
-            schemaName: ${writeSchema}
+            schemaName: write
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -49,13 +52,14 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+                    uniqueNameConstraint: unique_occupation_name
         - createTable:
             tableName: company
-            schemaName: ${writeSchema}
+            schemaName: write
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -64,9 +68,15 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+                    unique: true
+                    uniqueNameConstraint: unique_company_name
               - column:
                   name: website
                   type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueNameConstraint: unique_company_website
               - column:
                   name: logo
                   type: varchar(255)
@@ -77,111 +87,70 @@ databaseChangeLog:
                   name: twitter
                   type: varchar(255)
               - column:
-                  name: about
-                  type: varchar(10240)
+                  name: description
+                  type: text
               - column:
                   name: is_type_public
                   type: boolean
                   defaultValue: true
               - column:
-                  name: country
-                  type: varchar(255)
-              - column:
-                  name: state
-                  type: varchar(255)
-              - column:
-                  name: city
+                  name: location
                   type: varchar(255)
               - column:
                   name: slug
                   type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueNameConstraint: unique_company_website
               - column:
                   name: created_by
-                  type: varchar(36)
+                  type: uuid
+                  constraints:
+                    nullable: false
               - column:
                   name: industry_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     foreignKeyName: fk_company_industry_id
-                    references: industry(id)
+                    references: write.industry(id)
               - column:
                   name: occupation_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     foreignKeyName: fk_company_occupation_id
-                    references: occupation(id)
+                    references: write.occupation(id)
         - createTable:
             tableName: companies_keywords
-            schemaName: ${writeSchema}
+            schemaName: write
             columns:
               - column:
                   name: company_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     foreignKeyName: fk_company_keyword
-                    references: company(id)
+                    references: write.company(id)
                     nullable: false
               - column:
                   name: keyword_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     foreignKeyName: fk_keyword_company
-                    references: keyword(id)
+                    references: write.keyword(id)
                     nullable: false
-        - createTable:
-            tableName: user
-            schemaName: ${writeSchema}
-            columns:
-              - column:
-                  name: id
-                  type: varchar(36)
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: first_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: last_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: image
-                  type: varchar(255)
-              - column:
-                  name: company_id
-                  type: varchar(36)
-                  constraints:
-                    foreignKeyName: fk_emplyee_company_id
-                    references: company(id)
-                    nullable: false
-              - column:
-                  name: created
-                  type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
-                  constraints:
-                    nullable: false
-              - column:
-                  name: changed
-                  type: timestamp
-                  constraints:
-                    nullable: true
         - createTable:
             tableName: event_store
-            schemaName: ${writeSchema}
+            schemaName: write
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: data
-                  type: json
+                  type: jsonb
                   constraints:
                     nullable: false
               - column:

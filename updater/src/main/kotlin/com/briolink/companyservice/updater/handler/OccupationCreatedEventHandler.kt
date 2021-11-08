@@ -11,12 +11,13 @@ class OccupationCreatedEventHandler(
     private val occupationReadRepository: OccupationReadRepository
 ) : IEventHandler<OccupationCreatedEvent> {
     override fun handle(event: OccupationCreatedEvent) {
-        val eventData = event.data
-        val occupation = OccupationReadEntity().apply {
-            this.id = eventData.id
-            this.name = eventData.name
+        val industry = event.data
+        OccupationReadEntity(
+                id = industry.id,
+                name = industry.name,
+        ).apply {
+            occupationReadRepository.save(this)
 
         }
-        occupationReadRepository.save(occupation)
     }
 }

@@ -34,6 +34,7 @@ class IndustryDataLoader(
                 service.create(IndustryWriteEntity().apply {
                     id = UUID.fromString(uuid)
                     this.name = name
+                    println(name)
                 })
             }
         }

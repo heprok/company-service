@@ -1,5 +1,6 @@
 object Versions {
     const val SPRING_DOTENV = "2.3.0"
+    const val POSTGRESQL = "42.3.1"
     const val JAVA = "11"
     const val KOTLIN = "1.5.31"
     const val SPRING_BOOT = "2.5.5"

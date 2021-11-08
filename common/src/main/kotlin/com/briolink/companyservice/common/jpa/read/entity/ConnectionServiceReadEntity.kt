@@ -9,23 +9,23 @@ import javax.persistence.Id
 import javax.persistence.IdClass
 import javax.persistence.Table
 
-@Table(name = "connection_service", catalog = "schema_read")
+@Table(name = "connection_service", schema = "read")
 @Entity
 @IdClass(ConnectionServicePK::class)
 class ConnectionServiceReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "connection_id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "connection_id", nullable = false)
     var connectionId: UUID,
 
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "company_id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "company_id", nullable = false)
     var companyId: UUID,
 
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "service_id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "service_id", nullable = false)
     var serviceId: UUID,
 
     @Column(name = "service_name", nullable = false, length = 255)

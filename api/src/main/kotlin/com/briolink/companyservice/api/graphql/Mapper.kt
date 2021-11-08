@@ -88,12 +88,12 @@ fun Industry.Companion.fromEntity(entity: IndustryReadEntity) = Industry(
 )
 
 fun Keyword.Companion.fromEntity(entity: KeywordReadEntity) = Keyword(
-        id = entity.id!!.toString(),
+        id = entity.id.toString(),
         name = entity.name,
 )
 
 fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
-        id = entity.id!!.toString(),
+        id = entity.id.toString(),
         name = entity.name,
 )
 

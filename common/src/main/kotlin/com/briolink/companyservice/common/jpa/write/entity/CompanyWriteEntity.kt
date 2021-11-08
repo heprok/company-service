@@ -14,13 +14,13 @@ import javax.persistence.ManyToOne
 import javax.persistence.PrePersist
 import javax.persistence.Table
 
-@Table(name = "company", catalog = "schema_write")
+@Table(name = "company", schema = "write")
 @Entity
 class CompanyWriteEntity(
     @Column(name = "name", nullable = false)
     var name: String,
 
-    @Column(name = "website")
+    @Column(name = "website", nullable = false)
     var website: URL?,
 
     @Column(name = "slug", nullable = false, length = 255)
@@ -29,20 +29,14 @@ class CompanyWriteEntity(
     @Column(name = "logo")
     var logo: URL? = null,
 
-    @Column(name = "description", length = 10240)
+    @Column(name = "description")
     var description: String? = null,
 
     @Column(name = "isTypePublic")
     var isTypePublic: Boolean = true,
 
-//    @Column(name = "country")
-//    var country: String? = null,
-
     @Column(name = "location")
     var location: String? = null,
-
-//    @Column(name = "state")
-//    var state: String? = null,
 
     @Column(name = "facebook")
     var facebook: String? = null,
@@ -50,9 +44,9 @@ class CompanyWriteEntity(
     @Column(name = "twitter")
     var twitter: String? = null,
 
-    @Column(name = "created_by", nullable = false, length = 36)
-    @Type(type = "uuid-char")
-    var createdBy: UUID? = null,
+    @Column(name = "created_by", nullable = false)
+    @Type(type = "pg-uuid")
+    var createdBy: UUID,
 
     @ManyToOne(cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "industry_id")
@@ -65,7 +59,7 @@ class CompanyWriteEntity(
     @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
             name = "companies_keywords",
-            catalog = "schema_write",
+            schema = "write",
             joinColumns = [JoinColumn(name = "company_id")],
             inverseJoinColumns = [JoinColumn(name = "keyword_id")],
     )

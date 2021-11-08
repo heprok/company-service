@@ -5,67 +5,67 @@ databaseChangeLog:
       changes:
         - createTable:
               tableName: statistic
-              schemaName: ${readSchema}
+              schemaName: read
               columns:
                 - column:
                     name: company_id
-                    type: varchar(100)
+                    type: uuid
                     constraints:
                       primaryKey: true
                       nullable: false
                 - column:
                     name: stats_by_industry
-                    type: json
+                    type: jsonb
                     constraints:
                       nullable: false
                 - column:
                     name: stats_by_country
-                    type: json
+                    type: jsonb
                     constraints:
                       nullable: false
                 - column:
                     name: stats_service_provided
-                    type: json
+                    type: jsonb
                     constraints:
-                      nullable:
+                      nullable: false
                 - column:
                     name: stats_number_connection
-                    type: json
+                    type: jsonb
                     constraints:
                       nullable: false
         - createTable:
             tableName: user_permission_role
-            schemaName: ${readSchema}
+            schemaName: read
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: role
-                  type: int
+                  type: tinyint
                   constraints:
                     nullable: false
               - column:
                   name: user_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     nullable: false
               - column:
                   name: access_object_uuid
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     nullable: false
               - column:
                   name: access_object_type
-                  type: int
+                  type: tinyint
                   constraints:
                     nullable: false
         - createIndex:
             tableName: user_permission_role
-            schemaName: ${readSchema}
+            schemaName: read
             columns:
               - column:
                   name: user_id
@@ -73,7 +73,7 @@ databaseChangeLog:
             unique: false
         - createIndex:
             tableName: user_permission_role
-            schemaName: ${readSchema}
+            schemaName: read
             columns:
               - column:
                   name: access_object_uuid

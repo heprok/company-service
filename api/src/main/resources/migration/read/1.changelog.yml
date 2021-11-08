@@ -5,11 +5,11 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: company
-            schemaName: ${readSchema}
+            schemaName: read
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -20,7 +20,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: data
-                  type: json
+                  type: jsonb
                   constraints:
                     nullable: false
         - createIndex:
@@ -28,22 +28,28 @@ databaseChangeLog:
               - column:
                   name: slug
             indexName: idx_company_slug
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: company
             unique: true
         - createTable:
             tableName: service
-            schemaName: ${readSchema}
+            schemaName: read
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: company_id
-                  type: varchar(36)
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
@@ -59,12 +65,24 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: price
-                  type: double
+                  type: currency
+              - column:
+                  name: is_hidden
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
               - column:
                   name: data
-                  type: json
+                  type: jsonb
                   constraints:
                     nullable: false
         - createIndex:
@@ -72,26 +90,33 @@ databaseChangeLog:
               - column:
                   name: company_id
             indexName: idx_service_company_id
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: service
         - createIndex:
             columns:
               - column:
                   name: price
             indexName: idx_service_price
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: service
         - createIndex:
             columns:
               - column:
                   name: last_used
             indexName: idx_service_last_used
-            schemaName: ${readSchema}
+            schemaName: read
+            tableName: service
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: idx_service_name
+            schemaName: read
             tableName: service
         - createIndex:
             columns:
               - column:
                   name: verified_uses
             indexName: idx_service_verified_uses
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: service

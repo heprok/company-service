@@ -4,7 +4,7 @@ spring:
   profiles:
     active: ${env.spring_profiles_active:local}
   datasource:
-    url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
+    url: jdbc:postgresql://${env.DB_HOST:localhost}:${env.DB_PORT:5432}/${env.spring_profiles_active}_company
     username: ${env.DB_USER:root}
     password: ${env.DB_PASSWORD:root}
     hikari:
@@ -16,7 +16,8 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL57Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        metadata_builder_contributor: com.briolink.companyservice.common.jpa.Functions
         jdbc:
           batch_size: 60
     generate-ddl: false
@@ -25,9 +26,6 @@ cloud:
   aws:
     stack:
       auto: false
-app:
-  db:
-    schema-prefix: ${env.spring_profiles_active}_company
 event:
   listener:
     sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo

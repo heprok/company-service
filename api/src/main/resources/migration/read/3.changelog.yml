@@ -5,54 +5,76 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: connection
-            schemaName: ${readSchema}
+            schemaName: read
             columns:
               - column:
                   name: id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: seller_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     nullable: false
               - column:
                   name: buyer_id
-                  type: varchar(36)
+                  type: uuid
                   constraints:
                     nullable: false
               - column:
                   name: seller_role_id
-                  type: varchar(36)
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seller_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seller_role_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: buyer_name
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: buyer_role_id
-                  type: varchar(36)
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: buyer_role_name
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: service_ids
-                  type: text
+                  type: uuid[]
                   constraints:
                     nullable: false
               - column:
-                  name: dates_start_collaboration
-                  type: text
+                  name: start_collaboration
+                  type: smallint
                   constraints:
                     nullable: false
               - column:
-                  name: dates_end_collaboration
-                  type: text
-                  constraints:
-                    nullable: false
+                  name: end_collaboration
+                  type: smallint
               - column:
                   name: industry_id
-                  type: varchar(36)
-                  constraints:
-                    nullable: false
+                  type: uuid
+              - column:
+                  name: industry_name
+                  type: varchar(255)
+              - column:
+                  name: location
+                  type: varchar(255)
               - column:
                   name: verification_stage
                   type: tinyint
@@ -60,14 +82,17 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: is_hidden
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
                   name: created
-                  type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: smallint
                   constraints:
                     nullable: false
               - column:
                   name: data
-                  type: json
+                  type: jsonb
                   constraints:
                     nullable: false
         - createIndex:
@@ -75,46 +100,89 @@ databaseChangeLog:
               - column:
                   name: industry_id
             indexName: idx_connection_industry_id
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: connection
         - createIndex:
             columns:
               - column:
                   name: seller_id
             indexName: idx_connection_seller_id
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: connection
         - createIndex:
             columns:
               - column:
                   name: buyer_id
             indexName: idx_connection_buyer_id
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: connection
         - createIndex:
             columns:
               - column:
                   name: buyer_role_id
             indexName: idx_connection_buyer_role_id
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: connection
         - createIndex:
             columns:
               - column:
                   name: seller_role_id
             indexName: idx_connection_seller_role_id
-            schemaName: ${readSchema}
+            schemaName: read
             tableName: connection
         - sql:
-            comment: FULLTEXT index for ${readSchema}.connection table name field
-            sql: alter table ${readSchema}.connection add fulltext index idx_connection_dates_start_collaboration(dates_start_collaboration)
+            comment: FULLTEXT index for read.connection table buyer_name field
+            sql: CREATE INDEX idx_connection_buyer_name ON read.connection USING GIN (to_tsvector('simple', buyer_name))
             stripComments: true
         - sql:
-            comment: FULLTEXT index for ${readSchema}.connection table name field
-            sql: alter table ${readSchema}.connection add fulltext index idx_connection_dates_end_collaboration(dates_end_collaboration)
+            comment: FULLTEXT index for read.connection table buyer_role_name field
+            sql: CREATE INDEX idx_connection_buyer_role_name ON read.connection USING GIN (to_tsvector('simple', buyer_role_name))
             stripComments: true
         - sql:
-            comment: FULLTEXT index for ${readSchema}.connection table name field
-            sql: alter table ${readSchema}.connection add fulltext index idx_connection_service_ids(service_ids)
+            comment: FULLTEXT index for read.connection table seller_role_name field
+            sql: CREATE INDEX idx_connection_seller_role_name ON read.connection USING GIN (to_tsvector('simple', seller_role_name))
+            stripComments: true
+        - sql:
+            comment: FULLTEXT index for read.connection table industry_name field
+            sql: CREATE INDEX idx_connection_industry_name ON read.connection USING GIN (to_tsvector('simple', industry_name))
+            stripComments: true
+        - sql:
+            comment: FULLTEXT index for read.connection table location field
+            sql: CREATE INDEX idx_connection_location ON read.connection USING GIN (to_tsvector('simple', location))
+            stripComments: true
+        - sql:
+            comment: GIN index for read.connection table service_ids field
+            sql: CREATE INDEX idx_connection_service_ids ON read.connection USING GIN (service_ids)
+            stripComments: true
+        - createTable:
+            tableName: connection_service
+            schemaName: read
+            columns:
+              - column:
+                  name: connection_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: company_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: service_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: service_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - sql:
+            comment: FULLTEXT index for read.connection_service table service_name field
+            sql: CREATE INDEX idx_connection_service_name ON read.connection_service USING GIN (to_tsvector('simple', service_name))
             stripComments: true
 

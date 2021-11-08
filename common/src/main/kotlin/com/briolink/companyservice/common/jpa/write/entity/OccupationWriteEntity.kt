@@ -4,7 +4,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 
-@Table(name = "occupation", catalog = "schema_write")
+@Table(name = "occupation", schema = "write")
 @Entity
 class OccupationWriteEntity() : BaseWriteEntity() {
     @Column(name = "name", nullable = false)

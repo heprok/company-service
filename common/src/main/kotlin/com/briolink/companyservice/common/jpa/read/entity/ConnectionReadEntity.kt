@@ -13,12 +13,12 @@ import javax.persistence.Id
 import javax.persistence.PrePersist
 import javax.persistence.Table
 
-@Table(name = "connection", catalog = "schema_read")
+@Table(name = "connection", schema = "read")
 @Entity
 class ConnectionReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
     val id: UUID
 ) : BaseReadEntity() {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
@@ -30,20 +30,20 @@ class ConnectionReadEntity(
         Rejected(5)
     }
 
-    @Column(name = "seller_id", nullable = false, length = 36)
-    @Type(type = "uuid-char")
+    @Column(name = "seller_id", nullable = false)
+    @Type(type = "pg-uuid")
     lateinit var sellerId: UUID
 
-    @Column(name = "buyer_id", nullable = false, length = 36)
-    @Type(type = "uuid-char")
+    @Column(name = "buyer_id", nullable = false)
+    @Type(type = "pg-uuid")
     lateinit var buyerId: UUID
 
-    @Column(name = "seller_role_id", nullable = false, length = 36)
-    @Type(type = "uuid-char")
+    @Column(name = "seller_role_id", nullable = false)
+    @Type(type = "pg-uuid")
     lateinit var sellerRoleId: UUID
 
-    @Column(name = "buyer_role_id", nullable = false, length = 36)
-    @Type(type = "uuid-char")
+    @Column(name = "buyer_role_id", nullable = false)
+    @Type(type = "pg-uuid")
     lateinit var buyerRoleId: UUID
 
     @Column(name = "seller_name", nullable = false, length = 255)
@@ -61,19 +61,24 @@ class ConnectionReadEntity(
     @Column(name = "location", nullable = false, length = 255)
     var location: String? = null
 
-    @Column(name = "service_ids", nullable = false)
-    lateinit var serviceIds: String
 
-    @Type(type = "com.vladmihalcea.hibernate.type.basic.YearType")
+    @Type(type = "list-array")
+    @Column(
+            name = "service_ids",
+            columnDefinition = "uuid[]"
+    )
+    lateinit var serviceIds: List<UUID>
+
+    @Type(type = "year")
     @Column(name = "startCollaboration", nullable = false)
     lateinit var startCollaboration: Year
 
-    @Type(type = "com.vladmihalcea.hibernate.type.basic.YearType")
+    @Type(type = "year")
     @Column(name = "end_collaboration")
     var endCollaboration: Year? = null
 
-    @Column(name = "industry_id", nullable = false, length = 36)
-    @Type(type = "uuid-char")
+    @Column(name = "industry_id", nullable = false)
+    @Type(type = "pg-uuid")
     lateinit var industryId: UUID
 
     @Column(name = "industry_name", nullable = false, length = 255)
@@ -82,20 +87,12 @@ class ConnectionReadEntity(
     @Column(name = "verification_stage", nullable = false)
     var verificationStage: ConnectionStatus = ConnectionStatus.Pending
 
-    @Type(type = "com.vladmihalcea.hibernate.type.basic.YearType")
+    @Type(type = "year")
     @Column(name = "created", nullable = false)
     lateinit var created: Year
 
-    @Type(type = "json")
-    @Column(name = "seller_role", columnDefinition = "json")
-    var sellerRole: Role? = null
-
-    @Type(type = "json")
-    @Column(name = "buyer_role", columnDefinition = "json")
-    var buyerRole: Role? = null
-
-    @Type(type = "json")
-    @Column(name = "data", nullable = false, columnDefinition = "json")
+    @Type(type = "jsonb")
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
     @PrePersist
@@ -103,10 +100,9 @@ class ConnectionReadEntity(
         industryName = data.industry.name
         sellerRoleName = data.sellerCompany.role.name
         buyerRoleName = data.buyerCompany.role.name
-        sellerRole = data.sellerCompany.role
-        buyerRole = data.buyerCompany.role
+        created = startCollaboration
     }
-
+//TODO Типы json перевести в сущности и использовать их в других соущностях
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty("id")

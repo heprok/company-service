@@ -10,20 +10,20 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "company", catalog = "schema_read")
+@Table(name = "company", schema = "read")
 @Entity
 class CompanyReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
     val id: UUID,
 
     @Type(type = "string")
     @Column(name = "slug", nullable = false, length = 50)
     var slug: String
 ) : BaseReadEntity() {
-    @Type(type = "json")
-    @Column(name = "data", nullable = false, columnDefinition = "json")
+    @Type(type = "jsonb")
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,10 +34,6 @@ class CompanyReadEntity(
         var website: URL? = null,
         @JsonProperty("description")
         var description: String? = null,
-//        @JsonProperty("country")
-//        var country: String? = null,
-//        @JsonProperty("state")
-//        var state: String? = null,
         @JsonProperty("location")
         var location: String? = null,
         @JsonProperty("logo")

@@ -11,11 +11,12 @@ class KeywordCreatedEventHandler(
     private val keywordReadRepository: KeywordReadRepository
 ) : IEventHandler<KeywordCreatedEvent> {
     override fun handle(event: KeywordCreatedEvent) {
-        val eventData = event.data
-        val keyword = KeywordReadEntity().apply {
-            this.id = eventData.id
-            this.name = eventData.name
+        val keyword = event.data
+        KeywordReadEntity(
+                id = keyword.id,
+                name = keyword.name,
+        ).apply {
+            keywordReadRepository.save(this)
         }
-        keywordReadRepository.save(keyword)
     }
 }

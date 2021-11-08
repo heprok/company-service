@@ -5,11 +5,11 @@ databaseChangeLog:
       changes:
         - createTable:
               tableName: industry
-              schemaName: ${readSchema}
+              schemaName: read
               columns:
                 - column:
                     name: id
-                    type: varchar(36)
+                    type: uuid
                     constraints:
                       primaryKey: true
                       nullable: false
@@ -17,14 +17,16 @@ databaseChangeLog:
                     name: name
                     type: varchar(100)
                     constraints:
+                      unique: true
+                      uniqueNameConstraint: unique_industry_name
                       nullable: false
         - createTable:
               tableName: occupation
-              schemaName: ${readSchema}
+              schemaName: read
               columns:
                 - column:
                     name: id
-                    type: varchar(36)
+                    type: uuid
                     constraints:
                       primaryKey: true
                       nullable: false
@@ -32,14 +34,16 @@ databaseChangeLog:
                     name: name
                     type: varchar(100)
                     constraints:
+                      unique: true
+                      uniqueNameConstraint: unique_ocuupation_name
                       nullable: false
         - createTable:
               tableName: keyword
-              schemaName: ${readSchema}
+              schemaName: read
               columns:
                 - column:
                     name: id
-                    type: varchar(36)
+                    type: uuid
                     constraints:
                       primaryKey: true
                       nullable: false
@@ -47,16 +51,18 @@ databaseChangeLog:
                     name: name
                     type: varchar(100)
                     constraints:
+                      unique: true
+                      uniqueNameConstraint: unique_keyword_name
                       nullable: false
         - sql:
-            comment: FULLTEXT index for ${readSchema}.occupation table name field
-            sql: alter table ${readSchema}.occupation add fulltext index idx_fulltext_occupation_name(name)
+            comment: FULLTEXT index for read.occupation table industry_name field
+            sql: CREATE INDEX idx_occupation_name ON read.occupation USING GIN (to_tsvector('simple', name))
             stripComments: true
         - sql:
-            comment: FULLTEXT index for ${readSchema}.industry table name field
-            sql: alter table ${readSchema}.industry add fulltext index idx_fulltext_industry_name(name)
+            comment: FULLTEXT index for read.keyword table keyword_name field
+            sql: CREATE INDEX idx_keyword_name ON read.keyword USING GIN (to_tsvector('simple', name))
             stripComments: true
         - sql:
-            comment: FULLTEXT index for ${readSchema}.keyword table name field
-            sql: alter table ${readSchema}.keyword add fulltext index idx_fulltext_keyword_name(name)
+            comment: FULLTEXT index for read.industry table keyword_name field
+            sql: CREATE INDEX idx_industry_name ON read.industry USING GIN (to_tsvector('simple', name))
             stripComments: true

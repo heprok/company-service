@@ -8,15 +8,14 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "occupation", catalog = "schema_read")
+@Table(name = "occupation", schema = "read")
 @Entity
-class OccupationReadEntity : BaseReadEntity() {
+class OccupationReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
-    var id: UUID? = null
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
+    var id: UUID,
 
-    @Type(type = "string")
-    @Column(name = "name", nullable = false, length = 128, columnDefinition = "string")
-    lateinit var name: String
-}
+    @Column(name = "name", nullable = false, length = 128)
+    var name: String
+) : BaseReadEntity() {}

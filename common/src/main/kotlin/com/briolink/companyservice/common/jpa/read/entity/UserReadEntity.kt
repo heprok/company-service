@@ -10,16 +10,16 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "user", catalog = "schema_read")
+@Table(name = "user", schema = "read")
 @Entity
 class UserReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
     var id: UUID,
 ) : BaseReadEntity() {
-    @Type(type = "json")
-    @Column(name = "data", nullable = false, columnDefinition = "json")
+    @Type(type = "jsonb")
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
     @JsonIgnoreProperties(ignoreUnknown = true)

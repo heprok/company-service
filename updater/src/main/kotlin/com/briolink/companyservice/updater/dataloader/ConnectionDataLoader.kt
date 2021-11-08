@@ -4,7 +4,6 @@ import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEnti
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionRoleReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.dto.Connection
@@ -26,7 +25,6 @@ class ConnectionDataLoader(
     private var connectionReadRepository: ConnectionReadRepository,
     private var userReadRepository: UserReadRepository,
     private var userJobPositionReadRepository: UserJobPositionReadRepository,
-    private var connectionRoleReadRepository: ConnectionRoleReadRepository,
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
     private var connectionServiceHandler: ConnectionHandlerService,
@@ -37,12 +35,18 @@ class ConnectionDataLoader(
             userReadRepository.count().toInt() != 0 &&
             serviceReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0 &&
-            userJobPositionReadRepository.count().toInt() != 0 &&
-            connectionRoleReadRepository.count().toInt() != 0
+            userJobPositionReadRepository.count().toInt() != 0
         ) {
             val listCompany = companyReadRepository.findAll()
             val listUser = userReadRepository.findAll()
-            val listConnectionRole = connectionRoleReadRepository.findAll()
+            val listConnectionRole = listOf(
+                    ConnectionCompanyRole(UUID.randomUUID(), "Customer", ConnectionCompanyRoleType.Seller),
+                    ConnectionCompanyRole(UUID.randomUUID(), "Supplier", ConnectionCompanyRoleType.Buyer),
+                    ConnectionCompanyRole(UUID.randomUUID(), "Investor", ConnectionCompanyRoleType.Seller),
+                    ConnectionCompanyRole(UUID.randomUUID(), "Investor", ConnectionCompanyRoleType.Buyer),
+                    ConnectionCompanyRole(UUID.randomUUID(), "Client", ConnectionCompanyRoleType.Buyer),
+                    ConnectionCompanyRole(UUID.randomUUID(), "Vendor", ConnectionCompanyRoleType.Seller),
+            )
             val listService = serviceReadRepository.findAll()
             val connectionStatusList = listOf(ConnectionStatus.Verified, ConnectionStatus.Pending, ConnectionStatus.InProgress)
             for (i in 1..COUNT_CONNECTION) {
@@ -74,28 +78,14 @@ class ConnectionDataLoader(
                                         userJobPositionTitle = null,
                                         companyId = from.id,
                                         companyRole = listConnectionRole.shuffled()
-                                                .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Seller }!!
-                                                .let {
-                                                    ConnectionCompanyRole(
-                                                            name = it.name,
-                                                            id = it.id,
-                                                            type = ConnectionCompanyRoleType.valueOf(it.type.name),
-                                                    )
-                                                },
+                                                .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Seller }!!
                                 ),
                                 participantTo = ConnectionParticipant(
                                         userId = listUser.random().id,
                                         userJobPositionTitle = null,
                                         companyId = to.id,
                                         companyRole = listConnectionRole.shuffled()
-                                                .find { connectionRoleReadEntity -> connectionRoleReadEntity.type == ConnectionRoleReadEntity.RoleType.Buyer }!!
-                                                .let {
-                                                    ConnectionCompanyRole(
-                                                            name = it.name,
-                                                            id = it.id,
-                                                            type = ConnectionCompanyRoleType.valueOf(it.type.name),
-                                                    )
-                                                },
+                                                .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Buyer }!!
                                 ),
                                 services = ArrayList(services),
                                 status = connectionStatusList.random(),

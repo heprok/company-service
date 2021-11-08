@@ -10,7 +10,7 @@ spring:
       max-file-size: 2MB
       max-request-size: 2MB
   datasource:
-    url: jdbc:mariadb://${env.DB_HOST:localhost}:${env.DB_PORT:3306}/
+    url: jdbc:postgresql://${env.DB_HOST:localhost}:${env.DB_PORT:5432}/${env.spring_profiles_active}_company
     username: ${env.DB_USER:ok}
     password: ${env.DB_PASSWORD:ok}
     hikari:
@@ -22,15 +22,12 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        dialect: com.briolink.companyservice.common.dialect.MySQLCustomDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        metadata_builder_contributor: com.briolink.companyservice.common.jpa.Functions
     generate-ddl: false
     show-sql: false
   liquibase:
     change-log: migration/master.yml
-    default-schema: ${app.db.schema-prefix}_write
-    parameters:
-      readSchema: ${app.db.schema-prefix}_read
-      writeSchema: ${app.db.schema-prefix}_write
 cloud:
   aws:
     stack:
@@ -39,8 +36,6 @@ dgs:
   graphql:
     path: /
 app:
-  db:
-    schema-prefix: ${env.spring_profiles_active}_company
   aws:
     s3:
       name: ${env.S3_BUCKET_NAME:briolink}

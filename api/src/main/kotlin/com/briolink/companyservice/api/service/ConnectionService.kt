@@ -174,20 +174,32 @@ class ConnectionService(
     }
 
     fun getConnectionRoleUsedForCompany(companyId: UUID, query: String, limit: Int = 10): List<ConnectionRoleReadEntity> {
-        val mutableListCollaborator = mutableListOf<CollaboratorRoleProjection>()
+        val mutableListCollaborator = mutableListOf<ConnectionRoleReadEntity>()
         mutableListCollaborator.addAll(
                 connectionReadRepository.getCollaboratorsRolesBuyerUsedForCompany(
                         sellerCompanyId = companyId,
                         query = query,
-                ),
+                ).map {
+                      ConnectionRoleReadEntity(
+                              id = it.id,
+                              name = it.name,
+                              type = ConnectionRoleReadEntity.RoleType.Buyer
+                      )
+                },
         )
         mutableListCollaborator.addAll(
                 connectionReadRepository.getCollaboratorsSellerRolesUsedForCompany(
                         buyerCompanyId = companyId,
                         query = query,
-                ),
+                ).map {
+                    ConnectionRoleReadEntity(
+                            id = it.id,
+                            name = it.name,
+                            type = ConnectionRoleReadEntity.RoleType.Buyer
+                    )
+                },
         )
-        return mutableListCollaborator.take(limit).map { ConnectionRoleReadEntity(id = it.id, name = it.name, type = it.type) }.toList()
+        return mutableListCollaborator.take(limit).toList()
     }
 
     fun getServicesProvided(companyId: UUID, query: String): List<ConnectionServiceReadEntity> {

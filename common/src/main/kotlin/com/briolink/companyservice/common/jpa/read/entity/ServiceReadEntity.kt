@@ -11,21 +11,21 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "service", catalog = "schema_read")
+@Table(name = "service", schema = "read")
 @Entity
 class ServiceReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
     var id: UUID,
 ) : BaseReadEntity() {
 
-    @Type(type = "uuid-char")
-    @Column(name = "company_id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "company_id", nullable = false)
     lateinit var companyId: UUID
 
-    @Type(type = "json")
-    @Column(name = "data", nullable = false, columnDefinition = "json")
+    @Type(type = "jsonb")
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
     @Column(name = "name", nullable = false, length = 255)
@@ -43,7 +43,7 @@ class ServiceReadEntity(
     @Column(name = "created")
     var created: LocalDate? = LocalDate.now()
 
-    @Column(name = "is_hide")
+    @Column(name = "is_hidden")
     var isHide: Boolean = false
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -52,15 +52,6 @@ class ServiceReadEntity(
         var logo: URL? = null,
         @JsonProperty("slug")
         var slug: String,
-//        @JsonProperty("created")
-//        var created: LocalDate
     )
 
-//    @JsonIgnoreProperties(ignoreUnknown = true)
-//    data class Industry(
-//        @JsonProperty("id")
-//        val id: String,
-//        @JsonProperty("name")
-//        val name: String,
-//    )
 }

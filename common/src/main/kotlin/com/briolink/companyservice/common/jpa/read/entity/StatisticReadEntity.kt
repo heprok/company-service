@@ -13,29 +13,29 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "statistic", catalog = "schema_read")
+@Table(name = "statistic", schema = "read")
 @Entity
 class StatisticReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "companyId", length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "companyId")
     var companyId: UUID? = null,
 ) : BaseReadEntity() {
 
-    @Type(type = "json")
-    @Column(name = "statsNumberConnection", columnDefinition = "json", nullable = false)
+    @Type(type = "jsonb")
+    @Column(name = "statsNumberConnection", nullable = false)
     lateinit var statsNumberConnection: StatsNumberConnection
 
-    @Type(type = "json")
-    @Column(name = "statsByIndustry", columnDefinition = "json", nullable = false)
+    @Type(type = "jsonb")
+    @Column(name = "statsByIndustry", nullable = false)
     lateinit var statsByIndustry: StatsByIndustry
 
-    @Type(type = "json")
-    @Column(name = "statsByCountry", columnDefinition = "json", nullable = false)
+    @Type(type = "jsonb")
+    @Column(name = "statsByCountry", nullable = false)
     lateinit var statsByCountry: StatsByCountry
 
-    @Type(type = "json")
-    @Column(name = "statsServiceProvided", columnDefinition = "json", nullable = false)
+    @Type(type = "jsonb")
+    @Column(name = "statsServiceProvided", nullable = false)
     lateinit var statsServiceProvided: StatsServiceProvided
 
     @JsonIgnoreProperties(ignoreUnknown = true)

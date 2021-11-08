@@ -6,5 +6,4 @@ import java.util.*
 interface CollaboratorRoleProjection {
     val id: UUID
     val name: String
-    val type: ConnectionRoleReadEntity.RoleType
 }

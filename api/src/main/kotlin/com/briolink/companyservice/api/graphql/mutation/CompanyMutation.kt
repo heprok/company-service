@@ -34,20 +34,26 @@ class CompanyMutation(
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
-//    @PreAuthorize("isAuthenticated()")
+    //    @PreAuthorize("isAuthenticated()")
     @DgsMutation
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
-    return if(createInputCompany.website != null || !companyService.isExistWebsite(createInputCompany.website.toString())){
-        val company = companyService.createCompany(CompanyWriteEntity(name = createInputCompany.name, website = createInputCompany.website, createdBy = createInputCompany.createBy?.let { UUID.fromString(it) }))
-        CreateCompanyResult(
-                userErrors = listOf(),
-                data = CompanyResultData(id = company.id.toString(), name = company.name),
-        )
-    }else {
-        CreateCompanyResult(
-                userErrors = listOf(Error("WebsiteCompanyIsExist", listOf("website")))
-        )
-    }
+        return if (createInputCompany.website != null || !companyService.isExistWebsite(createInputCompany.website.toString())) {
+            val company = companyService.createCompany(
+                    CompanyWriteEntity(
+                            name = createInputCompany.name,
+                            website = createInputCompany.website,
+                            createdBy = UUID.fromString(createInputCompany.createBy),
+                    ),
+            )
+            CreateCompanyResult(
+                    userErrors = listOf(),
+                    data = CompanyResultData(id = company.id.toString(), name = company.name),
+            )
+        } else {
+            CreateCompanyResult(
+                    userErrors = listOf(Error("WebsiteCompanyIsExist", listOf("website"))),
+            )
+        }
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -7,14 +7,14 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "keyword", catalog = "schema_read")
+@Table(name = "keyword", schema = "read")
 @Entity
-class KeywordReadEntity() : BaseReadEntity() {
+class KeywordReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
-    var id: UUID? = null
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
+    var id: UUID,
 
     @Column(name = "name", nullable = false, length = 128)
-    lateinit var name: String
-}
+    var name: String
+) : BaseReadEntity() {}

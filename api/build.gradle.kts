@@ -33,8 +33,8 @@ dependencies {
     // Liquibase
     implementation("org.liquibase:liquibase-core:${Versions.LIQUIBASE_CORE}")
 
-    // MariaDB JDBC Driver
-    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    // postgtrsql JDBC Driver
+    runtimeOnly("org.postgresql:postgresql:${Versions.POSTGRESQL}")
 
     // Netflix DGS
     implementation(

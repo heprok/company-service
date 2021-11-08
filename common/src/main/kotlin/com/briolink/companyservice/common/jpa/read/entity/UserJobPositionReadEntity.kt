@@ -16,24 +16,24 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "user_job_position", catalog = "schema_read")
+@Table(name = "user_job_position", schema = "read")
 @Entity
 class UserJobPositionReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
     var id: UUID,
 
-    @Type(type = "uuid-char")
-    @Column(name = "user_id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "user_id", nullable = false)
     var userId: UUID,
 
-    @Type(type = "uuid-char")
-    @Column(name = "company_id", length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "company_id")
     var companyId: UUID? = null,
 ) : BaseReadEntity() {
-    @Type(type = "json")
-    @Column(name = "data", nullable = false, columnDefinition = "json")
+    @Type(type = "jsonb")
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

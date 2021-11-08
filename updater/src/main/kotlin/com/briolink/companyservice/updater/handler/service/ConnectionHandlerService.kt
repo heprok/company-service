@@ -47,7 +47,7 @@ class ConnectionHandlerService(
             data = ConnectionReadEntity.Data(connection.id).apply {
                 val endDateMutableList = mutableListOf<Year?>()
                 val startDateMutableList = mutableListOf<Year>()
-                val idServiceMutableList = mutableListOf<String>()
+                val idServiceMutableList = mutableListOf<UUID>()
                 val servicesConnection = mutableListOf<ConnectionReadEntity.Service>()
 
                 industry = ConnectionReadEntity.Industry(
@@ -117,7 +117,7 @@ class ConnectionHandlerService(
                             connectionService = connectionService,
                             connectionId = connection.id,
                     )
-                    idServiceMutableList.add(connectionService.serviceId.toString())
+                    idServiceMutableList.add(connectionService.serviceId!!)
                     startDateMutableList.add(connectionService.startDate!!)
                     endDateMutableList.add(connectionService.endDate)
                 }
@@ -125,7 +125,7 @@ class ConnectionHandlerService(
                 startCollaboration = startDateMutableList.minOrNull()!!
                 created = startCollaboration
                 endCollaboration = if (endDateMutableList.contains(null)) null else endDateMutableList.maxByOrNull { year -> year!! }
-                serviceIds = idServiceMutableList.joinToString(";")
+                serviceIds = idServiceMutableList
                 services = servicesConnection
 
             }

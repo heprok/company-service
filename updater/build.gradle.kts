@@ -24,8 +24,8 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
 
-    // MariaDB JDBC Driver
-    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    // postgtrsql JDBC Driver
+    runtimeOnly("org.postgresql:postgresql:${Versions.POSTGRESQL}")
 
     // kotlin-logging
     implementation("io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_JVM}")

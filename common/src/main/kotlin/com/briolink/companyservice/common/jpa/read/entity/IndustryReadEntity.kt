@@ -7,12 +7,12 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
-@Table(name = "industry", catalog = "schema_read")
+@Table(name = "industry", schema = "read")
 @Entity
 class IndustryReadEntity(
     @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id", nullable = false, length = 36)
+    @Type(type = "pg-uuid")
+    @Column(name = "id", nullable = false)
     var id: UUID,
     @Column(name = "name", nullable = false, length = 128)
     var name: String

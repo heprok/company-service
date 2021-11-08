@@ -8,10 +8,11 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 
-@Table(name = "event_store", catalog = "schema_write")
+@Table(name = "event_store", schema = "write")
 @Entity
 class EventStoreWriteEntity(
-    @Column(name = "data", nullable = false)
+    @Type(type = "jsonb")
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     val data: String,
     @Column(name = "created", nullable = false)
     var created: Instant
