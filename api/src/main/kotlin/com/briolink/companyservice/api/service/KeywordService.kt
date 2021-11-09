@@ -6,9 +6,11 @@ import com.briolink.companyservice.common.jpa.write.repository.KeywordWriteRepos
 import com.briolink.companyservice.common.mapper.KeywordMapper
 import com.briolink.event.publisher.EventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional
 class KeywordService(
     private val keywordWriteRepository: KeywordWriteRepository,
     private val eventPublisher: EventPublisher,
@@ -17,8 +19,10 @@ class KeywordService(
 
     fun create(name: String) = KeywordWriteEntity().apply {
         this.name = name
-        keywordWriteRepository.save(this)
-        eventPublisher.publishAsync(KeywordCreatedEvent(mapper.toDomain(this)))
+        keywordWriteRepository.save(this).let {
+            eventPublisher.publishAsync(KeywordCreatedEvent(mapper.toDomain(it)))
+
+        }
     }
 
     fun create(entity: KeywordWriteEntity) = KeywordWriteEntity().apply {

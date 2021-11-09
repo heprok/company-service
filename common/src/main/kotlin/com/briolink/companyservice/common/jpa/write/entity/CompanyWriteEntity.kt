@@ -48,15 +48,15 @@ class CompanyWriteEntity(
     @Type(type = "pg-uuid")
     var createdBy: UUID,
 
-    @ManyToOne(cascade = [CascadeType.PERSIST])
+    @ManyToOne(cascade = [CascadeType.MERGE])
     @JoinColumn(name = "industry_id")
     var industry: IndustryWriteEntity? = null,
 
-    @ManyToOne(cascade = [CascadeType.PERSIST])
+    @ManyToOne(cascade = [CascadeType.MERGE])
     @JoinColumn(name = "occupation_id")
     var occupation: OccupationWriteEntity? = null,
 
-    @ManyToMany(cascade = [CascadeType.PERSIST])
+    @ManyToMany(cascade = [CascadeType.MERGE])
     @JoinTable(
             name = "companies_keywords",
             schema = "write",

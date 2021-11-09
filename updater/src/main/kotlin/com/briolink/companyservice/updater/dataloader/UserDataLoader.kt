@@ -1,5 +1,6 @@
 package com.briolink.companyservice.updater.dataloader
 
+import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.util.StringUtil

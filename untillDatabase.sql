@@ -10,3 +10,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 delete from write.service;
 delete from read.service;
+
+delete from write.industry;
+delete from read.industry;

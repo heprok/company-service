@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.net.URL
+import java.time.Instant
 import java.time.Year
 import java.util.*
 import javax.persistence.Column
@@ -87,9 +88,8 @@ class ConnectionReadEntity(
     @Column(name = "verification_stage", nullable = false)
     var verificationStage: ConnectionStatus = ConnectionStatus.Pending
 
-    @Type(type = "year")
     @Column(name = "created", nullable = false)
-    lateinit var created: Year
+    lateinit var created: Instant
 
     @Type(type = "jsonb")
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
@@ -100,7 +100,6 @@ class ConnectionReadEntity(
         industryName = data.industry.name
         sellerRoleName = data.sellerCompany.role.name
         buyerRoleName = data.buyerCompany.role.name
-        created = startCollaboration
     }
 //TODO Типы json перевести в сущности и использовать их в других соущностях
     @JsonIgnoreProperties(ignoreUnknown = true)

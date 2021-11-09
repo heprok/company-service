@@ -1,6 +1,7 @@
 package com.briolink.companyservice.api.dataloader
 
 import com.briolink.companyservice.api.service.CompanyService
+import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
@@ -44,9 +45,7 @@ class CompanyDataLoader(
                             isTypePublic = false,
                             createdBy = UUID.randomUUID(),
                             description = "PayPal is the safer, easier way to pay and get paid online. The service allows anyone to pay in any way they prefer, including through credit cards, bank accounts, PayPal Smart Connect or account balances, without sharing financial information. PayPal has quickly become a global leader in online payment solutions with more than  million accounts worldwide. Available in 202 countries and 25 currencies around the world, PayPal enables global ecommerce by making payments possible across different locations, currencies, and languages.  PayPal has received more than 20 awards for excellence from the internet industry and the business community - most recently the 2006 Webby Award for Best Financial Services Site and the 2006 Webby People's Voice Award for Best Financial Services Site.  Located in San Jose, California, PayPal was founded in 1998. PayPal (Europe) S.à r.l. et Cie, S.C.A. is a credit institution (or bank) authorised and supervised by Luxembourg’s financial regulator, the Commission de Surveillance du Secteur Financier (or CSSF). CSSF’s registered office: 283, route d’Arlon, L-1150 Luxembourg.",
-                    ).apply {
-                        id = UUID.fromString("728e5333-6f00-4de1-bf0f-1ace3374c47b")
-                    },
+                    ),
             )
             companyWriteEntityList.add(
                     CompanyWriteEntity(
@@ -59,9 +58,7 @@ class CompanyDataLoader(
                             isTypePublic = true,
                             createdBy = UUID.randomUUID(),
                             description = "When Amazon.com launched in 1995, it was with the mission “to be Earth’s most customer-centric company.” What does this mean? It's simple. We're a company that obsesses over customers. Our actions, goals, projects, programmes and inventions begin and end with the customer at the forefront of our minds. In other words, we start with the customer and work backwards. When we hit on something that is really working for customers, we commit to it in the hope that it will turn into an even bigger success. However, it’s not always as straightforward as that. Inventing is messy, and over time, it’s certain that we’ll fail at some big bets too.",
-                    ).apply {
-                        id = UUID.fromString("728e5333-6f00-4de1-bf0f-1ace3374c47b")
-                    },
+                    ),
             )
             companyWriteEntityList.add(
                     CompanyWriteEntity(
@@ -74,9 +71,7 @@ class CompanyDataLoader(
                             isTypePublic = false,
                             createdBy = UUID.randomUUID(),
                             description = "You probably have fifteen tabs open: one for email, one for Slack, one for Google Docs, and on, and on…But have you ever thought about where these work tools came from? Or why there are so many of them?To answer these questions, and to explain why we created Notion, we have to travel back in time.",
-                    ).apply {
-                        id = UUID.fromString("974ae794-a929-434d-a939-b0fb49d8bf64")
-                    },
+                    ),
             )
             companyWriteEntityList.add(
                     CompanyWriteEntity(
@@ -89,9 +84,7 @@ class CompanyDataLoader(
                             isTypePublic = true,
                             createdBy = UUID.randomUUID(),
                             description = "American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware. It is considered one of the Big Five companies in the American information technology industry, along with Amazon, Facebook, Apple, and Microsoft. Google was founded on September 4, 1998, by Larry Page and Sergey Brin while they were Ph.D. students at Stanford University in California. Together they own about 14% of its publicly-listed shares and control 56% of the stockholder voting power through super-voting stock. The company went public via an initial public offering (IPO) in 2004. In 2015, Google was reorganized as a wholly-owned subsidiary of Alphabet Inc.. Google is Alphabet's largest subsidiary and is a holding company for Alphabet's Internet properties and interests. Sundar Pichai was appointed CEO of Google on October 24, 2015, replacing Larry Page, who became the CEO of Alphabet. On December 3, 2019, Pichai also became the CEO of Alphabet.",
-                    ).apply {
-                        id = UUID.fromString("95d3b063-8ab5-4abb-9887-4006db7a20a8")
-                    },
+                    ),
             )
             companyWriteEntityList.add(
                     CompanyWriteEntity(
@@ -104,13 +97,11 @@ class CompanyDataLoader(
                             isTypePublic = false,
                             createdBy = UUID.randomUUID(),
                             description = "Twitter is an American microblogging and social networking service on which users post and interact with messages known as tweets. Registered users can post, like, and retweet tweets, but unregistered users can only read those that are publicly available. Users interact with Twitter through browser or mobile frontend software, or programmatically via its APIs. Prior to April 2020 services were accessible via SMS. The service is provided by Twitter, Inc., a corporation based in San Francisco, California, and has more than 25 offices around the world.[14] Tweets were originally restricted to 140 characters, but the limit was doubled to 280 for non-CJK languages in November 2017. Audio and video tweets remain limited to 140 seconds for most accounts.",
-                    ).apply {
-                        id = UUID.fromString("1e325d92-38b2-420a-a79e-4504110e0959")
-                    },
+                    ),
             )
             companyWriteEntityList.add(
                     CompanyWriteEntity(
-                            name = "Git Hub",
+                            name = "GitHub",
                             website = URL("https://github.com/"),
                             logo = URL("https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"),
                             location = "USA, California, San Francisco",
@@ -119,9 +110,98 @@ class CompanyDataLoader(
                             isTypePublic = true,
                             createdBy = UUID.randomUUID(),
                             description = "GitHub, Inc. is a provider of Internet hosting for software development and version control using Git. It offers the distributed version control and source code management (SCM) functionality of Git, plus its own features. It provides access control and several collaboration features such as bug tracking, feature requests, task management, continuous integration and wikis for every project. Headquartered in California, it has been a subsidiary of Microsoft since 2018.",
-                    ).apply {
-                        id = UUID.fromString("765ca9e5-1bc0-4c94-abad-63e75ab3aa7c")
-                    },
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Walmart",
+                            website = URL("https://www.walmart.com/"),
+                            logo = URL("https://logo.clearbit.com/www.walmart.com/"),
+                            location = "United States,Omaha,6909 Melvin Parkway",
+                            facebook = "github",
+                            twitter = "github",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "Walmart is a retailing company that operates a chain of hypermarkets, discount department stores, and grocery stores.",
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Oaktree Capital",
+                            website = URL("https://www.oaktreecapital.com/"),
+                            logo = URL("https://logo.clearbit.com/www.oaktreecapital.com/"),
+                            location = "United States,Amarillo,1 Barby Circle",
+                            facebook = "oaktreecapital",
+                            twitter = "Oaktree",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "Oaktree is a leader among global investment managers specializing in alternative investments.",
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "KFC",
+                            website = URL("https://www.kfc.com/"),
+                            logo = URL("https://logo.clearbit.com/www.kfc.com/"),
+                            location = "United States,Frankfort,2920 Hauk Crossing",
+                            facebook = "KFC",
+                            twitter = "kfc",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "KFC (also known as Kentucky Fried Chicken) is a global chicken restaurant brand.",
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Tata",
+                            website = URL("http://www.tata.com"),
+                            logo = URL("https://logo.clearbit.com/www.tata.com/"),
+                            location = "United States,Topeka,660 3rd Lane",
+                            facebook = "TataMotorsGroup",
+                            twitter = "TataMotors",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "Tata Group is an international conglomerate that owns and operates independent companies, with the main focus on steel, hydro-power, hospitality, and airline industries. ",
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Compass Group",
+                            website = URL("https://www.compass-group.com/"),
+                            logo = URL("https://logo.clearbit.com/www.compass-group.com/"),
+                            location = "United States,Washington,43068 Declaration Lane",
+                            facebook = "compassgroupusa",
+                            twitter = "compassgroupusa",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "Compass Group is a global provider of food and support services.",
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Volkswagen",
+                            website = URL("https://www.volkswagenag.com/"),
+                            logo = URL("https://logo.clearbit.com/www.volkswagenag.com/"),
+                            location = "United States,Newport News,69 Walton Avenue",
+                            facebook = "Volkswagenrussia",
+                            twitter = "Volkswagen",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "Volkswagen Group (also known as VAG and Volkswagen AG) is an automobile manufacturer. ",
+                    ),
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Deutsche Post DHL Group",
+                            website = URL("https://www.dpdhl.com/"),
+                            logo = URL("https://logo.clearbit.com/www.dpdhl.com/"),
+                            location = "United States,Trenton,7 Boyd Point",
+                            facebook = "dhl",
+                            twitter = "DeutschePostDHL",
+                            isTypePublic = true,
+                            createdBy = UUID.randomUUID(),
+                            description = "Deutsche Post DHL Group (also known as Deutsche Post) is a mail and logistics company.",
+                    ),
             )
 
             companyWriteEntityList.forEach {
@@ -133,10 +213,7 @@ class CompanyDataLoader(
                     keywords = keywordsList
                 }
                 service.createCompany(it)
-
             }
-
         }
     }
-
 }

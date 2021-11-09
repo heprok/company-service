@@ -1,8 +1,8 @@
 package com.briolink.companyservice.api.dataloader
 
 import com.briolink.companyservice.api.service.OccupationService
+import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.OccupationReadRepository
-import com.briolink.companyservice.common.jpa.write.entity.IndustryWriteEntity
 import com.briolink.companyservice.common.jpa.write.entity.OccupationWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRepository
 import org.springframework.core.annotation.Order
@@ -26,12 +26,7 @@ class OccupationDataLoader(
             occupationList["e2e3cbed-70ff-4f5e-8347-a61c2e52ae49"] = "Hardware"
 
             occupationList.forEach { (uuid, name) ->
-                service.create(
-                        OccupationWriteEntity().apply {
-                            id = UUID.fromString(uuid)
-                            this.name = name
-                        },
-                )
+                service.create(name)
             }
         }
     }

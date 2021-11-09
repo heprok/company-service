@@ -8,9 +8,11 @@ import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRe
 import com.briolink.companyservice.common.mapper.OccupationMapper
 import com.briolink.event.publisher.EventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional
 class OccupationService(
     private val occupationWriteRepository: OccupationWriteRepository,
     private val eventPublisher: EventPublisher,
@@ -19,8 +21,10 @@ class OccupationService(
 
     fun create(name: String) = OccupationWriteEntity().apply {
         this.name = name
-        occupationWriteRepository.save(this)
-        eventPublisher.publishAsync(OccupationCreatedEvent(mapper.toDomain(this)))
+        occupationWriteRepository.save(this).let {
+            println(it.id)
+            eventPublisher.publishAsync(OccupationCreatedEvent(mapper.toDomain(it)))
+        }
     }
 
     fun create(entity: OccupationWriteEntity) = OccupationWriteEntity().apply {

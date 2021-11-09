@@ -116,22 +116,15 @@ fun inIndustryIds(industryIds: List<UUID>?): Specification<ConnectionReadEntity>
 }
 
 fun fullTextSearchByService(serviceId: UUID): Specification<ConnectionReadEntity> {
-    return Specification { root, _, criteriaBuilder ->
-        val match = criteriaBuilder.matchBoolMode(
-                root.get(ConnectionReadEntity_.serviceIds),
-                criteriaBuilder.literal(serviceId),
-        )
-        criteriaBuilder.greaterThan(match, 0.0)
-    }
+    return initSpec()
 }
 
 fun fullTextSearchByLocation(location: String?): Specification<ConnectionReadEntity>? {
     return if (location != null) Specification { root, _, criteriaBuilder ->
-        val match = criteriaBuilder.matchBoolMode(
+        criteriaBuilder.like(
                 root.get(ConnectionReadEntity_.location),
-                criteriaBuilder.literal(location),
+                "%$location%",
         )
-        criteriaBuilder.greaterThan(match, 0.0)
     } else {
         null
     }

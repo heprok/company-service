@@ -87,7 +87,7 @@ databaseChangeLog:
                   defaultValueBoolean: false
               - column:
                   name: created
-                  type: smallint
+                  type: timestamp
                   constraints:
                     nullable: false
               - column:

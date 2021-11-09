@@ -5,9 +5,11 @@ import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionRea
 import com.briolink.companyservice.common.util.PageRequest
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Transactional
 class UserJobPositionService(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
 ) {

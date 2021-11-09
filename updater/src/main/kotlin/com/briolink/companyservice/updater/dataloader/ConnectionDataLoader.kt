@@ -1,18 +1,18 @@
 package com.briolink.companyservice.updater.dataloader
 
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
+import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
-import com.briolink.companyservice.updater.dto.Connection
-import com.briolink.companyservice.updater.dto.ConnectionCompanyRole
-import com.briolink.companyservice.updater.dto.ConnectionParticipant
-import com.briolink.companyservice.updater.dto.ConnectionService
-import com.briolink.companyservice.updater.dto.ConnectionStatus
-import com.briolink.companyservice.updater.dto.ConnectionCompanyRoleType
-import com.briolink.companyservice.updater.handler.service.ConnectionHandlerService
+import com.briolink.companyservice.updater.handler.connection.Connection
+import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRole
+import com.briolink.companyservice.updater.handler.connection.ConnectionParticipant
+import com.briolink.companyservice.updater.handler.connection.ConnectionService
+import com.briolink.companyservice.updater.handler.connection.ConnectionStatus
+import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRoleType
+import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.Year
@@ -78,17 +78,18 @@ class ConnectionDataLoader(
                                         userJobPositionTitle = null,
                                         companyId = from.id,
                                         companyRole = listConnectionRole.shuffled()
-                                                .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Seller }!!
+                                                .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Seller }!!,
                                 ),
                                 participantTo = ConnectionParticipant(
                                         userId = listUser.random().id,
                                         userJobPositionTitle = null,
                                         companyId = to.id,
                                         companyRole = listConnectionRole.shuffled()
-                                                .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Buyer }!!
+                                                .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Buyer }!!,
                                 ),
                                 services = ArrayList(services),
                                 status = connectionStatusList.random(),
+                                created = randomInstant(2010, 2020),
                         ),
                 )
             }

@@ -31,6 +31,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.Tuple
@@ -39,6 +40,7 @@ import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
 @Service
+@Transactional
 class ConnectionService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val connectionServiceReadRepository: ConnectionServiceReadRepository,
@@ -136,7 +138,7 @@ class ConnectionService(
     }
 
     fun getSpecification(filter: ConnectionFilter?) = Specification<ConnectionReadEntity> { _, _, _ -> null }
-            .and(inServiceIds(filter?.serviceIds?.map { UUID.fromString(it) }))
+//            .and(inServiceIds(filter?.serviceIds?.map { UUID.fromString(it) }))
             .and(inIndustryIds(filter?.industryIds?.map { UUID.fromString(it) }))
             .and(
                     inBuyerRoleIds(filter?.collaboratorRoleIds?.map { UUID.fromString(it) })?.or(
