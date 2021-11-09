@@ -100,7 +100,6 @@ class ConnectionQuery(
             connectionService.getConnectionRoleUsedForCompany(UUID.fromString(companyId), StringUtil.replaceNonWord(query))
                     .map { ConnectionRole.fromEntity(it) }
 
-
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getServicesProvided(

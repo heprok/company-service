@@ -19,7 +19,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
     ): List<ConnectionReadEntity>
 
 
-    fun existsBySellerIdAndBuyerId(sellerId: UUID, buyerId: UUID): Boolean
+    fun existsBySellerIdOrBuyerId(sellerId: UUID, buyerId: UUID): Boolean
 
     fun findBySellerIdOrBuyerIdAndVerificationStage(
         sellerRoleId: UUID,
@@ -78,7 +78,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
     @Query(
             value = """
             SELECT 
-                distinct c.buyerRoleName, c.buyerRoleId
+                distinct c.buyerRoleName as name, c.buyerRoleId as id
             FROM 
                 ConnectionReadEntity c
             WHERE 

@@ -135,6 +135,12 @@ fun ConnectionRole.Companion.fromEntity(entity: StatisticReadEntity.Role) = Conn
         type = ConnectionRoleType.values()[entity.type.ordinal],
 )
 
+fun ConnectionRole.Companion.fromEntity(entity: ConnectionReadEntity.Role) = ConnectionRole(
+        id = entity.id.toString(),
+        name = entity.name,
+        type = ConnectionRoleType.values()[entity.type.ordinal],
+)
+
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
         id = entity.id.toString(),
         buyer = Participant(
@@ -153,7 +159,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                             Image(url = it)
                         },
                 ),
-                role = entity.data.sellerCompany.role.name,
+                role = ConnectionRole.fromEntity(entity.data.sellerCompany.role),
         ),
         seller = Participant(
                 id = entity.data.buyerCompany.id.toString(),
@@ -171,7 +177,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                             Image(url = it)
                         },
                 ),
-                role = entity.data.buyerCompany.role.name,
+                role = ConnectionRole.fromEntity(entity.data.buyerCompany.role),
         ),
         services = entity.data.services.map {
             ConnectionService(
