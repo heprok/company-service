@@ -77,31 +77,25 @@ class ConnectionService(
         val cq: CriteriaQuery<Tuple> = cb.createQuery(Tuple::class.java)
         val root: Root<ConnectionReadEntity> = cq.from(ConnectionReadEntity::class.java)
         cq.multiselect(
-                root.get<UUID>("sellerRoleId"),
-                root.get<String>("sellerRoleName").alias("sellerRoleName"),
+                root.get<UUID>("sellerRoleId").alias("roleId"),
                 cb.count(root.get<UUID>("sellerRoleId")).alias("count"),
         )
         cq.where(getSpecification(filter).and(equalsSellerId(companyId)).toPredicate(root, cq, cb))
-        cq.groupBy(root.get<UUID>("sellerRoleId"), root.get<ConnectionReadEntity.Role>("sellerRole"))
-        resultRolesAndCount.addAll(entityManager.createQuery(cq).resultList.map {
-            ConnectionRoleReadEntity(id = it[0] as UUID, name = it[1] as String, type = ConnectionRoleReadEntity.RoleType.Buyer)
-        })
+        cq.groupBy(root.get<UUID>("sellerRoleId"))
+        resultRolesAndCount.addAll(entityManager.createQuery(cq).resultList)
 
         cq.multiselect(
-                root.get<UUID>("buyerRoleId"),
-                root.get<String>("buyerRoleName").alias("buyerRoleName"),
+                root.get<UUID>("buyerRoleId").alias("roleId"),
                 cb.count(root.get<UUID>("buyerRoleId")).alias("count"),
         )
         cq.where(getSpecification(filter).and(equalsBuyerId(companyId)).toPredicate(root, cq, cb))
-        cq.groupBy(root.get<UUID>("buyerRoleId"), root.get<UUID>("buyerRole"))
-        resultRolesAndCount.addAll(entityManager.createQuery(cq).resultList.map {
-            ConnectionRoleReadEntity(id = it[0] as UUID, name = it[1] as String, type = ConnectionRoleReadEntity.RoleType.Seller)
-        })
+        cq.groupBy(root.get<UUID>("buyerRoleId"))
+        resultRolesAndCount.addAll(entityManager.createQuery(cq).resultList)
 
         resultRolesAndCount.forEach {
-            val role = it["role"] as ConnectionReadEntity.Role
+            val role = it["roleId"] as UUID
             val count = (it["count"] as Long).toInt()
-            resultMap[role.id] = count
+            resultMap[role] = count
         }
 
         return resultMap
@@ -127,7 +121,7 @@ class ConnectionService(
                 root.get<String>("buyerRoleName").alias("buyerRoleName"),
         )
         cq.where(equalsBuyerId(companyId).toPredicate(root, cq, cb))
-        cq.groupBy(root.get<UUID>("buyerRoleId"), root.get<UUID>("buyerRole"))
+        cq.groupBy(root.get<UUID>("buyerRoleId"), root.get<UUID>("buyerRoleName"))
         resultRoles.addAll(entityManager.createQuery(cq).resultList.map {
             ConnectionRoleReadEntity(id = it[0] as UUID, name = it[1] as String, type = ConnectionRoleReadEntity.RoleType.Buyer)
         })
@@ -136,7 +130,7 @@ class ConnectionService(
     }
 
     fun getSpecification(filter: ConnectionFilter?) = Specification<ConnectionReadEntity> { _, _, _ -> null }
-            .and(inServiceIds(filter?.serviceIds?.map { UUID.fromString(it) }))
+//            .and(inServiceIds(filter?.serviceIds?.map { UUID.fromString(it) }))
             .and(inIndustryIds(filter?.industryIds?.map { UUID.fromString(it) }))
             .and(
                     inCollaboratorRoles(

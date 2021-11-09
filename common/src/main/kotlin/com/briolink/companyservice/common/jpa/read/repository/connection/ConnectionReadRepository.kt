@@ -94,7 +94,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
     @Query(
             value = """
             SELECT 
-                distinct c.sellerId as id, c.sellerName as name
+                distinct c.sellerRoleId as id, c.sellerRoleName as name
             FROM 
                 ConnectionReadEntity c
             WHERE 

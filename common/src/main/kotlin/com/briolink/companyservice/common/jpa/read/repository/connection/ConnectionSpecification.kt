@@ -140,7 +140,7 @@ fun inCollaboratorRoles(collaboratorRoles: MutableMap<UUID, ConnectionRoleReadEn
         collaboratorRoles.forEach { (id, type) ->
             spec = spec.or(
                     if (type == ConnectionRoleReadEntity.RoleType.Buyer)
-                        equalsBuyerId(id) else equalsSellerId(id),
+                        equalsBuyerRoleId(id) else equalsSellerRoleId(id),
             )
         }
         spec
