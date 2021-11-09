@@ -7,6 +7,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -142,9 +143,11 @@ class ConnectionHandlerService(
     }
 
     fun delete(connectionId: UUID) {
-        // TODO check delete
-        if(connectionReadRepository.existsById(connectionId))
-        connectionReadRepository.deleteById(connectionId)
+        try {
+            connectionReadRepository.deleteById(connectionId)
+        } catch (e: EmptyResultDataAccessException) {
+
+        }
     }
 
 }

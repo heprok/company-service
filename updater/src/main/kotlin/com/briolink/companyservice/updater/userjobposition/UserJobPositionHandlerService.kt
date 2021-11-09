@@ -5,6 +5,7 @@ import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleRead
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -51,6 +52,10 @@ class UserJobPositionHandlerService(
     }
 
     fun delete(id: UUID) {
-        userJobPositionReadRepository.deleteById(id)
+        try {
+            userJobPositionReadRepository.deleteById(id)
+        } catch (e: EmptyResultDataAccessException) {
+
+        }
     }
 }
