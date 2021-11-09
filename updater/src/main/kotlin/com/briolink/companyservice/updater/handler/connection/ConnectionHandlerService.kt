@@ -142,6 +142,8 @@ class ConnectionHandlerService(
     }
 
     fun delete(connectionId: UUID) {
+        // TODO check delete
+        if(connectionReadRepository.existsById(connectionId))
         connectionReadRepository.deleteById(connectionId)
     }
 
