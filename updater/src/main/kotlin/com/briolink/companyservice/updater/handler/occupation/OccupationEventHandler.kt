@@ -8,7 +8,6 @@ import com.briolink.companyservice.common.jpa.read.repository.OccupationReadRepo
 import org.springframework.transaction.annotation.Transactional
 
 @EventHandler("OccupationCreatedEvent", "1.0")
-@Transactional
 class OccupationEventHandler(
     private val occupationHandlerService: OccupationHandlerService
 ) : IEventHandler<OccupationCreatedEvent> {

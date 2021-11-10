@@ -8,7 +8,6 @@ import com.briolink.companyservice.common.jpa.read.repository.OccupationReadRepo
 import org.springframework.transaction.annotation.Transactional
 
 @EventHandler("StatisticRefreshEvent", "1.0")
-@Transactional
 class StatisticEventHandler(
     private val occupationReadRepository: OccupationReadRepository,
     private val companyReadRepository: CompanyReadRepository,

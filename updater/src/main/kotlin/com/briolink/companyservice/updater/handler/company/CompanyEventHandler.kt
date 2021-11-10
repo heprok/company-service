@@ -11,13 +11,11 @@ import org.springframework.transaction.annotation.Transactional
     EventHandler("CompanyCreatedEvent", "1.0"),
     EventHandler("CompanyUpdatedEvent", "1.0")
 )
-@Transactional
 class CompanyEventHandler(
     private val companyReadRepository: CompanyReadRepository,
     private val companyHandlerService: CompanyHandlerService,
 ) : IEventHandler<CompanyCreatedEvent> {
     override fun handle(event: CompanyCreatedEvent) {
-        val company = event.data
-        companyHandlerService.createOrUpdate(company)
+        companyHandlerService.createOrUpdate(event.data)
     }
 }

@@ -8,7 +8,6 @@ import com.briolink.companyservice.common.jpa.read.repository.IndustryReadReposi
 import org.springframework.transaction.annotation.Transactional
 
 @EventHandler("IndustryCreatedEvent", "1.0")
-@Transactional
 class IndustryEventHandler(
     private val industryHandlerService: IndustryHandlerService
 ) : IEventHandler<IndustryCreatedEvent> {
