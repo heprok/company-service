@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional
         EventHandler("UserCreatedEvent", "1.0"),
         EventHandler("UserUpdatedEvent", "1.0")
 )
-@Transactional
 class UserCreatedEventHandler(
     private val userHandlerService: UserHandlerService
 ) : IEventHandler<UserCreatedEvent> {
