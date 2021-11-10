@@ -70,6 +70,7 @@ class ConnectionDataLoader(
                             },
                     )
                 }
+                //TODO очерёднос event in company
                 connectionServiceHandler.createOrUpdate(
                         Connection(
                                 id = UUID.randomUUID(),
