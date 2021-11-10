@@ -67,7 +67,7 @@ class CompanyWriteEntity(
     private var website: String? = null
 
     var websiteUrl: URL?
-        get() = URL("https://$website")
+        get() = website?.let { URL("https://$it") }
         set(value) {
             website = value?.host
         }
