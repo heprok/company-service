@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.graphql.mutation
 
+import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
@@ -10,6 +11,7 @@ import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
@@ -34,24 +36,32 @@ class CompanyMutation(
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
-    //    @PreAuthorize("isAuthenticated()")
     @DgsMutation
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
-        return if (createInputCompany.website != null || !companyService.isExistWebsite(createInputCompany.website.toString())) {
+        return if (createInputCompany.website == null || !companyService.isExistWebsite(createInputCompany.website.host.toString())) {
             val company = companyService.createCompany(
                     CompanyWriteEntity(
                             name = createInputCompany.name,
-                            website = createInputCompany.website,
                             createdBy = UUID.fromString(createInputCompany.createBy),
-                    ),
+                    ).apply {
+                        websiteUrl = createInputCompany.website
+                    },
             )
             CreateCompanyResult(
                     userErrors = listOf(),
-                    data = CompanyResultData(id = company.id.toString(), name = company.name),
+                    data = CompanyResultData(id = company.id.toString(), name = company.name, website = company.website),
             )
         } else {
             CreateCompanyResult(
-                    userErrors = listOf(Error("WebsiteCompanyIsExist", listOf("website"))),
+                    userErrors = listOf(),
+                    data = companyService.getByWebsite(createInputCompany.website).let {
+                        CompanyResultData(
+                                id = it.id.toString(),
+                                name = it.name,
+                                website = it.websiteUrl,
+                        )
+                    },
+//                    userErrors = listOf(Error("WebsiteCompanyIsExist", listOf("website"))),
             )
         }
     }
@@ -63,56 +73,110 @@ class CompanyMutation(
         @InputArgument("input") inputCompany: UpdateCompanyInput,
         dfe: DataFetchingEnvironment
     ): UpdateCompanyResult {
-        val company = companyService.findById(UUID.fromString(id)).orElseThrow { throw EntityNotFoundException("$id company not found") }
+        val userErrors = mutableListOf<Error>()
 
-        company.slug = inputCompany.slug ?: company.slug
-        company.name = inputCompany.name ?: company.name
-        company.website = inputCompany.website
-        company.description = inputCompany.description ?: company.description
-        company.isTypePublic = inputCompany.isTypePublic ?: company.isTypePublic
-//        company.country = inputCompany.country ?: company.country
-//        company.state = inputCompany.state ?: company.state
-//        company.city = inputCompany.city ?: company.city
-        company.location = inputCompany.location ?: company.location
-        company.facebook = inputCompany.facebook ?: company.facebook
-        company.twitter = inputCompany.twitter ?: company.twitter
+        if (companyService.getPermission(
+                    companyId = UUID.fromString(id),
+                    userId = currentUserAccountId,
+            ) != UserPermissionRoleReadEntity.RoleType.Owner)
+            userErrors.add(Error("403 Permission denied"))
+        else {
+            companyService.findById(UUID.fromString(id)).orElseThrow { throw EntityNotFoundException("$id company not found") }
+                    .apply {
+                        val definitionFiled: Map<String, Any> = dfe.getArgument("input")
+                        definitionFiled.forEach { (name, _) ->
+                            when (name) {
+                                "slug" -> this.slug = inputCompany.slug!!
+                                "name" -> {
+                                    if (inputCompany.name.isNullOrEmpty()) userErrors.add(Error("Name must be not empty or null"))
+                                    else this.name = inputCompany.name
+                                }
+                                "website" -> {
+                                    if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website.host.toString()))
+                                        userErrors.add(Error("Website exist"))
+                                    else this.websiteUrl = inputCompany.website
+                                }
+                                "description" -> this.description = inputCompany.description
+                                "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
+                                "location" -> this.location = inputCompany.location
+                                "facebook" -> this.facebook = inputCompany.facebook
+                                "twitter" -> this.twitter = inputCompany.twitter
+                                "occupationId" -> {
+                                    this.occupation = inputCompany.occupationId?.let {
+                                        occupationService.findById(UUID.fromString(it))
+                                                .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
+                                    }
+                                }
+                                "occupationName" -> {
+                                    if (inputCompany.occupationName.isNullOrEmpty()) userErrors.add(Error("Occupation must be not null or empty"))
+                                    else this.occupation = occupationService.create(name = inputCompany.occupationName)
+                                }
+                                "industryId" -> {
+                                    this.industry = inputCompany.industryId?.let {
+                                        industryService.findById(UUID.fromString(it))
+                                                .orElseThrow { throw EntityNotFoundException("$it industry not found") }
+                                    }
+                                }
+                                "industryName" -> {
+                                    if (inputCompany.industryName.isNullOrEmpty()) userErrors.add(Error("Industry must be not null or empty"))
+                                    else this.industry = industryService.create(name = inputCompany.industryName)
+                                }
+                                "keyWordIds" -> {
+                                    this.keywords = if (inputCompany.keyWordIds.isNullOrEmpty())
+                                        mutableListOf()
+                                    else
+                                        inputCompany.keyWordIds.let { list ->
+                                            list.map {
+                                                keywordService.findById(UUID.fromString(it))
+                                                        .orElseThrow { throw EntityNotFoundException("$id keyword not found") }
+                                            }
+                                        }.toMutableList()
+                                }
+                            }
 
-        company.occupation = if (inputCompany.occupationId != null || inputCompany.occupationName != null) {
-            if (inputCompany.occupationId != null) {
-                inputCompany.occupationId.let {
-                    occupationService.findById(UUID.fromString(it))
-                            .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
-                }
-            } else {
-                occupationService.create(name = inputCompany.occupationName!!)
-            }
-        } else {
-            company.occupation
+                        }
+                        if (userErrors.isEmpty()) companyService.updateCompany(this)
+
+//            this.occupation = if (inputCompany.occupationId != null || inputCompany.occupationName != null) {
+//                if (inputCompany.occupationId != null) {
+//                    inputCompany.occupationId.let {
+//                        occupationService.findById(UUID.fromString(it))
+//                                .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
+//                    }
+//                } else {
+//                    occupationService.create(name = inputCompany.occupationName!!)
+//                }
+//            } else {
+//                this.occupation
+//            }
+
+//            this.industry = if (inputCompany.industryId != null || inputCompany.industryName != null) {
+//                if (inputCompany.industryId != null) {
+//                    inputCompany.industryId.let {
+//                        industryService.findById(UUID.fromString(it))
+//                                .orElseThrow { throw EntityNotFoundException("$it industry not found") }
+//                    }
+//                } else {
+//                    industryService.create(name = inputCompany.industryName!!)
+//                }
+//            } else {
+//                this.industry
+//            }
+
+//                ?: this.keywords
+                    }
         }
 
-        company.industry = if (inputCompany.industryId != null || inputCompany.industryName != null) {
-            if (inputCompany.industryId != null) {
-                inputCompany.industryId.let {
-                    industryService.findById(UUID.fromString(it))
-                            .orElseThrow { throw EntityNotFoundException("$it industry not found") }
-                }
-            } else {
-                industryService.create(name = inputCompany.industryName!!)
-            }
-        } else {
-            company.industry
-        }
-
-        company.keywords = inputCompany.keyWordIds?.let { list ->
-            list.map {
-                keywordService.findById(UUID.fromString(it!!)).orElseThrow { throw EntityNotFoundException("$id keyword not found") }
-            }
-        }?.toMutableList() ?: company.keywords
-        companyService.updateCompany(company)
-        return UpdateCompanyResult(
-                success = true,
-                userErrors = listOf(),
-        )
+        return if (userErrors.isEmpty())
+            UpdateCompanyResult(
+                    success = true,
+                    userErrors = listOf(),
+            )
+        else
+            UpdateCompanyResult(
+                    success = false,
+                    userErrors = userErrors.toList(),
+            )
     }
 }
 

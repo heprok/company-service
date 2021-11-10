@@ -1,11 +1,10 @@
 package com.briolink.companyservice.updater.userjobposition
 
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -20,42 +19,46 @@ class UserJobPositionHandlerService(
 ) {
     fun createOrUpdate(userJobPosition: UserJobPosition) {
         if (userJobPosition.endDate == null) {
-            val jobPosition = userJobPositionReadRepository.findById(userJobPosition.id).orElse(
+            userJobPositionReadRepository.findById(userJobPosition.id).orElse(
                     UserJobPositionReadEntity(
                             id = userJobPosition.id,
                             userId = userJobPosition.userId,
                             companyId = userJobPosition.companyId,
                     ).apply {
-                        val user = userReadRepository.findById(userJobPosition.userId)
-                                .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
-                        data = UserJobPositionReadEntity.Data(
-                                user = UserJobPositionReadEntity.User(
-                                        firstName = user.data.firstName,
-                                        lastName = user.data.lastName,
-                                        slug = user.data.slug,
-                                        image = user.data.image,
-                                ),
-                        )
-                        companyHandlerService.setPermission(
-                                companyId = userJobPosition.companyId,
-                                userId = userJobPosition.userId,
-                                roleType = UserPermissionRoleReadEntity.RoleType.Employee,
-                        )
+                        userReadRepository.findById(userJobPosition.userId)
+                                .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }.let {
+                                    data = UserJobPositionReadEntity.Data(
+                                            user = UserJobPositionReadEntity.User(
+                                                    firstName = it.data.firstName,
+                                                    lastName = it.data.lastName,
+                                                    slug = it.data.slug,
+                                                    image = it.data.image,
+                                            ),
+                                    )
+                                }
+                        companyHandlerService.addEmployee(companyId = userJobPosition.companyId, userId = userJobPosition.userId)
                     },
-            )
-            jobPosition.companyId = userJobPosition.companyId
-            jobPosition.data.title = userJobPosition.title
-            userJobPositionReadRepository.save(jobPosition)
+            ).apply {
+                companyId = userJobPosition.companyId
+                data.title = userJobPosition.title
+                userJobPositionReadRepository.save(this)
+            }
         } else {
             delete(userJobPosition.id)
         }
     }
 
-    fun delete(id: UUID) {
-        try {
-            userJobPositionReadRepository.deleteById(id)
-        } catch (e: EmptyResultDataAccessException) {
+    fun updateUser(user: UserReadEntity) {
+        userJobPositionReadRepository.updateUserByUserId(
+                userId = user.id,
+                slug = user.data.slug,
+                firstName = user.data.firstName,
+                lastName = user.data.lastName,
+                image = user.data.image.toString(),
+        )
+    }
 
-        }
+    fun delete(id: UUID) {
+        userJobPositionReadRepository.deleteById(id)
     }
 }

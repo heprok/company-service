@@ -36,7 +36,7 @@ class CompanyService(
                 name = company.name,
                 slug = company.slug,
                 logo = company.logo,
-                website = company.website,
+                website = company.websiteUrl,
                 description = company.description,
                 isTypePublic = company.isTypePublic,
                 twitter = company.twitter,
@@ -81,7 +81,7 @@ class CompanyService(
         val domain = Company(
                 id = companyWrite.id!!,
                 name = companyWrite.name,
-                website = companyWrite.website,
+                website = companyWrite.websiteUrl,
                 description = companyWrite.description,
                 slug = companyWrite.slug,
 //                country = companyWrite.country,
@@ -136,24 +136,24 @@ class CompanyService(
         )?.role
     }
 
-    fun setOwner(companyId: UUID, userId: UUID): Boolean {
-        val company =
-                companyReadRepository.findById(companyId).orElseThrow { throw EntityNotFoundException("$companyId company not found") }
-        return if (company.data.createdBy == null) {
-            company.data.createdBy = userId
-            companyReadRepository.save(company)
-            userPermissionRoleReadRepository.save(
-                    UserPermissionRoleReadEntity(
-                            userId = userId,
-                            role = UserPermissionRoleReadEntity.RoleType.Owner,
-                            accessObjectUuid = companyId,
-                    ),
-            )
-            true
-        } else {
-            false
-        }
-    }
+//    fun setOwner(companyId: UUID, userId: UUID): Boolean {
+//        val company =
+//                companyReadRepository.findById(companyId).orElseThrow { throw EntityNotFoundException("$companyId company not found") }
+//        return if (company.data.createdBy == null) {
+//            company.data.createdBy = userId
+//            companyReadRepository.save(company)
+//            userPermissionRoleReadRepository.save(
+//                    UserPermissionRoleReadEntity(
+//                            userId = userId,
+//                            role = UserPermissionRoleReadEntity.RoleType.Owner,
+//                            accessObjectUuid = companyId,
+//                    ),
+//            )
+//            true
+//        } else {
+//            false
+//        }
+//    }
 
     fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleReadEntity.RoleType) {
         userPermissionRoleReadRepository.save(
@@ -165,4 +165,7 @@ class CompanyService(
                 } ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId, role = roleType),
         )
     }
+
+    fun getByWebsite(website: URL): CompanyWriteEntity = companyWriteRepository.findByWebsite(website.host)
+
 }

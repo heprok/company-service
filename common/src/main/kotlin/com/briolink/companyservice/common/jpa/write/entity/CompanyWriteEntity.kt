@@ -20,9 +20,6 @@ class CompanyWriteEntity(
     @Column(name = "name", nullable = false)
     var name: String,
 
-    @Column(name = "website", nullable = false)
-    var website: URL?,
-
     @Column(name = "slug", nullable = false, length = 255)
     var slug: String = "",
 
@@ -65,6 +62,15 @@ class CompanyWriteEntity(
     )
     var keywords: MutableList<KeywordWriteEntity> = mutableListOf()
 ) : BaseWriteEntity() {
+
+    @Column(name = "website")
+    private var website: String? = null
+
+    var websiteUrl: URL?
+        get() = URL("https://$website")
+        set(value) {
+            website = value?.host
+        }
 
     @PrePersist
     fun prePersist() {

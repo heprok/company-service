@@ -17,8 +17,8 @@ class CompanyHandlerService(
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
 ) {
 
-    fun createOrUpdate(company: Company) {
-       companyReadRepository.findById(company.id).orElse(
+    fun createOrUpdate(company: Company): CompanyReadEntity {
+        companyReadRepository.findById(company.id).orElse(
                 CompanyReadEntity(company.id, company.slug),
         ).apply {
             data = CompanyReadEntity.Data(
@@ -41,39 +41,19 @@ class CompanyHandlerService(
                     } ?: mutableListOf(),
                     occupation = company.occupation?.let { CompanyReadEntity.Occupation(it.id.toString(), it.name) },
             )
-           companyReadRepository.save(this)
+            return companyReadRepository.save(this)
         }
     }
 
-    fun setOwner(companyId: UUID, userId: UUID): Boolean {
-        val company =
-                companyReadRepository.findById(companyId).orElseThrow { throw EntityNotFoundException("$companyId company not found") }
-        return if (company.data.createdBy == null) {
-            company.data.createdBy = userId
-            companyReadRepository.save(company)
+    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleReadEntity.RoleType): UserPermissionRoleReadEntity =
             userPermissionRoleReadRepository.save(
-                    UserPermissionRoleReadEntity(
-                            userId = userId,
-                            role = UserPermissionRoleReadEntity.RoleType.Owner,
+                    userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
                             accessObjectUuid = companyId,
-                    ),
+                            userId = userId,
+                    )?.apply {
+                        role = roleType
+                    } ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId, role = roleType),
             )
-            true
-        } else {
-            false
-        }
-    }
-
-    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleReadEntity.RoleType) {
-        userPermissionRoleReadRepository.save(
-                userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
-                        accessObjectUuid = companyId,
-                        userId = userId,
-                )?.apply {
-                    role = roleType
-                } ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId, role = roleType),
-        )
-    }
 
     fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity.RoleType? {
         return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
@@ -81,6 +61,14 @@ class CompanyHandlerService(
                 accessObjectType = 1,
                 userId = userId,
         )?.role
+    }
+
+    fun addEmployee(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity {
+        return if (!userPermissionRoleReadRepository.existsByAccessObjectUuidAndAccessObjectTypeAndRole(companyId)) {
+            setPermission(companyId = companyId, userId = userId, roleType = UserPermissionRoleReadEntity.RoleType.Owner)
+        } else {
+            setPermission(companyId = companyId, userId = userId, roleType = UserPermissionRoleReadEntity.RoleType.Employee)
+        }
     }
 }
 

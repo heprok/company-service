@@ -6,4 +6,7 @@ import java.util.UUID
 
 interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
     fun existsByWebsiteIsLike(website: String): Boolean
+
+    fun findByWebsite(website: String): CompanyWriteEntity
+
 }

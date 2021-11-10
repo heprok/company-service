@@ -27,7 +27,6 @@ class UserJobPositionDeletedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
 ) : IEventHandler<UserJobPositionDeletedEvent> {
     override fun handle(event: UserJobPositionDeletedEvent) {
-        val eventData = event.data
-        userJobPositionHandlerService.delete(eventData.id)
+        userJobPositionHandlerService.delete(event.data.id)
     }
 }

@@ -13,4 +13,11 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
         userId: UUID
     ): UserPermissionRoleReadEntity?
 
+
+    fun existsByAccessObjectUuidAndAccessObjectTypeAndRole(
+        accessObjectUuid: UUID,
+        accessObjectType: Int = 1,
+        role: UserPermissionRoleReadEntity.RoleType = UserPermissionRoleReadEntity.RoleType.Owner
+    ): Boolean
+
 }
