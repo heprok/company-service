@@ -1,14 +1,16 @@
 package com.briolink.companyservice.common.jpa.read.repository.connection
 
+import com.briolink.companyservice.common.jpa.projection.CollaboratorProjection
 import com.briolink.companyservice.common.jpa.projection.CollaboratorRoleProjection
 import com.briolink.companyservice.common.jpa.projection.IndustryProjection
-import com.briolink.companyservice.common.jpa.projection.CollaboratorProjection
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.*
+
 
 interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, JpaSpecificationExecutor<ConnectionReadEntity> {
 //    fun findByBuyerIdIs(companyId: UUID, pageable: Pageable? = null): Page<ConnectionReadEntity>
@@ -106,4 +108,9 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID>, 
         @Param("query") query: String,
         @Param("companyId") buyerCompanyId: UUID,
     ): List<CollaboratorRoleProjection>
+
+    @Modifying
+    @Query("delete from ConnectionReadEntity c where c.id = ?1")
+    override fun deleteById(id: UUID)
+
 }

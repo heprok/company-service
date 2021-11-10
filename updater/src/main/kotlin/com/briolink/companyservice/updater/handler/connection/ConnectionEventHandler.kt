@@ -5,7 +5,6 @@ import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerSer
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
-import org.springframework.transaction.annotation.Transactional
 
 @EventHandlers(
         EventHandler("ConnectionCreatedEvent", "1.0"),

@@ -7,8 +7,6 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Year
@@ -33,7 +31,7 @@ class ConnectionHandlerService(
                 id = buyerRead.data.industry!!.id,
                 name = buyerRead.data.industry!!.name,
         )
-        (connectionReadRepository.findByIdOrNull(connection.id) ?: ConnectionReadEntity(connection.id)).apply {
+        connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
 
             sellerId = connection.participantFrom.companyId!!
             buyerId = connection.participantTo.companyId!!
@@ -143,11 +141,7 @@ class ConnectionHandlerService(
     }
 
     fun delete(connectionId: UUID) {
-        try {
             connectionReadRepository.deleteById(connectionId)
-        } catch (e: EmptyResultDataAccessException) {
-
-        }
     }
 
 }
