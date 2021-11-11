@@ -29,10 +29,10 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query(
             """update UserJobPositionReadEntity c
            set c.data = function('jsonb_sets', c.data,
-                '{user.slug}', :slug, text,
-                '{user.firstName}', :firstName, text,
-                '{user.lastName}', :lastName, text,
-                '{user.image}', :image, text
+                '{User,slug}', :slug, text,
+                '{User,firstName}', :firstName, text,
+                '{User,lastName}', :lastName, text,
+                '{User,image}', :image, text
            ) where c.userId = :userId""",
     )
     fun updateUserByUserId(
