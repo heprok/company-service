@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.userjobposition
+package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.briolink.event.Event
 

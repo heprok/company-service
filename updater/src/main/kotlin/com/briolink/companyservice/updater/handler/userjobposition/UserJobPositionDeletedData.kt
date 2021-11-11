@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.userjobposition
+package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*

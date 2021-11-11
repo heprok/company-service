@@ -1,6 +1,6 @@
 package com.briolink.companyservice.updater.handler.user
 
-import com.briolink.companyservice.updater.userjobposition.UserJobPositionHandlerService
+import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers

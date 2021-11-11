@@ -4,6 +4,7 @@ object Versions {
     const val JAVA = "11"
     const val KOTLIN = "1.5.31"
     const val SPRING_BOOT = "2.5.5"
+    const val BLAZE_PERSISTENCE = "1.6.3"
     const val SPRING_DEPENDENCY_MANAGEMENT = "1.0.11.RELEASE"
     const val AWSPRING_CLOUD = "2.3.2"
     const val DGS_CODEGEN = "5.0.6"

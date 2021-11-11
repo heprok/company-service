@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.userjobposition
+package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity

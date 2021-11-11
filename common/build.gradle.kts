@@ -14,12 +14,15 @@ allOpen {
 dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
     annotationProcessor("org.springframework.boot:spring-boot-autoconfigure-processor")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     kapt("org.springframework.boot:spring-boot-autoconfigure-processor:${Versions.SPRING_BOOT}")
     kapt("org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}")
 
+    // blaze-persistence-bom
+    api("com.blazebit:blaze-persistence-integration-spring-data-2.4:${Versions.BLAZE_PERSISTENCE}")
+    api("com.blazebit:blaze-persistence-integration-hibernate-5.4:${Versions.BLAZE_PERSISTENCE}")
+    api("com.blazebit:blaze-persistence-core-impl:${Versions.BLAZE_PERSISTENCE}")
 
     // FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -34,45 +37,15 @@ dependencies {
 
     //FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE}")
-//
-//    implementation("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
-//    implementation("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}")
-//    compile("com.querydsl:querydsl-core:${Versions.QUERY_DSL}")
-//    compile("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
-//    kapt("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}:jpa")
-
-    //querydsl
-//    compile("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
-//    kapt("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}:jpa")
-//    // JSR-330 javax.inject annotations - required by querydsl
-//
-//    annotationProcessor(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa" )
 
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.30.Final")
 
     // Hibernate Types 55
-    implementation("com.vladmihalcea:hibernate-types-55:${Versions.HIBERNATE_TYPES_55}")
+    api("com.vladmihalcea:hibernate-types-55:${Versions.HIBERNATE_TYPES_55}")
 
     // IBM ICU4J
     implementation("com.ibm.icu:icu4j:${Versions.IBM_ICU4J}")
 }
-//
-
-//java.sourceSets["main"].java {
-//    srcDir("${project.buildDir.absolutePath}/querydsl/generated")
-//}
-//tasks.withType<com.ewerk.gradle.plugins.tasks.InitQuerydslSourcesDir> {
-//    buildDir = file("${project.buildDir.absolutePath}/querydsl")
-//
-//}
-//tasks.withType<com.ewerk.gradle.plugins.tasks.QuerydslCompile> {
-//
-//    buildDir = file("${project.buildDir.absolutePath}/querydsl")
-//}
-//querydsl {
-//    jpa = true
-//    querydslSourcesDir = "${project.buildDir.absolutePath}/querydsl/main"
-//}
 
 kapt {
     arguments {
