@@ -136,34 +136,6 @@ class CompanyMutation(
 
                         }
                         if (userErrors.isEmpty()) companyService.updateCompany(this)
-
-//            this.occupation = if (inputCompany.occupationId != null || inputCompany.occupationName != null) {
-//                if (inputCompany.occupationId != null) {
-//                    inputCompany.occupationId.let {
-//                        occupationService.findById(UUID.fromString(it))
-//                                .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
-//                    }
-//                } else {
-//                    occupationService.create(name = inputCompany.occupationName!!)
-//                }
-//            } else {
-//                this.occupation
-//            }
-
-//            this.industry = if (inputCompany.industryId != null || inputCompany.industryName != null) {
-//                if (inputCompany.industryId != null) {
-//                    inputCompany.industryId.let {
-//                        industryService.findById(UUID.fromString(it))
-//                                .orElseThrow { throw EntityNotFoundException("$it industry not found") }
-//                    }
-//                } else {
-//                    industryService.create(name = inputCompany.industryName!!)
-//                }
-//            } else {
-//                this.industry
-//            }
-
-//                ?: this.keywords
                     }
         }
 

@@ -14,9 +14,9 @@ class UserCreatedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService
 ) : IEventHandler<UserCreatedEvent> {
     override fun handle(event: UserCreatedEvent) {
-        userHandlerService.createOrUpdate(event.data).let {
+        userHandlerService.createOrUpdate(event.data).apply {
             if (event.name == "UserUpdatedEvent") {
-                userJobPositionHandlerService.updateUser(it)
+                userJobPositionHandlerService.updateUser(this)
             }
         }
     }
