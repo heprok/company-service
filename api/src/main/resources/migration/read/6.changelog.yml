@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            tableName: connection
+            schemaName: read
+            columns:
+            - column:
+                name: dates_collaboration
+                type: int4range
+        - sql:
+              sql: update read.connection set dates_collaboration = int4range(start_collaboration, end_collaboration)
+        - addNotNullConstraint:
+            tableName: connection
+            schemaName: read
+            columnName: dates_collaboration
+            constraints: const_dates_not_null
+            columnDataType: int4range
