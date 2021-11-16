@@ -99,6 +99,8 @@ class ConnectionReadEntity(
     fun prePersist() {
         sellerRoleName = data.sellerCompany.role.name
         buyerRoleName = data.buyerCompany.role.name
+        industryName = data.industry?.name
+        industryId = data.industry?.id
     }
 //TODO Типы json перевести в сущности и использовать их в других соущностях
     @JsonIgnoreProperties(ignoreUnknown = true)

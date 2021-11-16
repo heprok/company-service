@@ -36,7 +36,7 @@ class ConnectionHandlerService(
             location = buyerRead.data.location
             buyerRoleId = connection.participantTo.companyRole!!.id
             sellerRoleId = connection.participantFrom.companyRole!!.id
-            industryId = buyerRead.data.industry!!.id
+            industryId = buyerRead.data.industry?.id
             verificationStage = ConnectionReadEntity.ConnectionStatus.valueOf(connection.status.name)
             created = connection.created
             data = ConnectionReadEntity.Data(connection.id).apply {
