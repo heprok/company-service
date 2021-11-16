@@ -59,7 +59,7 @@ class ConnectionReadEntity(
     @Column(name = "buyer_role_name", nullable = false, length = 255)
     var buyerRoleName: String? = null
 
-    @Column(name = "location", nullable = false, length = 255)
+    @Column(name = "location", length = 255)
     var location: String? = null
 
 
