@@ -5,18 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.*
-
+import org.springframework.data.domain.Pageable
 interface IndustryReadRepository : JpaRepository<IndustryReadEntity, UUID> {
-    @Query(
-            value = """
-            SELECT 
-                id, name
-            FROM 
-                schema_read.industry
-            WHERE 
-                MATCH (`name`) AGAINST (:query IN BOOLEAN MODE) LIMIT 10
-        """,
-            nativeQuery = true,
-    )
-    fun findByName(@Param("query") query: String?): List<IndustryReadEntity>
+    @Query("SELECT c FROM IndustryReadEntity c WHERE (:query is null or function('fts_partial', c.name, :query) = true)")
+    fun findByName(@Param("query") query: String?, pageable: Pageable = Pageable.ofSize(10)): List<IndustryReadEntity>
 }
