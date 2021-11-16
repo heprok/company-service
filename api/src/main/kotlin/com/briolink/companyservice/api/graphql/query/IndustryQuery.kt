@@ -25,7 +25,7 @@ class IndustryQuery(
     ): List<Industry> {
         val escapeQuery = StringUtil.replaceNonWord(query)
         val industries = if (companyId == null && query.isNotEmpty()) {
-            industryReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")")
+            industryReadRepository.findByName(query.ifBlank { null })
         } else if (companyId != null) {
             connectionService.getIndustriesInConnectionFromCompany(UUID.fromString(companyId), query )
         } else {

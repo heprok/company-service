@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7
+      author: oleg@briolink.com
+      changes:
+        - dropNotNullConstraint:
+            tableName: connection
+            schemaName: read
+            constraints: const_dates_not_null
+        - dropColumn:
+            tableName: connection
+            columnName: dates_collaboration
+            schemaName: read
+            constraints: const_dates_not_null

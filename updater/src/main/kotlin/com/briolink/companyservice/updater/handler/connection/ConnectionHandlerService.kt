@@ -27,10 +27,6 @@ class ConnectionHandlerService(
         val buyerRead = companyReadRepository.getById(connection.participantTo.companyId!!)
         val userBuyerRead = userReadRepository.getById(connection.participantTo.userId!!)
         val userSellerRead = userReadRepository.getById(connection.participantFrom.userId!!)
-        val industryRead = IndustryReadEntity(
-                id = buyerRead.data.industry!!.id,
-                name = buyerRead.data.industry!!.name,
-        )
         connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
 
             sellerId = connection.participantFrom.companyId!!
@@ -49,10 +45,12 @@ class ConnectionHandlerService(
                 val idServiceMutableList = mutableListOf<UUID>()
                 val servicesConnection = mutableListOf<ConnectionReadEntity.Service>()
 
-                industry = ConnectionReadEntity.Industry(
-                        id = industryRead.id,
-                        name = industryRead.name,
-                )
+                industry = buyerRead.data.industry?.let {
+                    ConnectionReadEntity.Industry(
+                            id = it.id,
+                            name = it.name,
+                    )
+                }
                 buyerCompany = ConnectionReadEntity.ParticipantCompany(
                         id = buyerRead.id,
                         name = buyerRead.data.name,
@@ -125,7 +123,6 @@ class ConnectionHandlerService(
                 endCollaboration = if (endDateMutableList.contains(null)) null else endDateMutableList.maxByOrNull { year -> year!! }
                 serviceIds = idServiceMutableList
                 services = servicesConnection
-
             }
             connectionReadRepository.save(this)
         }
@@ -141,7 +138,7 @@ class ConnectionHandlerService(
     }
 
     fun delete(connectionId: UUID) {
-            connectionReadRepository.deleteById(connectionId)
+        connectionReadRepository.deleteById(connectionId)
     }
 
 }

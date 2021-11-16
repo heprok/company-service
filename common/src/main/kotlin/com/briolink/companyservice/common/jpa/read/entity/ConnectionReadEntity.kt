@@ -97,7 +97,6 @@ class ConnectionReadEntity(
 
     @PrePersist
     fun prePersist() {
-        industryName = data.industry.name
         sellerRoleName = data.sellerCompany.role.name
         buyerRoleName = data.buyerCompany.role.name
     }
@@ -114,7 +113,7 @@ class ConnectionReadEntity(
         @JsonProperty("services")
         lateinit var services: List<Service>
         @JsonProperty("industry")
-        lateinit var industry: Industry
+        var industry: Industry? = null
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
