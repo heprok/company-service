@@ -78,12 +78,12 @@ class ConnectionReadEntity(
     @Column(name = "end_collaboration")
     var endCollaboration: Year? = null
 
-    @Column(name = "industry_id", nullable = false)
+    @Column(name = "industry_id")
     @Type(type = "pg-uuid")
-    lateinit var industryId: UUID
+    var industryId: UUID? = null
 
-    @Column(name = "industry_name", nullable = false, length = 255)
-    lateinit var industryName: String
+    @Column(name = "industry_name", length = 255)
+    var industryName: String? = null
 
     @Column(name = "verification_stage", nullable = false)
     var verificationStage: ConnectionStatus = ConnectionStatus.Pending
