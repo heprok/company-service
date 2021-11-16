@@ -1,58 +1,38 @@
-type Connection {
-    id: ID!
-    seller: Participant
-    buyer: Participant
-    verificationStage: VerificationStage!
-    services: [ConnectionService!]!
-    industry: Industry
-}
+# --- enums
 
-enum VerificationStage {
+enum ConnectionStatus {
     Pending
     InProgress
     Verified
 }
 
-input ConnectionFilter {
-    role: InputConnectionRole
-    collaborators: [InputCollaborator]
-    collaboratorRoles: [InputCollaboratorRole]
-    industryIds: [ID]
-    location: String
-    datesOfCollaborators: RangeYear
-    verificationStages: [VerificationStage]
-    serviceIds: [ID]
+enum ConnectionCompanyRoleType {
+    Buyer
+    Seller
 }
 
-type Collaborator {
-    id: ID!,
-    name: String!,
-    type: ConnectionRoleType!
+# --- types
+
+type ConnectionService {
+    id: ID!
+    serviceId: ID!
+    name: String!
+    slug: String
+    startDate: Year!
+    endDate: Year
 }
 
-input InputCollaborator {
-    id: ID!,
-    type: ConnectionRoleType!
+type ConnectionCompanyRole {
+    id: ID!
+    name: String!
+    type: ConnectionCompanyRoleType!
 }
 
-input InputCollaboratorRole {
-    id: ID!,
-    type: ConnectionRoleType!
-}
-
-enum ConnectionSortBy {
-    Created, NameSeller, NameBuyer
-}
-
-input ConnectionSort{
-    sortBy: ConnectionSortBy!
-    direction: SortDirection!
-}
-
-type ConnectionList implements PaginatedList {
-    items: [Connection]!
-    itemsCountByRole: [ConnectionTabItemsCount]!
-    totalItems: Int!
+type ConnectionParticipant {
+    user: User!
+    userJobPositionTitle: String
+    company: CompanyInfoItem!
+    companyRole: ConnectionCompanyRole!
 }
 
 type ConnectionTabItemsCount {
@@ -60,34 +40,64 @@ type ConnectionTabItemsCount {
     value: Int!
 }
 
-type ConnectionRole {
+type Connection {
     id: ID!
-    name: String!
-    type: ConnectionRoleType!
+    participantFrom: ConnectionParticipant!
+    participantTo: ConnectionParticipant!
+    services: [ConnectionService!]!
+    status: ConnectionStatus!
+    industry: String
 }
 
-input InputConnectionRole {
-    id: ID!
+type ConnectionTab {
+    id: ID
     name: String
-    type: ConnectionRoleType!
 }
 
-enum ConnectionRoleType {
-    Buyer, Seller
+type ConnectionList {
+    items: [Connection!]!
+    itemsCountByTab: [ConnectionTabItemsCount!]!
+    totalItems: Int!
 }
 
-type ConnectionService {
-    id: ID!
-    name: String!
-    startDate: Year!
-    endDate: Year
+type IdNameItem {
+    id: ID
+    name: String
 }
 
-type Participant {
-    id: ID!
-    name: String!
-    slug: String!
-    logo: Image
-    role: ConnectionRole!
-    verifyUser: User!
+type ToggleConnectionVisibilityResult {
+    hidden: Boolean!
+}
+
+# --- inputs
+
+input ConnectionListOptions {
+    limit: Int! = 10
+    offset: Int! = 0
+    tabId: ID
+    sort: ConnectionSortParameter!
+    filter: ConnectionFilterParameters
+}
+
+input ConnectionFilterParameters {
+    collaboratorIds: [ID!]
+    collaborationDates: YearRange
+    industryIds: [ID!]
+    serviceIds: [ID!]
+    location: String
+    status: [ConnectionStatus!]
+}
+
+enum ConnectionSortKeys {
+    created, id
+}
+
+input ConnectionSortParameter {
+    key: ConnectionSortKeys!
+    direction: SortDirection!
+}
+
+input YearRange {
+    start: Year
+    end: Year
 }

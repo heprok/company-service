@@ -11,8 +11,7 @@ import javax.persistence.MappedSuperclass
 @TypeDefs(
         TypeDef(name = "jsonb", typeClass = JsonBinaryType::class),
         TypeDef(name = "year", typeClass = YearType::class),
-        TypeDef(name = "list-array", typeClass = ListArrayType::class),
-
+        TypeDef(name = "uuid-array", typeClass = ListArrayType::class),
 )
 @MappedSuperclass
 abstract class BaseReadEntity

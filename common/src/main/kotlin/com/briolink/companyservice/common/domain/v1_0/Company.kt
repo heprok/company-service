@@ -6,46 +6,46 @@ import java.net.URL
 import java.util.*
 
 data class Company(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("name")
+    @JsonProperty
     val name: String,
-    @JsonProperty("slug")
+    @JsonProperty
     val slug: String,
-    @JsonProperty("website")
+    @JsonProperty
     val website: URL? = null,
-    @JsonProperty("logo")
+    @JsonProperty
     val logo: URL? = null,
-    @JsonProperty("description")
+    @JsonProperty
     val description: String? = null,
-    @JsonProperty("isTypePublic")
+    @JsonProperty
     val isTypePublic: Boolean = true,
-    @JsonProperty("location")
+    @JsonProperty
     val location: String? = null,
-    @JsonProperty("country")
+    @JsonProperty
     val country: String? = null,
-    @JsonProperty("state")
+    @JsonProperty
     val state: String? = null,
-    @JsonProperty("city")
+    @JsonProperty
     val city: String? = null,
-    @JsonProperty("facebook")
+    @JsonProperty
     val facebook: String? = null,
-    @JsonProperty("twitter")
+    @JsonProperty
     val twitter: String? = null,
-    @JsonProperty("occupation")
+    @JsonProperty
     val occupation: Occupation? = null,
-    @JsonProperty("industry")
+    @JsonProperty
     val industry: Industry? = null,
-    @JsonProperty("statistic")
-    val statistic: Statistic? = null,
-    @JsonProperty("keywords")
+    @JsonProperty
+    val createdBy: UUID,
+    @JsonProperty
     val keywords: ArrayList<Keyword>? = ArrayList()
 ) : Domain {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Keyword(
-        @JsonProperty("id")
+        @JsonProperty
         val id: UUID,
-        @JsonProperty("name")
+        @JsonProperty
         val name: String,
     )
 }

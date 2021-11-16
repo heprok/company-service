@@ -4,6 +4,7 @@ import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.HideCompanyServiceResult
+import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
@@ -23,9 +24,9 @@ class ServiceMutation(
         @InputArgument("serviceId") serviceId: String,
         @InputArgument("isHide") isHide: Boolean
     ): HideCompanyServiceResult {
-//            val role = UserPermissionRoleReadEntity.RoleType.Owner
+//            val role =UserPermissionRoleTypeEnum.Owner
         val role = companyService.getPermission(UUID.fromString(companyId), SecurityUtil.currentUserAccountId)
-        return if (role == UserPermissionRoleReadEntity.RoleType.Owner) {
+        return if (role == UserPermissionRoleTypeEnum.Owner) {
             serviceCompanyService.hideInCompany(
                     companyId = UUID.fromString(companyId),
                     serviceId = UUID.fromString(serviceId),

@@ -11,6 +11,7 @@ import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.netflix.graphql.dgs.DgsComponent
@@ -78,7 +79,7 @@ class CompanyMutation(
         if (companyService.getPermission(
                     companyId = UUID.fromString(id),
                     userId = currentUserAccountId,
-            ) != UserPermissionRoleReadEntity.RoleType.Owner)
+            ) != UserPermissionRoleTypeEnum.Owner)
             userErrors.add(Error("403 Permission denied"))
         else {
             companyService.findById(UUID.fromString(id)).orElseThrow { throw EntityNotFoundException("$id company not found") }

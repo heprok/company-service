@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.jpa
 
+import com.briolink.companyservice.common.jpa.func.JsonbGetFunc
 import com.briolink.companyservice.common.jpa.func.JsonbSetsFunc
 import org.hibernate.boot.MetadataBuilder
 import org.hibernate.boot.spi.MetadataBuilderContributor
@@ -14,7 +15,16 @@ class Functions : MetadataBuilderContributor {
                 "fts_partial",
                 SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @@ to_tsquery(quote_literal(quote_literal(?2)) || ':*')"),
         )
+        metadataBuilder.applySqlFunction(
+                "int4range_contains",
+                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 <@ int4range(?2, ?3)"),
+        )
+        metadataBuilder.applySqlFunction(
+                "array_contains",
+                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @> ?2"),
+        )
         metadataBuilder.applySqlFunction("fts_rank", StandardSQLFunction("ts_rank", DoubleType.INSTANCE))
         metadataBuilder.applySqlFunction("jsonb_sets", JsonbSetsFunc())
+        metadataBuilder.applySqlFunction("jsonb_get", JsonbGetFunc())
     }
 }

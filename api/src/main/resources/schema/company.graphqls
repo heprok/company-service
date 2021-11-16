@@ -11,7 +11,6 @@ type Company {
     twitter: String
     occupation: Occupation
     industry: Industry
-    statistic: Statistic!
     keywords: [Keyword]!
 }
 
@@ -56,11 +55,4 @@ input UpdateCompanyInput {
     occupationName: String
     occupationId: ID
     keyWordIds: [ID]
-}
-
-type Statistic {
-    serviceProvidedCount: Int!
-    collaboratingCompanyCount: Int!
-    collaboratingPeopleCount: Int!
-    totalConnectionCount: Int!
 }
