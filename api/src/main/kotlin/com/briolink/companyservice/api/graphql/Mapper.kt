@@ -187,7 +187,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
                     startDate = it.startDate,
             )
         },
-        industry = entity.data.industry.let {
+        industry = entity.data.industry?.let {
             Industry(id = it.id.toString(), name = it.name)
         },
         verificationStage = VerificationStage.valueOf(entity.verificationStage.name)
