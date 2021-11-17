@@ -30,7 +30,7 @@ class CompanyService(
 ) {
     fun createCompany(createCompany: CompanyWriteEntity): Company {
         return companyWriteRepository.save(createCompany).let {
-            eventPublisher.publishAsync(CompanyCreatedEvent(it.toDomain()))
+            eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
             it.toDomain()
         }
     }
@@ -69,6 +69,7 @@ class CompanyService(
         (userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = companyId,
                 userId = userId,
+                accessObjectType = AccessObjectTypeEnum.CompanyService.value
         ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)).apply {
             role = roleType
             return userPermissionRoleReadRepository.save(this)

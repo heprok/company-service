@@ -23,10 +23,11 @@ type ServiceList implements PaginatedList {
 enum ServiceSortBy {
     Name, Created, Price, VerifiedUses, LastUsed
 }
-type HideCompanyServiceResult {
+type HideCompanyServiceResult implements BaseResult {
     success: Boolean!,
     error: Error,
 }
+
 input ServiceSort{
     sortBy: ServiceSortBy!
     direction: SortDirection!

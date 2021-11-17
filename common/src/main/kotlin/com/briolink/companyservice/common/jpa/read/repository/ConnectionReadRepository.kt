@@ -19,7 +19,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
             """
         select c from ConnectionReadEntity c
         where (c.participantFromCompanyId = ?1 or c.participantFromCompanyId = ?1) and c._status = ?2
-    """
+    """,
     )
     fun getByCompanyIdAndStatus(companyId: UUID, type: Int = ConnectionStatusEnum.Verified.value): Stream<ConnectionReadEntity>
 
@@ -42,7 +42,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                     LIMIT 1
                 ) LIMIT 10
     """,
-            nativeQuery = true
+            nativeQuery = true,
     )
     fun getCollaboratorsByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
 
@@ -61,7 +61,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                     LIMIT 1
                 ) LIMIT 10
     """,
-            nativeQuery = true
+            nativeQuery = true,
     )
     fun getConnectionServicesByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
 
@@ -80,11 +80,49 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                     LIMIT 1
                 ) LIMIT 10
     """,
-            nativeQuery = true
+            nativeQuery = true,
     )
     fun getConnectionIndustriesByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
 
+    @Modifying
+    @Query(
+            """
+            UPDATE ConnectionReadEntity c
+            SET c.hiddenCompanyIds = case
+               when :hidden = true
+                   then function('array_append', c.hiddenCompanyIds, :companyId)
+               when :hidden = false
+                   then function('array_remove', c.hiddenCompanyIds, :companyId)
+               else c.hiddenCompanyIds end
+           WHERE
+               c.id = :id and
+               (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) and
+               function('array_contains_element', c.hiddenCompanyIds, :companyId) <> :hidden
+           """,
+    )
+    fun changeVisibilityByIdAndCompanyId(
+        @Param("id") connectionId: UUID,
+        @Param("companyId") companyId: UUID,
+        @Param("hidden") hidden: Boolean
+    )
+
 
     fun existsByParticipantFromCompanyIdOrParticipantToCompanyId(participantFromCompanyId: UUID, participantToCompanyId: UUID): Boolean
+
+    @Modifying
+    @Query(
+            """
+           UPDATE ConnectionReadEntity c
+           SET c.deletedCompanyIds = function('array_append', c.deletedCompanyIds, :companyId)
+           WHERE
+               c.id = :id and
+               (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) and
+               function('array_contains_element', c.deletedCompanyIds, :companyId) = false
+               """,
+    )
+    fun softDeleteByIdAndCompanyId(
+        @Param("id") id: UUID,
+        @Param("companyId") companyId: UUID
+    )
 
 }

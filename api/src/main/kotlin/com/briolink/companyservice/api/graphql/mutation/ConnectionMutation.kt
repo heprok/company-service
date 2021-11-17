@@ -1,8 +1,7 @@
 package com.briolink.companyservice.api.graphql.mutation
 
-import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.PermissionService
-import com.briolink.companyservice.api.service.ServiceCompanyService
+import com.briolink.companyservice.api.service.connection.ConnectionService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
@@ -11,35 +10,33 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.RequestHeader
 import java.util.*
 
 @DgsComponent
-class ServiceMutation(
-    private val serviceCompanyService: ServiceCompanyService,
+class ConnectionMutation(
+    private val connectionService: ConnectionService,
     private val permissionService: PermissionService,
-    private val companyService: CompanyService
 ) {
-    @DgsMutation(field = "hideCompanyService")
+    @DgsMutation(field = "hideCompanyConnection")
     @PreAuthorize("isAuthenticated()")
     fun hide(
         @InputArgument("companyId") companyId: String,
-        @InputArgument("serviceId") serviceId: String,
+        @InputArgument("connectionId") connectionId: String,
         @InputArgument("isHide") isHide: Boolean
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
-                    permissionRight = PermissionRightEnum.ServiceCrud,
-                    accessObjectType = AccessObjectTypeEnum.CompanyService,
+                    permissionRight = PermissionRightEnum.ConnectionCrud,
+                    accessObjectType = AccessObjectTypeEnum.Connection,
             )) {
-            serviceCompanyService.changeVisibilityByIdAndCompanyId(
+            connectionService.changeVisibilityByIdAndCompanyId(
                     companyId = UUID.fromString(companyId),
-                    serviceId = UUID.fromString(serviceId),
+                    connectionId = UUID.fromString(connectionId),
                     isHide = isHide,
             )
             DelOrHideResult(
                     success = true,
-                    userErrors = listOf(),
+                    userErrors = listOf()
             )
         } else {
             DelOrHideResult(
@@ -49,25 +46,24 @@ class ServiceMutation(
         }
     }
 
-    @DgsMutation(field = "deleteCompanyService")
+    @DgsMutation(field = "deleteCompanyConnection")
     @PreAuthorize("isAuthenticated()")
-    fun deleteCompanyService(
-        @InputArgument("serviceId") serviceId: String,
+    fun delete(
         @InputArgument("companyId") companyId: String,
-        @RequestHeader("Authorization") authorization: String
+        @InputArgument("connectionId") connectionId: String
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
-                    permissionRight = PermissionRightEnum.ServiceCrud,
-                    accessObjectType = AccessObjectTypeEnum.CompanyService,
+                    permissionRight = PermissionRightEnum.ConnectionCrud,
+                    accessObjectType = AccessObjectTypeEnum.Connection,
             )) {
-            serviceCompanyService.deleteServiceInCompany(
-                    serviceId = UUID.fromString(serviceId),
-                    authorization = authorization
+            connectionService.deleteConnectionInCompany(
+                    companyId = UUID.fromString(companyId),
+                    connectionId = UUID.fromString(connectionId),
             )
             DelOrHideResult(
                     success = true,
-                    userErrors = listOf(),
+                    userErrors = listOf()
             )
         } else {
             DelOrHideResult(
@@ -77,4 +73,3 @@ class ServiceMutation(
         }
     }
 }
-

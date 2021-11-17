@@ -18,7 +18,7 @@ class IndustryService(
             IndustryWriteEntity().apply {
                 this.name = name
                 industryWriteRepository.save(this).let {
-                    eventPublisher.publishAsync(IndustryCreatedEvent(it.toDomain()))
+                    eventPublisher.publish(IndustryCreatedEvent(it.toDomain()))
                 }
             }
 

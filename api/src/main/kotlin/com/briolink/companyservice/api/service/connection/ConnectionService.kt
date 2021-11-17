@@ -16,11 +16,13 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.vladmihalcea.hibernate.type.array.UUIDArrayType
 import org.hibernate.jpa.TypedParameterValue
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.Tuple
 
 @Service
+@Transactional
 class ConnectionService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val entityManager: EntityManager,
@@ -52,6 +54,10 @@ class ConnectionService(
         cb: T,
         filters: FiltersDto
     ): T where T : WhereBuilder<T>, T : ParameterHolder<T> {
+        cb
+                .where("array_contains_element(hiddenCompanyIds, :currentCompanyId)").notEq(true)
+                .where("array_contains_element(deletedCompanyIds, :currentCompanyId)").notEq(true)
+                .setParameter("currentCompanyId", companyId)
         with(filters) {
             if (!collaboratorIds.isNullOrEmpty()) {
                 cb.whereOr()
@@ -178,5 +184,13 @@ class ConnectionService(
     ): List<IndustryReadEntity> =
             connectionReadRepository.getConnectionIndustriesByCompanyId(companyId, query = query?.ifBlank { null })
                     .map { IndustryReadEntity(id = it.id, name = it.name) }
+
+    fun changeVisibilityByIdAndCompanyId(companyId: UUID, connectionId: UUID, isHide: Boolean) {
+        connectionReadRepository.changeVisibilityByIdAndCompanyId(connectionId = connectionId, companyId = companyId, hidden = isHide)
+    }
+
+    fun deleteConnectionInCompany(connectionId: UUID, companyId: UUID) {
+        connectionReadRepository.softDeleteByIdAndCompanyId(id = connectionId, companyId = companyId)
+    }
 
 }

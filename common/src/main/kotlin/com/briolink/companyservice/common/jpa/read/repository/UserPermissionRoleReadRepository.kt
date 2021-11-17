@@ -22,10 +22,47 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
     )
     fun getUserPermissionRole(
         @Param("accessObjectUuid") accessObjectUuid: UUID,
-        @Param("accessObjectType") accessObjectType: Int = AccessObjectTypeEnum.Company.value,
+        @Param("accessObjectType") accessObjectType: Int,
         @Param("userId") userId: UUID
     ): UserPermissionRoleReadEntity?
 
+    @Query(
+            """
+        SELECT c 
+        FROM UserPermissionRoleReadEntity c
+        WHERE 
+            c.accessObjectUuid = :accessObjectUuid AND
+            c.userId = :userId AND
+            c._accessObjectType = :accessObjectType AND
+            c._role = :userPermissionRoleType
+
+    """,
+    )
+    fun getUserPermissionRoleByRole(
+        @Param("accessObjectUuid") accessObjectUuid: UUID,
+        @Param("accessObjectType") accessObjectType: Int,
+        @Param("userId") userId: UUID,
+        @Param("userPermissionRoleType") userPermissionRoleType: Int
+    ): UserPermissionRoleReadEntity?
+
+
+    @Query(
+            """
+                SELECT count(c.id) > 0
+                FROM UserPermissionRoleReadEntity c
+                WHERE 
+                    c.accessObjectUuid = :accessObjectUuid AND
+                    c.userId = :userId AND
+                    c._accessObjectType = :accessObjectType AND 
+                    c._role = :userPermissionRoleType
+            """,
+    )
+    fun existsRole(
+        @Param("accessObjectUuid") accessObjectUuid: UUID,
+        @Param("accessObjectType") accessObjectType: Int,
+        @Param("userId") userId: UUID,
+        @Param("userPermissionRoleType") userPermissionRoleType: Int
+    ): Boolean
 
 
 //    fun existsByCompanyId(
@@ -33,5 +70,8 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
 //        _accessObjectType: Int = AccessObjectTypeEnum.Company.value,
 //        _role: Int = UserPermissionRoleTypeEnum.Owner.value
 //    ): Boolean
+
+
+    fun findByAccessObjectUuidAndUserId(accessObjectUuid: UUID, userId: UUID): List<UserPermissionRoleReadEntity>
 
 }

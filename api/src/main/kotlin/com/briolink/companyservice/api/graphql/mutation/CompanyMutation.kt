@@ -1,16 +1,20 @@
 package com.briolink.companyservice.api.graphql.mutation
 
+import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
+import com.briolink.companyservice.api.service.PermissionService
 import com.briolink.companyservice.api.types.CompanyResultData
 import com.briolink.companyservice.api.types.CreateCompanyInput
 import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
 import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
@@ -30,11 +34,22 @@ class CompanyMutation(
     val occupationService: OccupationService,
     val industryService: IndustryService,
     val keywordService: KeywordService,
+    val permissionService: PermissionService
 ) {
     @PreAuthorize("isAuthenticated()")
     @DgsMutation
     fun uploadCompanyImage(@InputArgument("id") id: String, @InputArgument("image") image: MultipartFile?): URL? {
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DgsMutation
+    fun getAllPermission(
+        @InputArgument("userId") userId: String?
+    ): Boolean
+    {
+        permissionService.addAllPermissionByUserId(userId = userId?.let { UUID.fromString(it) } ?: currentUserAccountId)
+        return true
     }
 
     @DgsMutation
@@ -76,10 +91,7 @@ class CompanyMutation(
     ): UpdateCompanyResult {
         val userErrors = mutableListOf<Error>()
 
-        if (companyService.getPermission(
-                    companyId = UUID.fromString(id),
-                    userId = currentUserAccountId,
-            ) != UserPermissionRoleTypeEnum.Owner)
+        if (!permissionService.isHavePermission(accessObjectType = AccessObjectTypeEnum.Company, companyId = UUID.fromString(id), permissionRight = PermissionRightEnum.EditCompanyProfile))
             userErrors.add(Error("403 Permission denied"))
         else {
             companyService.findById(UUID.fromString(id)).orElseThrow { throw EntityNotFoundException("$id company not found") }
