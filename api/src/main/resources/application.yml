@@ -36,6 +36,9 @@ dgs:
   graphql:
     path: /
 app:
+  app-endpoints:
+    companyservice: http://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
+#    companyservice: http://192.168.0.23:8090/
   aws:
     s3:
       name: ${env.S3_BUCKET_NAME:briolink}

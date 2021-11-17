@@ -8,6 +8,7 @@ import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.api.types.ServiceList
+import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -33,7 +34,7 @@ class ServiceQuery(
         return if (serviceCompanyService.countServiceByCompany(companyId = UUID.fromString(companyId))) {
             val filterSecurity =
                     if (companyService.getPermission(UUID.fromString(companyId), SecurityUtil.currentUserAccountId)
-                        != UserPermissionRoleReadEntity.RoleType.Owner) {
+                        !=UserPermissionRoleTypeEnum.Owner) {
                         filter?.copy(isHide = false) ?: ServiceFilter(isHide = false)
                     } else filter
             val page =

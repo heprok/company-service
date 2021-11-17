@@ -39,8 +39,13 @@ input RangeFloat {
     end: Float
 }
 
-type BaseResult {
+interface BaseResult {
     success: Boolean
+}
+
+type DelOrHideResult implements BaseResult & ResultWithUserErrors {
+    success: Boolean!
+    userErrors: [Error]!
 }
 
 interface ResultWithUserErrors {

@@ -1,10 +1,10 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.domain.v1_0.Company
-import com.briolink.companyservice.common.domain.v1_0.Industry
-import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
+import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.util.*
 import javax.persistence.EntityNotFoundException
-import kotlin.collections.ArrayList
 
 @Service
 @Transactional
@@ -30,46 +29,10 @@ class CompanyService(
     private val awsS3Service: AwsS3Service
 ) {
     fun createCompany(createCompany: CompanyWriteEntity): Company {
-        val company = companyWriteRepository.save(createCompany)
-        val companyDomain = Company(
-                id = company.id!!,
-                name = company.name,
-                slug = company.slug,
-                logo = company.logo,
-                website = company.websiteUrl,
-                description = company.description,
-                isTypePublic = company.isTypePublic,
-                twitter = company.twitter,
-                facebook = company.facebook,
-                location = company.location,
-                industry = company.industry?.let {
-                    Industry(
-                            id = it.id!!,
-                            name = it.name,
-                    )
-                },
-                occupation = company.occupation?.let {
-                    Occupation(
-                            id = it.id!!,
-                            name = it.name,
-                    )
-                },
-        ).apply {
-            keywords!!.addAll(
-                    company.keywords.let { it ->
-                        it.map {
-                            Company.Keyword(
-                                    id = it.id!!,
-                                    name = it.name,
-                            )
-                        }
-                    }
-            )
+        return companyWriteRepository.save(createCompany).let {
+            eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
+            it.toDomain()
         }
-        eventPublisher.publishAsync(
-                CompanyCreatedEvent(companyDomain),
-        )
-        return companyDomain
     }
 
     fun isExistWebsite(website: String): Boolean {
@@ -77,44 +40,10 @@ class CompanyService(
     }
 
     fun updateCompany(company: CompanyWriteEntity): Company {
-        val companyWrite = companyWriteRepository.save(company)
-        val domain = Company(
-                id = companyWrite.id!!,
-                name = companyWrite.name,
-                website = companyWrite.websiteUrl,
-                description = companyWrite.description,
-                slug = companyWrite.slug,
-//                country = companyWrite.country,
-//                state = companyWrite.state,
-                logo = companyWrite.logo,
-                isTypePublic = companyWrite.isTypePublic,
-//                city = companyWrite.city,
-                location = companyWrite.location,
-                facebook = companyWrite.facebook,
-                twitter = companyWrite.twitter,
-                industry = companyWrite.industry?.let {
-                    Industry(
-                            it.id!!,
-                            it.name,
-                    )
-                },
-                occupation = company.occupation?.let {
-                    Occupation(
-                            it.id!!,
-                            it.name,
-                    )
-                },
-                keywords = ArrayList(
-                        company.keywords.map {
-                            Company.Keyword(
-                                    it.id!!,
-                                    it.name,
-                            )
-                        },
-                ),
-        )
-        eventPublisher.publishAsync(CompanyUpdatedEvent(domain))
-        return domain
+        return companyWriteRepository.save(company).let {
+            eventPublisher.publishAsync(CompanyUpdatedEvent(it.toDomain()))
+            it.toDomain()
+        }
     }
 
     fun deleteCompany(id: UUID) = companyWriteRepository.deleteById(id)
@@ -128,44 +57,24 @@ class CompanyService(
         return imageUrl
     }
 
-    fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity.RoleType? {
-        return userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
+    fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleTypeEnum? {
+        return userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = companyId,
-                accessObjectType = 1,
+                accessObjectType = AccessObjectTypeEnum.Company.value,
                 userId = userId,
         )?.role
     }
 
-//    fun setOwner(companyId: UUID, userId: UUID): Boolean {
-//        val company =
-//                companyReadRepository.findById(companyId).orElseThrow { throw EntityNotFoundException("$companyId company not found") }
-//        return if (company.data.createdBy == null) {
-//            company.data.createdBy = userId
-//            companyReadRepository.save(company)
-//            userPermissionRoleReadRepository.save(
-//                    UserPermissionRoleReadEntity(
-//                            userId = userId,
-//                            role = UserPermissionRoleReadEntity.RoleType.Owner,
-//                            accessObjectUuid = companyId,
-//                    ),
-//            )
-//            true
-//        } else {
-//            false
-//        }
-//    }
-
-    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleReadEntity.RoleType) {
-        userPermissionRoleReadRepository.save(
-                userPermissionRoleReadRepository.findByAccessObjectUuidAndAccessObjectTypeAndUserId(
-                        accessObjectUuid = companyId,
-                        userId = userId,
-                )?.apply {
-                    role = roleType
-                } ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId, role = roleType),
-        )
+    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleTypeEnum): UserPermissionRoleReadEntity {
+        (userPermissionRoleReadRepository.getUserPermissionRole(
+                accessObjectUuid = companyId,
+                userId = userId,
+                accessObjectType = AccessObjectTypeEnum.CompanyService.value
+        ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)).apply {
+            role = roleType
+            return userPermissionRoleReadRepository.save(this)
+        }
     }
 
     fun getByWebsite(website: URL): CompanyWriteEntity = companyWriteRepository.findByWebsite(website.host)
-
 }

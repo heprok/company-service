@@ -51,9 +51,25 @@ class CompanyDataLoader(
             )
             companyWriteEntityList.add(
                     CompanyWriteEntity(
+                            name = "Nikonv&Sheshuk",
+                            location = "Russia",
+                            isTypePublic = false,
+                            createdBy = UUID.randomUUID(),
+                    )
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
+                            name = "Nokia",
+                            location = "Russia",
+                            isTypePublic = false,
+                            createdBy = UUID.randomUUID(),
+                    )
+            )
+            companyWriteEntityList.add(
+                    CompanyWriteEntity(
                             name = "Amazon",
                             logo = URL("https://regnum.ru/uploads/pictures/news/2018/11/30/regnum_picture_154356037138044_normal.png"),
-                            location = "USA, Texas, Houston",
+                            location = "Austria, Texas, Houston",
                             facebook = "amazon",
                             twitter = "amazon",
                             isTypePublic = true,
@@ -98,7 +114,7 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Twitter",
                             logo = URL("https://upload.wikimedia.org/wikipedia/ru/thumb/9/9f/Twitter_bird_logo_2012.svg/1261px-Twitter_bird_logo_2012.svg.png"),
-                            location = "USA, Utah, Moscow",
+                            location = "Cuba, Utah, Moscow",
                             facebook = "twitter",
                             twitter = "twitter",
                             isTypePublic = false,
@@ -188,7 +204,7 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Compass Group",
                             logo = URL("https://logo.clearbit.com/www.compass-group.com/"),
-                            location = "United States,Washington,43068 Declaration Lane",
+                            location = "Nigeria,Washington,43068 Declaration Lane",
                             facebook = "compassgroupusa",
                             twitter = "compassgroupusa",
                             isTypePublic = true,
@@ -203,7 +219,7 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Volkswagen",
                             logo = URL("https://logo.clearbit.com/www.volkswagenag.com/"),
-                            location = "United States,Newport News,69 Walton Avenue",
+                            location = "Ukraine,Newport News,69 Walton Avenue",
                             facebook = "Volkswagenrussia",
                             twitter = "Volkswagen",
                             isTypePublic = true,
@@ -218,7 +234,7 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Deutsche Post DHL Group",
                             logo = URL("https://logo.clearbit.com/www.dpdhl.com/"),
-                            location = "United States,Trenton,7 Boyd Point",
+                            location = "Ukraine,Trenton,7 Boyd Point",
                             facebook = "dhl",
                             twitter = "DeutschePostDHL",
                             isTypePublic = true,
@@ -234,9 +250,9 @@ class CompanyDataLoader(
                 val keywordsList = mutableListOf<KeywordWriteEntity>()
                 keywordsList.addAll(keywordList.shuffled().take(Random.nextInt(0, 10)))
                 it.apply {
-                    industry = industryList.random()
-                    occupation = occupationList.random()
-                    keywords = keywordsList
+                    industry = if(Random.nextBoolean()) industryList.random() else null
+                    occupation = if(Random.nextBoolean()) occupationList.random() else null
+                    keywords = if(Random.nextBoolean()) keywordsList else mutableListOf()
                 }
                 service.createCompany(it)
             }

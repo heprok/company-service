@@ -1,5 +1,8 @@
 package com.briolink.companyservice.common.jpa.write.entity
 
+import com.briolink.companyservice.common.domain.v1_0.Company
+import com.briolink.companyservice.common.domain.v1_0.Industry
+import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.util.StringUtil
 import org.hibernate.annotations.Type
 import java.net.URL
@@ -76,5 +79,39 @@ class CompanyWriteEntity(
     fun prePersist() {
         slug = StringUtil.slugify(name, false)
     }
+
+    fun toDomain() = Company(
+            id = id!!,
+            name = name,
+            website = websiteUrl,
+            description = description,
+            slug = slug,
+            logo = logo,
+            isTypePublic = isTypePublic,
+            location = location,
+            facebook = facebook,
+            twitter = twitter,
+            industry = industry?.let {
+                Industry(
+                        it.id!!,
+                        it.name,
+                )
+            },
+            createdBy = createdBy,
+            occupation = occupation?.let {
+                Occupation(
+                        it.id!!,
+                        it.name,
+                )
+            },
+            keywords = ArrayList(
+                    keywords.map {
+                        Company.Keyword(
+                                it.id!!,
+                                it.name,
+                        )
+                    },
+            ),
+    )
 
 }

@@ -1,8 +1,9 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.vladmihalcea.hibernate.type.range.Range
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.time.Instant
@@ -11,7 +12,6 @@ import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
-import javax.persistence.PrePersist
 import javax.persistence.Table
 
 @Table(name = "connection", schema = "read")
@@ -22,164 +22,155 @@ class ConnectionReadEntity(
     @Column(name = "id", nullable = false)
     val id: UUID
 ) : BaseReadEntity() {
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    enum class ConnectionStatus(val value: Int) {
-        Draft(1),
-        Pending(2),
-        InProgress(3),
-        Verified(4),
-        Rejected(5)
-    }
 
-    @Column(name = "seller_id", nullable = false)
-    @Type(type = "pg-uuid")
-    lateinit var sellerId: UUID
+    @Column(name = "participant_from_company_id", nullable = false)
+    lateinit var participantFromCompanyId: UUID
 
-    @Column(name = "buyer_id", nullable = false)
-    @Type(type = "pg-uuid")
-    lateinit var buyerId: UUID
+    @Column(name = "participant_from_user_id", nullable = false)
+    lateinit var participantFromUserId: UUID
 
-    @Column(name = "seller_role_id", nullable = false)
-    @Type(type = "pg-uuid")
-    lateinit var sellerRoleId: UUID
+    @Column(name = "participant_from_role_id", nullable = false)
+    lateinit var participantFromRoleId: UUID
 
-    @Column(name = "buyer_role_id", nullable = false)
-    @Type(type = "pg-uuid")
-    lateinit var buyerRoleId: UUID
+    @Column(name = "participant_from_role_name", nullable = false)
+    lateinit var participantFromRoleName: String
 
-    @Column(name = "seller_name", nullable = false, length = 255)
-    var sellerName: String? = null
+    @Column(name = "participant_from_role_type", nullable = false)
+    private var _participantFromRoleType = 0
 
-    @Column(name = "buyer_name", nullable = false, length = 255)
-    var buyerName: String? = null
+    @Column(name = "participant_to_company_id", nullable = false)
+    lateinit var participantToCompanyId: UUID
 
-    @Column(name = "seller_role_name", nullable = false, length = 255)
-    var sellerRoleName: String? = null
+    @Column(name = "participant_to_user_id", nullable = false)
+    lateinit var participantToUserId: UUID
 
-    @Column(name = "buyer_role_name", nullable = false, length = 255)
-    var buyerRoleName: String? = null
+    @Column(name = "participant_to_role_id", nullable = false)
+    lateinit var participantToRoleId: UUID
 
-    @Column(name = "location", length = 255)
-    var location: String? = null
+    @Column(name = "participant_to_role_name", nullable = false)
+    lateinit var participantToRoleName: String
 
+    @Column(name = "participant_to_role_type", nullable = false)
+    private var _participantToRoleType = 0
 
-    @Type(type = "list-array")
-    @Column(
-            name = "service_ids",
-            columnDefinition = "uuid[]"
-    )
+    @Type(type = "uuid-array")
+    @Column(name = "service_ids", columnDefinition = "uuid[]")
     lateinit var serviceIds: List<UUID>
 
-    @Type(type = "year")
-    @Column(name = "startCollaboration", nullable = false)
-    lateinit var startCollaboration: Year
+    @Column(name = "dates", columnDefinition = "int4range", nullable = false)
+    lateinit var dates: Range<Int>
 
-    @Type(type = "year")
-    @Column(name = "end_collaboration")
-    var endCollaboration: Year? = null
+    @Column(name = "location")
+    var location: String? = null
 
-    @Column(name = "industry_id")
-    @Type(type = "pg-uuid")
-    var industryId: UUID? = null
+    @Column(name = "country")
+    var country: String? = null
 
-    @Column(name = "industry_name", length = 255)
-    var industryName: String? = null
+    @Column(name = "company_industry_id")
+    var companyIndustryId: UUID? = null
 
-    @Column(name = "verification_stage", nullable = false)
-    var verificationStage: ConnectionStatus = ConnectionStatus.Pending
+    @Column(name = "status", nullable = false)
+    private var _status: Int = ConnectionStatusEnum.Pending.value
+
+    @Type(type = "uuid-array")
+    @Column(name = "hidden_company_ids", columnDefinition = "uuid[]")
+    lateinit var hiddenCompanyIds: List<UUID>
+
+    @Type(type = "uuid-array")
+    @Column(name = "deleted_company_ids", columnDefinition = "uuid[]")
+    lateinit var deletedCompanyIds: List<UUID>
 
     @Column(name = "created", nullable = false)
     lateinit var created: Instant
 
     @Type(type = "jsonb")
-    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "data", nullable = false)
     lateinit var data: Data
 
-    @PrePersist
-    fun prePersist() {
-        sellerRoleName = data.sellerCompany.role.name
-        buyerRoleName = data.buyerCompany.role.name
-        industryName = data.industry?.name
-        industryId = data.industry?.id
-    }
-//TODO Типы json перевести в сущности и использовать их в других соущностях
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    var status: ConnectionStatusEnum
+        get() = ConnectionStatusEnum.fromInt(_status)
+        set(value) {
+            _status = value.value
+        }
+
+    var participantFromRoleType: CompanyRoleTypeEnum
+        get() = CompanyRoleTypeEnum.fromInt(_participantFromRoleType)
+        set(value) {
+            _participantFromRoleType = value.value
+        }
+
+    var participantToRoleType: CompanyRoleTypeEnum
+        get() = CompanyRoleTypeEnum.fromInt(_participantToRoleType)
+        set(value) {
+            _participantToRoleType = value.value
+        }
+
     data class Data(
-        @JsonProperty("id")
-        var id: UUID,
-    ) {
-        @JsonProperty("buyerCompany")
-        lateinit var buyerCompany: ParticipantCompany
-        @JsonProperty("sellerCompany")
-        lateinit var sellerCompany: ParticipantCompany
-        @JsonProperty("services")
-        lateinit var services: List<Service>
-        @JsonProperty("industry")
-        var industry: Industry? = null
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class ParticipantCompany(
-        @JsonProperty("id")
-        var id: UUID,
-        @JsonProperty("name")
-        var name: String,
-        @JsonProperty("slug")
-        var slug: String,
-        @JsonProperty("logo")
-        var logo: URL?,
-        @JsonProperty("verifyUser")
-        var verifyUser: VerifyUser,
-        @JsonProperty("role")
-        var role: Role
-    ) {
-
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Role(
-        @JsonProperty("id")
-        var id: UUID,
-        @JsonProperty("name")
-        var name: String,
-        @JsonProperty("role")
-        var type: ConnectionRoleReadEntity.RoleType,
+        @JsonProperty
+        val participantFrom: Participant,
+        @JsonProperty
+        val participantTo: Participant,
+        @JsonProperty
+        val services: ArrayList<Service>,
+        @JsonProperty
+        val industry: String?,
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class Participant(
+        @JsonProperty
+        val user: User,
+        @JsonProperty
+        val userJobPositionTitle: String?,
+        @JsonProperty
+        val company: Company,
+        @JsonProperty
+        val companyRole: CompanyRole,
+    )
+
+    data class CompanyRole(
+        @JsonProperty
+        val id: UUID,
+        @JsonProperty
+        val name: String,
+        @JsonProperty
+        val type: CompanyRoleTypeEnum
+    )
+
     data class Service(
-        @JsonProperty("id")
-        var id: UUID? = null,
-        @JsonProperty("name")
-        var name: String?,
-        @JsonProperty("slug")
-        var slug: String? = null,
-        @JsonProperty("endDate")
-        val endDate: Year?,
-        @JsonProperty("startDate")
+        @JsonProperty
+        val id: UUID,
+        @JsonProperty
+        val serviceId: UUID?,
+        @JsonProperty
+        val serviceName: String,
+        @JsonProperty
         val startDate: Year,
+        @JsonProperty
+        val endDate: Year?,
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Industry(
-        @JsonProperty("id")
-        var id: UUID,
-        @JsonProperty("name")
-        var name: String,
+    data class User(
+        @JsonProperty
+        val id: UUID,
+        @JsonProperty
+        val slug: String,
+        @JsonProperty
+        val image: URL?,
+        @JsonProperty
+        val lastName: String,
+        @JsonProperty
+        val firstName: String,
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class VerifyUser(
-        @JsonProperty("id")
-        var id: UUID,
-        @JsonProperty("firstName")
-        var firstName: String,
-        @JsonProperty("lastName")
-        var lastName: String,
-        @JsonProperty("image")
-        var image: URL?,
-        @JsonProperty("slug")
-        var slug: String,
+    data class Company(
+        @JsonProperty
+        val id: UUID,
+        @JsonProperty
+        val slug: String,
+        @JsonProperty
+        val logo: URL?,
+        @JsonProperty
+        val name: String,
     )
 }
 

@@ -6,12 +6,11 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyAndUserRole
 import com.briolink.companyservice.api.types.PermissionRole
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
+import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
-import java.util.*
 
 @DgsComponent
 class CompanyQuery(private val companyService: CompanyService) {
@@ -23,8 +22,8 @@ class CompanyQuery(private val companyService: CompanyService) {
         return CompanyAndUserRole(
                 company = Company.fromEntity(company),
                 role = when (role) {
-                    UserPermissionRoleReadEntity.RoleType.Employee -> PermissionRole.Employee
-                    UserPermissionRoleReadEntity.RoleType.Owner -> PermissionRole.Owner
+                   UserPermissionRoleTypeEnum.Employee -> PermissionRole.Employee
+                   UserPermissionRoleTypeEnum.Owner -> PermissionRole.Owner
                     else -> null
                 },
         )

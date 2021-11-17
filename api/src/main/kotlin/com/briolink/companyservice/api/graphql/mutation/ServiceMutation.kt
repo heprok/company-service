@@ -1,20 +1,24 @@
 package com.briolink.companyservice.api.graphql.mutation
 
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.service.CompanyService
+import com.briolink.companyservice.api.service.PermissionService
 import com.briolink.companyservice.api.service.ServiceCompanyService
-import com.briolink.companyservice.api.types.HideCompanyServiceResult
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
+import com.briolink.companyservice.api.types.DelOrHideResult
+import com.briolink.companyservice.api.types.Error
+import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.RequestHeader
 import java.util.*
 
 @DgsComponent
 class ServiceMutation(
-    val serviceCompanyService: ServiceCompanyService,
-    val companyService: CompanyService
+    private val serviceCompanyService: ServiceCompanyService,
+    private val permissionService: PermissionService,
+    private val companyService: CompanyService
 ) {
     @DgsMutation(field = "hideCompanyService")
     @PreAuthorize("isAuthenticated()")
@@ -22,33 +26,55 @@ class ServiceMutation(
         @InputArgument("companyId") companyId: String,
         @InputArgument("serviceId") serviceId: String,
         @InputArgument("isHide") isHide: Boolean
-    ): HideCompanyServiceResult {
-//            val role = UserPermissionRoleReadEntity.RoleType.Owner
-        val role = companyService.getPermission(UUID.fromString(companyId), SecurityUtil.currentUserAccountId)
-        return if (role == UserPermissionRoleReadEntity.RoleType.Owner) {
-            serviceCompanyService.hideInCompany(
+    ): DelOrHideResult {
+        return if (permissionService.isHavePermission(
+                    companyId = UUID.fromString(companyId),
+                    permissionRight = PermissionRightEnum.ServiceCrud,
+                    accessObjectType = AccessObjectTypeEnum.CompanyService,
+            )) {
+            serviceCompanyService.changeVisibilityByIdAndCompanyId(
                     companyId = UUID.fromString(companyId),
                     serviceId = UUID.fromString(serviceId),
                     isHide = isHide,
             )
-            HideCompanyServiceResult(
+            DelOrHideResult(
                     success = true,
+                    userErrors = listOf(),
             )
         } else {
-            HideCompanyServiceResult(
+            DelOrHideResult(
                     success = false,
-                    error = com.briolink.companyservice.api.types.Error("403 Permission denied"),
+                    userErrors = listOf(Error("403 Permission denied")),
             )
         }
     }
 
     @DgsMutation(field = "deleteCompanyService")
     @PreAuthorize("isAuthenticated()")
-    fun delete(
+    fun deleteCompanyService(
+        @InputArgument("serviceId") serviceId: String,
         @InputArgument("companyId") companyId: String,
-        @InputArgument("serviceId") serviceId: String
-    ): Boolean {
-        return false
+        @RequestHeader("Authorization") authorization: String
+    ): DelOrHideResult {
+        return if (permissionService.isHavePermission(
+                    companyId = UUID.fromString(companyId),
+                    permissionRight = PermissionRightEnum.ServiceCrud,
+                    accessObjectType = AccessObjectTypeEnum.CompanyService,
+            )) {
+            serviceCompanyService.deleteServiceInCompany(
+                    serviceId = UUID.fromString(serviceId),
+                    authorization = authorization
+            )
+            DelOrHideResult(
+                    success = true,
+                    userErrors = listOf(),
+            )
+        } else {
+            DelOrHideResult(
+                    success = false,
+                    userErrors = listOf(Error("403 Permission denied")),
+            )
+        }
     }
 }
 
