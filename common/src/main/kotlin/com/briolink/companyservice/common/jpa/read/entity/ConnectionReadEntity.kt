@@ -83,9 +83,6 @@ class ConnectionReadEntity(
     @Column(name = "created", nullable = false)
     lateinit var created: Instant
 
-    @Column(name = "changed")
-    var changed: Instant? = null
-
     @Type(type = "jsonb")
     @Column(name = "data", nullable = false)
     lateinit var data: Data
@@ -123,7 +120,7 @@ class ConnectionReadEntity(
         @JsonProperty
         val user: User,
         @JsonProperty
-        val userJobPositionTitle: String,
+        val userJobPositionTitle: String?,
         @JsonProperty
         val company: Company,
         @JsonProperty

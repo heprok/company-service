@@ -31,8 +31,8 @@ class ConnectionEventHandler(
                             companyId = connection.participantTo.companyId!!,
                     ) != null) {
                     connectionHandlerService.createOrUpdate(connection).let {
-                        statisticHandlerService.addConnectionToStats(it, connection.participantTo.companyId!!)
-                        statisticHandlerService.addConnectionToStats(it, connection.participantFrom.companyId!!)
+                        statisticHandlerService.refreshByCompanyId(connection.participantTo.companyId!!)
+                        statisticHandlerService.refreshByCompanyId(connection.participantFrom.companyId!!)
                     }
 
                 }

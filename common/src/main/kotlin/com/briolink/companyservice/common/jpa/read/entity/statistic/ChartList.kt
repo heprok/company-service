@@ -13,18 +13,18 @@ class ChartDataList<T>(
     @JsonProperty
     var name: String,
     @JsonProperty
-    var items: MutableList<T>
+    var items: MutableList<T> = mutableListOf(),
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class ChartList<T> {
-    @JsonProperty lateinit var data: MutableMap<String, ChartDataList<T>>
+    @JsonProperty var data: MutableMap<String, ChartDataList<T>> = mutableMapOf()
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ChartListItemWithRoles(
     @JsonProperty override val companyId: UUID,
-    @JsonProperty val roles: MutableSet<String>
+    @JsonProperty val roles: MutableSet<String> = mutableSetOf()
 ) : ChartListItem
 
 @JsonIgnoreProperties(ignoreUnknown = true)

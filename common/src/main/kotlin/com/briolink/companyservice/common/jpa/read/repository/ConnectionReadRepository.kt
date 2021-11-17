@@ -50,7 +50,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
             """
         SELECT cast(connection_service.id as varchar), connection_service.name FROM read.connection_service as connection_service
             WHERE
-                connection_service.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true) 
+                (:query is null or connection_service.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true) 
                 AND EXISTS (
                 SELECT 1 FROM
                     read.connection as connection
@@ -85,6 +85,6 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     fun getConnectionIndustriesByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
 
 
-    fun existsByParticipantFromCompanyIdAndParticipantToCompanyId(participantFromCompanyId: UUID, participantToCompanyId: UUID): Boolean
+    fun existsByParticipantFromCompanyIdOrParticipantToCompanyId(participantFromCompanyId: UUID, participantToCompanyId: UUID): Boolean
 
 }

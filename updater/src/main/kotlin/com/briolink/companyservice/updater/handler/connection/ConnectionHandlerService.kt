@@ -78,6 +78,12 @@ class ConnectionHandlerService(
             dates = if (serviceMaxDate == null) Range.closedInfinite(serviceMinDate) else Range.closed(serviceMinDate, serviceMaxDate)
             status = ConnectionStatusEnum.fromInt(connection.status.value)
             location = buyerCompany.data.location
+            deletedCompanyIds = listOf()
+            hiddenCompanyIds = listOf()
+            country = buyerCompany.data.location?.let {
+                it.split(",", ignoreCase = true, limit = 3)[0].trimStart()
+            }
+            created = connection.created
             companyIndustryId = industry?.id
             this.data = ConnectionReadEntity.Data(
                     participantFrom = ConnectionReadEntity.Participant(
@@ -88,7 +94,7 @@ class ConnectionHandlerService(
                                     firstName = participantUsers[connection.participantFrom.userId]!!.data.firstName,
                                     lastName = participantUsers[connection.participantFrom.userId]!!.data.lastName,
                             ),
-                            userJobPositionTitle = connection.participantFrom.userJobPositionTitle!!,
+                            userJobPositionTitle = connection.participantFrom.userJobPositionTitle,
                             company = ConnectionReadEntity.Company(
                                     id = connection.participantFrom.companyId!!,
                                     slug = participantCompanies[connection.participantFrom.companyId]!!.slug,
@@ -110,7 +116,7 @@ class ConnectionHandlerService(
                                         firstName = participantUsers[connection.participantTo.userId]!!.data.firstName,
                                         lastName = participantUsers[connection.participantTo.userId]!!.data.lastName,
                                 ),
-                                userJobPositionTitle = it.userJobPositionTitle!!,
+                                userJobPositionTitle = it.userJobPositionTitle,
                                 company = ConnectionReadEntity.Company(
                                         id = connection.participantTo.companyId!!,
                                         slug = participantCompanies[connection.participantTo.companyId!!]!!.slug,
@@ -127,12 +133,12 @@ class ConnectionHandlerService(
                         )
                     },
                     services = ArrayList(
-                            data.services.map {
+                            connection.services.map {
                                 ConnectionReadEntity.Service(
                                         id = it.id,
                                         serviceId = it.serviceId,
                                         serviceName = it.serviceName,
-                                        startDate = it.startDate,
+                                        startDate = it.startDate!!,
                                         endDate = it.endDate,
                                 )
                             },

@@ -8,20 +8,13 @@ import com.blazebit.persistence.WhereBuilder
 import com.briolink.companyservice.api.service.connection.dto.FiltersDto
 import com.briolink.companyservice.api.service.connection.dto.SortDto
 import com.briolink.companyservice.api.service.connection.dto.TabItemDto
-import com.briolink.companyservice.api.types.ConnectionFilterParameters
-import com.briolink.companyservice.api.types.IdNameItem
-import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.cte.RoleProjectionCte
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.netflix.graphql.dgs.DgsQuery
-import com.netflix.graphql.dgs.InputArgument
 import com.vladmihalcea.hibernate.type.array.UUIDArrayType
 import org.hibernate.jpa.TypedParameterValue
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.persistence.EntityManager
@@ -150,7 +143,7 @@ class ConnectionService(
     }
 
     fun existsConnectionByCompany(companyId: UUID): Boolean =
-            connectionReadRepository.existsByParticipantFromCompanyIdAndParticipantToCompanyId(companyId, companyId)
+            connectionReadRepository.existsByParticipantFromCompanyIdOrParticipantToCompanyId(companyId, companyId)
 
     fun setActiveTab(companyId: UUID, tab: String, cb: CriteriaBuilder<ConnectionReadEntity>): CriteriaBuilder<ConnectionReadEntity> {
         val tabType = tab.take(1).toInt()
@@ -183,7 +176,7 @@ class ConnectionService(
         companyId: String,
         query: String?,
     ): List<IndustryReadEntity> =
-            connectionReadRepository.getConnectionServicesByCompanyId(companyId, query = query?.ifBlank { null })
+            connectionReadRepository.getConnectionIndustriesByCompanyId(companyId, query = query?.ifBlank { null })
                     .map { IndustryReadEntity(id = it.id, name = it.name) }
 
 }

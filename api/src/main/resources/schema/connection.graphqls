@@ -15,7 +15,7 @@ enum ConnectionCompanyRoleType {
 
 type ConnectionService {
     id: ID!
-    serviceId: ID!
+    serviceId: ID
     name: String!
     slug: String
     startDate: Year!
@@ -100,4 +100,9 @@ input ConnectionSortParameter {
 input YearRange {
     start: Year
     end: Year
+}
+
+type ManipulationCompanyConnectionResult implements BaseResult {
+    success: Boolean!,
+    error: Error,
 }

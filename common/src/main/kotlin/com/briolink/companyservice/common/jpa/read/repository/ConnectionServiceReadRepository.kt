@@ -8,5 +8,5 @@ import org.springframework.data.repository.query.Param
 import java.util.*
 
 interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadEntity, UUID> {
-    fun existsByIdAndCompanyIdAndServiceId(connectionId: UUID, companyId: UUID, serviceId: UUID): Boolean
+    fun existsByIdAndCompanyIdAndServiceId(id: UUID, companyId: UUID, serviceId: UUID): Boolean
 }

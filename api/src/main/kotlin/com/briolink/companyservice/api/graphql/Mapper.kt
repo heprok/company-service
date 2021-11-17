@@ -155,7 +155,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
         services = entity.data.services.map { service ->
             ConnectionService(
                     id = service.id.toString(),
-                    serviceId = service.serviceId.toString(),
+                    serviceId = service.serviceId?.toString(),
                     name = service.serviceName,
                     startDate = service.startDate,
                     endDate = service.endDate,

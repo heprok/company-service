@@ -6,7 +6,7 @@ data class SortDto<T>(
     val direction: SortDirection
 ) {
     enum class ConnectionSortKeys {
-        Id, Created
+        id, created
     }
 
     enum class SortDirection {

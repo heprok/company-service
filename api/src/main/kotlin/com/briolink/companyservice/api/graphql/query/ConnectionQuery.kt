@@ -94,10 +94,11 @@ class ConnectionQuery(
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getCompanyConnectionIndustries(
+    fun getCompanyConnectionServices(
         @InputArgument("companyId") companyId: String,
         @InputArgument("query") query: String?,
     ): List<IdNameItem> =
             connectionReadRepository.getConnectionServicesByCompanyId(companyId, query = query?.ifBlank { null })
                     .map { IdNameItem(id = it.id.toString(), name = it.name) }
+
 }
