@@ -18,7 +18,6 @@ enum SortDirection{
     ASC, DESC
 }
 
-
 type TabItemsCount {
     key: String!
     count: Int!

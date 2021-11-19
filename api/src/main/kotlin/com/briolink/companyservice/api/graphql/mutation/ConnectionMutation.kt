@@ -32,7 +32,7 @@ class ConnectionMutation(
             connectionService.changeVisibilityByIdAndCompanyId(
                     companyId = UUID.fromString(companyId),
                     connectionId = UUID.fromString(connectionId),
-                    isHide = isHide,
+                    isHide = isHide
             )
             DelOrHideResult(
                     success = true,

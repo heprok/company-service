@@ -75,7 +75,7 @@ input ConnectionListOptions {
     limit: Int! = 10
     offset: Int! = 0
     tabId: ID
-    sort: ConnectionSortParameter!
+    sort: ConnectionSortParameter
     filter: ConnectionFilterParameters
 }
 

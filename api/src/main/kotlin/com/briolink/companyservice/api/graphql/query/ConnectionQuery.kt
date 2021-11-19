@@ -17,6 +17,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import graphql.schema.DataFetchingEnvironment
+import liquibase.pro.packaged.it
 import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
@@ -42,26 +43,29 @@ class ConnectionQuery(
                     location = options.filter?.location,
                     status = options.filter?.status?.map { ConnectionStatusEnum.valueOf(it.name) },
             )
-            val sortDto = SortDto(
-                    key = SortDto.ConnectionSortKeys.valueOf(options.sort.key.name),
-                    direction = SortDto.SortDirection.valueOf(options.sort.direction.name),
+            val sortDto = options.sort?.let {
+                SortDto(
+                        key = SortDto.ConnectionSortKeys.valueOf(it.key.name),
+                        direction = SortDto.SortDirection.valueOf(it.direction.name),
+                )
+            } ?: SortDto(
+                    key = SortDto.ConnectionSortKeys.id,
+                    direction = SortDto.SortDirection.ASC,
             )
             val tabsCount = connectionService
                     .tabs(UUID.fromString(companyId), true, filterDto)
 
-            var result: List<ConnectionReadEntity> = emptyList()
-            val tabId = options.tabId ?: tabsCount.firstOrNull()?.id
+            val result: List<ConnectionReadEntity>
+            val tabId = options.tabId
 
-            if (tabId != null) {
-                result = connectionService.getList(
-                        companyId = UUID.fromString(companyId),
-                        tabId = tabId,
-                        filters = filterDto,
-                        sort = sortDto,
-                        offset = options.offset,
-                        limit = options.limit,
-                )
-            }
+            result = connectionService.getList(
+                    companyId = UUID.fromString(companyId),
+                    tabId = tabId,
+                    filters = filterDto,
+                    sort = sortDto,
+                    offset = options.offset,
+                    limit = options.limit,
+            )
 
             ConnectionList(
                     items = result.map { Connection.fromEntity(it) },

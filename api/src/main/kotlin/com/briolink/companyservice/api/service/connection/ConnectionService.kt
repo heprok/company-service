@@ -34,7 +34,7 @@ class ConnectionService(
 
     fun getList(
         companyId: UUID,
-        tabId: String,
+        tabId: String?,
         filters: FiltersDto,
         sort: SortDto<SortDto.ConnectionSortKeys>,
         offset: Int = 0,
@@ -151,23 +151,29 @@ class ConnectionService(
     fun existsConnectionByCompany(companyId: UUID): Boolean =
             connectionReadRepository.existsByParticipantFromCompanyIdOrParticipantToCompanyId(companyId, companyId)
 
-    fun setActiveTab(companyId: UUID, tab: String, cb: CriteriaBuilder<ConnectionReadEntity>): CriteriaBuilder<ConnectionReadEntity> {
-        val tabType = tab.take(1).toInt()
-        val tabId = UUID.fromString(tab.drop(2))
+    fun setActiveTab(companyId: UUID, tab: String?, cb: CriteriaBuilder<ConnectionReadEntity>): CriteriaBuilder<ConnectionReadEntity> {
 
-        cb.whereOr()
-                .whereAnd()
-                .where("participantFromCompanyId").eq(companyId)
-                .where("participantToRoleId").eq(tabId)
-                .where("_participantToRoleType").eq(tabType)
-                .endAnd()
-                .whereAnd()
-                .where("participantToCompanyId").eq(companyId)
-                .where("participantFromRoleId").eq(tabId)
-                .where("_participantFromRoleType").eq(tabType)
-                .endAnd()
-                .endOr()
-
+        if (tab != null) {
+            val tabType = tab.take(1).toInt()
+            val tabId = UUID.fromString(tab.drop(2))
+            cb.whereOr()
+                    .whereAnd()
+                    .where("participantFromCompanyId").eq(companyId)
+                    .where("participantToRoleId").eq(tabId)
+                    .where("_participantToRoleType").eq(tabType)
+                    .endAnd()
+                    .whereAnd()
+                    .where("participantToCompanyId").eq(companyId)
+                    .where("participantFromRoleId").eq(tabId)
+                    .where("_participantFromRoleType").eq(tabType)
+                    .endAnd()
+                    .endOr()
+        } else {
+            cb.whereOr()
+                    .where("participantFromCompanyId").eq(companyId)
+                    .where("participantToCompanyId").eq(companyId)
+                    .endOr()
+        }
         return cb
     }
 

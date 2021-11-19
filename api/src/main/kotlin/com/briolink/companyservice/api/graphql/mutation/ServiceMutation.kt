@@ -24,19 +24,16 @@ class ServiceMutation(
     @PreAuthorize("isAuthenticated()")
     fun hide(
         @InputArgument("companyId") companyId: String,
-        @InputArgument("serviceId") serviceId: String,
-        @InputArgument("isHide") isHide: Boolean
+        @InputArgument("serviceId") serviceId: String
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
                     permissionRight = PermissionRightEnum.ServiceCrud,
                     accessObjectType = AccessObjectTypeEnum.CompanyService,
             )) {
-            serviceCompanyService.changeVisibilityByIdAndCompanyId(
+            serviceCompanyService.toggleVisibilityByIdAndCompanyId(
                     companyId = UUID.fromString(companyId),
-                    serviceId = UUID.fromString(serviceId),
-                    isHide = isHide,
-            )
+                    serviceId = UUID.fromString(serviceId))
             DelOrHideResult(
                     success = true,
                     userErrors = listOf(),

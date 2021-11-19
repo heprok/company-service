@@ -1,7 +1,6 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.api.config.AppEndpointsProperties
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.jpa.initSpec
@@ -50,8 +49,8 @@ class ServiceCompanyService(
 
 
     fun countServiceByCompany(companyId: UUID) = serviceReadRepository.existsByCompanyId(companyId)
-    fun changeVisibilityByIdAndCompanyId(companyId: UUID, serviceId: UUID, isHide: Boolean) {
-        serviceReadRepository.changeVisibilityByIdAndCompanyId(serviceId = serviceId, companyId = companyId, isHide = isHide)
+    fun toggleVisibilityByIdAndCompanyId(companyId: UUID, serviceId: UUID) {
+        serviceReadRepository.toggleVisibilityByIdAndCompanyId(serviceId = serviceId, companyId = companyId)
     }
 
     fun deleteServiceInCompany(serviceId: UUID, authorization: String): Boolean {
@@ -77,6 +76,7 @@ class ServiceCompanyService(
 
         return try {
             val success = result.extractValue<Boolean>("deleteServiceLocal.success")
+            serviceReadRepository.deleteById(serviceId)
             success
         } catch (e: Exception) {
             throw UnavailableException("CompanyService service unavailable")
