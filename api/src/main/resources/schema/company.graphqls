@@ -47,7 +47,7 @@ input UpdateCompanyInput {
     slug: String
     description: String
     isTypePublic: Boolean
-    location: String
+    locationId: ID
     facebook: String
     twitter: String
     industryId: ID

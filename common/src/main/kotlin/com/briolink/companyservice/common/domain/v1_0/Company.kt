@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.domain.v1_0
 
+import com.briolink.companyservice.common.jpa.dto.location.LocationId
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
@@ -21,7 +22,7 @@ data class Company(
     @JsonProperty
     val isTypePublic: Boolean = true,
     @JsonProperty
-    val location: String? = null,
+    val locationId: LocationId? = null,
     @JsonProperty
     val country: String? = null,
     @JsonProperty

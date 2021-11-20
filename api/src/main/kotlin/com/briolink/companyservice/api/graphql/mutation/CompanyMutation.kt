@@ -1,6 +1,5 @@
 package com.briolink.companyservice.api.graphql.mutation
 
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
@@ -13,11 +12,11 @@ import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.common.jpa.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
-import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
+import com.briolink.companyservice.common.service.LocationService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -34,7 +33,8 @@ class CompanyMutation(
     val occupationService: OccupationService,
     val industryService: IndustryService,
     val keywordService: KeywordService,
-    val permissionService: PermissionService
+    val permissionService: PermissionService,
+    val locationService: LocationService,
 ) {
     @PreAuthorize("isAuthenticated()")
     @DgsMutation
@@ -46,8 +46,7 @@ class CompanyMutation(
     @DgsMutation
     fun getAllPermission(
         @InputArgument("userId") userId: String?
-    ): Boolean
-    {
+    ): Boolean {
         permissionService.addAllPermissionByUserId(userId = userId?.let { UUID.fromString(it) } ?: currentUserAccountId)
         return true
     }
@@ -91,7 +90,11 @@ class CompanyMutation(
     ): UpdateCompanyResult {
         val userErrors = mutableListOf<Error>()
 
-        if (!permissionService.isHavePermission(accessObjectType = AccessObjectTypeEnum.Company, companyId = UUID.fromString(id), permissionRight = PermissionRightEnum.EditCompanyProfile))
+        if (!permissionService.isHavePermission(
+                    accessObjectType = AccessObjectTypeEnum.Company,
+                    companyId = UUID.fromString(id),
+                    permissionRight = PermissionRightEnum.EditCompanyProfile,
+            ))
             userErrors.add(Error("403 Permission denied"))
         else {
             companyService.findById(UUID.fromString(id)).orElseThrow { throw EntityNotFoundException("$id company not found") }
@@ -111,7 +114,23 @@ class CompanyMutation(
                                 }
                                 "description" -> this.description = inputCompany.description
                                 "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
-                                "location" -> this.location = inputCompany.location
+                                "locationId" -> {
+                                    if (inputCompany.locationId != null) {
+                                        locationService.getLocation(LocationId.fromStringId(inputCompany.locationId)).also {
+                                            if (it != null) {
+                                                countryId = it.country.id
+                                                stateId = it.state?.id
+                                                cityId = it.city?.id
+                                            } else userErrors.add(Error("Not find location for ${inputCompany.locationId}"))
+                                        }
+                                        return@forEach
+                                    } else {
+                                        countryId = null
+                                        stateId = null
+                                        cityId = null
+                                    }
+
+                                }
                                 "facebook" -> this.facebook = inputCompany.facebook
                                 "twitter" -> this.twitter = inputCompany.twitter
                                 "occupationId" -> {

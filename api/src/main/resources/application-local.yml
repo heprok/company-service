@@ -14,3 +14,7 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: https://auth.dev.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
+app:
+  app-endpoints:
+    companyservice: http://192.168.0.23:8090/
+    locationservice: http://192.168.0.23:8070/

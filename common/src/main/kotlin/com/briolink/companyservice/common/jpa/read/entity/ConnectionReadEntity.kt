@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
+import com.briolink.companyservice.common.jpa.dto.location.LocationInfoDto
 import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -60,11 +61,14 @@ class ConnectionReadEntity(
     @Column(name = "dates", columnDefinition = "int4range", nullable = false)
     lateinit var dates: Range<Int>
 
-    @Column(name = "location")
-    var location: String? = null
+    @Column(name = "country_id")
+    var countryId: Int? = null
 
-    @Column(name = "country")
-    var country: String? = null
+    @Column(name = "state_id")
+    var stateId: Int? = null
+
+    @Column(name = "city_id")
+    var cityId: Int? = null
 
     @Column(name = "company_industry_id")
     var companyIndustryId: UUID? = null
@@ -114,6 +118,8 @@ class ConnectionReadEntity(
         val services: ArrayList<Service>,
         @JsonProperty
         val industry: String?,
+        @JsonProperty
+        val location: LocationInfoDto? = null
     )
 
     data class Participant(

@@ -7,6 +7,7 @@ import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
+import com.briolink.companyservice.common.service.LocationService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -16,6 +17,7 @@ import java.util.*
 class CompanyHandlerService(
     private val companyReadRepository: CompanyReadRepository,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
+    private val locationService: LocationService
 ) {
 
     fun createOrUpdate(company: Company): CompanyReadEntity {
@@ -25,7 +27,6 @@ class CompanyHandlerService(
             data = CompanyReadEntity.Data(
                     name = company.name,
                     website = company.website,
-                    location = company.location,
                     facebook = company.facebook,
                     twitter = company.twitter,
                     isTypePublic = company.isTypePublic,
@@ -41,7 +42,9 @@ class CompanyHandlerService(
                         }
                     } ?: mutableListOf(),
                     occupation = company.occupation?.let { CompanyReadEntity.Occupation(it.id.toString(), it.name) },
-            )
+            ).apply {
+                location = company.locationId?.let { locationService.getLocation(it) }
+            }
             return companyReadRepository.save(this)
         }
     }
@@ -51,7 +54,7 @@ class CompanyHandlerService(
                     userPermissionRoleReadRepository.getUserPermissionRole(
                             accessObjectUuid = companyId,
                             userId = userId,
-                            accessObjectType = AccessObjectTypeEnum.Company.value
+                            accessObjectType = AccessObjectTypeEnum.Company.value,
                     )?.apply {
                         role = roleType
                     } ?: UserPermissionRoleReadEntity(

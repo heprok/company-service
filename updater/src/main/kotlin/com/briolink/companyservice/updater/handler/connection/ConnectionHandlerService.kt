@@ -77,12 +77,11 @@ class ConnectionHandlerService(
             serviceIds = connection.services.map { service -> service.id }.toList()
             dates = if (serviceMaxDate == null) Range.closedInfinite(serviceMinDate) else Range.closed(serviceMinDate, serviceMaxDate)
             status = ConnectionStatusEnum.fromInt(connection.status.value)
-            location = buyerCompany.data.location
+            countryId = buyerCompany.data.location?.country?.id
+            stateId = buyerCompany.data.location?.state?.id
+            cityId = buyerCompany.data.location?.city?.id
             deletedCompanyIds = listOf()
             hiddenCompanyIds = listOf()
-            country = buyerCompany.data.location?.let {
-                it.split(",", ignoreCase = true, limit = 3)[0].trimStart()
-            }
             created = connection.created
             companyIndustryId = industry?.id
             this.data = ConnectionReadEntity.Data(

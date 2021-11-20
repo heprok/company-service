@@ -26,6 +26,10 @@ cloud:
   aws:
     stack:
       auto: false
+app:
+  app-endpoints:
+    companyservice: http://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
+    locationservice: http://location-service.${env.spring_profiles_active}.svc.cluster.local:8080/
 event:
   listener:
     sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo

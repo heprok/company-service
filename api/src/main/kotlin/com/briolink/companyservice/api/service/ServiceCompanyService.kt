@@ -1,6 +1,6 @@
 package com.briolink.companyservice.api.service
 
-import com.briolink.companyservice.api.config.AppEndpointsProperties
+import com.briolink.companyservice.common.config.AppEndpointsProperties
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.jpa.initSpec

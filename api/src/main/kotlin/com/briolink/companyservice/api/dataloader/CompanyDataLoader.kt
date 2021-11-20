@@ -38,7 +38,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "PayPal",
                             logo = URL("https://www.paypalobjects.com/webstatic/icon/pp258.png"),
-                            location = "USA, California, San-Mateo",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "paypal",
                             twitter = "paypal",
                             isTypePublic = false,
@@ -52,7 +54,9 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Nikonv&Sheshuk",
-                            location = "Russia",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             isTypePublic = false,
                             createdBy = UUID.randomUUID(),
                     )
@@ -60,7 +64,9 @@ class CompanyDataLoader(
             companyWriteEntityList.add(
                     CompanyWriteEntity(
                             name = "Nokia",
-                            location = "Russia",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             isTypePublic = false,
                             createdBy = UUID.randomUUID(),
                     )
@@ -69,7 +75,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Amazon",
                             logo = URL("https://regnum.ru/uploads/pictures/news/2018/11/30/regnum_picture_154356037138044_normal.png"),
-                            location = "Austria, Texas, Houston",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "amazon",
                             twitter = "amazon",
                             isTypePublic = true,
@@ -84,7 +92,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Notion Labs INC",
                             logo = URL("https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png"),
-                            location = "USA, California, Los Angeles",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "notion-labs-inc",
                             twitter = "notion-labs-inc",
                             isTypePublic = false,
@@ -99,7 +109,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Google",
                             logo = URL("https://w7.pngwing.com/pngs/760/624/png-transparent-google-logo-google-search-advertising-google-company-text-trademark.png"),
-                            location = "USA, Texas, Dallas",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "google",
                             twitter = "google",
                             isTypePublic = true,
@@ -114,7 +126,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Twitter",
                             logo = URL("https://upload.wikimedia.org/wikipedia/ru/thumb/9/9f/Twitter_bird_logo_2012.svg/1261px-Twitter_bird_logo_2012.svg.png"),
-                            location = "Cuba, Utah, Moscow",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "twitter",
                             twitter = "twitter",
                             isTypePublic = false,
@@ -129,7 +143,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "GitHub",
                             logo = URL("https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"),
-                            location = "USA, California, San Francisco",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "github",
                             twitter = "github",
                             isTypePublic = true,
@@ -144,7 +160,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Walmart",
                             logo = URL("https://logo.clearbit.com/www.walmart.com/"),
-                            location = "United States,Omaha,6909 Melvin Parkway",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "github",
                             twitter = "github",
                             isTypePublic = true,
@@ -159,7 +177,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Oaktree Capital",
                             logo = URL("https://logo.clearbit.com/www.oaktreecapital.com/"),
-                            location = "United States,Amarillo,1 Barby Circle",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "oaktreecapital",
                             twitter = "Oaktree",
                             isTypePublic = true,
@@ -174,7 +194,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "KFC",
                             logo = URL("https://logo.clearbit.com/www.kfc.com/"),
-                            location = "United States,Frankfort,2920 Hauk Crossing",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "KFC",
                             twitter = "kfc",
                             isTypePublic = true,
@@ -189,7 +211,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Tata",
                             logo = URL("https://logo.clearbit.com/www.tata.com/"),
-                            location = "United States,Topeka,660 3rd Lane",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "TataMotorsGroup",
                             twitter = "TataMotors",
                             isTypePublic = true,
@@ -204,7 +228,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Compass Group",
                             logo = URL("https://logo.clearbit.com/www.compass-group.com/"),
-                            location = "Nigeria,Washington,43068 Declaration Lane",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "compassgroupusa",
                             twitter = "compassgroupusa",
                             isTypePublic = true,
@@ -219,7 +245,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Volkswagen",
                             logo = URL("https://logo.clearbit.com/www.volkswagenag.com/"),
-                            location = "Ukraine,Newport News,69 Walton Avenue",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "Volkswagenrussia",
                             twitter = "Volkswagen",
                             isTypePublic = true,
@@ -234,7 +262,9 @@ class CompanyDataLoader(
                     CompanyWriteEntity(
                             name = "Deutsche Post DHL Group",
                             logo = URL("https://logo.clearbit.com/www.dpdhl.com/"),
-                            location = "Ukraine,Trenton,7 Boyd Point",
+                            countryId = Random.nextInt(1, 130),
+                            stateId = Random.nextInt(1, 3000),
+                            cityId = Random.nextInt(1, 12000),
                             facebook = "dhl",
                             twitter = "DeutschePostDHL",
                             isTypePublic = true,

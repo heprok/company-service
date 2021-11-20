@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8
+      author: oleg@briolink.com
+      changes:
+        - dropColumn:
+            columnName: location
+            tableName: connection
+            schemaName: read
+        - addColumn:
+            tableName: connection
+            schemaName: read
+            columns:
+              - column:
+                  name: country_id
+                  type: int
+              - column:
+                  name: state_id
+                  type: int
+              - column:
+                  name: city_id
+                  type: int
+        - createIndex:
+            tableName: connection
+            schemaName: read
+            indexName: idx_connection_city_id
+            columns:
+              - column:
+                  name: city_id
+        - createIndex:
+            tableName: connection
+            schemaName: read
+            indexName: idx_connection_state_id
+            columns:
+              - column:
+                  name: state_id
+        - createIndex:
+            tableName: connection
+            schemaName: read
+            indexName: idx_connection_country_id
+            columns:
+              - column:
+                  name: country_id

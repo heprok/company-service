@@ -3,6 +3,8 @@ package com.briolink.companyservice.common.jpa.write.entity
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import com.briolink.companyservice.common.domain.v1_0.Occupation
+import com.briolink.companyservice.common.jpa.dto.location.LocationId
+import com.briolink.companyservice.common.jpa.enumration.LocationTypeEnum
 import com.briolink.companyservice.common.util.StringUtil
 import org.hibernate.annotations.Type
 import java.net.URL
@@ -35,8 +37,14 @@ class CompanyWriteEntity(
     @Column(name = "isTypePublic")
     var isTypePublic: Boolean = true,
 
-    @Column(name = "location")
-    var location: String? = null,
+    @Column(name = "country_id")
+    var countryId: Int? = null,
+
+    @Column(name = "state_id")
+    var stateId: Int? = null,
+
+    @Column(name = "city_id")
+    var cityId: Int? = null,
 
     @Column(name = "facebook")
     var facebook: String? = null,
@@ -75,6 +83,25 @@ class CompanyWriteEntity(
             website = value?.host
         }
 
+    fun getLocationId(): LocationId? {
+        return if (cityId != null)
+            LocationId(
+                    id = cityId!!,
+                    type = LocationTypeEnum.City
+            )
+        else if (stateId != null)
+            LocationId(
+                    id = stateId!!,
+                    type = LocationTypeEnum.State
+            )
+        else if (countryId != null)
+            LocationId(
+                    id = countryId!!,
+                    type = LocationTypeEnum.Country
+            )
+        else null
+    }
+
     @PrePersist
     fun prePersist() {
         slug = StringUtil.slugify(name, false)
@@ -88,7 +115,7 @@ class CompanyWriteEntity(
             slug = slug,
             logo = logo,
             isTypePublic = isTypePublic,
-            location = location,
+            locationId = getLocationId(),
             facebook = facebook,
             twitter = twitter,
             industry = industry?.let {

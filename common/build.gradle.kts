@@ -18,6 +18,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     kapt("org.springframework.boot:spring-boot-autoconfigure-processor:${Versions.SPRING_BOOT}")
     kapt("org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}")
+    api("org.springframework.boot:spring-boot-starter-webflux")
 
     // blaze-persistence-bom
     api("com.blazebit:blaze-persistence-integration-spring-data-2.4:${Versions.BLAZE_PERSISTENCE}")

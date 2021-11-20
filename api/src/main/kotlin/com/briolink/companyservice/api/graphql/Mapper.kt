@@ -29,11 +29,8 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                 name = entity.data.name,
                 website = entity.data.website,
                 logo = Image(entity.data.logo),
-//                country = entity.data.country,
-//                state = entity.data.state,
-//                city = entity.data.city,
                 slug = entity.slug,
-                location = entity.data.location,
+                location = entity.data.location?.location,
                 facebook = entity.data.facebook,
                 twitter = entity.data.twitter,
                 description = entity.data.description,
@@ -105,7 +102,7 @@ fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInf
         name = entity.data.name,
         slug = entity.slug,
         logo = entity.data.logo?.let { Image(it) },
-        location = entity.data.location
+        location = entity.data.location?.location,
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(

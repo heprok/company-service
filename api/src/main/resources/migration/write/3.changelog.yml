@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: oleg@briolink.com
+      changes:
+        - dropColumn:
+            columnName: location
+            tableName: company
+            schemaName: write
+        - addColumn:
+            tableName: company
+            schemaName: write
+            columns:
+              - column:
+                  name: country_id
+                  type: int
+              - column:
+                  name: state_id
+                  type: int
+              - column:
+                  name: city_id
+                  type: int

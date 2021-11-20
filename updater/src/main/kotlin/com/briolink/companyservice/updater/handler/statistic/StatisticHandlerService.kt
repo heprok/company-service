@@ -38,7 +38,7 @@ class StatisticHandlerService(
                     connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
 
                 // chart data by country
-                val country = connectionReadEntity.country
+                val country = connectionReadEntity.data.location?.country?.name
                 if (!country.isNullOrBlank()) {
                     companyStatistic.chartByCountryData.data.getOrPut(country) { ChartDataList(country, mutableListOf()) }.also { list ->
                         when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
@@ -134,7 +134,7 @@ class StatisticHandlerService(
                 connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
 
             // chart data by country
-            val country = connectionReadEntity.country
+            val country = connectionReadEntity.data.location?.country?.name
             if (!country.isNullOrBlank()) {
                 companyStatistic.chartByCountryData.data.getOrPut(country) { ChartDataList(country, mutableListOf()) }.also { list ->
                     when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
