@@ -11,6 +11,7 @@ import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
+import com.briolink.companyservice.common.service.LocationService
 import com.briolink.event.publisher.EventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,11 +27,14 @@ class CompanyService(
     private val companyWriteRepository: CompanyWriteRepository,
     val eventPublisher: EventPublisher,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
-    private val awsS3Service: AwsS3Service
+    private val awsS3Service: AwsS3Service,
+    private val locationService: LocationService
 ) {
     fun createCompany(createCompany: CompanyWriteEntity): Company {
         return companyWriteRepository.save(createCompany).let {
-            eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
+            eventPublisher.publish(CompanyCreatedEvent(it.toDomain().apply {
+                location = locationId?.let { locationService.getLocation(it)?.location }
+            }))
             it.toDomain()
         }
     }

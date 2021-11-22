@@ -87,17 +87,17 @@ class CompanyWriteEntity(
         return if (cityId != null)
             LocationId(
                     id = cityId!!,
-                    type = LocationTypeEnum.City
+                    type = LocationTypeEnum.City,
             )
         else if (stateId != null)
             LocationId(
                     id = stateId!!,
-                    type = LocationTypeEnum.State
+                    type = LocationTypeEnum.State,
             )
         else if (countryId != null)
             LocationId(
                     id = countryId!!,
-                    type = LocationTypeEnum.Country
+                    type = LocationTypeEnum.Country,
             )
         else null
     }
@@ -140,5 +140,4 @@ class CompanyWriteEntity(
                     },
             ),
     )
-
 }

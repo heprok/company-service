@@ -24,6 +24,8 @@ data class Company(
     @JsonProperty
     val locationId: LocationId? = null,
     @JsonProperty
+    var location: String? = null,
+    @JsonProperty
     val country: String? = null,
     @JsonProperty
     val state: String? = null,
