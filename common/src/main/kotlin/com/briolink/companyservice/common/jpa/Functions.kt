@@ -10,6 +10,7 @@ import org.hibernate.dialect.function.StandardSQLFunction
 import org.hibernate.engine.spi.Mapping
 import org.hibernate.type.BooleanType
 import org.hibernate.type.DoubleType
+import org.hibernate.type.StringType
 import org.hibernate.type.Type
 
 class Functions : MetadataBuilderContributor {
@@ -30,7 +31,7 @@ class Functions : MetadataBuilderContributor {
         metadataBuilder.applySqlFunction("jsonb_sets", JsonbSetsFunc())
         metadataBuilder.applySqlFunction("jsonb_get", JsonbGetFunc())
 
-
+        metadataBuilder.applySqlFunction("lower", StandardSQLFunction("lower", StringType.INSTANCE))
         metadataBuilder.applySqlFunction(
                 "orderby_equal",
                 SQLFunctionTemplate(BooleanType.INSTANCE, "?1 = ?2"),

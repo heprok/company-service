@@ -6,3 +6,7 @@ logging:
 spring:
   jpa:
     show-sql: true
+app:
+  app-endpoints:
+    companyservice: http://192.168.0.23:8090/
+    locationservice: http://192.168.0.23:8070/

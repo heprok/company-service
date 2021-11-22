@@ -32,15 +32,33 @@ class CompanyService(
 ) {
     fun createCompany(createCompany: CompanyWriteEntity): Company {
         return companyWriteRepository.save(createCompany).let {
-            eventPublisher.publish(CompanyCreatedEvent(it.toDomain().apply {
-                location = locationId?.let { locationService.getLocation(it)?.location }
-            }))
+            eventPublisher.publish(
+                    CompanyCreatedEvent(
+                            it.toDomain().apply {
+                                location = locationId?.let { locationService.getLocation(it)?.location }
+                            },
+                    ),
+            )
             it.toDomain()
         }
     }
 
-    fun isExistWebsite(website: String): Boolean {
-        return companyWriteRepository.existsByWebsiteIsLike(website)
+    fun createCompany(name: String, website: URL?, createdBy: UUID): CompanyWriteEntity {
+        val companyWrite = if (website == null)
+            companyWriteRepository.getByName(name)
+        else
+            companyWriteRepository.getByNameOrWebsite(name, website.host)
+
+        return companyWrite ?: CompanyWriteEntity(name = name, createdBy = createdBy).apply {
+            websiteUrl = website
+            companyWriteRepository.save(this).let {
+                eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
+            }
+        }
+    }
+
+    fun isExistWebsite(website: URL): Boolean {
+        return companyWriteRepository.existsByWebsite(website.host)
     }
 
     fun updateCompany(company: CompanyWriteEntity): Company {
@@ -73,12 +91,10 @@ class CompanyService(
         (userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = companyId,
                 userId = userId,
-                accessObjectType = AccessObjectTypeEnum.CompanyService.value
+                accessObjectType = AccessObjectTypeEnum.CompanyService.value,
         ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)).apply {
             role = roleType
             return userPermissionRoleReadRepository.save(this)
         }
     }
-
-    fun getByWebsite(website: URL): CompanyWriteEntity = companyWriteRepository.findByWebsite(website.host)
 }

@@ -53,32 +53,16 @@ class CompanyMutation(
 
     @DgsMutation
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
-        return if (createInputCompany.website == null || !companyService.isExistWebsite(createInputCompany.website.host.toString())) {
-            val company = companyService.createCompany(
-                    CompanyWriteEntity(
-                            name = createInputCompany.name,
-                            createdBy = UUID.fromString(createInputCompany.createBy),
-                    ).apply {
-                        websiteUrl = createInputCompany.website
-                    },
-            )
-            CreateCompanyResult(
-                    userErrors = listOf(),
-                    data = CompanyResultData(id = company.id.toString(), name = company.name, website = company.website),
-            )
-        } else {
-            CreateCompanyResult(
-                    userErrors = listOf(),
-                    data = companyService.getByWebsite(createInputCompany.website).let {
-                        CompanyResultData(
-                                id = it.id.toString(),
-                                name = it.name,
-                                website = it.websiteUrl,
-                        )
-                    },
-//                    userErrors = listOf(Error("WebsiteCompanyIsExist", listOf("website"))),
-            )
-        }
+        val company = companyService.createCompany(
+                name = createInputCompany.name,
+                createdBy = UUID.fromString(createInputCompany.createBy),
+                website = createInputCompany.website,
+        )
+        return CreateCompanyResult(
+                userErrors = listOf(),
+                data = CompanyResultData(id = company.id.toString(), name = company.name, website = company.websiteUrl),
+        )
+
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -108,7 +92,7 @@ class CompanyMutation(
                                     else this.name = inputCompany.name
                                 }
                                 "website" -> {
-                                    if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website.host.toString()))
+                                    if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))
                                         userErrors.add(Error("Website exist"))
                                     else this.websiteUrl = inputCompany.website
                                 }

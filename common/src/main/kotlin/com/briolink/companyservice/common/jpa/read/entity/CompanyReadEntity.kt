@@ -38,7 +38,7 @@ class CompanyReadEntity(
         var website: URL? = null,
         @JsonProperty
         var description: String? = null,
-        @JsonProperty
+        @JsonProperty()
         var location: LocationInfoDto? = null,
         @JsonProperty
         var logo: URL? = null,

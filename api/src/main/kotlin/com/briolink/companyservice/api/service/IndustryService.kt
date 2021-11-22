@@ -15,7 +15,7 @@ class IndustryService(
     private val eventPublisher: EventPublisher,
 ) {
     fun create(name: String): IndustryWriteEntity =
-            IndustryWriteEntity().apply {
+            industryWriteRepository.findByName(name) ?: IndustryWriteEntity().apply {
                 this.name = name
                 industryWriteRepository.save(this).let {
                     eventPublisher.publish(IndustryCreatedEvent(it.toDomain()))

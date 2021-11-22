@@ -18,7 +18,7 @@ class OccupationService(
     val mapper = OccupationMapper.INSTANCE
 
     fun create(name: String): OccupationWriteEntity =
-            OccupationWriteEntity().apply {
+            occupationWriteRepository.findByName(name) ?: OccupationWriteEntity().apply {
                 this.name = name
                 occupationWriteRepository.save(this).let {
                     eventPublisher.publishAsync(OccupationCreatedEvent(it.toDomain()))

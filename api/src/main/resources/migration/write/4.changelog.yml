@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: oleg@briolink.com
+      changes:
+        - sql:
+            sql: create index idx_keyword_lower_name on write.keyword ((lower(name)))
+        - sql:
+            sql: create index idx_occupation_lower_name on write.occupation ((lower(name)))
+        - sql:
+            sql: create index idx_industry_lower_name on write.industry ((lower(name)))
+        - sql:
+            sql: create index idx_company_lower_name on write.company ((lower(name)))
+        - sql:
+            sql: create index idx_company_lower_website on write.company ((lower(website)))
