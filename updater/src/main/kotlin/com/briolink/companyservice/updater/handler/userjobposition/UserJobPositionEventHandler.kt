@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.userjobposition
+package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
@@ -27,7 +27,6 @@ class UserJobPositionDeletedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
 ) : IEventHandler<UserJobPositionDeletedEvent> {
     override fun handle(event: UserJobPositionDeletedEvent) {
-        val eventData = event.data
-        userJobPositionHandlerService.delete(eventData.id)
+        userJobPositionHandlerService.delete(event.data.id)
     }
 }

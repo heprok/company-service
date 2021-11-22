@@ -1,16 +1,20 @@
 package com.briolink.companyservice.updater.handler.connection
 
+import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
+import com.vladmihalcea.hibernate.type.range.Range
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Year
 import java.util.*
+import java.util.stream.Collectors
 import javax.persistence.EntityNotFoundException
 
 @Transactional
@@ -18,131 +22,135 @@ import javax.persistence.EntityNotFoundException
 class ConnectionHandlerService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val companyReadRepository: CompanyReadRepository,
-    private val serviceReadRepository: ServiceReadRepository,
+    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val serviceConnectionService: ServiceConnectionHandlerService
 ) {
-    fun createOrUpdate(connection: Connection) {
-        val sellerRead = companyReadRepository.getById(connection.participantFrom.companyId!!)
-        val buyerRead = companyReadRepository.getById(connection.participantTo.companyId!!)
-        val userBuyerRead = userReadRepository.getById(connection.participantTo.userId!!)
-        val userSellerRead = userReadRepository.getById(connection.participantFrom.userId!!)
-        val industryRead = IndustryReadEntity(
-                id = buyerRead.data.industry!!.id,
-                name = buyerRead.data.industry!!.name,
-        )
+    fun createOrUpdate(connection: Connection): ConnectionReadEntity {
+        val participantUsers = userReadRepository.findByIdIsIn(
+                mutableListOf(connection.participantFrom.userId!!, connection.participantTo.userId!!),
+        ).stream().collect(Collectors.toMap(UserReadEntity::id) { v -> v })
+
+        val participantCompanies = companyReadRepository.findByIdIsIn(
+                mutableListOf(connection.participantFrom.companyId!!, connection.participantTo.companyId!!),
+        ).stream().collect(Collectors.toMap(CompanyReadEntity::id) { v -> v })
+
+        val buyerCompany: CompanyReadEntity
+        val sellerCompany: CompanyReadEntity
+        if (connection.participantFrom.companyRole?.type == ConnectionCompanyRoleType.Buyer) {
+            buyerCompany = participantCompanies[connection.participantFrom.companyId]!!
+            sellerCompany = participantCompanies[connection.participantTo.companyId]!!
+        } else {
+            buyerCompany = participantCompanies[connection.participantTo.companyId]!!
+            sellerCompany = participantCompanies[connection.participantFrom.companyId]!!
+        }
+        val industry = buyerCompany.data.industry
+
+        val serviceMinDate = connection.services.minOf { it.startDate!!.value }
+        var serviceMaxDate = connection.services.maxOfOrNull { it.endDate?.value ?: -1 }
+
+        if (serviceMaxDate == -1) {
+            serviceMaxDate = null
+        }
+
+        connection.services.forEach {
+            val s = connectionServiceReadRepository.findById(it.id).orElse(ConnectionServiceReadEntity())
+
+            if (s.id == null) s.id = it.id
+            s.companyId = sellerCompany.id
+            s.serviceId = it.serviceId
+            s.name = it.serviceName
+
+            connectionServiceReadRepository.save(s)
+        }
+
         connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
-
-            sellerId = connection.participantFrom.companyId!!
-            buyerId = connection.participantTo.companyId!!
-            buyerName = buyerRead.data.name
-            sellerName = sellerRead.data.name
-            location = buyerRead.data.location
-            buyerRoleId = connection.participantTo.companyRole!!.id
-            sellerRoleId = connection.participantFrom.companyRole!!.id
-            industryId = buyerRead.data.industry!!.id
-            verificationStage = ConnectionReadEntity.ConnectionStatus.valueOf(connection.status.name)
-            created = connection.created
-            data = ConnectionReadEntity.Data(connection.id).apply {
-                val endDateMutableList = mutableListOf<Year?>()
-                val startDateMutableList = mutableListOf<Year>()
-                val idServiceMutableList = mutableListOf<UUID>()
-                val servicesConnection = mutableListOf<ConnectionReadEntity.Service>()
-
-                industry = ConnectionReadEntity.Industry(
-                        id = industryRead.id,
-                        name = industryRead.name,
-                )
-                buyerCompany = ConnectionReadEntity.ParticipantCompany(
-                        id = buyerRead.id,
-                        name = buyerRead.data.name,
-                        slug = buyerRead.slug,
-                        logo = buyerRead.data.logo,
-                        verifyUser = ConnectionReadEntity.VerifyUser(
-                                id = userBuyerRead.id,
-                                firstName = userBuyerRead.data.firstName,
-                                lastName = userBuyerRead.data.lastName,
-                                image = userBuyerRead.data.image,
-                                slug = userBuyerRead.data.slug,
-                        ),
-                        role = ConnectionReadEntity.Role(
-                                id = connection.participantTo.companyRole!!.id,
-                                name = connection.participantTo.companyRole!!.name,
-                                type = ConnectionRoleReadEntity.RoleType.values()[connection.participantTo.companyRole!!.type.ordinal],
-                        ),
-                )
-
-                sellerCompany = ConnectionReadEntity.ParticipantCompany(
-                        id = sellerRead.id,
-                        name = sellerRead.data.name,
-                        slug = sellerRead.slug,
-                        logo = sellerRead.data.logo,
-                        verifyUser = ConnectionReadEntity.VerifyUser(
-                                id = userSellerRead.id,
-                                firstName = userSellerRead.data.firstName,
-                                lastName = userSellerRead.data.lastName,
-                                image = userSellerRead.data.image,
-                                slug = userSellerRead.data.slug,
-                        ),
-                        role = ConnectionReadEntity.Role(
-                                id = connection.participantFrom.companyRole!!.id,
-                                name = connection.participantFrom.companyRole!!.name,
-                                type = ConnectionRoleReadEntity.RoleType.values()[connection.participantFrom.companyRole!!.type.ordinal],
-                        ),
-                )
-
-                connection.services.forEach { connectionService ->
-                    val serviceReadEntity = connectionService.serviceId?.let { serviceReadRepository.findById(it) }
-                    val connectionServiceRead = serviceReadEntity?.get()?.let {
-
-                        ConnectionReadEntity.Service(
-                                id = it.id,
-                                name = it.name,
-                                slug = it.data.slug,
-                                endDate = connectionService.endDate,
-                                startDate = connectionService.startDate!!,
-                        )
-                    }
-                        ?: ConnectionReadEntity.Service(
-                                id = connectionService.serviceId,
-                                name = connectionService.serviceName,
-                                endDate = connectionService.endDate,
-                                startDate = connectionService.startDate!!,
-                        )
-                    servicesConnection.add(connectionServiceRead)
-                    serviceConnectionService.addConnectionService(
-                            buyerCompanyId = buyerCompany.id,
-                            sellerCompanyId = sellerCompany.id,
-                            connectionService = connectionService,
-                            connectionId = connection.id,
-                    )
-                    idServiceMutableList.add(connectionService.serviceId!!)
-                    startDateMutableList.add(connectionService.startDate!!)
-                    endDateMutableList.add(connectionService.endDate)
-                }
-
-                startCollaboration = startDateMutableList.minOrNull()!!
-                endCollaboration = if (endDateMutableList.contains(null)) null else endDateMutableList.maxByOrNull { year -> year!! }
-                serviceIds = idServiceMutableList
-                services = servicesConnection
-
+            participantFromCompanyId = connection.participantFrom.companyId!!
+            participantFromUserId = connection.participantFrom.userId!!
+            participantFromRoleId = connection.participantFrom.companyRole!!.id
+            participantFromRoleName = connection.participantFrom.companyRole!!.name
+            participantFromRoleType = CompanyRoleTypeEnum.fromInt(connection.participantFrom.companyRole!!.type.value)
+            participantToCompanyId = connection.participantTo.companyId!!
+            participantToUserId = connection.participantTo.userId!!
+            participantToRoleId = connection.participantTo.companyRole!!.id
+            participantToRoleName = connection.participantTo.companyRole!!.name
+            participantToRoleType = CompanyRoleTypeEnum.fromInt(connection.participantTo.companyRole!!.type.value)
+            serviceIds = connection.services.map { service -> service.id }.toList()
+            dates = if (serviceMaxDate == null) Range.closedInfinite(serviceMinDate) else Range.closed(serviceMinDate, serviceMaxDate)
+            status = ConnectionStatusEnum.fromInt(connection.status.value)
+            location = buyerCompany.data.location
+            deletedCompanyIds = listOf()
+            hiddenCompanyIds = listOf()
+            country = buyerCompany.data.location?.let {
+                it.split(",", ignoreCase = true, limit = 3)[0].trimStart()
             }
-            connectionReadRepository.save(this)
+            created = connection.created
+            companyIndustryId = industry?.id
+            this.data = ConnectionReadEntity.Data(
+                    participantFrom = ConnectionReadEntity.Participant(
+                            user = ConnectionReadEntity.User(
+                                    id = participantUsers[connection.participantFrom.userId]!!.id,
+                                    slug = participantUsers[connection.participantFrom.userId]!!.data.slug,
+                                    image = participantUsers[connection.participantFrom.userId]!!.data.image,
+                                    firstName = participantUsers[connection.participantFrom.userId]!!.data.firstName,
+                                    lastName = participantUsers[connection.participantFrom.userId]!!.data.lastName,
+                            ),
+                            userJobPositionTitle = connection.participantFrom.userJobPositionTitle,
+                            company = ConnectionReadEntity.Company(
+                                    id = connection.participantFrom.companyId!!,
+                                    slug = participantCompanies[connection.participantFrom.companyId]!!.slug,
+                                    name = participantCompanies[connection.participantFrom.companyId]!!.name,
+                                    logo = participantCompanies[connection.participantFrom.companyId]!!.data.logo,
+                            ),
+                            companyRole = ConnectionReadEntity.CompanyRole(
+                                    id = connection.participantFrom.companyRole!!.id,
+                                    name = connection.participantFrom.companyRole!!.name,
+                                    type = CompanyRoleTypeEnum.valueOf(connection.participantFrom.companyRole!!.type.name),
+                            ),
+                    ),
+                    participantTo = connection.participantTo.let {
+                        ConnectionReadEntity.Participant(
+                                user = ConnectionReadEntity.User(
+                                        id = participantUsers[connection.participantTo.userId]!!.id,
+                                        slug = participantUsers[connection.participantTo.userId]!!.data.slug,
+                                        image = participantUsers[connection.participantTo.userId]!!.data.image,
+                                        firstName = participantUsers[connection.participantTo.userId]!!.data.firstName,
+                                        lastName = participantUsers[connection.participantTo.userId]!!.data.lastName,
+                                ),
+                                userJobPositionTitle = it.userJobPositionTitle,
+                                company = ConnectionReadEntity.Company(
+                                        id = connection.participantTo.companyId!!,
+                                        slug = participantCompanies[connection.participantTo.companyId!!]!!.slug,
+                                        name = participantCompanies[connection.participantTo.companyId!!]!!.name,
+                                        logo = participantCompanies[connection.participantTo.companyId!!]!!.data.logo,
+                                ),
+                                companyRole = it.companyRole.let { role ->
+                                    ConnectionReadEntity.CompanyRole(
+                                            id = role!!.id,
+                                            name = role.name,
+                                            type = CompanyRoleTypeEnum.valueOf(role.type.name),
+                                    )
+                                },
+                        )
+                    },
+                    services = ArrayList(
+                            connection.services.map {
+                                ConnectionReadEntity.Service(
+                                        id = it.id,
+                                        serviceId = it.serviceId,
+                                        serviceName = it.serviceName,
+                                        startDate = it.startDate!!,
+                                        endDate = it.endDate,
+                                )
+                            },
+                    ),
+                    industry = industry?.name,
+            )
+
+            return connectionReadRepository.save(this)
         }
     }
 
-    fun setStatus(status: ConnectionReadEntity.ConnectionStatus, connectionId: UUID) {
-        connectionReadRepository.save(
-                connectionReadRepository.findById(connectionId)
-                        .orElseThrow { throw EntityNotFoundException("$connectionId connection not found") }.apply {
-                            verificationStage = status
-                        },
-        )
-    }
-
     fun delete(connectionId: UUID) {
-            connectionReadRepository.deleteById(connectionId)
+        connectionReadRepository.deleteById(connectionId)
     }
-
 }
-

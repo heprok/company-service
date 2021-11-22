@@ -18,9 +18,12 @@ class CompanyReadEntity(
     @Column(name = "id", nullable = false)
     val id: UUID,
 
-    @Type(type = "string")
     @Column(name = "slug", nullable = false, length = 50)
-    var slug: String
+    var slug: String,
+
+    @Column(name = "name", nullable = false, length = 255)
+    var name: String
+
 ) : BaseReadEntity() {
     @Type(type = "jsonb")
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
@@ -28,67 +31,51 @@ class CompanyReadEntity(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
-        @JsonProperty("name")
+        @JsonProperty
         var name: String,
-        @JsonProperty("website")
+        @JsonProperty
         var website: URL? = null,
-        @JsonProperty("description")
+        @JsonProperty
         var description: String? = null,
-        @JsonProperty("location")
+        @JsonProperty
         var location: String? = null,
-        @JsonProperty("logo")
+        @JsonProperty
         var logo: URL? = null,
-        @JsonProperty("isTypePublic")
+        @JsonProperty
         var isTypePublic: Boolean = true,
-        @JsonProperty("facebook")
+        @JsonProperty
         var facebook: String? = null,
-        @JsonProperty("twitter")
+        @JsonProperty
         var twitter: String? = null,
-        @JsonProperty("createdBy")
-        var createdBy: UUID? = null,
-        @JsonProperty("industry")
+        @JsonProperty
         var industry: Industry? = null,
-        @JsonProperty("occupation")
+        @JsonProperty
         var occupation: Occupation? = null,
-        @JsonProperty("statistic")
-        var statistic: Statistic = Statistic(),
-        @JsonProperty("keywords")
+        @JsonProperty
         var keywords: List<Keyword?> = mutableListOf<Keyword>(),
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Occupation(
-        @JsonProperty("id")
+        @JsonProperty
         val id: String,
-        @JsonProperty("name")
+        @JsonProperty
         val name: String,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Industry(
-        @JsonProperty("id")
+        @JsonProperty
         val id: UUID,
-        @JsonProperty("name")
+        @JsonProperty
         val name: String,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Keyword(
-        @JsonProperty("id")
+        @JsonProperty
         val id: UUID,
-        @JsonProperty("name")
+        @JsonProperty
         val name: String,
-    )
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Statistic(
-        @JsonProperty("serviceProvidedCount")
-        var serviceProvidedCount: Int = 0,
-        @JsonProperty("collaboratingCompanyCount")
-        var collaboratingCompanyCount: Int = 0,
-        @JsonProperty("collaboratingPeopleCount")
-        val collaboratingPeopleCount: Int = 0,
-        @JsonProperty("totalConnectionCount")
-        var totalConnectionCount: Int = 0,
     )
 }

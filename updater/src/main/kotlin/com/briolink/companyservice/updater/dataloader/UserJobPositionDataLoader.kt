@@ -63,12 +63,6 @@ class UserJobPositionDataLoader(
                             },
                     )
                 }
-
-                listCompany.forEach{
-                    companyHandlerService.setOwner(it.id, UUID.fromString("e0983f0e-68ad-4a5a-8968-7406f915ff90"))
-                }
-
-
 //                UserJobPosition(
 //                        id = UUID.randomUUID(),
 //                        title = listJobPosition.random(),

@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.service
 
+import com.briolink.companyservice.api.config.AppEndpointsProperties
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.jpa.initSpec
@@ -10,17 +11,21 @@ import com.briolink.companyservice.common.jpa.read.repository.service.betweenLas
 import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
 import com.briolink.companyservice.common.jpa.read.repository.service.equalHide
 import com.briolink.companyservice.common.util.PageRequest
+import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.reactive.function.client.WebClient
 import java.util.UUID
+import javax.servlet.UnavailableException
 
 @Service
 @Transactional
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
+    val appEndpointsProperties: AppEndpointsProperties,
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
             serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
@@ -43,9 +48,39 @@ class ServiceCompanyService(
             serviceReadRepository.count(getSpecification(filter).and(companyIdEqual(companyId)))
 
 
-    fun hideInCompany(companyId: UUID, serviceId: UUID, isHide: Boolean) =
-            serviceReadRepository.hideServiceByIdAndCompanyId(companyId = companyId, id = serviceId, isHide = isHide)
-
     fun countServiceByCompany(companyId: UUID) = serviceReadRepository.existsByCompanyId(companyId)
+    fun toggleVisibilityByIdAndCompanyId(companyId: UUID, serviceId: UUID) {
+        serviceReadRepository.toggleVisibilityByIdAndCompanyId(serviceId = serviceId, companyId = companyId)
+    }
+
+    fun deleteServiceInCompany(serviceId: UUID, authorization: String): Boolean {
+        val webClient = MonoGraphQLClient.createWithWebClient(
+                WebClient.create(appEndpointsProperties.companyservice),
+                headersConsumer = {
+                    it.add("Authorization", authorization)
+                },
+        )
+
+        val result = webClient.reactiveExecuteQuery(
+                """
+                mutation deleteServiceLocal(${'$'}serviceId: ID!) {
+                  deleteServiceLocal(serviceId: ${'$'}serviceId) {
+                    success
+                  }
+                }
+                """,
+                mapOf(
+                        "serviceId" to serviceId,
+                ),
+        ).block() ?: throw UnavailableException("CompanyService service unavailable")
+
+        return try {
+            val success = result.extractValue<Boolean>("deleteServiceLocal.success")
+            serviceReadRepository.deleteById(serviceId)
+            success
+        } catch (e: Exception) {
+            throw UnavailableException("CompanyService service unavailable")
+        }
+    }
 
 }

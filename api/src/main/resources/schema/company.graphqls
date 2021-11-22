@@ -11,7 +11,6 @@ type Company {
     twitter: String
     occupation: Occupation
     industry: Industry
-    statistic: Statistic!
     keywords: [Keyword]!
 }
 
@@ -22,7 +21,8 @@ type CompanyAndUserRole {
 
 type CompanyResultData {
     id: ID!
-    name: String
+    name: String!
+    website: Url
 }
 
 type UpdateCompanyResult implements ResultWithUserErrors {
@@ -32,7 +32,7 @@ type UpdateCompanyResult implements ResultWithUserErrors {
 
 input CreateCompanyInput {
     name: String!
-    website: Url!
+    website: Url
     createBy: ID!
 }
 
@@ -48,9 +48,6 @@ input UpdateCompanyInput {
     description: String
     isTypePublic: Boolean
     location: String
-#    country: String
-#    state: String
-#    city: String
     facebook: String
     twitter: String
     industryId: ID
@@ -58,11 +55,4 @@ input UpdateCompanyInput {
     occupationName: String
     occupationId: ID
     keyWordIds: [ID]
-}
-
-type Statistic {
-    serviceProvidedCount: Int!
-    collaboratingCompanyCount: Int!
-    collaboratingPeopleCount: Int!
-    totalConnectionCount: Int!
 }

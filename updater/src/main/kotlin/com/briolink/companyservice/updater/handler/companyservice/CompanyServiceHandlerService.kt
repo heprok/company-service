@@ -4,6 +4,7 @@ import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Transactional
 @Service
@@ -25,5 +26,9 @@ class CompanyServiceHandlerService(
             )
             serviceReadRepository.save(this)
         }
+    }
+
+    fun deleteById(id: UUID) {
+        serviceReadRepository.deleteById(id)
     }
 }

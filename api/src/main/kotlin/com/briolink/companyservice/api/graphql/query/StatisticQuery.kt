@@ -1,262 +1,237 @@
 package com.briolink.companyservice.api.graphql.query
 
+import com.blazebit.persistence.CriteriaBuilderFactory
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.types.ChartByCountry
+import com.briolink.companyservice.api.types.ChartByCountryItem
 import com.briolink.companyservice.api.types.ChartByIndustry
-import com.briolink.companyservice.api.types.ChartByNumberConnection
-import com.briolink.companyservice.api.types.ChartByServicesProvider
-import com.briolink.companyservice.api.types.ChartCompany
-import com.briolink.companyservice.api.types.Charts
+import com.briolink.companyservice.api.types.ChartByIndustryItem
+import com.briolink.companyservice.api.types.ChartByServicesProvided
+import com.briolink.companyservice.api.types.ChartByServicesProvidedItem
+import com.briolink.companyservice.api.types.ChartConnectionCountByYear
+import com.briolink.companyservice.api.types.ChartConnectionCountByYearItem
+import com.briolink.companyservice.api.types.ChartItemHint
+import com.briolink.companyservice.api.types.ChartItemWithHint
+import com.briolink.companyservice.api.types.ChartTabItem
+import com.briolink.companyservice.api.types.CompanyInfoItem
+import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
 import com.briolink.companyservice.api.types.Image
-import com.briolink.companyservice.api.types.TabItemsCount
-import com.briolink.companyservice.api.types.Tooltip
-import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
+import com.briolink.companyservice.api.types.CompanyStatistic
+import com.briolink.companyservice.api.types.CompanyStatisticCharts
+import com.briolink.companyservice.api.types.CompanyStatisticTotal
+import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoles
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithServicesCount
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithUsesCount
+import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
+import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
+import com.fasterxml.jackson.core.type.TypeReference
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import org.springframework.security.access.prepost.PreAuthorize
-import java.time.Year
+import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
+import graphql.schema.DataFetchingEnvironment
+import java.util.Objects
 import java.util.UUID
-import javax.persistence.EntityNotFoundException
+import java.util.function.Function
+import java.util.stream.Collectors
+import javax.persistence.EntityManager
+import javax.persistence.Tuple
+
+inline fun <reified T> Tuple.getOrNull(alias: String): T? =
+        try {
+            this.get(alias, T::class.java)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
 
 @DgsComponent
-class StatisticQuery(private val statisticReadRepository: StatisticReadRepository) {
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getCharts(
-        @InputArgument("companyId") companyId: String
-    ): Charts? {
-        try {
-            val statistic = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-                    .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }
-
-            val chartByCountry = getChartsByCountry(statistic.statsByCountry, limitViewCompany = 3, offset = 3)
-            val chartByIndustry = getChartsByIndustry(statistic.statsByIndustry, limitViewCompany = 3, offset = 3)
-            val chartByNumberConnection = getChartsNumberConnection(statistic.statsNumberConnection, limitViewCompany = 3)
-
-            val chartByServiceProvided = getChartsServicesProvided(statistic.statsServiceProvided, limitViewCompany = 3, offset = 5)
-            return Charts(
-                    chartByCountry = chartByCountry,
-                    chartByIndustry = chartByIndustry,
-                    chartByNumberConnection = chartByNumberConnection,
-                    chartByServiceProvided = chartByServiceProvided,
-            )
-        } catch (e: EntityNotFoundException) {
-            return null
-        }
-    }
-
-    private fun getSortingListChart(list: List<Pair<String, Int>>, offset: Int = 3): List<Pair<String, Int>> {
-        val sortingListValues = mutableListOf<Int>()
-        val sortingListKey = mutableListOf<String>()
-
-        if (offset < list.count()) {
-            val otherValue = list.subList(offset, list.count()).sumOf { pair: Pair<String, Int> -> pair.second }
-            val otherPair: Pair<String, Int> = Pair("Other", otherValue)
-            val newList = list.dropLastWhile { pair: Pair<String, Int> -> pair.first != list[offset - 1].first }
-            sortingListValues.addAll(newList.map { it.second }.plus(otherPair.second))
-            sortingListKey.addAll(newList.map { it.first }.plus(otherPair.first))
-        } else {
-            sortingListValues.addAll(list.map { it.second })
-            sortingListKey.addAll(list.map { it.first })
-        }
-        val sortingList = mutableListOf<Pair<String, Int>>()
-        sortingListKey.forEachIndexed { index, key ->
-            sortingList.add(Pair(key, sortingListValues[index]))
-        }
-        return sortingList
-    }
-
-    private fun getTooltip(
-        companiesStats: MutableMap<String, StatisticReadEntity.CompaniesStats>,
-        limitViewCompany: Int = 3,
-        offset: Int = 5
-    ): MutableList<Tooltip> {
-        val tooltipList = mutableListOf<Tooltip>()
-        val mutableSetOtherCompany = mutableSetOf<StatisticReadEntity.Company>()
-        companiesStats.toList().forEachIndexed { index, pair ->
-            if (index < offset) {
-                val sortingChartCompany = pair.second.listCompanies.take(limitViewCompany).map {
-                    ChartCompany.fromEntity(it)
+class CompanyStatisticQuery(
+    private val entityManager: EntityManager,
+    private val criteriaBuilderFactory: CriteriaBuilderFactory,
+    private val companyReadRepository: CompanyReadRepository
+) {
+    fun collectCompanyIds(vararg values: Any?): MutableSet<UUID> {
+        val companyIds = mutableSetOf<UUID>()
+        values.forEach { v ->
+            when (v) {
+                is Chart -> {
+                    companyIds.addAll(v.items.map { it.companyIds }.flatten())
                 }
-                tooltipList.add(Tooltip(key = pair.first, value = sortingChartCompany))
-            } else {
-                mutableSetOtherCompany.addAll(pair.second.listCompanies)
+                is List<*> -> {
+                    companyIds.addAll(
+                            v.mapNotNull {
+                                if (it is ChartListItem) it.companyId else null
+                            }
+                    )
+                }
             }
         }
-        if (mutableSetOtherCompany.isNotEmpty()) {
-            tooltipList.add(
-                    Tooltip(
-                            "Other",
-                            mutableSetOtherCompany.take(limitViewCompany).map {
-                                ChartCompany.fromEntity(it)
-                            },
-                    ),
-            )
-        }
-        return tooltipList
+        return companyIds
     }
 
-    private fun getTooltipOnInt(
-        companiesStats: MutableMap<Int, StatisticReadEntity.CompaniesStats>,
-        limitViewCompany: Int = 3
-    ): MutableList<Tooltip> {
-        val tooltipList = mutableListOf<Tooltip>()
-        companiesStats.forEach { (key, companies) ->
-            val sortingChartCompany = companies.listCompanies.take(limitViewCompany).map {
-                ChartCompany(
-                        name = it.name,
-                        slug = it.slug,
-                        logo = Image(it.logo),
-                        id = it.id.toString(),
+    fun <T> mapRawData(raw: String?, type: TypeReference<T>) =
+            if (raw != null) ObjectMapperWrapper.INSTANCE.objectMapper.readValue(
+                    raw, type,
+            ) else null
+
+    @DgsQuery
+    fun getCompanyStatistic(@InputArgument companyId: String, dfe: DataFetchingEnvironment): CompanyStatistic {
+        val cbf = criteriaBuilderFactory.create(entityManager, Tuple::class.java)
+        val cb = cbf.from(StatisticReadEntity::class.java)
+
+        cb.where("companyId").eq(UUID.fromString(companyId))
+
+        if (dfe.selectionSet.contains("total/connectionsNumber")) cb.select("totalConnections", "totalConnections")
+        if (dfe.selectionSet.contains("total/servicesProvidedNumber")) cb.select("totalServicesProvided", "totalServicesProvided")
+        if (dfe.selectionSet.contains("total/numberOfCollaborationCompanies"))
+            cb.select("totalCollaborationCompanies", "totalCollaborationCompanies")
+
+        if (dfe.selectionSet.containsAnyOf("charts/connectionCountByYear/data", "charts/connectionCountByYear/tabs"))
+            cb.select("chartConnectionCountByYear", "chartConnectionCountByYear")
+        if (dfe.selectionSet.containsAnyOf("charts/byCountry/data", "charts/byCountry/tabs"))
+            cb.select("chartByCountry", "chartByCountry")
+        if (dfe.selectionSet.containsAnyOf("charts/byIndustry/data", "charts/byIndustry/tabs"))
+            cb.select("chartByIndustry", "chartByIndustry")
+        if (dfe.selectionSet.containsAnyOf("charts/byServicesProvided/data", "charts/byServicesProvided/tabs"))
+            cb.select("chartByServicesProvided", "chartByServicesProvided")
+
+        if (dfe.selectionSet.contains("charts/connectionCountByYear/listByTab"))
+            cb
+                    .select("jsonb_get(chartConnectionCountByYearData, 'data', :dk1, 'items')", "chartConnectionCountByYearData")
+                    .setParameter("dk1", dfe.selectionSet.getFields("charts/connectionCountByYear/listByTab")[0].arguments["id"])
+
+        if (dfe.selectionSet.contains("charts/byCountry/listByTab"))
+            cb
+                    .select("jsonb_get(chartByCountryData, 'data', :dk2, 'items')", "chartByCountryData")
+                    .setParameter("dk2", dfe.selectionSet.getFields("charts/byCountry/listByTab")[0].arguments["id"])
+
+        if (dfe.selectionSet.contains("charts/byIndustry/listByTab"))
+            cb
+                    .select("jsonb_get(chartByIndustryData, 'data', :dk3, 'items')", "chartByIndustryData")
+                    .setParameter("dk3", dfe.selectionSet.getFields("charts/byIndustry/listByTab")[0].arguments["id"])
+
+        if (dfe.selectionSet.contains("charts/byServicesProvided/listByService"))
+            cb
+                    .select("jsonb_get(chartByServicesProvidedData, 'data', :dk4, 'items')", "chartByServicesProvidedData")
+                    .setParameter("dk4", dfe.selectionSet.getFields("charts/byServicesProvided/listByService")[0].arguments["id"])
+
+        val result = cb.resultList.firstOrNull()
+
+        val chartConnectionCountByYear = result?.getOrNull<Chart>("chartConnectionCountByYear")
+        val chartByCountry = result?.getOrNull<Chart>("chartByCountry")
+        val chartByIndustry = result?.getOrNull<Chart>("chartByIndustry")
+        val chartByServicesProvided = result?.getOrNull<Chart>("chartByServicesProvided")
+        val chartConnectionCountByYearData =
+                mapRawData(
+                        result?.getOrNull("chartConnectionCountByYearData"),
+                        object : TypeReference<List<ChartListItemWithServicesCount>>() {}
                 )
-            }
-            tooltipList.add(Tooltip(key = key.toString(), value = sortingChartCompany))
+        val chartByCountryData =
+                mapRawData(result?.getOrNull("chartByCountryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
+        val chartByIndustryData =
+                mapRawData(result?.getOrNull("chartByIndustryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
+        val chartByServicesProvidedData =
+                mapRawData(result?.getOrNull("chartByServicesProvidedData"), object : TypeReference<List<ChartListItemWithUsesCount>>() {})
+
+        val companyIds = collectCompanyIds(
+                chartConnectionCountByYear,
+                chartByCountry,
+                chartByIndustry,
+                chartByServicesProvided,
+                chartConnectionCountByYearData,
+                chartByCountryData,
+                chartByIndustryData,
+                chartByServicesProvidedData
+        )
+
+        val companies: Map<UUID, CompanyReadEntity> =
+                companyReadRepository
+                        .findByIdIsIn(companyIds.toList())
+                        .parallelStream()
+                        .collect(Collectors.toMap(CompanyReadEntity::id, Function.identity()))
+
+        val mapTabs = { chart: Chart? ->
+            chart?.tabs?.map {
+                ChartTabItem(
+                        id = it.id,
+                        name = it.name,
+                        total = it.total,
+                )
+            }.orEmpty()
         }
-        return tooltipList
-    }
 
-// ============= country stats ================
+        val mapData = { chart: Chart? ->
+            chart?.items?.map {
+                ChartItemWithHint(
+                        it.key,
+                        it.name,
+                        it.value,
+                        hints = it.companyIds
+                                .stream().map(companies::get)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList()).map { hint ->
+                                    ChartItemHint(
+                                            name = hint!!.name,
+                                            image = hint.data.logo?.let { logo -> Image(logo) }
+                                    )
+                                }
+                )
+            }.orEmpty()
+        }
 
-    fun getChartsByCountry(
-        statsByCountry: StatisticReadEntity.StatsByCountry,
-        offset: Int = 3,
-        limitViewCompany: Int = 3
-    ): ChartByCountry {
-        val statisticByCountry = statsByCountry.totalCountByCountry.toList().sortedByDescending { pair -> pair.second }
-
-        val sortingList = getSortingListChart(statisticByCountry, offset)
-        val tooltipList = getTooltip(statsByCountry.companiesStatsByCountry, offset = offset, limitViewCompany = limitViewCompany)
-        return ChartByCountry(
-                values = sortingList.map { it.first },
-                data = sortingList.map { it.second },
-                tooltip = tooltipList,
+        return CompanyStatistic(
+                total = CompanyStatisticTotal(
+                        result?.getOrNull<Int>("totalConnections") ?: 0,
+                        result?.getOrNull<Int>("totalServicesProvided") ?: 0,
+                        result?.getOrNull<Int>("totalCollaborationCompanies") ?: 0,
+                ),
+                charts = CompanyStatisticCharts(
+                        ChartConnectionCountByYear(
+                                data = mapData(chartConnectionCountByYear),
+                                tabs = mapTabs(chartConnectionCountByYear),
+                                listByTab = chartConnectionCountByYearData?.map {
+                                    ChartConnectionCountByYearItem(
+                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                                            companyRole = it.companyRole,
+                                            companyRoleType = ConnectionCompanyRoleType.valueOf(it.companyRoleType.name),
+                                            servicesCount = it.servicesCount
+                                    )
+                                }.orEmpty()
+                        ),
+                        ChartByCountry(
+                                data = mapData(chartByCountry),
+                                tabs = mapTabs(chartByCountry),
+                                listByTab = chartByCountryData?.map {
+                                    println(it.companyId)
+                                    ChartByCountryItem(
+                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                                            companyRoles = it.roles.toList()
+                                    )
+                                }.orEmpty()
+                        ),
+                        ChartByIndustry(
+                                data = mapData(chartByIndustry),
+                                tabs = mapTabs(chartByIndustry),
+                                listByTab = chartByIndustryData?.map {
+                                    ChartByIndustryItem(
+                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                                            companyRoles = it.roles.toList()
+                                    )
+                                }.orEmpty()
+                        ),
+                        ChartByServicesProvided(
+                                data = mapData(chartByServicesProvided),
+                                listByService = chartByServicesProvidedData?.map {
+                                    ChartByServicesProvidedItem(
+                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                                            usesCount = it.usesCount
+                                    )
+                                }.orEmpty()
+                        ),
+                ),
         )
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getCompanyStatsByCountry(
-        @InputArgument("companyId") companyId: String,
-        @InputArgument("country") country: String
-    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByCountry.companiesStatsByCountry[country]?.let { companiesStats ->
-        companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getTabsStatsByCountry(
-        @InputArgument("companyId") companyId: String,
-    ): List<TabItemsCount>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByCountry.totalCountByCountry.let { totalCount ->
-                totalCount.map { (country, count) ->
-                    TabItemsCount(key = country, count = count)
-                }
-            }
-
-    // ============= industry stats ================
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getCompanyStatsByIndustry(
-        @InputArgument("companyId") companyId: String,
-        @InputArgument("industryName") industryName: String
-    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByIndustry.companiesStatsByIndustry[industryName]?.let { companiesStats ->
-        companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getTabsStatsByIndustry(
-        @InputArgument("companyId") companyId: String,
-    ): List<TabItemsCount>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsByIndustry.totalCountByIndustry.let { totalCount ->
-                totalCount.map { (industryName, count) ->
-                    TabItemsCount(key = industryName, count = count)
-                }
-            }
-
-    private fun getChartsByIndustry(
-        statsByIndustry: StatisticReadEntity.StatsByIndustry,
-        offset: Int = 3,
-        limitViewCompany: Int = 3
-    ): ChartByIndustry {
-        val statisticByIndustry = statsByIndustry.totalCountByIndustry.toList().sortedByDescending { pair -> pair.second }
-        val sortingList = getSortingListChart(statisticByIndustry, offset)
-        val tooltipList = getTooltip(statsByIndustry.companiesStatsByIndustry, offset = offset, limitViewCompany = limitViewCompany)
-        return ChartByIndustry(
-                values = sortingList.map { it.first },
-                data = sortingList.map { it.second },
-                tooltip = tooltipList,
-        )
-    }
-
-// ============= number connections stats ================
-
-
-    fun getChartsNumberConnection(
-        statsByNumberConnection: StatisticReadEntity.StatsNumberConnection,
-        limitViewCompany: Int = 3
-    ): ChartByNumberConnection {
-        return ChartByNumberConnection(
-                values = statsByNumberConnection.companiesStatsByYear.map { Year.of(it.key) },
-                data = statsByNumberConnection.companiesStatsByYear.values.map {
-                    it.totalCount.values.sum()
-                },
-                tooltip = getTooltipOnInt(statsByNumberConnection.companiesStatsByYear, limitViewCompany = limitViewCompany),
-        )
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getCompanyStatsByNumberConnectionOnYear(
-        @InputArgument("companyId") companyId: String,
-        @InputArgument("year") year: Year?
-    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsNumberConnection.companiesStatsByYear[year?.value]?.let { companiesStats ->
-        companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getTabsStatsByNumberConnection(
-        @InputArgument("companyId") companyId: String,
-    ): List<TabItemsCount>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsNumberConnection.companiesStatsByYear.let {
-                it.map { (year, companiesStats) ->
-                    TabItemsCount(key = year.toString(), count = companiesStats.totalCount.values.sum())
-                }
-            }
-
-// ============= service provided stats ================
-
-    fun getChartsServicesProvided(
-        statsByServiceProvided: StatisticReadEntity.StatsServiceProvided,
-        offset: Int = 5,
-        limitViewCompany: Int = 3
-    ): ChartByServicesProvider {
-        val statisticByServicesProvider =
-                statsByServiceProvided.totalCountByService.toList().sortedByDescending { pair -> pair.second }
-        val sortingList = getSortingListChart(statisticByServicesProvider, offset)
-        val tooltipList = getTooltip(
-                companiesStats = statsByServiceProvided.companiesStatsByService, offset = offset, limitViewCompany = limitViewCompany,
-        )
-        return ChartByServicesProvider(
-                values = sortingList.map { it.first },
-                data = sortingList.map { it.second },
-                tooltip = tooltipList,
-        )
-    }
-
-    @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getCompanyStatsByService(
-        @InputArgument("companyId") companyId: String,
-        @InputArgument("serviceName") serviceName: String
-    ): List<ChartCompany>? = statisticReadRepository.findByCompanyId(UUID.fromString(companyId))
-            .orElseThrow { throw EntityNotFoundException("$companyId stats not found") }.statsServiceProvided.companiesStatsByService[serviceName]?.let { companiesStats ->
-        companiesStats.listCompanies.map { ChartCompany.fromEntity(it) }
     }
 }

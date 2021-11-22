@@ -15,10 +15,12 @@ type Mutation{
     #    KeyWord
     createKeyword(input: CreateKeywordInput!) : CreateKeywordResult!
 
+    hideCompanyConnection(companyId: ID!, connectionId: ID!, isHide: Boolean!) : DelOrHideResult!
+    deleteCompanyConnection(companyId: ID!, connectionId: ID!) : DelOrHideResult!
     #    User ( company Stuff)
 #    createEmployee(input: CreateUserInput!) : User!
-
+    getAllPermission(userId: ID) : Boolean
     # Service
-    hideCompanyService(companyId: ID!, serviceId: ID!, isHide: Boolean!): HideCompanyServiceResult
-    deleteCompanyService(companyId: ID!, serviceId: ID!) : Boolean
+    hideCompanyService(companyId: ID!, serviceId: ID!): DelOrHideResult!
+    deleteCompanyService(companyId: ID!, serviceId: ID!) : DelOrHideResult!
 }

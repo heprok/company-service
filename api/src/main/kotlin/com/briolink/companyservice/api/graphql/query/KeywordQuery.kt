@@ -10,12 +10,11 @@ import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
 
 @DgsComponent
-class KeywordQuery(private val keywordReadRepository: KeywordReadRepository ) {
+class KeywordQuery(private val keywordReadRepository: KeywordReadRepository) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getKeywords(@InputArgument("query") query: String): List<Keyword> {
-        val escapeQuery = StringUtil.replaceNonWord(query)
-        val keywords = if (query.isNotEmpty()) keywordReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")") else listOf()
+    fun getKeywords(@InputArgument("query") query: String?): List<Keyword> {
+        val keywords = keywordReadRepository.findByName(query?.ifBlank { null })
 
         return keywords.map {
             Keyword.fromEntity(it)

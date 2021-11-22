@@ -14,8 +14,7 @@ class OccupationQuery(private val occupationReadRepository: OccupationReadReposi
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getOccupations(@InputArgument("query") query: String): List<Occupation> {
-        val escapeQuery = StringUtil.replaceNonWord(query)
-        val occupations = if (query.isNotEmpty()) occupationReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")") else listOf()
+        val occupations = occupationReadRepository.findByName(query.ifBlank { null })
 
         return occupations.map {
             Occupation.fromEntity(it)
