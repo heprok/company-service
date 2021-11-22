@@ -15,7 +15,14 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     fun existsByCompanyId(companyId: UUID): Boolean
 
     @Modifying
-    @Query("UPDATE ServiceReadEntity s SET s.isHide = ?3 where s.id = ?1 and s.companyId = ?2")
-    fun hideServiceByIdAndCompanyId(id: UUID, companyId: UUID, isHide: Boolean)
+    @Query("""
+        UPDATE read.service SET is_hidden = NOT is_hidden where id = ?1 and company_id = ?2
+    """,
+    nativeQuery = true)
+    fun toggleVisibilityByIdAndCompanyId(serviceId: UUID, companyId: UUID)
+
+    @Modifying
+    @Query("DELETE from ServiceReadEntity c where c.id = ?1")
+    override fun deleteById(id: UUID)
 
 }

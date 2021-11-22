@@ -1,5 +1,8 @@
 package com.briolink.companyservice.common.jpa.write.entity
 
+import com.briolink.companyservice.common.domain.v1_0.Company
+import com.briolink.companyservice.common.domain.v1_0.Industry
+import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.util.StringUtil
 import org.hibernate.annotations.Type
 import java.net.URL
@@ -19,9 +22,6 @@ import javax.persistence.Table
 class CompanyWriteEntity(
     @Column(name = "name", nullable = false)
     var name: String,
-
-    @Column(name = "website", nullable = false)
-    var website: URL?,
 
     @Column(name = "slug", nullable = false, length = 255)
     var slug: String = "",
@@ -66,9 +66,52 @@ class CompanyWriteEntity(
     var keywords: MutableList<KeywordWriteEntity> = mutableListOf()
 ) : BaseWriteEntity() {
 
+    @Column(name = "website")
+    private var website: String? = null
+
+    var websiteUrl: URL?
+        get() = website?.let { URL("https://$it") }
+        set(value) {
+            website = value?.host
+        }
+
     @PrePersist
     fun prePersist() {
         slug = StringUtil.slugify(name, false)
     }
+
+    fun toDomain() = Company(
+            id = id!!,
+            name = name,
+            website = websiteUrl,
+            description = description,
+            slug = slug,
+            logo = logo,
+            isTypePublic = isTypePublic,
+            location = location,
+            facebook = facebook,
+            twitter = twitter,
+            industry = industry?.let {
+                Industry(
+                        it.id!!,
+                        it.name,
+                )
+            },
+            createdBy = createdBy,
+            occupation = occupation?.let {
+                Occupation(
+                        it.id!!,
+                        it.name,
+                )
+            },
+            keywords = ArrayList(
+                    keywords.map {
+                        Company.Keyword(
+                                it.id!!,
+                                it.name,
+                        )
+                    },
+            ),
+    )
 
 }

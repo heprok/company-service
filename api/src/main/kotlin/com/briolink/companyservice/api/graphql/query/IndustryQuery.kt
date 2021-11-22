@@ -1,9 +1,8 @@
 package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromEntity
-import com.briolink.companyservice.api.service.ConnectionService
+import com.briolink.companyservice.api.service.connection.ConnectionService
 import com.briolink.companyservice.api.types.Industry
-import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
 import com.briolink.companyservice.common.util.StringUtil
 import com.netflix.graphql.dgs.DgsComponent
@@ -23,11 +22,10 @@ class IndustryQuery(
         @InputArgument("query") query: String,
         @InputArgument("companyId") companyId: String?
     ): List<Industry> {
-        val escapeQuery = StringUtil.replaceNonWord(query)
         val industries = if (companyId == null && query.isNotEmpty()) {
-            industryReadRepository.findByName("($escapeQuery*) (\"$escapeQuery\")")
+            industryReadRepository.findByName(query.ifBlank { null })
         } else if (companyId != null) {
-            connectionService.getIndustriesInConnectionFromCompany(UUID.fromString(companyId), query )
+            connectionService.getIndustriesInConnectionFromCompany(companyId, query )
         } else {
             listOf()
         }

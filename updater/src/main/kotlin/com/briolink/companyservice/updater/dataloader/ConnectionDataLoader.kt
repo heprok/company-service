@@ -3,7 +3,7 @@ package com.briolink.companyservice.updater.dataloader
 import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.connection.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.handler.connection.Connection
@@ -57,15 +57,17 @@ class ConnectionDataLoader(
                     } else it
                 }
                 val services = mutableListOf<ConnectionService>()
-                for (j in 0..Random.nextInt(1, 4)) {
+                for (j in 0..Random.nextInt(1, 6)) {
+                    val startYear = Year.of(Random.nextInt(2010, 2021))
+                    val endYear = Year.of(Random.nextInt(startYear.value, 2021))
                     services.add(
                             listService.shuffled().find { service -> service.companyId == from.id }!!.let {
                                 ConnectionService(
-                                        id = it.id,
-                                        serviceId = it.id,
+                                        id = UUID.randomUUID(),
+                                        serviceId = if( Random.nextBoolean()) it.id else null,
                                         serviceName = it.name,
-                                        startDate = Year.of(Random.nextInt(2010, 2021)),
-                                        endDate = if (Random.nextBoolean()) null else Year.of(Random.nextInt(2010, 2020)),
+                                        startDate = startYear,
+                                        endDate = if (Random.nextBoolean()) null else endYear,
                                 )
                             },
                     )

@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.net.URL
 import java.util.*
+import kotlin.random.Random
 
 @Component
 @Order(1)
@@ -33,10 +34,10 @@ class UserDataLoader(
                             data = UserReadEntity.Data(
                                     firstName = listFirstName.random(),
                                     lastName = listLastName.random(),
-                                    image = URL("https://placeimg.com/148/148/people"),
+                                    image = if(Random.nextBoolean()) URL("https://placeimg.com/148/148/people") else null,
                             ).apply {
                                 slug = StringUtil.slugify(
-                                        listFirstName.random() + " " + listLastName.random() + " " + UUID.randomUUID().toString(),
+                                        firstName + " " + lastName + " " + UUID.randomUUID().toString(),
                                 )
                             }
                         },

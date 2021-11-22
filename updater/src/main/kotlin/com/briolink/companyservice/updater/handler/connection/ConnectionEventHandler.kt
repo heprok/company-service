@@ -30,9 +30,11 @@ class ConnectionEventHandler(
                             userId = connection.participantTo.userId!!,
                             companyId = connection.participantTo.companyId!!,
                     ) != null) {
-                    connectionHandlerService.createOrUpdate(connection)
-                    statisticHandlerService.refreshByCompany(connection.participantTo.companyId!!)
-                    statisticHandlerService.refreshByCompany(connection.participantFrom.companyId!!)
+                    connectionHandlerService.createOrUpdate(connection).let {
+                        statisticHandlerService.refreshByCompanyId(connection.participantTo.companyId!!)
+                        statisticHandlerService.refreshByCompanyId(connection.participantFrom.companyId!!)
+                    }
+
                 }
             }
         } else if (connection.status == ConnectionStatus.Rejected) {

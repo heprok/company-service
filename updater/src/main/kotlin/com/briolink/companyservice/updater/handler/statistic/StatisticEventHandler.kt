@@ -18,7 +18,7 @@ class StatisticEventHandler(
             it.id
         }
         companiesUUID.forEach {
-            statisticHandlerService.refreshByCompany(it)
+            statisticHandlerService.refreshByCompanyId(it)
         }
     }
 }

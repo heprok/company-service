@@ -15,6 +15,10 @@ class CompanyEventHandler(
     private val companyHandlerService: CompanyHandlerService,
 ) : IEventHandler<CompanyCreatedEvent> {
     override fun handle(event: CompanyCreatedEvent) {
-        companyHandlerService.createOrUpdate(event.data)
+        companyHandlerService.createOrUpdate(event.data).let {
+            if (event.name == "CompanyUpdatedEvent") {
+
+            }
+        }
     }
 }

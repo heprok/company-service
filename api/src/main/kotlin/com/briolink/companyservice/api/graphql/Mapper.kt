@@ -1,29 +1,27 @@
 package com.briolink.companyservice.api.graphql
 
-import com.briolink.companyservice.api.types.ChartCompany
 import com.briolink.companyservice.api.types.Company
+import com.briolink.companyservice.api.types.CompanyInfoItem
 import com.briolink.companyservice.api.types.Connection
-import com.briolink.companyservice.api.types.ConnectionRole
-import com.briolink.companyservice.api.types.ConnectionRoleType
+import com.briolink.companyservice.api.types.ConnectionCompanyRole
+import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
+import com.briolink.companyservice.api.types.ConnectionParticipant
 import com.briolink.companyservice.api.types.ConnectionService
+import com.briolink.companyservice.api.types.ConnectionStatus
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Keyword
 import com.briolink.companyservice.api.types.Occupation
-import com.briolink.companyservice.api.types.Participant
 import com.briolink.companyservice.api.types.Service
-import com.briolink.companyservice.api.types.Statistic
 import com.briolink.companyservice.api.types.User
-import com.briolink.companyservice.api.types.VerificationStage
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
+import java.net.URL
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         Company(
@@ -50,14 +48,6 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
                     Occupation(
                             id = it.id,
                             name = it.name,
-                    )
-                },
-                statistic = entity.data.statistic.let {
-                    Statistic(
-                            serviceProvidedCount = it.serviceProvidedCount,
-                            collaboratingCompanyCount = it.collaboratingCompanyCount,
-                            collaboratingPeopleCount = it.collaboratingPeopleCount,
-                            totalConnectionCount = it.totalConnectionCount,
                     )
                 },
                 keywords = entity.data.keywords.let { list ->
@@ -106,89 +96,72 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
         lastUsed = entity.lastUsed,
         isHide = entity.isHide,
         image = entity.data.logo.let { Image(url = it) },
-        slug = entity.data.slug
+        slug = entity.data.slug,
 )
 
 
-fun ChartCompany.Companion.fromEntity(entity: StatisticReadEntity.Company) =
-        ChartCompany(
-                name = entity.name,
-                countService = entity.countService,
-                logo = Image(entity.logo),
-                slug = entity.slug,
-                role = entity.role.map { ConnectionRole.fromEntity(it) },
-                industry = entity.industry,
-                location = entity.location,
-                id = entity.id.toString(),
-        )
-
-
-fun ConnectionRole.Companion.fromEntity(entity: ConnectionRoleReadEntity) = ConnectionRole(
+fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInfoItem(
         id = entity.id.toString(),
-        name = entity.name,
-        type = ConnectionRoleType.values()[entity.type.ordinal],
-)
-
-fun ConnectionRole.Companion.fromEntity(entity: StatisticReadEntity.Role) = ConnectionRole(
-        id = entity.id.toString(),
-        name = entity.name,
-        type = ConnectionRoleType.values()[entity.type.ordinal],
-)
-
-fun ConnectionRole.Companion.fromEntity(entity: ConnectionReadEntity.Role) = ConnectionRole(
-        id = entity.id.toString(),
-        name = entity.name,
-        type = ConnectionRoleType.values()[entity.type.ordinal],
+        name = entity.data.name,
+        slug = entity.slug,
+        logo = entity.data.logo?.let { Image(it) },
+        location = entity.data.location
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
         id = entity.id.toString(),
-        buyer = Participant(
-                id = entity.data.sellerCompany.id.toString(),
-                name = entity.data.sellerCompany.name,
-                slug = entity.data.sellerCompany.slug,
-                logo = entity.data.sellerCompany.logo?.let {
-                    Image(url = it)
-                },
-                verifyUser = User(
-                        id = entity.data.sellerCompany.verifyUser.id.toString(),
-                        lastName = entity.data.sellerCompany.verifyUser.lastName,
-                        firstName = entity.data.sellerCompany.verifyUser.firstName,
-                        slug = entity.data.sellerCompany.verifyUser.slug,
-                        image = entity.data.sellerCompany.verifyUser.image?.let {
-                            Image(url = it)
-                        },
+        participantFrom = ConnectionParticipant(
+                user = User(
+                        id = entity.data.participantFrom.user.id.toString(),
+                        slug = entity.data.participantFrom.user.slug,
+                        image = entity.data.participantFrom.user.image?.let { image -> Image(image) },
+                        firstName = entity.data.participantFrom.user.firstName,
+                        lastName = entity.data.participantFrom.user.lastName,
                 ),
-                role = ConnectionRole.fromEntity(entity.data.sellerCompany.role),
-        ),
-        seller = Participant(
-                id = entity.data.buyerCompany.id.toString(),
-                name = entity.data.buyerCompany.name,
-                slug = entity.data.buyerCompany.slug,
-                logo = entity.data.buyerCompany.logo?.let {
-                    Image(url = it)
-                },
-                verifyUser = User(
-                        id = entity.data.buyerCompany.verifyUser.id.toString(),
-                        lastName = entity.data.buyerCompany.verifyUser.lastName,
-                        firstName = entity.data.buyerCompany.verifyUser.firstName,
-                        slug = entity.data.buyerCompany.verifyUser.slug,
-                        image = entity.data.buyerCompany.verifyUser.image?.let {
-                            Image(url = it)
-                        },
+                userJobPositionTitle = null,
+                company = CompanyInfoItem(
+                        id = entity.data.participantFrom.company.id.toString(),
+                        slug = entity.data.participantFrom.company.slug,
+                        logo = entity.data.participantFrom.company.logo?.let { logo -> Image(logo) },
+                        name = entity.data.participantFrom.company.name,
                 ),
-                role = ConnectionRole.fromEntity(entity.data.buyerCompany.role),
+                companyRole = ConnectionCompanyRole(
+                        id = entity.participantFromRoleId.toString(),
+                        name = entity.participantFromRoleName,
+                        type = ConnectionCompanyRoleType.valueOf(entity.participantFromRoleType.name),
+                ),
         ),
-        services = entity.data.services.map {
+        participantTo = ConnectionParticipant(
+                user = User(
+                        id = entity.data.participantTo.user.id.toString(),
+                        slug = entity.data.participantTo.user.slug,
+                        image = entity.data.participantTo.user.image?.let { image -> Image(image) },
+                        firstName = entity.data.participantTo.user.firstName,
+                        lastName = entity.data.participantTo.user.lastName,
+                ),
+                userJobPositionTitle = null,
+                company = CompanyInfoItem(
+                        id = entity.data.participantTo.company.id.toString(),
+                        slug = entity.data.participantTo.company.slug,
+                        logo = entity.data.participantTo.company.logo?.let { logo -> Image(logo) },
+                        name = entity.data.participantTo.company.name,
+                ),
+                companyRole = ConnectionCompanyRole(
+                        id = entity.participantToRoleId.toString(),
+                        name = entity.participantToRoleName,
+                        type = ConnectionCompanyRoleType.valueOf(entity.participantToRoleType.name),
+                ),
+        ),
+        services = entity.data.services.map { service ->
             ConnectionService(
-                    id = it.id.toString(),
-                    name = it.name!!,
-                    endDate = it.endDate,
-                    startDate = it.startDate,
+                    id = service.id.toString(),
+                    serviceId = service.serviceId?.toString(),
+                    name = service.serviceName,
+                    startDate = service.startDate,
+                    endDate = service.endDate,
             )
         },
-        industry = entity.data.industry.let {
-            Industry(id = it.id.toString(), name = it.name)
-        },
-        verificationStage = VerificationStage.valueOf(entity.verificationStage.name)
+        status = ConnectionStatus.valueOf(entity.status.name),
+        industry = entity.data.industry,
 )
+
