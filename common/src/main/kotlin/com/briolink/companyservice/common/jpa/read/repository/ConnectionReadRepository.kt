@@ -21,7 +21,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         where 
             (c.participantFromCompanyId = ?1 or c.participantFromCompanyId = ?1) and
             c._status = ?2 and (
-                function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE or
+                function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE and
                 function('array_contains_element', c.deletedCompanyIds, ?1) = FALSE
             )
     """)

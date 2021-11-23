@@ -32,10 +32,12 @@ class StatisticHandlerService(
         val companyStatistic = StatisticReadEntity(companyId)
 //        val companyStatistic = statisticReadRepository.findByCompanyId(companyId) ?: StatisticReadEntity(companyId)
 
-        connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrDeleted(companyId, ConnectionStatusEnum.Verified.value)
-                .forEach { connectionReadEntity ->
+        val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrDeleted(companyId, ConnectionStatusEnum.Verified.value)
+        companyStatistic.totalConnections = list.count()
+        list.forEach { connectionReadEntity ->
                     val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
                         connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
+
 
                     // chart data by country
                     val country = connectionReadEntity.data.location?.country?.name
@@ -91,7 +93,7 @@ class StatisticHandlerService(
                                 else -> list.items[i].usesCount = list.items[i].usesCount.inc()
                             }
                             serviceReadRepository.findByIdOrNull(UUID.fromString(serviceId))?.apply {
-                                verifiedUses = list.items.sumOf { i -> i.usesCount }
+                                verifiedUses = companyStatistic.chartByServicesProvidedData.data[serviceId]!!.items.size
                                 lastUsed = connectionReadEntity.created.atZone(ZoneId.systemDefault()).toLocalDate()
                                 serviceReadRepository.save(this)
                             }
@@ -103,6 +105,7 @@ class StatisticHandlerService(
                             { it.second.items.sumOf { i -> i.usesCount } },
                             true,
                     )
+                    companyStatistic.totalServicesProvided =  companyStatistic.chartByServicesProvidedData.data.size
                     // chart data by number of connections
                     val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
                     companyStatistic.chartConnectionCountByYearData.data.getOrPut(createdYear) {
@@ -126,16 +129,11 @@ class StatisticHandlerService(
                     }
                     companyStatistic.totalCollaborationCompanies = companyStatistic
                             .chartConnectionCountByYear.items.map { it.companyIds }.flatten().toSet().count()
-
+                    companyStatistic.totalConnections = companyStatistic.chartConnectionCountByYearData.data.values.sumOf { year -> year.items.size }
                     companyStatistic.chartConnectionCountByYear = getChart(
                             companyStatistic.chartConnectionCountByYearData,
                             {
-                                (
-                                        if (it.first == createdYear)
-                                            companyStatistic.chartConnectionCountByYear.items.firstOrNull { t -> t.key == createdYear }?.value?.inc()
-                                        else
-                                            companyStatistic.chartConnectionCountByYear.items.firstOrNull { t -> t.key == createdYear }?.value
-                                        ) ?: 1
+                                it.second.items.count()
                             },
                             withoutOther = true,
                     ) { it.sortedBy { el -> el.first.toInt() } }
