@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 
 data class Statistic (
-    @JsonProperty("name")
-    val name: String
+    @JsonProperty
+    val companyId: UUID?
 ) : Domain

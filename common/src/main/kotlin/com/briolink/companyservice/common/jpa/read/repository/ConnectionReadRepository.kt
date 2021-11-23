@@ -18,10 +18,14 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     @Query(
             """
         select c from ConnectionReadEntity c
-        where (c.participantFromCompanyId = ?1 or c.participantFromCompanyId = ?1) and c._status = ?2
-    """,
-    )
-    fun getByCompanyIdAndStatus(companyId: UUID, type: Int = ConnectionStatusEnum.Verified.value): Stream<ConnectionReadEntity>
+        where 
+            (c.participantFromCompanyId = ?1 or c.participantFromCompanyId = ?1) and
+            c._status = ?2 and (
+                function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE or
+                function('array_contains_element', c.deletedCompanyIds, ?1) = FALSE
+            )
+    """)
+    fun getByCompanyIdAndStatusAndNotHiddenOrDeleted(companyId: UUID, type: Int = ConnectionStatusEnum.Verified.value): List<ConnectionReadEntity>
 
 
     @Modifying
@@ -103,6 +107,29 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     fun changeVisibilityByIdAndCompanyId(
         @Param("id") connectionId: UUID,
         @Param("companyId") companyId: UUID,
+        @Param("hidden") hidden: Boolean
+    )
+
+    @Modifying
+    @Query(
+            """
+            UPDATE ConnectionReadEntity c
+            SET c.hiddenCompanyIds = case
+               when :hidden = true
+                   then function('array_append', c.hiddenCompanyIds, :companyId)
+               when :hidden = false
+                   then function('array_remove', c.hiddenCompanyIds, :companyId)
+               else c.hiddenCompanyIds end
+           WHERE
+               (c.participantFromCompanyId = :companyId OR c.participantToCompanyId = :companyId) AND
+               (c.participantFromUserId = :userId OR c.participantToUserId = :userId) AND
+               function('array_contains_element', c.hiddenCompanyIds, :companyId) <> :hidden
+           """,
+    )
+
+    fun changeVisibilityByCompanyIdAndUserId(
+        @Param("companyId") companyId: UUID,
+        @Param("userId") userId: UUID,
         @Param("hidden") hidden: Boolean
     )
 

@@ -65,14 +65,6 @@ class CompanyHandlerService(
                     },
             )
 
-    fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleTypeEnum? {
-        return userPermissionRoleReadRepository.getUserPermissionRole(
-                accessObjectUuid = companyId,
-                accessObjectType = AccessObjectTypeEnum.Company.value,
-                userId = userId,
-        )?.role
-    }
-
     fun addEmployee(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity {
 //        return if (!userPermissionRoleReadRepository.existsByCompanyId(companyId) || true) {
         //TODO добавить условие

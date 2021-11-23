@@ -5,7 +5,6 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
-import com.briolink.companyservice.api.service.PermissionService
 import com.briolink.companyservice.api.types.CompanyResultData
 import com.briolink.companyservice.api.types.CreateCompanyInput
 import com.briolink.companyservice.api.types.CreateCompanyResult
@@ -15,8 +14,8 @@ import com.briolink.companyservice.api.types.UpdateCompanyResult
 import com.briolink.companyservice.common.jpa.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
-import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.service.LocationService
+import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -76,6 +75,7 @@ class CompanyMutation(
 
         if (!permissionService.isHavePermission(
                     accessObjectType = AccessObjectTypeEnum.Company,
+                    userId = currentUserAccountId,
                     companyId = UUID.fromString(id),
                     permissionRight = PermissionRightEnum.EditCompanyProfile,
             ))

@@ -1,7 +1,6 @@
 package com.briolink.companyservice.updater.handler.statistic
 
 import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartItem
@@ -12,9 +11,10 @@ import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListIte
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithUsesCount
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartTabItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZoneId
@@ -25,101 +25,121 @@ import java.util.*
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
-    private val companyReadRepository: CompanyReadRepository,
+    private val serviceReadRepository: ServiceReadRepository
 ) {
     fun refreshByCompanyId(companyId: UUID) {
         deleteStatisticByCompanyId(companyId)
-        val companyStatistic = statisticReadRepository.findByCompanyId(companyId) ?: StatisticReadEntity(companyId)
+        val companyStatistic = StatisticReadEntity(companyId)
+//        val companyStatistic = statisticReadRepository.findByCompanyId(companyId) ?: StatisticReadEntity(companyId)
 
-        connectionReadRepository.getByCompanyIdAndStatus(companyId, ConnectionStatusEnum.Verified.value).forEach { connectionReadEntity ->
-//            addConnectionToStats(it, companyId)
-            if (connectionReadEntity.status == ConnectionStatusEnum.Verified) {
-                val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
-                    connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
+        connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrDeleted(companyId, ConnectionStatusEnum.Verified.value)
+                .forEach { connectionReadEntity ->
+                    val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
+                        connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
 
-                // chart data by country
-                val country = connectionReadEntity.data.location?.country?.name
-                if (!country.isNullOrBlank()) {
-                    companyStatistic.chartByCountryData.data.getOrPut(country) { ChartDataList(country, mutableListOf()) }.also { list ->
-                        when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                            -1 -> list.items.add(
-                                    ChartListItemWithRoles(
-                                            companyId = collaboratorParticipant.company.id,
-                                            roles = mutableSetOf(collaboratorParticipant.companyRole.name),
-                                    ),
-                            )
-                            else -> list.items[i].roles.add(collaboratorParticipant.companyRole.name)
-                        }
+                    // chart data by country
+                    val country = connectionReadEntity.data.location?.country?.name
+                    if (!country.isNullOrBlank()) {
+                        companyStatistic.chartByCountryData.data.getOrPut(country) { ChartDataList(country, mutableListOf()) }
+                                .also { list ->
+                                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
+                                        -1 -> list.items.add(
+                                                ChartListItemWithRoles(
+                                                        companyId = collaboratorParticipant.company.id,
+                                                        roles = mutableSetOf(collaboratorParticipant.companyRole.name),
+                                                ),
+                                        )
+                                        else -> list.items[i].roles.add(collaboratorParticipant.companyRole.name)
+                                    }
+                                }
                     }
-                }
-                companyStatistic.chartByCountry = getChart(companyStatistic.chartByCountryData)
+                    companyStatistic.chartByCountry = getChart(companyStatistic.chartByCountryData)
 
-                // chart data by industry
-                val industry = connectionReadEntity.data.industry
-                if (!industry.isNullOrBlank()) {
-                    companyStatistic.chartByIndustryData.data.getOrPut(industry) { ChartDataList(industry, mutableListOf()) }.also { list ->
-                        when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                            -1 -> list.items.add(
-                                    ChartListItemWithRoles(
-                                            companyId = collaboratorParticipant.company.id,
-                                            mutableSetOf(collaboratorParticipant.companyRole.name),
-                                    ),
-                            )
-                            else -> list.items[i].roles.add(collaboratorParticipant.companyRole.name)
-                        }
+                    // chart data by industry
+                    val industry = connectionReadEntity.data.industry
+                    if (!industry.isNullOrBlank()) {
+                        companyStatistic.chartByIndustryData.data.getOrPut(industry) { ChartDataList(industry, mutableListOf()) }
+                                .also { list ->
+                                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
+                                        -1 -> list.items.add(
+                                                ChartListItemWithRoles(
+                                                        companyId = collaboratorParticipant.company.id,
+                                                        mutableSetOf(collaboratorParticipant.companyRole.name),
+                                                ),
+                                        )
+                                        else -> list.items[i].roles.add(collaboratorParticipant.companyRole.name)
+                                    }
+                                }
                     }
-                }
-                companyStatistic.chartByIndustry = getChart(companyStatistic.chartByIndustryData)
+                    companyStatistic.chartByIndustry = getChart(companyStatistic.chartByIndustryData)
 
-                // chart data by services provided
-                connectionReadEntity.data.services.forEach { service ->
-                    val serviceId = service.serviceId.toString()
-                    val serviceName = service.serviceName
+                    // chart data by services provided
+                    connectionReadEntity.data.services.forEach { service ->
+                        val serviceId = service.serviceId.toString()
+                        val serviceName = service.serviceName
 
-                    companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
-                        ChartDataList(serviceName, mutableListOf())
+                        companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
+                            ChartDataList(serviceName, mutableListOf())
+                        }.also { list ->
+                            when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
+                                -1 -> list.items.add(
+                                        ChartListItemWithUsesCount(
+                                                companyId = collaboratorParticipant.company.id,
+                                                usesCount = 1,
+                                        ),
+                                )
+                                else -> list.items[i].usesCount = list.items[i].usesCount.inc()
+                            }
+                            serviceReadRepository.findByIdOrNull(UUID.fromString(serviceId))?.apply {
+                                verifiedUses = list.items.sumOf { i -> i.usesCount }
+                                lastUsed = connectionReadEntity.created.atZone(ZoneId.systemDefault()).toLocalDate()
+                                serviceReadRepository.save(this)
+                            }
+                        }
+
+                    }
+                    companyStatistic.chartByServicesProvided = getChart(
+                            companyStatistic.chartByServicesProvidedData,
+                            { it.second.items.sumOf { i -> i.usesCount } },
+                            true,
+                    )
+                    // chart data by number of connections
+                    val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
+                    companyStatistic.chartConnectionCountByYearData.data.getOrPut(createdYear) {
+                        ChartDataList(createdYear, mutableListOf())
                     }.also { list ->
-                        when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
+                        when (
+                            val i = list.items.indexOfFirst {
+                                it.companyId == collaboratorParticipant.company.id && it.companyRole == collaboratorParticipant.companyRole.name
+                            }
+                        ) {
                             -1 -> list.items.add(
-                                    ChartListItemWithUsesCount(
+                                    ChartListItemWithServicesCount(
                                             companyId = collaboratorParticipant.company.id,
-                                            usesCount = 1,
+                                            companyRole = collaboratorParticipant.companyRole.name,
+                                            companyRoleType = collaboratorParticipant.companyRole.type,
+                                            servicesCount = connectionReadEntity.serviceIds.size,
                                     ),
                             )
-                            else -> list.items[i].usesCount = list.items[i].usesCount.inc()
+                            else -> list.items[i].servicesCount = list.items[i].servicesCount.plus(connectionReadEntity.serviceIds.size)
                         }
                     }
-                }
-                companyStatistic.chartByServicesProvided = getChart(companyStatistic.chartByServicesProvidedData, true)
+                    companyStatistic.totalCollaborationCompanies = companyStatistic
+                            .chartConnectionCountByYear.items.map { it.companyIds }.flatten().toSet().count()
 
-                // chart data by industry
-                val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
-                companyStatistic.chartConnectionCountByYearData.data.getOrPut(createdYear) {
-                    ChartDataList(createdYear, mutableListOf())
-                }.also { list ->
-                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                        -1 -> list.items.add(
-                                ChartListItemWithServicesCount(
-                                        companyId = collaboratorParticipant.company.id,
-                                        companyRole = collaboratorParticipant.companyRole.name,
-                                        companyRoleType = collaboratorParticipant.companyRole.type,
-                                        servicesCount = connectionReadEntity.serviceIds.size,
-                                ),
-                        )
-                        else -> list.items[i].servicesCount = list.items[i].servicesCount.inc()
-                    }
+                    companyStatistic.chartConnectionCountByYear = getChart(
+                            companyStatistic.chartConnectionCountByYearData,
+                            {
+                                (
+                                        if (it.first == createdYear)
+                                            companyStatistic.chartConnectionCountByYear.items.firstOrNull { t -> t.key == createdYear }?.value?.inc()
+                                        else
+                                            companyStatistic.chartConnectionCountByYear.items.firstOrNull { t -> t.key == createdYear }?.value
+                                        ) ?: 1
+                            },
+                            withoutOther = true,
+                    ) { it.sortedBy { el -> el.first.toInt() } }
                 }
-                companyStatistic.totalCollaborationCompanies = companyStatistic.chartConnectionCountByYearData.data.values.map {
-                    it.items.map { it.companyId }
-                }.toSet().size
-                companyStatistic.totalServicesProvided = companyStatistic.chartByServicesProvidedData.data.values.size
-                companyStatistic.totalConnections = companyStatistic.totalConnections + 1
-            }
-            companyStatistic.chartConnectionCountByYear = getChart(
-                    companyStatistic.chartConnectionCountByYearData,
-                    true,
-            ) { it.sortedBy { el -> el.first.toInt() } }
-        }
         statisticReadRepository.save(companyStatistic)
     }
 
@@ -127,94 +147,9 @@ class StatisticHandlerService(
         statisticReadRepository.deleteByCompanyId(companyId)
     }
 
-    fun addConnectionToStats(connectionReadEntity: ConnectionReadEntity, companyId: UUID) {
-        if (connectionReadEntity.status == ConnectionStatusEnum.Verified) {
-            val companyStatistic = statisticReadRepository.findByCompanyId(companyId) ?: StatisticReadEntity(companyId)
-            val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
-                connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
-
-            // chart data by country
-            val country = connectionReadEntity.data.location?.country?.name
-            if (!country.isNullOrBlank()) {
-                companyStatistic.chartByCountryData.data.getOrPut(country) { ChartDataList(country, mutableListOf()) }.also { list ->
-                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                        -1 -> list.items.add(
-                                ChartListItemWithRoles(
-                                        companyId = collaboratorParticipant.company.id,
-                                        roles = mutableSetOf(collaboratorParticipant.companyRole.name),
-                                ),
-                        )
-                        else -> list.items[i].roles.add(collaboratorParticipant.companyRole.name)
-                    }
-                }
-            }
-            companyStatistic.chartByCountry = getChart(companyStatistic.chartByCountryData)
-
-            // chart data by industry
-            val industry = connectionReadEntity.data.industry
-            if (!industry.isNullOrBlank()) {
-                companyStatistic.chartByIndustryData.data.getOrPut(industry) { ChartDataList(industry, mutableListOf()) }.also { list ->
-                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                        -1 -> list.items.add(
-                                ChartListItemWithRoles(
-                                        companyId = collaboratorParticipant.company.id,
-                                        mutableSetOf(collaboratorParticipant.companyRole.name),
-                                ),
-                        )
-                        else -> list.items[i].roles.add(collaboratorParticipant.companyRole.name)
-                    }
-                }
-            }
-            companyStatistic.chartByIndustry = getChart(companyStatistic.chartByIndustryData)
-
-            // chart data by services provided
-            connectionReadEntity.data.services.forEach { service ->
-                val serviceId = service.serviceId.toString()
-                val serviceName = service.serviceName
-
-                companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
-                    ChartDataList(serviceName, mutableListOf())
-                }.also { list ->
-                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                        -1 -> list.items.add(
-                                ChartListItemWithUsesCount(
-                                        companyId = collaboratorParticipant.company.id,
-                                        usesCount = 1,
-                                ),
-                        )
-                        else -> list.items[i].usesCount = list.items[i].usesCount.inc()
-                    }
-                }
-            }
-            companyStatistic.chartByServicesProvided = getChart(companyStatistic.chartByServicesProvidedData, true)
-
-            // chart data by industry
-            val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
-            companyStatistic.chartConnectionCountByYearData.data.getOrPut(createdYear) {
-                ChartDataList(createdYear, mutableListOf())
-            }.also { list ->
-                when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                    -1 -> list.items.add(
-                            ChartListItemWithServicesCount(
-                                    companyId = collaboratorParticipant.company.id,
-                                    companyRole = collaboratorParticipant.companyRole.name,
-                                    companyRoleType = collaboratorParticipant.companyRole.type,
-                                    servicesCount = connectionReadEntity.serviceIds.size,
-                            ),
-                    )
-                    else -> list.items[i].servicesCount = list.items[i].servicesCount.inc()
-                }
-            }
-            companyStatistic.chartConnectionCountByYear = getChart(
-                    companyStatistic.chartConnectionCountByYearData,
-                    true,
-            ) { it.sortedBy { el -> el.first.toInt() } }
-            statisticReadRepository.save(companyStatistic)
-        }
-    }
-
     fun <T : ChartListItem> getChart(
         chartList: ChartList<T>,
+        itemValueSelector: ((Pair<String, ChartDataList<T>>) -> Int) = { it.second.items.size },
         withoutOther: Boolean = false,
         sortSelector: ((List<Pair<String, ChartDataList<T>>>) -> List<Pair<String, ChartDataList<T>>>)? = null
     ): Chart {
@@ -225,7 +160,7 @@ class StatisticHandlerService(
                 if (sortSelector != null)
                     sortSelector(chartList.data.toList())
                 else
-                    chartList.data.toList().sortedByDescending { it.second.items.count() }
+                    chartList.data.toList().sortedByDescending { itemValueSelector(it) }
 
         var otherIndex = -1
 
@@ -242,11 +177,12 @@ class StatisticHandlerService(
                 val companyIds = pair.second.items
                         .toSortedSet(compareBy { v -> v.companyId })
                         .take(COUNT_COMPANY_ON_HINT).map { it.companyId }.toMutableSet()
+
                 items.add(
                         ChartItem(
                                 key = pair.first,
                                 name = pair.second.name,
-                                value = pair.second.items.size,
+                                value = itemValueSelector(pair),
                                 companyIds = companyIds,
                         ),
                 )

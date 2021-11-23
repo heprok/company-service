@@ -1,13 +1,11 @@
-package com.briolink.companyservice.api.service
+package com.briolink.companyservice.common.service
 
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
 import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
-import com.briolink.event.publisher.EventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -18,12 +16,11 @@ import javax.persistence.EntityNotFoundException
 class PermissionService(
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val companyReadRepository: CompanyReadRepository,
-    private val eventPublisher: EventPublisher,
 ) {
     fun create(
         accessObjectType: AccessObjectTypeEnum,
         accessObjectUuid: UUID,
-        userId: UUID = SecurityUtil.currentUserAccountId,
+        userId: UUID,
         roleType: UserPermissionRoleTypeEnum
     ): UserPermissionRoleReadEntity {
         return userPermissionRoleReadRepository.getUserPermissionRoleByRole(
@@ -46,7 +43,7 @@ class PermissionService(
         id: UUID,
         accessObjectType: AccessObjectTypeEnum,
         accessObjectUuid: UUID,
-        userId: UUID = SecurityUtil.currentUserAccountId,
+        userId: UUID,
         roleType: UserPermissionRoleTypeEnum
     ): UserPermissionRoleReadEntity =
             userPermissionRoleReadRepository.findById(id).orElseThrow {
@@ -60,7 +57,7 @@ class PermissionService(
             }
 
     fun isHavePermission(
-        userId: UUID = SecurityUtil.currentUserAccountId,
+        userId: UUID,
         companyId: UUID,
         accessObjectType: AccessObjectTypeEnum,
         permissionRight: PermissionRightEnum

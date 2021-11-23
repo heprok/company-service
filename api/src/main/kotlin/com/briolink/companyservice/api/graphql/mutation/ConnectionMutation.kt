@@ -1,11 +1,12 @@
 package com.briolink.companyservice.api.graphql.mutation
 
-import com.briolink.companyservice.api.service.PermissionService
+import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.service.connection.ConnectionService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
+import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -26,17 +27,18 @@ class ConnectionMutation(
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
+                    userId = SecurityUtil.currentUserAccountId,
                     permissionRight = PermissionRightEnum.ConnectionCrud,
                     accessObjectType = AccessObjectTypeEnum.Connection,
             )) {
             connectionService.changeVisibilityByIdAndCompanyId(
                     companyId = UUID.fromString(companyId),
                     connectionId = UUID.fromString(connectionId),
-                    isHide = isHide
+                    isHide = isHide,
             )
             DelOrHideResult(
                     success = true,
-                    userErrors = listOf()
+                    userErrors = listOf(),
             )
         } else {
             DelOrHideResult(
@@ -55,6 +57,7 @@ class ConnectionMutation(
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
                     permissionRight = PermissionRightEnum.ConnectionCrud,
+                    userId = SecurityUtil.currentUserAccountId,
                     accessObjectType = AccessObjectTypeEnum.Connection,
             )) {
             connectionService.deleteConnectionInCompany(
@@ -63,7 +66,7 @@ class ConnectionMutation(
             )
             DelOrHideResult(
                     success = true,
-                    userErrors = listOf()
+                    userErrors = listOf(),
             )
         } else {
             DelOrHideResult(

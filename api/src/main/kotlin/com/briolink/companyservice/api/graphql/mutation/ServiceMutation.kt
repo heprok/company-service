@@ -1,12 +1,13 @@
 package com.briolink.companyservice.api.graphql.mutation
 
+import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.api.service.CompanyService
-import com.briolink.companyservice.api.service.PermissionService
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
+import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -18,7 +19,6 @@ import java.util.*
 class ServiceMutation(
     private val serviceCompanyService: ServiceCompanyService,
     private val permissionService: PermissionService,
-    private val companyService: CompanyService
 ) {
     @DgsMutation(field = "hideCompanyService")
     @PreAuthorize("isAuthenticated()")
@@ -29,6 +29,7 @@ class ServiceMutation(
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
                     permissionRight = PermissionRightEnum.ServiceCrud,
+                    userId = currentUserAccountId,
                     accessObjectType = AccessObjectTypeEnum.CompanyService,
             )) {
             serviceCompanyService.toggleVisibilityByIdAndCompanyId(
@@ -56,6 +57,7 @@ class ServiceMutation(
         return if (permissionService.isHavePermission(
                     companyId = UUID.fromString(companyId),
                     permissionRight = PermissionRightEnum.ServiceCrud,
+                    userId = currentUserAccountId,
                     accessObjectType = AccessObjectTypeEnum.CompanyService,
             )) {
             serviceCompanyService.deleteServiceInCompany(
