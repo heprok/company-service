@@ -30,7 +30,8 @@ class UserJobPositionHandlerService(
                             companyId = userJobPosition.companyId,
                     ).apply {
                         userReadRepository.findById(userJobPosition.userId)
-                                .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }.let {
+                                .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
+                                .let {
                                     data = UserJobPositionReadEntity.Data(
                                             user = UserJobPositionReadEntity.User(
                                                     firstName = it.data.firstName,

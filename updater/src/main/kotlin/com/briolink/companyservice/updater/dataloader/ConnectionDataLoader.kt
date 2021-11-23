@@ -13,6 +13,7 @@ import com.briolink.companyservice.updater.handler.connection.ConnectionService
 import com.briolink.companyservice.updater.handler.connection.ConnectionStatus
 import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRoleType
 import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
+import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.Year
@@ -28,6 +29,7 @@ class ConnectionDataLoader(
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
     private var connectionServiceHandler: ConnectionHandlerService,
+    private val statisticHandlerService: StatisticHandlerService,
 ) : DataLoader() {
     override fun loadData() {
         if (
@@ -95,6 +97,9 @@ class ConnectionDataLoader(
                                 created = randomInstant(2010, 2020),
                         ),
                 )
+            }
+            listCompany.forEach {
+                statisticHandlerService.refreshByCompanyId(it.id)
             }
         }
     }

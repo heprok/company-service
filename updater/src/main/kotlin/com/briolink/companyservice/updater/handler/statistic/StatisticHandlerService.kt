@@ -75,9 +75,9 @@ class StatisticHandlerService(
 
                     // chart data by services provided
                     connectionReadEntity.data.services.forEach { service ->
+                        if (service.serviceId == null) return@forEach
                         val serviceId = service.serviceId.toString()
                         val serviceName = service.serviceName
-
                         companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
                             ChartDataList(serviceName, mutableListOf())
                         }.also { list ->

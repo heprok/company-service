@@ -6,6 +6,8 @@ import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
+import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
+import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.*
@@ -17,8 +19,9 @@ class UserJobPositionDataLoader(
     var userReadRepository: UserReadRepository,
     var companyReadRepository: CompanyReadRepository,
     var companyHandlerService: CompanyHandlerService,
+    var userJobPositionHandlerService: UserJobPositionHandlerService
 
-    ) : DataLoader() {
+) : DataLoader() {
     private val listJobPosition: List<String> = listOf(
             "Product Manager",
             "IOS developer",
@@ -45,43 +48,21 @@ class UserJobPositionDataLoader(
                 val userRandom = listUser.random()
                 val companyRandom = listCompany.random()
                 if (!userJobPositionReadRepository.existsByUserIdAndCompanyId(userId = userRandom.id, companyId = companyRandom.id)) {
-                    userJobPositionReadRepository.save(
-                            UserJobPositionReadEntity(
+                    userJobPositionHandlerService.createOrUpdate(
+                            UserJobPosition(
                                     id = UUID.randomUUID(),
+                                    title = listJobPosition.random(),
+                                    isCurrent = true,
                                     companyId = companyRandom.id,
                                     userId = userRandom.id,
-                            ).apply {
-                                data = UserJobPositionReadEntity.Data(
-                                        title = listJobPosition.random(),
-                                        user = UserJobPositionReadEntity.User(
-                                                firstName = userRandom.data.firstName,
-                                                slug = userRandom.data.slug,
-                                                lastName = userRandom.data.lastName,
-                                                image = userRandom.data.image,
-                                        ),
-                                )
-                            },
+                            ),
                     )
                 }
-//                UserJobPosition(
-//                        id = UUID.randomUUID(),
-//                        title = listJobPosition.random(),
-//                        startDate = randomDate(2018, 2021),
-//                        endDate = if (Random.nextBoolean())
-//                            null
-//                        else randomDate(2012, 2020),
-//                        companyId = listCompany.random().id,
-//                        userId = listUser.random().id,
-//                ).apply {
-//                    eventPublisher.publishAsync(
-//                            UserJobPositionCreatedEvent(this),
-//                    )
-//                }
             }
         }
     }
 
     companion object {
-        const val COUNT_JOB_POSITION = 20
+        const val COUNT_JOB_POSITION = 40
     }
 }
