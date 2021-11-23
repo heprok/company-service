@@ -11,6 +11,7 @@ import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListIte
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithUsesCount
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartTabItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
+import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
@@ -25,7 +26,8 @@ import java.util.*
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
-    private val serviceReadRepository: ServiceReadRepository
+    private val serviceReadRepository: ServiceReadRepository,
+    private val companyReadRepository: CompanyReadRepository,
 ) {
     fun refreshByCompanyId(companyId: UUID) {
         deleteStatisticByCompanyId(companyId)
@@ -38,9 +40,9 @@ class StatisticHandlerService(
                     val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
                         connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
 
-
+                val companyBuyer = companyReadRepository.findById(collaboratorParticipant.company.id).get()
                     // chart data by country
-                    val country = connectionReadEntity.data.location?.country?.name
+                    val country = companyBuyer.data.location?.country?.name
                     if (!country.isNullOrBlank()) {
                         companyStatistic.chartByCountryData.data.getOrPut(country) { ChartDataList(country, mutableListOf()) }
                                 .also { list ->
