@@ -1,5 +1,6 @@
 package com.briolink.companyservice.updater.handler.statistic
 
+import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
@@ -37,7 +38,7 @@ class StatisticHandlerService(
         val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrDeleted(companyId, ConnectionStatusEnum.Verified.value)
         companyStatistic.totalConnections = list.count()
         list.forEach { connectionReadEntity ->
-                    val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
+                    val collaboratorParticipant = if (connectionReadEntity.participantToRoleType == CompanyRoleTypeEnum.Buyer)
                         connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
 
                 val companyBuyer = companyReadRepository.findById(collaboratorParticipant.company.id).get()
