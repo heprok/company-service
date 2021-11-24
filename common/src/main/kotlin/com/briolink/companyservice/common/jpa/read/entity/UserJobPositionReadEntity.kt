@@ -3,13 +3,14 @@ package com.briolink.companyservice.common.jpa.read.entity
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.hibernate.annotations.Type
 import java.net.URL
+import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
-import org.hibernate.annotations.Type
 
 @Table(name = "user_job_position", schema = "read")
 @Entity
@@ -38,25 +39,31 @@ class UserJobPositionReadEntity(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
-        @JsonProperty("User")
+        @JsonProperty
         var user: User,
-        @JsonProperty("status")
+        @JsonProperty
         var status: VerifyStatus = VerifyStatus.Verified,
-        @JsonProperty("verifiedBy")
+        @JsonProperty
         var verifiedBy: UUID? = null,
-        @JsonProperty("jobPosition")
-        var title: String? = null,
+        @JsonProperty
+        var title: String,
+        @JsonProperty
+        var isCurrent: Boolean = false,
+        @JsonProperty
+        var startDate: LocalDate? = null,
+        @JsonProperty
+        var endDate: LocalDate? = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class User(
-        @JsonProperty("firstName")
+        @JsonProperty
         var firstName: String,
-        @JsonProperty("slug")
+        @JsonProperty
         var slug: String,
-        @JsonProperty("lastName")
+        @JsonProperty
         var lastName: String,
-        @JsonProperty("image")
+        @JsonProperty
         var image: URL? = null,
     )
 }

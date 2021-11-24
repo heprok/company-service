@@ -16,6 +16,8 @@ databaseChangeLog:
   - include:
       file: migration/read/8.changelog.yml
   - include:
+      file: migration/read/9.changelog.yml
+  - include:
       file: migration/write/1.changelog.yml
   - include:
       file: migration/write/2.changelog.yml

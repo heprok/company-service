@@ -78,6 +78,7 @@ class CompanyHandlerService(
 
     fun addEmployee(companyId: UUID, userId: UUID): UserPermissionRoleReadEntity {
 //        return if (!userPermissionRoleReadRepository.existsByCompanyId(companyId) || true) {
+        // TODO добавить условие, если нет owner то добавить employee
         return if (true) {
             addOwner(companyId = companyId, userId = userId)
         } else {

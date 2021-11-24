@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: oleg@briolink.com
+      changes:
+        - dropIndex:
+            indexName: idx_user_company_id
+            schemaName: read
+            tableName: user_job_position
+        - createIndex:
+            indexName: idx_user_job_position_company_id
+            schemaName: read
+            tableName: user_job_position
+            columns:
+              - column:
+                  name: company_id

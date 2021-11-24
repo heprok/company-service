@@ -9,7 +9,7 @@ import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
 @Transactional
@@ -22,46 +22,51 @@ class UserJobPositionHandlerService(
     private val companyHandlerService: CompanyHandlerService
 ) {
     fun createOrUpdate(userJobPosition: UserJobPosition) {
-        if (userJobPosition.endDate == null) {
-            userJobPositionReadRepository.findById(userJobPosition.id).orElse(
-                    UserJobPositionReadEntity(
-                            id = userJobPosition.id,
-                            userId = userJobPosition.userId,
-                            companyId = userJobPosition.companyId,
-                    ).apply {
-                        userReadRepository.findById(userJobPosition.userId)
-                                .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
-                                .let {
-                                    data = UserJobPositionReadEntity.Data(
-                                            user = UserJobPositionReadEntity.User(
-                                                    firstName = it.data.firstName,
-                                                    lastName = it.data.lastName,
-                                                    slug = it.data.slug,
-                                                    image = it.data.image,
-                                            ),
-                                    )
-                                }
-                        companyHandlerService.addEmployee(companyId = userJobPosition.companyId, userId = userJobPosition.userId)
-                        connectionReadRepository.changeVisibilityByCompanyIdAndUserId(companyId = userJobPosition.companyId, userId = userJobPosition.userId, false)
-                        statisticHandlerService.refreshByCompanyId(userJobPosition.companyId)
-                    },
+        userJobPositionReadRepository.findById(userJobPosition.id).orElse(
+            UserJobPositionReadEntity(
+                id = userJobPosition.id,
+                userId = userJobPosition.userId,
+                companyId = userJobPosition.companyId,
             ).apply {
-                companyId = userJobPosition.companyId
-                data.title = userJobPosition.title
-                userJobPositionReadRepository.save(this)
-            }
-        } else {
-            delete(userJobPosition.id)
+                userReadRepository.findById(userJobPosition.userId)
+                    .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
+                    .let {
+                        data = UserJobPositionReadEntity.Data(
+                            user = UserJobPositionReadEntity.User(
+                                firstName = it.data.firstName,
+                                lastName = it.data.lastName,
+                                slug = it.data.slug,
+                                image = it.data.image,
+                            ),
+                            isCurrent = userJobPosition.isCurrent,
+                            title = userJobPosition.title,
+                        )
+                    }
+                companyHandlerService.addEmployee(companyId = userJobPosition.companyId, userId = userJobPosition.userId)
+                connectionReadRepository.changeVisibilityByCompanyIdAndUserId(
+                    companyId = userJobPosition.companyId,
+                    userId = userJobPosition.userId, false,
+                )
+                statisticHandlerService.refreshByCompanyId(userJobPosition.companyId)
+            },
+        ).apply {
+            companyId = userJobPosition.companyId
+            data.title = userJobPosition.title
+            data.startDate = userJobPosition.startDate
+            data.endDate = userJobPosition.endDate
+            data.isCurrent = userJobPosition.isCurrent
+            data.title = userJobPosition.title
+            userJobPositionReadRepository.save(this)
         }
     }
 
     fun updateUser(user: UserReadEntity) {
         userJobPositionReadRepository.updateUserByUserId(
-                userId = user.id,
-                slug = user.data.slug,
-                firstName = user.data.firstName,
-                lastName = user.data.lastName,
-                image = user.data.image.toString(),
+            userId = user.id,
+            slug = user.data.slug,
+            firstName = user.data.firstName,
+            lastName = user.data.lastName,
+            image = user.data.image?.toString(),
         )
     }
 

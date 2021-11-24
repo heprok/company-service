@@ -1,7 +1,7 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.*
+import java.util.UUID
 
 data class UserJobPositionDeletedData(
     @JsonProperty("id")
@@ -11,4 +11,3 @@ data class UserJobPositionDeletedData(
     @JsonProperty("isCurrent")
     val isCurrent: Boolean = false
 )
-

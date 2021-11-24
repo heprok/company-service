@@ -2,7 +2,7 @@ package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class UserJobPosition(
     @JsonProperty("id")
@@ -20,4 +20,3 @@ data class UserJobPosition(
     @JsonProperty("userId")
     val userId: UUID,
 )
-
