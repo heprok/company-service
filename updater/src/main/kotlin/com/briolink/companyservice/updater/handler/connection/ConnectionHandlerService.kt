@@ -10,15 +10,14 @@ import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadE
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.service.PermissionService
 import com.vladmihalcea.hibernate.type.range.Range
+import java.util.UUID
+import java.util.stream.Collectors
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
-import java.util.stream.Collectors
-import javax.persistence.EntityNotFoundException
 
 @Transactional
 @Service

@@ -3,11 +3,9 @@ package com.briolink.companyservice.api.dataloader
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
-import com.briolink.companyservice.common.jpa.write.entity.IndustryWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.IndustryWriteRepository
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 @Order(1)

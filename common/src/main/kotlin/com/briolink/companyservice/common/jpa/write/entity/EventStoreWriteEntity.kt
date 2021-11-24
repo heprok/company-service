@@ -1,12 +1,10 @@
 package com.briolink.companyservice.common.jpa.write.entity
 
-import com.fasterxml.jackson.databind.JsonNode
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.Type
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Table(name = "event_store", schema = "write")
 @Entity

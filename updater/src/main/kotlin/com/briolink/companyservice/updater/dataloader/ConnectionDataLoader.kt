@@ -1,24 +1,24 @@
 package com.briolink.companyservice.updater.dataloader
 
 import com.briolink.companyservice.common.dataloader.DataLoader
-import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.handler.connection.Connection
 import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRole
+import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRoleType
+import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import com.briolink.companyservice.updater.handler.connection.ConnectionParticipant
 import com.briolink.companyservice.updater.handler.connection.ConnectionService
 import com.briolink.companyservice.updater.handler.connection.ConnectionStatus
-import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRoleType
-import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
+import java.time.Year
+import java.util.UUID
+import kotlin.random.Random
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import java.time.Year
-import java.util.*
-import kotlin.random.Random
 
 @Component
 @Order(3)
@@ -74,7 +74,6 @@ class ConnectionDataLoader(
                             },
                     )
                 }
-                //TODO очерёднос event in company
                 connectionServiceHandler.createOrUpdate(
                         Connection(
                                 id = UUID.randomUUID(),

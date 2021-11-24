@@ -6,7 +6,6 @@ import graphql.schema.Coercing
 import graphql.schema.CoercingParseLiteralException
 import graphql.schema.CoercingParseValueException
 import graphql.schema.CoercingSerializeException
-import java.net.URL
 import java.time.Year
 
 

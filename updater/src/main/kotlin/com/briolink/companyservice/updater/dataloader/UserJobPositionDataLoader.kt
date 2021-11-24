@@ -1,16 +1,15 @@
 package com.briolink.companyservice.updater.dataloader
 
 import com.briolink.companyservice.common.dataloader.DataLoader
-import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
+import java.util.UUID
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 @Order(2)

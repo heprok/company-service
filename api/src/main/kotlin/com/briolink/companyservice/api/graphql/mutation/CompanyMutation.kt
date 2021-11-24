@@ -20,11 +20,11 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
 import graphql.schema.DataFetchingEnvironment
+import java.net.URL
+import java.util.UUID
+import javax.persistence.EntityNotFoundException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.multipart.MultipartFile
-import java.net.URL
-import java.util.*
-import javax.persistence.EntityNotFoundException
 
 @DgsComponent
 class CompanyMutation(

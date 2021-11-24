@@ -1,7 +1,6 @@
 package com.briolink.companyservice.api.graphql.mutation
 
 import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
-import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
@@ -11,9 +10,9 @@ import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
+import java.util.UUID
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RequestHeader
-import java.util.*
 
 @DgsComponent
 class ServiceMutation(
@@ -34,7 +33,8 @@ class ServiceMutation(
             )) {
             serviceCompanyService.toggleVisibilityByIdAndCompanyId(
                     companyId = UUID.fromString(companyId),
-                    serviceId = UUID.fromString(serviceId))
+                    serviceId = UUID.fromString(serviceId),
+            )
             DelOrHideResult(
                     success = true,
                     userErrors = listOf(),
@@ -62,7 +62,7 @@ class ServiceMutation(
             )) {
             serviceCompanyService.deleteServiceInCompany(
                     serviceId = UUID.fromString(serviceId),
-                    authorization = authorization
+                    authorization = authorization,
             )
             DelOrHideResult(
                     success = true,

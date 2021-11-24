@@ -5,10 +5,9 @@ import com.vladmihalcea.hibernate.type.basic.YearType
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import com.vladmihalcea.hibernate.type.range.PostgreSQLRangeType
 import com.vladmihalcea.hibernate.type.range.Range
-import org.hibernate.annotations.Type
+import javax.persistence.MappedSuperclass
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
-import javax.persistence.MappedSuperclass
 
 @TypeDefs(
         TypeDef(name = "jsonb", typeClass = JsonBinaryType::class),

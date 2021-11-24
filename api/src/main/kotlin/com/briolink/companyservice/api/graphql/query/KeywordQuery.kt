@@ -3,7 +3,6 @@ package com.briolink.companyservice.api.graphql.query
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.types.Keyword
 import com.briolink.companyservice.common.jpa.read.repository.KeywordReadRepository
-import com.briolink.companyservice.common.util.StringUtil
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument

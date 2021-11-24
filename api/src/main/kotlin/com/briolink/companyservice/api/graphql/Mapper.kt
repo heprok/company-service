@@ -21,7 +21,6 @@ import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import java.net.URL
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         Company(

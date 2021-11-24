@@ -1,10 +1,9 @@
 package com.briolink.companyservice.updater.handler.companyservice
 
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
-import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
-import org.springframework.transaction.annotation.Transactional
 
 @EventHandlers(
     EventHandler("CompanyServiceCreatedEvent", "1.0"),

@@ -3,13 +3,11 @@ package com.briolink.companyservice.common.jpa.read.entity
 import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.write.entity.BaseWriteEntity
-import org.hibernate.annotations.Type
-import java.util.*
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Table(name = "user_permission_role", schema = "read")
 @Entity

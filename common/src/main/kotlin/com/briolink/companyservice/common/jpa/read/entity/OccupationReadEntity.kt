@@ -1,12 +1,11 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import org.hibernate.annotations.Type
-import java.util.*
-import java.util.UUID.randomUUID
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Table(name = "occupation", schema = "read")
 @Entity
@@ -18,4 +17,4 @@ class OccupationReadEntity(
 
     @Column(name = "name", nullable = false, length = 128)
     var name: String
-) : BaseReadEntity() {}
+) : BaseReadEntity()

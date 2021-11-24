@@ -6,10 +6,10 @@ import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeE
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
+import java.util.UUID
+import javax.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
-import javax.persistence.EntityNotFoundException
 
 @Service
 @Transactional
@@ -17,13 +17,13 @@ class PermissionService(
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val companyReadRepository: CompanyReadRepository,
 ) {
-    fun create(
+    fun createPermission(
         accessObjectType: AccessObjectTypeEnum,
         accessObjectUuid: UUID,
         userId: UUID,
         roleType: UserPermissionRoleTypeEnum
     ): UserPermissionRoleReadEntity {
-        return userPermissionRoleReadRepository.getUserPermissionRoleByRole(
+        return userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = accessObjectUuid,
                 accessObjectType = accessObjectType.value,
                 userId = userId,
@@ -39,7 +39,11 @@ class PermissionService(
 
     }
 
-    fun update(
+//    fun editRole(accessObjectUuid: UUID, userId: UUID, roleType: UserPermissionRoleTypeEnum): UserPermissionRoleReadEntity {
+//        return userPermissionRoleReadRepository.findByAccessObjectUuidAndUserId(accessObjectUuid = accessObjectUuid, userId = userId)
+//    }
+
+    fun updatePermission(
         id: UUID,
         accessObjectType: AccessObjectTypeEnum,
         accessObjectUuid: UUID,
@@ -73,11 +77,10 @@ class PermissionService(
         return false
     }
 
+    // TODO удалить
     fun addAllPermissionByUserId(userId: UUID) {
-        companyReadRepository.findAll().forEach {
-            create(
-                    AccessObjectTypeEnum.Company, it.id, userId = userId, UserPermissionRoleTypeEnum.Owner
-            )
+        companyReadRepository.getAllCompanyUUID().forEach {
+            createPermission(AccessObjectTypeEnum.Company, it, userId = userId, UserPermissionRoleTypeEnum.Owner)
         }
     }
 }

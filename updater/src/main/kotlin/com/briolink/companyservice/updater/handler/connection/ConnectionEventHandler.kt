@@ -1,7 +1,5 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.service.PermissionService
-import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
