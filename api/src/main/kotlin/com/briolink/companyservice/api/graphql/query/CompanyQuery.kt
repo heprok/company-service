@@ -20,13 +20,12 @@ class CompanyQuery(private val companyService: CompanyService) {
         val company = companyService.getCompanyBySlug(slug)
         val role = companyService.getPermission(company.id, SecurityUtil.currentUserAccountId)
         return CompanyAndUserRole(
-                company = Company.fromEntity(company),
-                role = when (role) {
-                   UserPermissionRoleTypeEnum.Employee -> PermissionRole.Employee
-                   UserPermissionRoleTypeEnum.Owner -> PermissionRole.Owner
-                    else -> null
-                },
+            company = Company.fromEntity(company),
+            role = when (role) {
+                UserPermissionRoleTypeEnum.Employee -> PermissionRole.Employee
+                UserPermissionRoleTypeEnum.Owner -> PermissionRole.Owner
+                else -> null
+            },
         )
-
     }
 }

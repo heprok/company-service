@@ -20,7 +20,7 @@ import com.vladmihalcea.hibernate.type.array.UUIDArrayType
 import org.hibernate.jpa.TypedParameterValue
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.UUID
 import javax.persistence.EntityManager
 import javax.persistence.Tuple
 
@@ -34,7 +34,6 @@ class ConnectionService(
 ) {
 //    fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ConnectionReadEntity> =
 //            connectionReadRepository.findByBuyerIdIs(id, PageRequest(offset, limit))
-
 
     fun getList(
         companyId: UUID,
@@ -59,30 +58,30 @@ class ConnectionService(
         filters: FiltersDto
     ): T where T : WhereBuilder<T>, T : ParameterHolder<T> {
         cb
-                .where("array_contains_element(hiddenCompanyIds, :currentCompanyId)").notEq(true)
-                .where("array_contains_element(deletedCompanyIds, :currentCompanyId)").notEq(true)
-                .setParameter("currentCompanyId", companyId)
+            .where("array_contains_element(hiddenCompanyIds, :currentCompanyId)").notEq(true)
+            .where("array_contains_element(deletedCompanyIds, :currentCompanyId)").notEq(true)
+            .setParameter("currentCompanyId", companyId)
         with(filters) {
             if (!collaboratorIds.isNullOrEmpty()) {
                 cb.whereOr()
-                        .whereAnd()
-                        .where("participantFromCompanyId").`in`(collaboratorIds)
-                        .where("participantFromCompanyId").notEq(companyId)
-                        .endAnd()
-                        .whereAnd()
-                        .where("participantToCompanyId").`in`(collaboratorIds)
-                        .where("participantToCompanyId").notEq(companyId)
-                        .endAnd()
-                        .endOr()
+                    .whereAnd()
+                    .where("participantFromCompanyId").`in`(collaboratorIds)
+                    .where("participantFromCompanyId").notEq(companyId)
+                    .endAnd()
+                    .whereAnd()
+                    .where("participantToCompanyId").`in`(collaboratorIds)
+                    .where("participantToCompanyId").notEq(companyId)
+                    .endAnd()
+                    .endOr()
             }
 
             if (collaborationStartDate != null || collaborationEndDate != null) {
                 cb
-                        .whereExpression(
-                                "int4range_contains(dates, :collaborationStartDate, :collaborationEndDate) = true",
-                        )
-                        .setParameter("collaborationStartDate", collaborationStartDate?.value)
-                        .setParameter("collaborationEndDate", collaborationEndDate?.value)
+                    .whereExpression(
+                        "int4range_contains(dates, :collaborationStartDate, :collaborationEndDate) = true",
+                    )
+                    .setParameter("collaborationStartDate", collaborationStartDate?.value)
+                    .setParameter("collaborationEndDate", collaborationEndDate?.value)
             }
 
             if (!industryIds.isNullOrEmpty()) {
@@ -91,8 +90,8 @@ class ConnectionService(
 
             if (!serviceIds.isNullOrEmpty()) {
                 cb
-                        .whereExpression("array_contains(serviceIds, :serviceIds) = true")
-                        .setParameter("serviceIds", TypedParameterValue(UUIDArrayType.INSTANCE, serviceIds.toTypedArray()))
+                    .whereExpression("array_contains(serviceIds, :serviceIds) = true")
+                    .setParameter("serviceIds", TypedParameterValue(UUIDArrayType.INSTANCE, serviceIds.toTypedArray()))
             }
 
             if (!location.isNullOrEmpty()) {
@@ -111,32 +110,32 @@ class ConnectionService(
         val cbf = criteriaBuilderFactory.create(entityManager, Tuple::class.java)
 
         val cb = cbf.fromSubquery(RoleProjectionCte::class.java, "r")
-                .from(ConnectionReadEntity::class.java)
-                .bind("id").select("participantToRoleId")
-                .bind("name").select("participantToRoleName")
-                .bind("type").select("_participantToRoleType")
-                .also { if (filters != null) setFilters(companyId, it, filters) }
-                .where("participantFromCompanyId").eq(companyId)
-                .whereOr()
-                .where("_participantFromRoleType").eq(CompanyRoleTypeEnum.Buyer.value)
-                .where("_participantFromRoleType").eq(CompanyRoleTypeEnum.Seller.value)
-                .endOr()
-                .unionAll()
-                .from(ConnectionReadEntity::class.java)
-                .bind("id").select("participantFromRoleId")
-                .bind("name").select("participantFromRoleName")
-                .bind("type").select("_participantFromRoleType")
-                .also { if (filters != null) setFilters(companyId, it, filters) }
-                .where("participantToCompanyId").eq(companyId)
-                .whereOr()
-                .where("_participantToRoleType").eq(CompanyRoleTypeEnum.Buyer.value)
-                .where("_participantToRoleType").eq(CompanyRoleTypeEnum.Seller.value)
-                .endOr()
-                .endSet().end()
-                .select("r.id", "id")
-                .select("max(r.name)", "name")
-                .select("max(r.type)", "type")
-                .groupBy("r.id")
+            .from(ConnectionReadEntity::class.java)
+            .bind("id").select("participantToRoleId")
+            .bind("name").select("participantToRoleName")
+            .bind("type").select("_participantToRoleType")
+            .also { if (filters != null) setFilters(companyId, it, filters) }
+            .where("participantFromCompanyId").eq(companyId)
+            .whereOr()
+            .where("_participantFromRoleType").eq(CompanyRoleTypeEnum.Buyer.value)
+            .where("_participantFromRoleType").eq(CompanyRoleTypeEnum.Seller.value)
+            .endOr()
+            .unionAll()
+            .from(ConnectionReadEntity::class.java)
+            .bind("id").select("participantFromRoleId")
+            .bind("name").select("participantFromRoleName")
+            .bind("type").select("_participantFromRoleType")
+            .also { if (filters != null) setFilters(companyId, it, filters) }
+            .where("participantToCompanyId").eq(companyId)
+            .whereOr()
+            .where("_participantToRoleType").eq(CompanyRoleTypeEnum.Buyer.value)
+            .where("_participantToRoleType").eq(CompanyRoleTypeEnum.Seller.value)
+            .endOr()
+            .endSet().end()
+            .select("r.id", "id")
+            .select("max(r.name)", "name")
+            .select("max(r.type)", "type")
+            .groupBy("r.id")
 
         if (withCount)
             cb.select("count(r.id)", "count")
@@ -145,15 +144,15 @@ class ConnectionService(
 
         return resultList.map {
             TabItemDto(
-                    "${it.get("type")}:${it.get("id")}",
-                    it.get("name") as String,
-                    if (withCount) (it.get("count") as Long).toInt() else null,
+                "${it.get("type")}:${it.get("id")}",
+                it.get("name") as String,
+                if (withCount) (it.get("count") as Long).toInt() else null,
             )
         }
     }
 
     fun existsConnectionByCompany(companyId: UUID): Boolean =
-            connectionReadRepository.existsByParticipantFromCompanyIdOrParticipantToCompanyId(companyId, companyId)
+        connectionReadRepository.existsByParticipantFromCompanyIdOrParticipantToCompanyId(companyId, companyId)
 
     fun setActiveTab(companyId: UUID, tab: String?, cb: CriteriaBuilder<ConnectionReadEntity>): CriteriaBuilder<ConnectionReadEntity> {
 
@@ -161,22 +160,22 @@ class ConnectionService(
             val tabType = tab.take(1).toInt()
             val tabId = UUID.fromString(tab.drop(2))
             cb.whereOr()
-                    .whereAnd()
-                    .where("participantFromCompanyId").eq(companyId)
-                    .where("participantToRoleId").eq(tabId)
-                    .where("_participantToRoleType").eq(tabType)
-                    .endAnd()
-                    .whereAnd()
-                    .where("participantToCompanyId").eq(companyId)
-                    .where("participantFromRoleId").eq(tabId)
-                    .where("_participantFromRoleType").eq(tabType)
-                    .endAnd()
-                    .endOr()
+                .whereAnd()
+                .where("participantFromCompanyId").eq(companyId)
+                .where("participantToRoleId").eq(tabId)
+                .where("_participantToRoleType").eq(tabType)
+                .endAnd()
+                .whereAnd()
+                .where("participantToCompanyId").eq(companyId)
+                .where("participantFromRoleId").eq(tabId)
+                .where("_participantFromRoleType").eq(tabType)
+                .endAnd()
+                .endOr()
         } else {
             cb.whereOr()
-                    .where("participantFromCompanyId").eq(companyId)
-                    .where("participantToCompanyId").eq(companyId)
-                    .endOr()
+                .where("participantFromCompanyId").eq(companyId)
+                .where("participantToCompanyId").eq(companyId)
+                .endOr()
         }
         return cb
     }
@@ -192,8 +191,8 @@ class ConnectionService(
         companyId: String,
         query: String?,
     ): List<IndustryReadEntity> =
-            connectionReadRepository.getConnectionIndustriesByCompanyId(companyId, query = query?.ifBlank { null })
-                    .map { IndustryReadEntity(id = it.id, name = it.name) }
+        connectionReadRepository.getConnectionIndustriesByCompanyId(companyId, query = query?.ifBlank { null })
+            .map { IndustryReadEntity(id = it.id, name = it.name) }
 
     fun changeVisibilityByIdAndCompanyId(companyId: UUID, connectionId: UUID, isHide: Boolean) {
         connectionReadRepository.changeVisibilityByIdAndCompanyId(connectionId = connectionId, companyId = companyId, hidden = isHide)
@@ -204,5 +203,4 @@ class ConnectionService(
         connectionReadRepository.softDeleteByIdAndCompanyId(id = connectionId, companyId = companyId)
         eventPublisher.publishAsync(StatisticRefreshEvent(Statistic(companyId)))
     }
-
 }

@@ -1,7 +1,6 @@
 package com.briolink.companyservice.common.jpa.converter
 
 import java.time.Year
-
 import javax.persistence.AttributeConverter
 import javax.persistence.Converter
 

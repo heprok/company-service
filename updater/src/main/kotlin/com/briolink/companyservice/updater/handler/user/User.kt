@@ -2,25 +2,25 @@ package com.briolink.companyservice.updater.handler.user
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
-import java.util.*
+import java.util.UUID
 
 data class User(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("slug")
+    @JsonProperty
     var slug: String,
-    @JsonProperty("firstName")
+    @JsonProperty
     val firstName: String,
-    @JsonProperty("lastName")
+    @JsonProperty
     val lastName: String,
-    @JsonProperty("description")
+    @JsonProperty
     val description: String? = null,
-    @JsonProperty("location")
+    @JsonProperty
     val location: String? = null,
-    @JsonProperty("image")
+    @JsonProperty
     val image: URL? = null,
-    @JsonProperty("twitter")
+    @JsonProperty
     val twitter: String? = null,
-    @JsonProperty("facebook")
+    @JsonProperty
     val facebook: String? = null,
 )

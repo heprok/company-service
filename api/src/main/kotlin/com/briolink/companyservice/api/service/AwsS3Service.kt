@@ -27,8 +27,8 @@ class AwsS3Service(private val s3Client: AmazonS3) {
     val DEFAULT_HEADER_ACL_KEY: String = "x-amz-acl"
     val DEFAULT_HEADER_ACL_VALUE: String = "public-read"
     val IMAGE_FILE_TYPE: Map<String, String> = mapOf(
-            MediaType.IMAGE_JPEG_VALUE to "jpg",
-            MediaType.IMAGE_PNG_VALUE to "png",
+        MediaType.IMAGE_JPEG_VALUE to "jpg",
+        MediaType.IMAGE_PNG_VALUE to "png",
     )
 
     @Value("\${app.aws.s3.name}")
@@ -36,47 +36,47 @@ class AwsS3Service(private val s3Client: AmazonS3) {
     val tempDirPath: String = "uploads/temp"
 
     fun uploadFile(key: String, contentType: String, file: MultipartFile, acl: String? = null): URL =
-            try {
-                val metadata = ObjectMetadata()
-                metadata.contentType = contentType
-                metadata.contentLength = file.size
-                metadata.setHeader(DEFAULT_HEADER_ACL_KEY, acl ?: DEFAULT_HEADER_ACL_VALUE)
+        try {
+            val metadata = ObjectMetadata()
+            metadata.contentType = contentType
+            metadata.contentLength = file.size
+            metadata.setHeader(DEFAULT_HEADER_ACL_KEY, acl ?: DEFAULT_HEADER_ACL_VALUE)
 
-                s3Client.putObject(bucketName, key, file.inputStream, metadata)
-                s3Client.getUrl(bucketName, key)
-            } catch (ioe: IOException) {
-                logger.error { "IOException: ${ioe.message}" }
-                throw ioe
-            } catch (serviceException: AmazonServiceException) {
-                logger.error { "AmazonServiceException: ${serviceException.message}" }
-                throw serviceException
-            } catch (clientException: AmazonClientException) {
-                logger.error { "AmazonClientException: ${clientException.message}" }
-                throw clientException
-            }
+            s3Client.putObject(bucketName, key, file.inputStream, metadata)
+            s3Client.getUrl(bucketName, key)
+        } catch (ioe: IOException) {
+            logger.error { "IOException: ${ioe.message}" }
+            throw ioe
+        } catch (serviceException: AmazonServiceException) {
+            logger.error { "AmazonServiceException: ${serviceException.message}" }
+            throw serviceException
+        } catch (clientException: AmazonClientException) {
+            logger.error { "AmazonClientException: ${clientException.message}" }
+            throw clientException
+        }
 
     fun uploadTempImage(file: MultipartFile): String =
-            if (isImageFile(file.contentType)) {
-                val objectName = generateObjectName()
-                uploadFile("$tempDirPath/$objectName", file.contentType!!, file, "private")
-                objectName
-            } else {
-                throw FileTypeException()
-            }
+        if (isImageFile(file.contentType)) {
+            val objectName = generateObjectName()
+            uploadFile("$tempDirPath/$objectName", file.contentType!!, file, "private")
+            objectName
+        } else {
+            throw FileTypeException()
+        }
 
     fun uploadImage(path: String, file: MultipartFile): URL =
-            if (isImageFile(file.contentType)) {
-                uploadFile("$path/${generateObjectName()}.${IMAGE_FILE_TYPE[file.contentType]}", file.contentType!!, file)
-            } else {
-                throw FileTypeException()
-            }
+        if (isImageFile(file.contentType)) {
+            uploadFile("$path/${generateObjectName()}.${IMAGE_FILE_TYPE[file.contentType]}", file.contentType!!, file)
+        } else {
+            throw FileTypeException()
+        }
 
     fun deleteFile(key: String) =
-            try {
-                s3Client.deleteObject(DeleteObjectRequest(bucketName, key))
-            } catch (clientException: AmazonClientException) {
-                logger.error { "AmazonClientException: ${clientException.message}" }
-            }
+        try {
+            s3Client.deleteObject(DeleteObjectRequest(bucketName, key))
+        } catch (clientException: AmazonClientException) {
+            logger.error { "AmazonClientException: ${clientException.message}" }
+        }
 
     fun moveFromTemp(key: String, path: String): URL {
         try {
@@ -86,11 +86,11 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             println(sourceKey)
             println(destinationKey)
             s3Client.copyObject(
-                    CopyObjectRequest(bucketName, sourceKey, bucketName, destinationKey).apply {
-                        accessControlList = AccessControlList().apply {
-                            grantPermission(GroupGrantee.AllUsers, Permission.Read)
-                        }
-                    },
+                CopyObjectRequest(bucketName, sourceKey, bucketName, destinationKey).apply {
+                    accessControlList = AccessControlList().apply {
+                        grantPermission(GroupGrantee.AllUsers, Permission.Read)
+                    }
+                },
             )
             return s3Client.getUrl(bucketName, destinationKey)
         } catch (serviceException: AmazonServiceException) {

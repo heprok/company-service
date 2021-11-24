@@ -14,10 +14,10 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceR
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.service.PermissionService
 import com.vladmihalcea.hibernate.type.range.Range
-import java.util.UUID
-import java.util.stream.Collectors
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import java.util.stream.Collectors
 
 @Transactional
 @Service
@@ -30,11 +30,11 @@ class ConnectionHandlerService(
 ) {
     fun createOrUpdate(connection: Connection): ConnectionReadEntity {
         val participantUsers = userReadRepository.findByIdIsIn(
-                mutableListOf(connection.participantFrom.userId!!, connection.participantTo.userId!!),
+            mutableListOf(connection.participantFrom.userId!!, connection.participantTo.userId!!),
         ).stream().collect(Collectors.toMap(UserReadEntity::id) { v -> v })
 
         val participantCompanies = companyReadRepository.findByIdIsIn(
-                mutableListOf(connection.participantFrom.companyId!!, connection.participantTo.companyId!!),
+            mutableListOf(connection.participantFrom.companyId!!, connection.participantTo.companyId!!),
         ).stream().collect(Collectors.toMap(CompanyReadEntity::id) { v -> v })
 
         val buyerCompany: CompanyReadEntity
@@ -86,89 +86,91 @@ class ConnectionHandlerService(
             deletedCompanyIds = listOf()
             hiddenCompanyIds = mutableListOf<UUID>().apply {
                 if (!permissionService.isHavePermission(
-                            userId = connection.participantFrom.userId!!,
-                            companyId = connection.participantFrom.companyId!!,
-                            accessObjectType = AccessObjectTypeEnum.Company,
-                            PermissionRightEnum.ConnectionCrud,
-                    ))
+                        userId = connection.participantFrom.userId!!,
+                        companyId = connection.participantFrom.companyId!!,
+                        accessObjectType = AccessObjectTypeEnum.Company,
+                        PermissionRightEnum.ConnectionCrud,
+                    )
+                )
                     add(connection.participantFrom.companyId!!)
 
                 if (!permissionService.isHavePermission(
-                            userId = connection.participantTo.userId!!,
-                            companyId = connection.participantTo.companyId!!,
-                            accessObjectType = AccessObjectTypeEnum.Company,
-                            PermissionRightEnum.ConnectionCrud,
-                    ))
+                        userId = connection.participantTo.userId!!,
+                        companyId = connection.participantTo.companyId!!,
+                        accessObjectType = AccessObjectTypeEnum.Company,
+                        PermissionRightEnum.ConnectionCrud,
+                    )
+                )
                     add(connection.participantTo.companyId!!)
             }
 
             permissionService.isHavePermission(
-                    userId = connection.participantTo.userId!!,
-                    companyId = connection.participantTo.companyId!!,
-                    accessObjectType = AccessObjectTypeEnum.Company,
-                    PermissionRightEnum.ConnectionCrud,
+                userId = connection.participantTo.userId!!,
+                companyId = connection.participantTo.companyId!!,
+                accessObjectType = AccessObjectTypeEnum.Company,
+                PermissionRightEnum.ConnectionCrud,
             )
             created = connection.created
             companyIndustryId = industry?.id
             this.data = ConnectionReadEntity.Data(
-                    participantFrom = ConnectionReadEntity.Participant(
-                            user = ConnectionReadEntity.User(
-                                    id = participantUsers[connection.participantFrom.userId]!!.id,
-                                    slug = participantUsers[connection.participantFrom.userId]!!.data.slug,
-                                    image = participantUsers[connection.participantFrom.userId]!!.data.image,
-                                    firstName = participantUsers[connection.participantFrom.userId]!!.data.firstName,
-                                    lastName = participantUsers[connection.participantFrom.userId]!!.data.lastName,
-                            ),
-                            userJobPositionTitle = connection.participantFrom.userJobPositionTitle,
-                            company = ConnectionReadEntity.Company(
-                                    id = connection.participantFrom.companyId!!,
-                                    slug = participantCompanies[connection.participantFrom.companyId]!!.slug,
-                                    name = participantCompanies[connection.participantFrom.companyId]!!.name,
-                                    logo = participantCompanies[connection.participantFrom.companyId]!!.data.logo,
-                            ),
-                            companyRole = ConnectionReadEntity.CompanyRole(
-                                    id = connection.participantFrom.companyRole!!.id,
-                                    name = connection.participantFrom.companyRole!!.name,
-                                    type = CompanyRoleTypeEnum.valueOf(connection.participantFrom.companyRole!!.type.name),
-                            ),
+                participantFrom = ConnectionReadEntity.Participant(
+                    user = ConnectionReadEntity.User(
+                        id = participantUsers[connection.participantFrom.userId]!!.id,
+                        slug = participantUsers[connection.participantFrom.userId]!!.data.slug,
+                        image = participantUsers[connection.participantFrom.userId]!!.data.image,
+                        firstName = participantUsers[connection.participantFrom.userId]!!.data.firstName,
+                        lastName = participantUsers[connection.participantFrom.userId]!!.data.lastName,
                     ),
-                    participantTo = connection.participantTo.let {
-                        ConnectionReadEntity.Participant(
-                                user = ConnectionReadEntity.User(
-                                        id = participantUsers[connection.participantTo.userId]!!.id,
-                                        slug = participantUsers[connection.participantTo.userId]!!.data.slug,
-                                        image = participantUsers[connection.participantTo.userId]!!.data.image,
-                                        firstName = participantUsers[connection.participantTo.userId]!!.data.firstName,
-                                        lastName = participantUsers[connection.participantTo.userId]!!.data.lastName,
-                                ),
-                                userJobPositionTitle = it.userJobPositionTitle,
-                                company = ConnectionReadEntity.Company(
-                                        id = connection.participantTo.companyId!!,
-                                        slug = participantCompanies[connection.participantTo.companyId!!]!!.slug,
-                                        name = participantCompanies[connection.participantTo.companyId!!]!!.name,
-                                        logo = participantCompanies[connection.participantTo.companyId!!]!!.data.logo,
-                                ),
-                                companyRole = it.companyRole.let { role ->
-                                    ConnectionReadEntity.CompanyRole(
-                                            id = role!!.id,
-                                            name = role.name,
-                                            type = CompanyRoleTypeEnum.valueOf(role.type.name),
-                                    )
-                                },
+                    userJobPositionTitle = connection.participantFrom.userJobPositionTitle,
+                    company = ConnectionReadEntity.Company(
+                        id = connection.participantFrom.companyId!!,
+                        slug = participantCompanies[connection.participantFrom.companyId]!!.slug,
+                        name = participantCompanies[connection.participantFrom.companyId]!!.name,
+                        logo = participantCompanies[connection.participantFrom.companyId]!!.data.logo,
+                    ),
+                    companyRole = ConnectionReadEntity.CompanyRole(
+                        id = connection.participantFrom.companyRole!!.id,
+                        name = connection.participantFrom.companyRole!!.name,
+                        type = CompanyRoleTypeEnum.valueOf(connection.participantFrom.companyRole!!.type.name),
+                    ),
+                ),
+                participantTo = connection.participantTo.let {
+                    ConnectionReadEntity.Participant(
+                        user = ConnectionReadEntity.User(
+                            id = participantUsers[connection.participantTo.userId]!!.id,
+                            slug = participantUsers[connection.participantTo.userId]!!.data.slug,
+                            image = participantUsers[connection.participantTo.userId]!!.data.image,
+                            firstName = participantUsers[connection.participantTo.userId]!!.data.firstName,
+                            lastName = participantUsers[connection.participantTo.userId]!!.data.lastName,
+                        ),
+                        userJobPositionTitle = it.userJobPositionTitle,
+                        company = ConnectionReadEntity.Company(
+                            id = connection.participantTo.companyId!!,
+                            slug = participantCompanies[connection.participantTo.companyId!!]!!.slug,
+                            name = participantCompanies[connection.participantTo.companyId!!]!!.name,
+                            logo = participantCompanies[connection.participantTo.companyId!!]!!.data.logo,
+                        ),
+                        companyRole = it.companyRole.let { role ->
+                            ConnectionReadEntity.CompanyRole(
+                                id = role!!.id,
+                                name = role.name,
+                                type = CompanyRoleTypeEnum.valueOf(role.type.name),
+                            )
+                        },
+                    )
+                },
+                services = ArrayList(
+                    connection.services.map {
+                        ConnectionReadEntity.Service(
+                            id = it.id,
+                            serviceId = it.serviceId,
+                            serviceName = it.serviceName,
+                            startDate = it.startDate!!,
+                            endDate = it.endDate,
                         )
                     },
-                    services = ArrayList(
-                            connection.services.map {
-                                ConnectionReadEntity.Service(
-                                        id = it.id,
-                                        serviceId = it.serviceId,
-                                        serviceName = it.serviceName,
-                                        startDate = it.startDate!!,
-                                        endDate = it.endDate,
-                                )
-                            },
-                    ),
-                    industry = industry?.name,
+                ),
+                industry = industry?.name,
             )
 
             return connectionReadRepository.save(this)

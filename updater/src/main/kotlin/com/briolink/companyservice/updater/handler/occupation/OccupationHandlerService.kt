@@ -13,9 +13,7 @@ class OccupationHandlerService(
 ) {
     fun create(occupation: Occupation) {
         occupationReadRepository.save(
-                OccupationReadEntity(id = occupation.id, name = occupation.name),
+            OccupationReadEntity(id = occupation.id, name = occupation.name),
         )
     }
-
 }
-

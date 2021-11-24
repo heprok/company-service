@@ -1,7 +1,6 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.event.v1_0.KeywordCreatedEvent
-import com.briolink.companyservice.common.jpa.read.repository.KeywordReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.KeywordWriteRepository
 import com.briolink.companyservice.common.mapper.KeywordMapper
@@ -14,7 +13,6 @@ import java.util.UUID
 @Transactional
 class KeywordService(
     private val keywordWriteRepository: KeywordWriteRepository,
-    private val keywordReadRepository: KeywordReadRepository,
     private val eventPublisher: EventPublisher,
 ) {
     val mapper = KeywordMapper.INSTANCE

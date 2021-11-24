@@ -8,6 +8,7 @@ import java.util.UUID
 interface CompanyReadRepository : JpaRepository<CompanyReadEntity, UUID> {
     fun findBySlug(slug: String): CompanyReadEntity
     fun findByIdIsIn(ids: List<UUID>): List<CompanyReadEntity>
+
     @Query("SELECT id FROM CompanyReadEntity")
     fun getAllCompanyUUID(): List<UUID>
 }

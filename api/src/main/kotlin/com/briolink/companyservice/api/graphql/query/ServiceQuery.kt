@@ -12,8 +12,8 @@ import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeE
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import java.util.UUID
 import org.springframework.security.access.prepost.PreAuthorize
+import java.util.UUID
 
 @DgsComponent
 class ServiceQuery(
@@ -29,26 +29,27 @@ class ServiceQuery(
         @InputArgument("filter") filter: ServiceFilter?,
         @InputArgument("offset") offset: Int,
 
-        ): ServiceList {
+    ): ServiceList {
         return if (serviceCompanyService.countServiceByCompany(companyId = UUID.fromString(companyId))) {
             val filterSecurity =
-                    if (companyService.getPermission(UUID.fromString(companyId), SecurityUtil.currentUserAccountId)
-                        != UserPermissionRoleTypeEnum.Owner) {
-                        filter?.copy(isHide = false) ?: ServiceFilter(isHide = false)
-                    } else filter
+                if (companyService.getPermission(UUID.fromString(companyId), SecurityUtil.currentUserAccountId)
+                    != UserPermissionRoleTypeEnum.Owner
+                ) {
+                    filter?.copy(isHide = false) ?: ServiceFilter(isHide = false)
+                } else filter
             val page =
-                    serviceCompanyService.findAll(
-                            companyId = UUID.fromString(companyId),
-                            sort = sort,
-                            limit = limit,
-                            offset = offset,
-                            filter = filterSecurity,
-                    )
+                serviceCompanyService.findAll(
+                    companyId = UUID.fromString(companyId),
+                    sort = sort,
+                    limit = limit,
+                    offset = offset,
+                    filter = filterSecurity,
+                )
             ServiceList(
-                    items = page.content.map {
-                        Service.fromEntity(it)
-                    },
-                    totalItems = page.totalElements.toInt(),
+                items = page.content.map {
+                    Service.fromEntity(it)
+                },
+                totalItems = page.totalElements.toInt(),
             )
         } else {
             ServiceList(items = listOf(), totalItems = -1)
@@ -61,5 +62,4 @@ class ServiceQuery(
         @InputArgument("companyId") companyId: String,
         @InputArgument("filter") filter: ServiceFilter?
     ): Int = serviceCompanyService.count(companyId = UUID.fromString(companyId), filter = filter).toInt()
-
 }

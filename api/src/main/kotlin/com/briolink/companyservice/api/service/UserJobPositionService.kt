@@ -14,5 +14,5 @@ class UserJobPositionService(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<UserJobPositionReadEntity> =
-            userJobPositionReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
+        userJobPositionReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
 }

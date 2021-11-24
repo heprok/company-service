@@ -5,18 +5,18 @@ import java.time.LocalDate
 import java.util.UUID
 
 data class UserJobPosition(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("title")
+    @JsonProperty
     val title: String,
-    @JsonProperty("startDate")
+    @JsonProperty
     val startDate: LocalDate? = null,
-    @JsonProperty("endDate")
+    @JsonProperty
     val endDate: LocalDate? = null,
-    @JsonProperty("isCurrent")
+    @JsonProperty
     val isCurrent: Boolean = false,
-    @JsonProperty("companyId")
+    @JsonProperty
     val companyId: UUID,
-    @JsonProperty("userId")
+    @JsonProperty
     val userId: UUID,
 )

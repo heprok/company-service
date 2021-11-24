@@ -11,6 +11,4 @@ data class LocationInfoDto(
     val city: CityDto? = null,
     @JsonProperty
     val location: String
-) {
-
-}
+)

@@ -7,17 +7,18 @@ import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
-import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
-import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
+import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
+import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.service.LocationService
 import com.briolink.event.publisher.EventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
 @Service
@@ -33,11 +34,11 @@ class CompanyService(
     fun createCompany(createCompany: CompanyWriteEntity): Company {
         return companyWriteRepository.save(createCompany).let {
             eventPublisher.publish(
-                    CompanyCreatedEvent(
-                            it.toDomain().apply {
-                                location = locationId?.let { locationService.getLocation(it)?.location }
-                            },
-                    ),
+                CompanyCreatedEvent(
+                    it.toDomain().apply {
+                        location = locationId?.let { locationService.getLocation(it)?.location }
+                    },
+                ),
             )
             it.toDomain()
         }
@@ -81,18 +82,20 @@ class CompanyService(
 
     fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleTypeEnum? {
         return userPermissionRoleReadRepository.getUserPermissionRole(
-                accessObjectUuid = companyId,
-                accessObjectType = AccessObjectTypeEnum.Company.value,
-                userId = userId,
+            accessObjectUuid = companyId,
+            accessObjectType = AccessObjectTypeEnum.Company.value,
+            userId = userId,
         )?.role
     }
 
     fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleTypeEnum): UserPermissionRoleReadEntity {
-        (userPermissionRoleReadRepository.getUserPermissionRole(
+        (
+            userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = companyId,
                 userId = userId,
                 accessObjectType = AccessObjectTypeEnum.CompanyService.value,
-        ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)).apply {
+            ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)
+            ).apply {
             role = roleType
             return userPermissionRoleReadRepository.save(this)
         }

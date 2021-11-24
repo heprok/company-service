@@ -9,7 +9,7 @@ import org.hibernate.annotations.Type
 import java.net.URL
 import java.time.Instant
 import java.time.Year
-import java.util.*
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -179,5 +179,3 @@ class ConnectionReadEntity(
         val name: String,
     )
 }
-
-

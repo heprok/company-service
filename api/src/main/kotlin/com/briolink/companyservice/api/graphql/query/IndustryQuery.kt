@@ -23,7 +23,7 @@ class IndustryQuery(
         val industries = if (companyId == null && query.isNotEmpty()) {
             industryReadRepository.findByName(query.ifBlank { null })
         } else if (companyId != null) {
-            connectionService.getIndustriesInConnectionFromCompany(companyId, query )
+            connectionService.getIndustriesInConnectionFromCompany(companyId, query)
         } else {
             listOf()
         }

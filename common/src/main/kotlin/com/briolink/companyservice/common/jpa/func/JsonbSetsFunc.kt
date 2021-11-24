@@ -16,13 +16,13 @@ class JsonbSetsFunc : SQLFunction {
         val arguments = args.toMutableList().apply { removeFirst() }
 
         return "${"jsonb_set(".repeat(arguments.size / 3)}$field," +
-                arguments.chunked(3).joinToString(",") { it ->
-                    if (it[1] == "null") {
-                        "${it[0]}, 'null', true)"
-                    } else {
-                        "${it[0]}, coalesce(to_jsonb(cast(${it[1]} as ${it[2]})), 'null'), true)"
-                    }
+            arguments.chunked(3).joinToString(",") { it ->
+                if (it[1] == "null") {
+                    "${it[0]}, 'null', true)"
+                } else {
+                    "${it[0]}, coalesce(to_jsonb(cast(${it[1]} as ${it[2]})), 'null'), true)"
                 }
+            }
     }
 
     @Throws(QueryException::class)

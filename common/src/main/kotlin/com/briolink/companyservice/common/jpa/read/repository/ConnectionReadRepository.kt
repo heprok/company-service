@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.*
+import java.util.UUID
 
 interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
 
@@ -20,9 +20,12 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                 function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE and
                 function('array_contains_element', c.deletedCompanyIds, ?1) = FALSE
             )
-    """
+    """,
     )
-    fun getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(companyId: UUID, type: Int = ConnectionStatusEnum.Verified.value): List<ConnectionReadEntity> // ktlint-disable max-line-length
+    fun getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
+        companyId: UUID,
+        type: Int = ConnectionStatusEnum.Verified.value
+    ): List<ConnectionReadEntity> // ktlint-disable max-line-length
 
     @Modifying
     @Query("delete from ConnectionReadEntity c where c.id = ?1")

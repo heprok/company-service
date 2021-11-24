@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 
 data class UserJobPositionDeletedData(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("userId")
+    @JsonProperty
     val userId: UUID,
-    @JsonProperty("isCurrent")
+    @JsonProperty
     val isCurrent: Boolean = false
 )

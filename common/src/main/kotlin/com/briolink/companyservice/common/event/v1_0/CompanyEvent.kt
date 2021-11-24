@@ -6,4 +6,4 @@ import com.briolink.event.Event
 
 data class CompanyCreatedEvent(override val data: Company) : Event<Domain>("1.0")
 data class CompanyUpdatedEvent(override val data: Company) : Event<Domain>("1.0")
-//data class CompanyDeletedEvent(override val data: Company) : Event<Domain>("1.0")
+// data class CompanyDeletedEvent(override val data: Company) : Event<Domain>("1.0")

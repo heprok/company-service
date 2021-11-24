@@ -13,9 +13,7 @@ class IndustryHandlerService(
 ) {
     fun create(industry: Industry) {
         industryReadRepository.save(
-                IndustryReadEntity(id = industry.id, name = industry.name),
+            IndustryReadEntity(id = industry.id, name = industry.name),
         )
     }
-
 }
-

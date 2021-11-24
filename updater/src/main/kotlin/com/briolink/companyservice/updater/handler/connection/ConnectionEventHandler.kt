@@ -6,8 +6,8 @@ import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
 
 @EventHandlers(
-        EventHandler("ConnectionCreatedEvent", "1.0"),
-        EventHandler("ConnectionUpdatedEvent", "1.0"),
+    EventHandler("ConnectionCreatedEvent", "1.0"),
+    EventHandler("ConnectionUpdatedEvent", "1.0"),
 )
 class ConnectionEventHandler(
     private val connectionHandlerService: ConnectionHandlerService,
@@ -16,10 +16,10 @@ class ConnectionEventHandler(
     override fun handle(event: ConnectionCreatedEvent) {
         val connection = event.data
         if (connection.status != ConnectionStatus.Draft && connection.status != ConnectionStatus.Rejected) {
-                connectionHandlerService.createOrUpdate(connection).let {
-                    statisticHandlerService.refreshByCompanyId(connection.participantTo.companyId!!)
-                    statisticHandlerService.refreshByCompanyId(connection.participantFrom.companyId!!)
-                }
+            connectionHandlerService.createOrUpdate(connection).let {
+                statisticHandlerService.refreshByCompanyId(connection.participantTo.companyId!!)
+                statisticHandlerService.refreshByCompanyId(connection.participantFrom.companyId!!)
+            }
         } else if (connection.status == ConnectionStatus.Rejected) {
             connectionHandlerService.delete(connection.id)
         }

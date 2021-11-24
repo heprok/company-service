@@ -2,17 +2,17 @@ package com.briolink.companyservice.common.jpa.write.entity
 
 import com.vladmihalcea.hibernate.type.basic.YearType
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
+import org.hibernate.annotations.Type
+import org.hibernate.annotations.TypeDef
+import org.hibernate.annotations.TypeDefs
 import java.util.UUID
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.MappedSuperclass
-import org.hibernate.annotations.Type
-import org.hibernate.annotations.TypeDef
-import org.hibernate.annotations.TypeDefs
 
 @TypeDefs(
-        TypeDef(name = "jsonb", typeClass = JsonBinaryType::class),
-        TypeDef(name = "year", typeClass = YearType::class)
+    TypeDef(name = "jsonb", typeClass = JsonBinaryType::class),
+    TypeDef(name = "year", typeClass = YearType::class),
 )
 @MappedSuperclass
 abstract class BaseWriteEntity {

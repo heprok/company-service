@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
     kotlin("plugin.allopen")
-    }
+}
 allOpen {
     annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
 }
@@ -36,7 +36,7 @@ dependencies {
     implementation("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
     kapt("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
 
-    //FasterXML
+    // FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE}")
 
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.30.Final")

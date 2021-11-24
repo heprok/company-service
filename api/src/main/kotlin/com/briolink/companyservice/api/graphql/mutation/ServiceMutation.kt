@@ -10,9 +10,9 @@ import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
-import java.util.UUID
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RequestHeader
+import java.util.UUID
 
 @DgsComponent
 class ServiceMutation(
@@ -26,23 +26,24 @@ class ServiceMutation(
         @InputArgument("serviceId") serviceId: String
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
-                    companyId = UUID.fromString(companyId),
-                    permissionRight = PermissionRightEnum.ServiceCrud,
-                    userId = currentUserAccountId,
-                    accessObjectType = AccessObjectTypeEnum.CompanyService,
-            )) {
+                companyId = UUID.fromString(companyId),
+                permissionRight = PermissionRightEnum.ServiceCrud,
+                userId = currentUserAccountId,
+                accessObjectType = AccessObjectTypeEnum.CompanyService,
+            )
+        ) {
             serviceCompanyService.toggleVisibilityByIdAndCompanyId(
-                    companyId = UUID.fromString(companyId),
-                    serviceId = UUID.fromString(serviceId),
+                companyId = UUID.fromString(companyId),
+                serviceId = UUID.fromString(serviceId),
             )
             DelOrHideResult(
-                    success = true,
-                    userErrors = listOf(),
+                success = true,
+                userErrors = listOf(),
             )
         } else {
             DelOrHideResult(
-                    success = false,
-                    userErrors = listOf(Error("403 Permission denied")),
+                success = false,
+                userErrors = listOf(Error("403 Permission denied")),
             )
         }
     }
@@ -55,25 +56,25 @@ class ServiceMutation(
         @RequestHeader("Authorization") authorization: String
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
-                    companyId = UUID.fromString(companyId),
-                    permissionRight = PermissionRightEnum.ServiceCrud,
-                    userId = currentUserAccountId,
-                    accessObjectType = AccessObjectTypeEnum.CompanyService,
-            )) {
+                companyId = UUID.fromString(companyId),
+                permissionRight = PermissionRightEnum.ServiceCrud,
+                userId = currentUserAccountId,
+                accessObjectType = AccessObjectTypeEnum.CompanyService,
+            )
+        ) {
             serviceCompanyService.deleteServiceInCompany(
-                    serviceId = UUID.fromString(serviceId),
-                    authorization = authorization,
+                serviceId = UUID.fromString(serviceId),
+                authorization = authorization,
             )
             DelOrHideResult(
-                    success = true,
-                    userErrors = listOf(),
+                success = true,
+                userErrors = listOf(),
             )
         } else {
             DelOrHideResult(
-                    success = false,
-                    userErrors = listOf(Error("403 Permission denied")),
+                success = false,
+                userErrors = listOf(Error("403 Permission denied")),
             )
         }
     }
 }
-

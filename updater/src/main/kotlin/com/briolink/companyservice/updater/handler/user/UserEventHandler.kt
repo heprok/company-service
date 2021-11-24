@@ -6,10 +6,10 @@ import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
 
 @EventHandlers(
-        EventHandler("UserCreatedEvent", "1.0"),
-        EventHandler("UserUpdatedEvent", "1.0"),
+    EventHandler("UserCreatedEvent", "1.0"),
+    EventHandler("UserUpdatedEvent", "1.0"),
 )
-class UserCreatedEventHandler(
+class UserEventHandler(
     private val userHandlerService: UserHandlerService,
     private val userJobPositionHandlerService: UserJobPositionHandlerService
 ) : IEventHandler<UserCreatedEvent> {

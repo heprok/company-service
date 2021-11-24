@@ -8,7 +8,7 @@ import com.briolink.companyservice.common.jpa.enumration.LocationTypeEnum
 import com.briolink.companyservice.common.util.StringUtil
 import org.hibernate.annotations.Type
 import java.net.URL
-import java.util.*
+import java.util.UUID
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -66,10 +66,10 @@ class CompanyWriteEntity(
 
     @ManyToMany(cascade = [CascadeType.MERGE])
     @JoinTable(
-            name = "companies_keywords",
-            schema = "write",
-            joinColumns = [JoinColumn(name = "company_id")],
-            inverseJoinColumns = [JoinColumn(name = "keyword_id")],
+        name = "companies_keywords",
+        schema = "write",
+        joinColumns = [JoinColumn(name = "company_id")],
+        inverseJoinColumns = [JoinColumn(name = "keyword_id")],
     )
     var keywords: MutableList<KeywordWriteEntity> = mutableListOf()
 ) : BaseWriteEntity() {
@@ -86,18 +86,18 @@ class CompanyWriteEntity(
     fun getLocationId(): LocationId? {
         return if (cityId != null)
             LocationId(
-                    id = cityId!!,
-                    type = LocationTypeEnum.City,
+                id = cityId!!,
+                type = LocationTypeEnum.City,
             )
         else if (stateId != null)
             LocationId(
-                    id = stateId!!,
-                    type = LocationTypeEnum.State,
+                id = stateId!!,
+                type = LocationTypeEnum.State,
             )
         else if (countryId != null)
             LocationId(
-                    id = countryId!!,
-                    type = LocationTypeEnum.Country,
+                id = countryId!!,
+                type = LocationTypeEnum.Country,
             )
         else null
     }
@@ -108,36 +108,36 @@ class CompanyWriteEntity(
     }
 
     fun toDomain() = Company(
-            id = id!!,
-            name = name,
-            website = websiteUrl,
-            description = description,
-            slug = slug,
-            logo = logo,
-            isTypePublic = isTypePublic,
-            locationId = getLocationId(),
-            facebook = facebook,
-            twitter = twitter,
-            industry = industry?.let {
-                Industry(
-                        it.id!!,
-                        it.name,
+        id = id!!,
+        name = name,
+        website = websiteUrl,
+        description = description,
+        slug = slug,
+        logo = logo,
+        isTypePublic = isTypePublic,
+        locationId = getLocationId(),
+        facebook = facebook,
+        twitter = twitter,
+        industry = industry?.let {
+            Industry(
+                it.id!!,
+                it.name,
+            )
+        },
+        createdBy = createdBy,
+        occupation = occupation?.let {
+            Occupation(
+                it.id!!,
+                it.name,
+            )
+        },
+        keywords = ArrayList(
+            keywords.map {
+                Company.Keyword(
+                    it.id!!,
+                    it.name,
                 )
             },
-            createdBy = createdBy,
-            occupation = occupation?.let {
-                Occupation(
-                        it.id!!,
-                        it.name,
-                )
-            },
-            keywords = ArrayList(
-                    keywords.map {
-                        Company.Keyword(
-                                it.id!!,
-                                it.name,
-                        )
-                    },
-            ),
+        ),
     )
 }

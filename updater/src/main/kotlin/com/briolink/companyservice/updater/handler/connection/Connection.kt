@@ -3,17 +3,21 @@ package com.briolink.companyservice.updater.handler.connection
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Instant
 import java.time.Year
-import java.util.*
+import java.util.UUID
 
 enum class ConnectionStatus(val value: Int) {
     @JsonProperty("1")
     Draft(1),
+
     @JsonProperty("2")
     Pending(2),
+
     @JsonProperty("3")
     InProgress(3),
+
     @JsonProperty("4")
     Verified(4),
+
     @JsonProperty("5")
     Rejected(5);
 }
@@ -21,6 +25,7 @@ enum class ConnectionStatus(val value: Int) {
 enum class ConnectionCompanyRoleType(val value: Int) {
     @JsonProperty("0")
     Buyer(0),
+
     @JsonProperty("1")
     Seller(1)
 }

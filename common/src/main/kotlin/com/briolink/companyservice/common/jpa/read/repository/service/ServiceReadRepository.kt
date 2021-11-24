@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import java.util.*
+import java.util.UUID
 
 interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpecificationExecutor<ServiceReadEntity> {
     fun findByCompanyIdIs(companyId: UUID, pageable: Pageable? = null): Page<ServiceReadEntity>
@@ -15,14 +15,15 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     fun existsByCompanyId(companyId: UUID): Boolean
 
     @Modifying
-    @Query("""
+    @Query(
+        """
         UPDATE read.service SET is_hidden = NOT is_hidden where id = ?1 and company_id = ?2
     """,
-    nativeQuery = true)
+        nativeQuery = true,
+    )
     fun toggleVisibilityByIdAndCompanyId(serviceId: UUID, companyId: UUID)
 
     @Modifying
     @Query("DELETE from ServiceReadEntity c where c.id = ?1")
     override fun deleteById(id: UUID)
-
 }

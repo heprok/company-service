@@ -1,7 +1,7 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
 import org.hibernate.annotations.Type
-import java.util.*
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -17,6 +17,4 @@ class IndustryReadEntity(
     @Column(name = "name", nullable = false, length = 128)
     var name: String
 
-) : BaseReadEntity() {
-
-}
+) : BaseReadEntity()

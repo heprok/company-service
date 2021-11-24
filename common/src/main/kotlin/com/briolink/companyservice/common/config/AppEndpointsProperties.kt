@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration
 class AppEndpointsProperties {
     @NotNull
     lateinit var companyservice: String
+
     @NotNull
     lateinit var locationservice: String
 }

@@ -8,7 +8,7 @@ import com.briolink.event.annotation.EventHandlers
 
 @EventHandlers(
     EventHandler("CompanyCreatedEvent", "1.0"),
-    EventHandler("CompanyUpdatedEvent", "1.0")
+    EventHandler("CompanyUpdatedEvent", "1.0"),
 )
 class CompanyEventHandler(
     private val companyReadRepository: CompanyReadRepository,
@@ -16,8 +16,8 @@ class CompanyEventHandler(
 ) : IEventHandler<CompanyCreatedEvent> {
     override fun handle(event: CompanyCreatedEvent) {
         companyHandlerService.createOrUpdate(event.data).let {
+            // TODO update connection
             if (event.name == "CompanyUpdatedEvent") {
-
             }
         }
     }

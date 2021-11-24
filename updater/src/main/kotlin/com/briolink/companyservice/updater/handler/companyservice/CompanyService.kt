@@ -3,30 +3,28 @@ package com.briolink.companyservice.updater.handler.companyservice
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class CompanyService(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID,
-    @JsonProperty("companyId")
+    @JsonProperty
     val companyId: UUID,
-    @JsonProperty("name")
+    @JsonProperty
     val name: String,
-    @JsonProperty("slug")
+    @JsonProperty
     val slug: String,
-    @JsonProperty("price")
+    @JsonProperty
     val price: Double? = null,
-    @JsonProperty("logo")
+    @JsonProperty
     val logo: URL? = null,
-    @JsonProperty("lastUsed")
+    @JsonProperty
     val lastUsed: LocalDate? = null,
-    @JsonProperty("verifiedUses")
+    @JsonProperty
     val verifiedUses: Int = 0,
 )
 
 data class CompanyServiceDeletedData(
-    @JsonProperty("id")
+    @JsonProperty
     val id: UUID
 )
-
-

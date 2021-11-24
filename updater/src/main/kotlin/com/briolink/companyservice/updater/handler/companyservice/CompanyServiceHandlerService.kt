@@ -4,7 +4,7 @@ import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.UUID
 
 @Transactional
 @Service
@@ -13,7 +13,7 @@ class CompanyServiceHandlerService(
 ) {
     fun createOrUpdate(service: CompanyService) {
         serviceReadRepository.findById(service.id).orElse(
-                ServiceReadEntity(service.id),
+            ServiceReadEntity(service.id),
         ).apply {
             companyId = service.companyId
             name = service.name
@@ -21,8 +21,8 @@ class CompanyServiceHandlerService(
             verifiedUses = service.verifiedUses
             lastUsed = service.lastUsed
             data = ServiceReadEntity.Data(
-                    logo = service.logo,
-                    slug = service.slug
+                logo = service.logo,
+                slug = service.slug,
             )
             serviceReadRepository.save(this)
         }

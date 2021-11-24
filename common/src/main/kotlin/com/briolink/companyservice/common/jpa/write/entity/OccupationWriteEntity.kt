@@ -7,11 +7,11 @@ import javax.persistence.Table
 
 @Table(name = "occupation", schema = "write")
 @Entity
-class OccupationWriteEntity() : BaseWriteEntity() {
+class OccupationWriteEntity : BaseWriteEntity() {
     @Column(name = "name", nullable = false)
     lateinit var name: String
     fun toDomain(): Occupation = Occupation(
-            id = id!!,
-            name = name,
+        id = id!!,
+        name = name,
     )
 }

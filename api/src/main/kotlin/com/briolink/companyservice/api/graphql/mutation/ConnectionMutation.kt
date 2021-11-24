@@ -10,8 +10,8 @@ import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
-import java.util.UUID
 import org.springframework.security.access.prepost.PreAuthorize
+import java.util.UUID
 
 @DgsComponent
 class ConnectionMutation(
@@ -26,24 +26,25 @@ class ConnectionMutation(
         @InputArgument("isHide") isHide: Boolean
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
-                    companyId = UUID.fromString(companyId),
-                    userId = SecurityUtil.currentUserAccountId,
-                    permissionRight = PermissionRightEnum.ConnectionCrud,
-                    accessObjectType = AccessObjectTypeEnum.Connection,
-            )) {
+                companyId = UUID.fromString(companyId),
+                userId = SecurityUtil.currentUserAccountId,
+                permissionRight = PermissionRightEnum.ConnectionCrud,
+                accessObjectType = AccessObjectTypeEnum.Connection,
+            )
+        ) {
             connectionService.changeVisibilityByIdAndCompanyId(
-                    companyId = UUID.fromString(companyId),
-                    connectionId = UUID.fromString(connectionId),
-                    isHide = isHide,
+                companyId = UUID.fromString(companyId),
+                connectionId = UUID.fromString(connectionId),
+                isHide = isHide,
             )
             DelOrHideResult(
-                    success = true,
-                    userErrors = listOf(),
+                success = true,
+                userErrors = listOf(),
             )
         } else {
             DelOrHideResult(
-                    success = false,
-                    userErrors = listOf(Error("403 Permission denied")),
+                success = false,
+                userErrors = listOf(Error("403 Permission denied")),
             )
         }
     }
@@ -55,23 +56,24 @@ class ConnectionMutation(
         @InputArgument("connectionId") connectionId: String
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
-                    companyId = UUID.fromString(companyId),
-                    permissionRight = PermissionRightEnum.ConnectionCrud,
-                    userId = SecurityUtil.currentUserAccountId,
-                    accessObjectType = AccessObjectTypeEnum.Connection,
-            )) {
+                companyId = UUID.fromString(companyId),
+                permissionRight = PermissionRightEnum.ConnectionCrud,
+                userId = SecurityUtil.currentUserAccountId,
+                accessObjectType = AccessObjectTypeEnum.Connection,
+            )
+        ) {
             connectionService.deleteConnectionInCompany(
-                    companyId = UUID.fromString(companyId),
-                    connectionId = UUID.fromString(connectionId),
+                companyId = UUID.fromString(companyId),
+                connectionId = UUID.fromString(connectionId),
             )
             DelOrHideResult(
-                    success = true,
-                    userErrors = listOf(),
+                success = true,
+                userErrors = listOf(),
             )
         } else {
             DelOrHideResult(
-                    success = false,
-                    userErrors = listOf(Error("403 Permission denied")),
+                success = false,
+                userErrors = listOf(Error("403 Permission denied")),
             )
         }
     }

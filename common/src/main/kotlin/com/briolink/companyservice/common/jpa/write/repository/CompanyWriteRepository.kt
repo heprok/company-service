@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
-    @Query("SELECT count(1) > 0 FROM CompanyWriteEntity c WHERE lower(c.website) = lower(?1)")
+    @Query("SELECT count(c.id) > 0 FROM CompanyWriteEntity c WHERE lower(c.website) = lower(?1)")
     fun existsByWebsite(website: String): Boolean
 
     @Query("SELECT c FROM CompanyWriteEntity c WHERE lower(c.name) = lower(?1) OR lower(c.website) = lower(?2)")
@@ -14,5 +14,4 @@ interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
 
     @Query("SELECT c FROM CompanyWriteEntity c WHERE lower(c.name) = lower(?1)")
     fun getByName(name: String): CompanyWriteEntity?
-
 }

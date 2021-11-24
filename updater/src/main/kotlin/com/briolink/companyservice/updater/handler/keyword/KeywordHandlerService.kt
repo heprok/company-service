@@ -13,9 +13,7 @@ class KeywordHandlerService(
 ) {
     fun create(keyword: Keyword) {
         keywordReadRepository.save(
-                KeywordReadEntity(id = keyword.id, name = keyword.name),
+            KeywordReadEntity(id = keyword.id, name = keyword.name),
         )
     }
-
 }
-

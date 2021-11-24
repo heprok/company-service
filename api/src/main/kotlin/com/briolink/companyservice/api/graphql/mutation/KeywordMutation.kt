@@ -18,9 +18,8 @@ class KeywordMutation(
     fun create(@InputArgument("input") keywordInput: CreateKeywordInput): CreateKeywordResult {
         val keyword = keywordService.create(keywordInput.name)
         return CreateKeywordResult(
-                data = KeywordResultData(keyword.id.toString(), keyword.name),
-                userErrors = listOf(),
+            data = KeywordResultData(keyword.id.toString(), keyword.name),
+            userErrors = listOf(),
         )
     }
 }
-

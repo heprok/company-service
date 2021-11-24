@@ -8,13 +8,13 @@ class LocationId(
     var id: Int,
     @JsonProperty
     var type: LocationTypeEnum,
-    ) {
+) {
     companion object {
         fun fromStringId(idAndType: String): LocationId {
             val attribute = idAndType.split(";")
             return LocationId(
-                    id = attribute[0].toInt(),
-                    type = LocationTypeEnum.valueOf(attribute[1]),
+                id = attribute[0].toInt(),
+                type = LocationTypeEnum.valueOf(attribute[1]),
             )
         }
     }

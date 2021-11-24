@@ -5,7 +5,7 @@ import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity_
 import org.springframework.data.jpa.domain.Specification
 import java.time.LocalDate
 import java.time.Year
-import java.util.*
+import java.util.UUID
 
 fun companyIdEqual(companyId: UUID): Specification<ServiceReadEntity> {
     return Specification<ServiceReadEntity> { root, _, builder ->
@@ -19,7 +19,6 @@ fun equalHide(hide: Boolean?): Specification<ServiceReadEntity>? {
             builder.equal(root.get(ServiceReadEntity_.isHide), hide)
         }
     } else null
-
 }
 
 fun betweenPrice(start: Double?, end: Double?): Specification<ServiceReadEntity>? {

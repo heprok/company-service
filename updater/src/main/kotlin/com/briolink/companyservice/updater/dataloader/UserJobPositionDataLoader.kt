@@ -7,9 +7,9 @@ import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
-import java.util.UUID
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 @Order(2)
@@ -22,16 +22,16 @@ class UserJobPositionDataLoader(
 
 ) : DataLoader() {
     private val listJobPosition: List<String> = listOf(
-            "Product Manager",
-            "IOS developer",
-            "Android developer",
-            "UX UI designer",
-            "Regional finance manager",
-            "Software developer",
-            "Web developer",
-            "Content maker",
-            "Hardware developer",
-            "Manager",
+        "Product Manager",
+        "IOS developer",
+        "Android developer",
+        "UX UI designer",
+        "Regional finance manager",
+        "Software developer",
+        "Web developer",
+        "Content maker",
+        "Hardware developer",
+        "Manager",
     )
 
     override fun loadData() {
@@ -48,13 +48,13 @@ class UserJobPositionDataLoader(
                 val companyRandom = listCompany.random()
                 if (!userJobPositionReadRepository.existsByUserIdAndCompanyId(userId = userRandom.id, companyId = companyRandom.id)) {
                     userJobPositionHandlerService.createOrUpdate(
-                            UserJobPosition(
-                                    id = UUID.randomUUID(),
-                                    title = listJobPosition.random(),
-                                    isCurrent = true,
-                                    companyId = companyRandom.id,
-                                    userId = userRandom.id,
-                            ),
+                        UserJobPosition(
+                            id = UUID.randomUUID(),
+                            title = listJobPosition.random(),
+                            isCurrent = true,
+                            companyId = companyRandom.id,
+                            userId = userRandom.id,
+                        ),
                     )
                 }
             }

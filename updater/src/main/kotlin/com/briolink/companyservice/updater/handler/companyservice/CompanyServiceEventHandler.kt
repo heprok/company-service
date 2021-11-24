@@ -7,7 +7,7 @@ import com.briolink.event.annotation.EventHandlers
 
 @EventHandlers(
     EventHandler("CompanyServiceCreatedEvent", "1.0"),
-    EventHandler("CompanyServiceUpdatedEvent", "1.0")
+    EventHandler("CompanyServiceUpdatedEvent", "1.0"),
 )
 class CompanyServiceCreatedEventHandler(
     private val companyServiceReadRepository: ServiceReadRepository,

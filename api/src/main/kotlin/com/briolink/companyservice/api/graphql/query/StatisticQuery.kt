@@ -14,11 +14,11 @@ import com.briolink.companyservice.api.types.ChartItemHint
 import com.briolink.companyservice.api.types.ChartItemWithHint
 import com.briolink.companyservice.api.types.ChartTabItem
 import com.briolink.companyservice.api.types.CompanyInfoItem
-import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
-import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.CompanyStatistic
 import com.briolink.companyservice.api.types.CompanyStatisticCharts
 import com.briolink.companyservice.api.types.CompanyStatisticTotal
+import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
+import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
@@ -41,11 +41,11 @@ import javax.persistence.EntityManager
 import javax.persistence.Tuple
 
 inline fun <reified T> Tuple.getOrNull(alias: String): T? =
-        try {
-            this.get(alias, T::class.java)
-        } catch (e: IllegalArgumentException) {
-            null
-        }
+    try {
+        this.get(alias, T::class.java)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
 
 @DgsComponent
 class CompanyStatisticQuery(
@@ -62,9 +62,9 @@ class CompanyStatisticQuery(
                 }
                 is List<*> -> {
                     companyIds.addAll(
-                            v.mapNotNull {
-                                if (it is ChartListItem) it.companyId else null
-                            }
+                        v.mapNotNull {
+                            if (it is ChartListItem) it.companyId else null
+                        },
                     )
                 }
             }
@@ -73,9 +73,9 @@ class CompanyStatisticQuery(
     }
 
     fun <T> mapRawData(raw: String?, type: TypeReference<T>) =
-            if (raw != null) ObjectMapperWrapper.INSTANCE.objectMapper.readValue(
-                    raw, type,
-            ) else null
+        if (raw != null) ObjectMapperWrapper.INSTANCE.objectMapper.readValue(
+            raw, type,
+        ) else null
 
     @DgsQuery
     fun getCompanyStatistic(@InputArgument companyId: String, dfe: DataFetchingEnvironment): CompanyStatistic {
@@ -100,23 +100,23 @@ class CompanyStatisticQuery(
 
         if (dfe.selectionSet.contains("charts/connectionCountByYear/listByTab"))
             cb
-                    .select("jsonb_get(chartConnectionCountByYearData, 'data', :dk1, 'items')", "chartConnectionCountByYearData")
-                    .setParameter("dk1", dfe.selectionSet.getFields("charts/connectionCountByYear/listByTab")[0].arguments["id"])
+                .select("jsonb_get(chartConnectionCountByYearData, 'data', :dk1, 'items')", "chartConnectionCountByYearData")
+                .setParameter("dk1", dfe.selectionSet.getFields("charts/connectionCountByYear/listByTab")[0].arguments["id"])
 
         if (dfe.selectionSet.contains("charts/byCountry/listByTab"))
             cb
-                    .select("jsonb_get(chartByCountryData, 'data', :dk2, 'items')", "chartByCountryData")
-                    .setParameter("dk2", dfe.selectionSet.getFields("charts/byCountry/listByTab")[0].arguments["id"])
+                .select("jsonb_get(chartByCountryData, 'data', :dk2, 'items')", "chartByCountryData")
+                .setParameter("dk2", dfe.selectionSet.getFields("charts/byCountry/listByTab")[0].arguments["id"])
 
         if (dfe.selectionSet.contains("charts/byIndustry/listByTab"))
             cb
-                    .select("jsonb_get(chartByIndustryData, 'data', :dk3, 'items')", "chartByIndustryData")
-                    .setParameter("dk3", dfe.selectionSet.getFields("charts/byIndustry/listByTab")[0].arguments["id"])
+                .select("jsonb_get(chartByIndustryData, 'data', :dk3, 'items')", "chartByIndustryData")
+                .setParameter("dk3", dfe.selectionSet.getFields("charts/byIndustry/listByTab")[0].arguments["id"])
 
         if (dfe.selectionSet.contains("charts/byServicesProvided/listByService"))
             cb
-                    .select("jsonb_get(chartByServicesProvidedData, 'data', :dk4, 'items')", "chartByServicesProvidedData")
-                    .setParameter("dk4", dfe.selectionSet.getFields("charts/byServicesProvided/listByService")[0].arguments["id"])
+                .select("jsonb_get(chartByServicesProvidedData, 'data', :dk4, 'items')", "chartByServicesProvidedData")
+                .setParameter("dk4", dfe.selectionSet.getFields("charts/byServicesProvided/listByService")[0].arguments["id"])
 
         val result = cb.resultList.firstOrNull()
 
@@ -125,40 +125,40 @@ class CompanyStatisticQuery(
         val chartByIndustry = result?.getOrNull<Chart>("chartByIndustry")
         val chartByServicesProvided = result?.getOrNull<Chart>("chartByServicesProvided")
         val chartConnectionCountByYearData =
-                mapRawData(
-                        result?.getOrNull("chartConnectionCountByYearData"),
-                        object : TypeReference<List<ChartListItemWithServicesCount>>() {}
-                )
+            mapRawData(
+                result?.getOrNull("chartConnectionCountByYearData"),
+                object : TypeReference<List<ChartListItemWithServicesCount>>() {},
+            )
         val chartByCountryData =
-                mapRawData(result?.getOrNull("chartByCountryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
+            mapRawData(result?.getOrNull("chartByCountryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
         val chartByIndustryData =
-                mapRawData(result?.getOrNull("chartByIndustryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
+            mapRawData(result?.getOrNull("chartByIndustryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
         val chartByServicesProvidedData =
-                mapRawData(result?.getOrNull("chartByServicesProvidedData"), object : TypeReference<List<ChartListItemWithUsesCount>>() {})
+            mapRawData(result?.getOrNull("chartByServicesProvidedData"), object : TypeReference<List<ChartListItemWithUsesCount>>() {})
 
         val companyIds = collectCompanyIds(
-                chartConnectionCountByYear,
-                chartByCountry,
-                chartByIndustry,
-                chartByServicesProvided,
-                chartConnectionCountByYearData,
-                chartByCountryData,
-                chartByIndustryData,
-                chartByServicesProvidedData
+            chartConnectionCountByYear,
+            chartByCountry,
+            chartByIndustry,
+            chartByServicesProvided,
+            chartConnectionCountByYearData,
+            chartByCountryData,
+            chartByIndustryData,
+            chartByServicesProvidedData,
         )
 
         val companies: Map<UUID, CompanyReadEntity> =
-                companyReadRepository
-                        .findByIdIsIn(companyIds.toList())
-                        .parallelStream()
-                        .collect(Collectors.toMap(CompanyReadEntity::id, Function.identity()))
+            companyReadRepository
+                .findByIdIsIn(companyIds.toList())
+                .parallelStream()
+                .collect(Collectors.toMap(CompanyReadEntity::id, Function.identity()))
 
         val mapTabs = { chart: Chart? ->
             chart?.tabs?.map {
                 ChartTabItem(
-                        id = it.id,
-                        name = it.name,
-                        total = it.total,
+                    id = it.id,
+                    name = it.name,
+                    total = it.total,
                 )
             }.orEmpty()
         }
@@ -166,72 +166,72 @@ class CompanyStatisticQuery(
         val mapData = { chart: Chart? ->
             chart?.items?.map {
                 ChartItemWithHint(
-                        it.key,
-                        it.name,
-                        it.value,
-                        hints = it.companyIds
-                                .stream().map(companies::get)
-                                .filter(Objects::nonNull)
-                                .collect(Collectors.toList()).map { hint ->
-                                    ChartItemHint(
-                                            name = hint!!.name,
-                                            image = hint.data.logo?.let { logo -> Image(logo) }
-                                    )
-                                }
+                    it.key,
+                    it.name,
+                    it.value,
+                    hints = it.companyIds
+                        .stream().map(companies::get)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList()).map { hint ->
+                            ChartItemHint(
+                                name = hint!!.name,
+                                image = hint.data.logo?.let { logo -> Image(logo) },
+                            )
+                        },
                 )
             }.orEmpty()
         }
 
         return CompanyStatistic(
-                total = CompanyStatisticTotal(
-                        result?.getOrNull<Int>("totalConnections") ?: 0,
-                        result?.getOrNull<Int>("totalServicesProvided") ?: 0,
-                        result?.getOrNull<Int>("totalCollaborationCompanies") ?: 0,
+            total = CompanyStatisticTotal(
+                result?.getOrNull<Int>("totalConnections") ?: 0,
+                result?.getOrNull<Int>("totalServicesProvided") ?: 0,
+                result?.getOrNull<Int>("totalCollaborationCompanies") ?: 0,
+            ),
+            charts = CompanyStatisticCharts(
+                ChartConnectionCountByYear(
+                    data = mapData(chartConnectionCountByYear),
+                    tabs = mapTabs(chartConnectionCountByYear),
+                    listByTab = chartConnectionCountByYearData?.map {
+                        ChartConnectionCountByYearItem(
+                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                            companyRole = it.companyRole,
+                            companyRoleType = ConnectionCompanyRoleType.valueOf(it.companyRoleType.name),
+                            servicesCount = it.servicesCount,
+                        )
+                    }.orEmpty(),
                 ),
-                charts = CompanyStatisticCharts(
-                        ChartConnectionCountByYear(
-                                data = mapData(chartConnectionCountByYear),
-                                tabs = mapTabs(chartConnectionCountByYear),
-                                listByTab = chartConnectionCountByYearData?.map {
-                                    ChartConnectionCountByYearItem(
-                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                                            companyRole = it.companyRole,
-                                            companyRoleType = ConnectionCompanyRoleType.valueOf(it.companyRoleType.name),
-                                            servicesCount = it.servicesCount
-                                    )
-                                }.orEmpty()
-                        ),
-                        ChartByCountry(
-                                data = mapData(chartByCountry),
-                                tabs = mapTabs(chartByCountry),
-                                listByTab = chartByCountryData?.map {
-                                    println(it.companyId)
-                                    ChartByCountryItem(
-                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                                            companyRoles = it.roles.toList()
-                                    )
-                                }.orEmpty()
-                        ),
-                        ChartByIndustry(
-                                data = mapData(chartByIndustry),
-                                tabs = mapTabs(chartByIndustry),
-                                listByTab = chartByIndustryData?.map {
-                                    ChartByIndustryItem(
-                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                                            companyRoles = it.roles.toList()
-                                    )
-                                }.orEmpty()
-                        ),
-                        ChartByServicesProvided(
-                                data = mapData(chartByServicesProvided),
-                                listByService = chartByServicesProvidedData?.map {
-                                    ChartByServicesProvidedItem(
-                                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                                            usesCount = it.usesCount
-                                    )
-                                }.orEmpty()
-                        ),
+                ChartByCountry(
+                    data = mapData(chartByCountry),
+                    tabs = mapTabs(chartByCountry),
+                    listByTab = chartByCountryData?.map {
+                        println(it.companyId)
+                        ChartByCountryItem(
+                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                            companyRoles = it.roles.toList(),
+                        )
+                    }.orEmpty(),
                 ),
+                ChartByIndustry(
+                    data = mapData(chartByIndustry),
+                    tabs = mapTabs(chartByIndustry),
+                    listByTab = chartByIndustryData?.map {
+                        ChartByIndustryItem(
+                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                            companyRoles = it.roles.toList(),
+                        )
+                    }.orEmpty(),
+                ),
+                ChartByServicesProvided(
+                    data = mapData(chartByServicesProvided),
+                    listByService = chartByServicesProvidedData?.map {
+                        ChartByServicesProvidedItem(
+                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                            usesCount = it.usesCount,
+                        )
+                    }.orEmpty(),
+                ),
+            ),
         )
     }
 }

@@ -11,18 +11,18 @@ class UserHandlerService(
     private val userReadRepository: UserReadRepository
 ) {
     fun createOrUpdate(user: User): UserReadEntity =
-            userReadRepository.findById(user.id).orElse(
-                    UserReadEntity(
-                            id = user.id,
-                    ),
+        userReadRepository.findById(user.id).orElse(
+            UserReadEntity(
+                id = user.id,
+            ),
+        ).apply {
+            data = UserReadEntity.Data(
+                lastName = user.lastName,
+                firstName = user.firstName,
+                image = user.image,
             ).apply {
-                data = UserReadEntity.Data(
-                        lastName = user.lastName,
-                        firstName = user.firstName,
-                        image = user.image,
-                ).apply {
-                    slug = user.slug
-                }
-                userReadRepository.save(this)
+                slug = user.slug
             }
+            userReadRepository.save(this)
+        }
 }

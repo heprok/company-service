@@ -21,10 +21,10 @@ class EmployeesQuery(private val userJobPositionService: UserJobPositionService)
     ): UserList {
         val page = userJobPositionService.getByCompanyId(UUID.fromString(companyId), limit, offset)
         return UserList(
-                items = page.content.map {
-                    User.fromEntity(it)
-                },
-                totalItems = page.totalElements.toInt(),
+            items = page.content.map {
+                User.fromEntity(it)
+            },
+            totalItems = page.totalElements.toInt(),
         )
     }
 }

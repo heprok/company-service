@@ -1,6 +1,5 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.updater.handler.connection.Connection
 import com.briolink.event.Event
 
 data class ConnectionCreatedEvent(override val data: Connection) : Event<Connection>("1.0")

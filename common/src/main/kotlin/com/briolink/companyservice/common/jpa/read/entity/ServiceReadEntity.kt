@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -48,10 +48,9 @@ class ServiceReadEntity(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
-        @JsonProperty("logo")
+        @JsonProperty
         var logo: URL? = null,
-        @JsonProperty("slug")
+        @JsonProperty
         var slug: String,
     )
-
 }

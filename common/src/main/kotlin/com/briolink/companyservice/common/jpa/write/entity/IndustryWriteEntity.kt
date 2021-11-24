@@ -11,7 +11,7 @@ class IndustryWriteEntity : BaseWriteEntity() {
     @Column(name = "name", nullable = false)
     lateinit var name: String
     fun toDomain(): Industry = Industry(
-            id = id!!,
-            name = name,
+        id = id!!,
+        name = name,
     )
 }

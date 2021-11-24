@@ -44,8 +44,7 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
     ): UserPermissionRoleReadEntity?
 
     @Query(
-        """
-                SELECT count(c.id) > 0
+        """SELECT count(c.id) > 0
                 FROM UserPermissionRoleReadEntity c
                 WHERE 
                     c.accessObjectUuid = :accessObjectUuid AND

@@ -1,6 +1,5 @@
 package com.briolink.companyservice.api.service.connection.dto
 
-
 data class SortDto<T>(
     val key: T,
     val direction: SortDirection

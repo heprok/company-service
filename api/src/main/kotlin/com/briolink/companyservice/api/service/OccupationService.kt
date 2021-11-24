@@ -18,12 +18,12 @@ class OccupationService(
     val mapper = OccupationMapper.INSTANCE
 
     fun create(name: String): OccupationWriteEntity =
-            occupationWriteRepository.findByName(name) ?: OccupationWriteEntity().apply {
-                this.name = name
-                occupationWriteRepository.save(this).let {
-                    eventPublisher.publishAsync(OccupationCreatedEvent(it.toDomain()))
-                }
+        occupationWriteRepository.findByName(name) ?: OccupationWriteEntity().apply {
+            this.name = name
+            occupationWriteRepository.save(this).let {
+                eventPublisher.publishAsync(OccupationCreatedEvent(it.toDomain()))
             }
+        }
 
     fun findById(id: UUID) = occupationWriteRepository.findById(id)
 }

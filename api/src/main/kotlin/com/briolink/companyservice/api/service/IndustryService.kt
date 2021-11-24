@@ -15,12 +15,12 @@ class IndustryService(
     private val eventPublisher: EventPublisher,
 ) {
     fun create(name: String): IndustryWriteEntity =
-            industryWriteRepository.findByName(name) ?: IndustryWriteEntity().apply {
-                this.name = name
-                industryWriteRepository.save(this).let {
-                    eventPublisher.publish(IndustryCreatedEvent(it.toDomain()))
-                }
+        industryWriteRepository.findByName(name) ?: IndustryWriteEntity().apply {
+            this.name = name
+            industryWriteRepository.save(this).let {
+                eventPublisher.publish(IndustryCreatedEvent(it.toDomain()))
             }
+        }
 
     fun findById(id: UUID) = industryWriteRepository.findById(id)
 }

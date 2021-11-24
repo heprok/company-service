@@ -6,10 +6,10 @@ import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeE
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
-import java.util.UUID
-import javax.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import javax.persistence.EntityNotFoundException
 
 @Service
 @Transactional
@@ -24,19 +24,18 @@ class PermissionService(
         roleType: UserPermissionRoleTypeEnum
     ): UserPermissionRoleReadEntity {
         return userPermissionRoleReadRepository.getUserPermissionRole(
-                accessObjectUuid = accessObjectUuid,
-                accessObjectType = accessObjectType.value,
-                userId = userId,
-                userPermissionRoleType = roleType.value,
+            accessObjectUuid = accessObjectUuid,
+            accessObjectType = accessObjectType.value,
+            userId = userId,
+            userPermissionRoleType = roleType.value,
         ) ?: UserPermissionRoleReadEntity(
-                accessObjectUuid = accessObjectUuid,
-                userId = userId,
-                _accessObjectType = accessObjectType.value,
-                _role = roleType.value,
+            accessObjectUuid = accessObjectUuid,
+            userId = userId,
+            _accessObjectType = accessObjectType.value,
+            _role = roleType.value,
         ).let {
             userPermissionRoleReadRepository.save(it)
         }
-
     }
 
 //    fun editRole(accessObjectUuid: UUID, userId: UUID, roleType: UserPermissionRoleTypeEnum): UserPermissionRoleReadEntity {
@@ -50,15 +49,15 @@ class PermissionService(
         userId: UUID,
         roleType: UserPermissionRoleTypeEnum
     ): UserPermissionRoleReadEntity =
-            userPermissionRoleReadRepository.findById(id).orElseThrow {
-                throw EntityNotFoundException("Not found permission with id: $id")
-            }.apply {
-                this.accessObjectUuid = accessObjectUuid
-                this.userId = userId
-                this.accessObjectType = accessObjectType
-                this.role = roleType
-                userPermissionRoleReadRepository.save(this)
-            }
+        userPermissionRoleReadRepository.findById(id).orElseThrow {
+            throw EntityNotFoundException("Not found permission with id: $id")
+        }.apply {
+            this.accessObjectUuid = accessObjectUuid
+            this.userId = userId
+            this.accessObjectType = accessObjectType
+            this.role = roleType
+            userPermissionRoleReadRepository.save(this)
+        }
 
     fun isHavePermission(
         userId: UUID,
@@ -67,13 +66,13 @@ class PermissionService(
         permissionRight: PermissionRightEnum
     ): Boolean {
         userPermissionRoleReadRepository.findByAccessObjectUuidAndUserId(userId = userId, accessObjectUuid = companyId)
-                .let { listPermission ->
-                    listPermission.forEach {
-                        if (it.role == UserPermissionRoleTypeEnum.Owner && it.accessObjectType == accessObjectType) return true
-                        if (it.accessObjectType == AccessObjectTypeEnum.Company && it.role == UserPermissionRoleTypeEnum.Owner) return true
-                        if (it.role == UserPermissionRoleTypeEnum.Employee && permissionRight == PermissionRightEnum.VerifyCollegue) return true
-                    }
+            .let { listPermission ->
+                listPermission.forEach {
+                    if (it.role == UserPermissionRoleTypeEnum.Owner && it.accessObjectType == accessObjectType) return true
+                    if (it.accessObjectType == AccessObjectTypeEnum.Company && it.role == UserPermissionRoleTypeEnum.Owner) return true
+                    if (it.role == UserPermissionRoleTypeEnum.Employee && permissionRight == PermissionRightEnum.VerifyCollegue) return true
                 }
+            }
         return false
     }
 

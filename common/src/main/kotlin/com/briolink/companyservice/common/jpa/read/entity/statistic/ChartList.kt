@@ -18,7 +18,8 @@ class ChartDataList<T>(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class ChartList<T> {
-    @JsonProperty var data: MutableMap<String, ChartDataList<T>> = mutableMapOf()
+    @JsonProperty
+    var data: MutableMap<String, ChartDataList<T>> = mutableMapOf()
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
