@@ -1,7 +1,7 @@
 package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromEntity
-import com.briolink.companyservice.api.service.UserJobPositionService
+import com.briolink.companyservice.api.service.EmployeeService
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserList
 import com.netflix.graphql.dgs.DgsComponent
@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
-class EmployeesQuery(private val userJobPositionService: UserJobPositionService) {
+class EmployeesQuery(private val employeeService: EmployeeService) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getEmployees(
@@ -19,7 +19,7 @@ class EmployeesQuery(private val userJobPositionService: UserJobPositionService)
         @InputArgument("offset") offset: Int,
         @InputArgument("companyId") companyId: String
     ): UserList {
-        val page = userJobPositionService.getByCompanyId(UUID.fromString(companyId), limit, offset)
+        val page = employeeService.getByCompanyId(UUID.fromString(companyId), limit, offset)
         return UserList(
             items = page.content.map {
                 User.fromEntity(it)

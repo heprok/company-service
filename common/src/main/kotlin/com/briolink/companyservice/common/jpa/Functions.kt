@@ -16,16 +16,16 @@ import org.hibernate.type.Type
 class Functions : MetadataBuilderContributor {
     override fun contribute(metadataBuilder: MetadataBuilder) {
         metadataBuilder.applySqlFunction(
-                "fts_partial",
-                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @@ to_tsquery(quote_literal(quote_literal(?2)) || ':*')"),
+            "fts_partial",
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @@ to_tsquery(quote_literal(quote_literal(?2)) || ':*')"),
         )
         metadataBuilder.applySqlFunction(
-                "int4range_contains",
-                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 <@ int4range(?2, ?3)"),
+            "int4range_contains",
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 <@ int4range(?2, ?3)"),
         )
         metadataBuilder.applySqlFunction(
-                "array_contains",
-                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @> ?2"),
+            "array_contains",
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @> ?2"),
         )
         metadataBuilder.applySqlFunction("fts_rank", StandardSQLFunction("ts_rank", DoubleType.INSTANCE))
         metadataBuilder.applySqlFunction("jsonb_sets", JsonbSetsFunc())
@@ -33,30 +33,30 @@ class Functions : MetadataBuilderContributor {
 
         metadataBuilder.applySqlFunction("lower", StandardSQLFunction("lower", StringType.INSTANCE))
         metadataBuilder.applySqlFunction(
-                "orderby_equal",
-                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 = ?2"),
+            "orderby_equal",
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 = ?2"),
         )
         metadataBuilder.applySqlFunction(
-                "array_append",
-                object : SQLFunctionTemplate(null, "array_append(?1, ?2)") {
-                    @Throws(QueryException::class)
-                    override fun getReturnType(argumentType: Type?, mapping: Mapping?): Type? {
-                        return argumentType
-                    }
-                },
+            "array_append",
+            object : SQLFunctionTemplate(null, "array_append(?1, ?2)") {
+                @Throws(QueryException::class)
+                override fun getReturnType(argumentType: Type?, mapping: Mapping?): Type? {
+                    return argumentType
+                }
+            },
         )
         metadataBuilder.applySqlFunction(
-                "array_remove",
-                object : SQLFunctionTemplate(null, "array_remove(?1, ?2)") {
-                    @Throws(QueryException::class)
-                    override fun getReturnType(argumentType: Type?, mapping: Mapping?): Type? {
-                        return argumentType
-                    }
-                },
+            "array_remove",
+            object : SQLFunctionTemplate(null, "array_remove(?1, ?2)") {
+                @Throws(QueryException::class)
+                override fun getReturnType(argumentType: Type?, mapping: Mapping?): Type? {
+                    return argumentType
+                }
+            },
         )
         metadataBuilder.applySqlFunction(
-                "array_contains_element",
-                SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @> array[?2]"),
+            "array_contains_element",
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @> array[?2]"),
         )
     }
 }

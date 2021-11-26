@@ -14,7 +14,14 @@ delete from read.service;
 delete from write.industry;
 delete from read.industry;
 
+ALTER TABLE read.employee ALTER COLUMN user_job_position_ids SET DATA TYPE UUID[] USING "user_job_position_ids"::uuid[]
 
+select pg_typeof(user_job_position_ids) from read.employee
+delete from read.employee
+select * from read.employee c where c.user_job_position_ids @> array['88939030-abd3-4bda-acac-1243e804cade']::uuid[]
+
+create index idx_connection_deleted_user_ids on read.employee using gin (deleted_user_ids)
+alter table read.employee drop column deleted_user_ids
 alter table read.connection drop column dates_collaboration;
 delete from read.connection;
 delete from public.databasechangelog where orderexecuted = 7

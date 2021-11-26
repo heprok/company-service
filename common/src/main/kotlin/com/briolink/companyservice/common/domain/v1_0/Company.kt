@@ -1,10 +1,10 @@
 package com.briolink.companyservice.common.domain.v1_0
 
-import com.briolink.companyservice.common.jpa.dto.location.LocationId
+import com.briolink.companyservice.common.dto.location.LocationId
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
-import java.util.*
+import java.util.UUID
 
 data class Company(
     @JsonProperty

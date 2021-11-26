@@ -14,13 +14,7 @@ import com.briolink.companyservice.api.types.Keyword
 import com.briolink.companyservice.api.types.Occupation
 import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.User
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.*
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
     Company(
@@ -58,11 +52,12 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         },
     )
 
-fun User.Companion.fromEntity(entity: UserJobPositionReadEntity) = User(
+fun User.Companion.fromEntity(entity: EmployeeReadEntity) = User(
     id = entity.userId.toString(),
     firstName = entity.data.user.firstName,
     lastName = entity.data.user.lastName,
-    jobPosition = entity.data.title,
+    jobPosition = entity.data.userJobPositions.toList()
+        .let { jobPosition -> jobPosition.find { it.second.isCurrent } ?: jobPosition.first() }.second.title,
     slug = entity.data.user.slug,
     image = entity.data.user.image?.let { Image(url = it) },
 )

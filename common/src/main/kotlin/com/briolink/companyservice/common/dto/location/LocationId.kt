@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.jpa.dto.location
+package com.briolink.companyservice.common.dto.location
 
 import com.briolink.companyservice.common.jpa.enumration.LocationTypeEnum
 import com.fasterxml.jackson.annotation.JsonProperty

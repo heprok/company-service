@@ -2,7 +2,7 @@ package com.briolink.companyservice.updater.dataloader
 
 import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
@@ -10,11 +10,12 @@ import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositi
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.UUID
+import kotlin.random.Random
 
 @Component
 @Order(2)
 class UserJobPositionDataLoader(
-    var userJobPositionReadRepository: UserJobPositionReadRepository,
+    var employeeReadRepository: EmployeeReadRepository,
     var userReadRepository: UserReadRepository,
     var companyReadRepository: CompanyReadRepository,
     var companyHandlerService: CompanyHandlerService,
@@ -36,7 +37,7 @@ class UserJobPositionDataLoader(
 
     override fun loadData() {
         if (
-            userJobPositionReadRepository.count().toInt() == 0 &&
+            employeeReadRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0
         ) {
@@ -46,22 +47,24 @@ class UserJobPositionDataLoader(
             for (i in 1..COUNT_JOB_POSITION) {
                 val userRandom = listUser.random()
                 val companyRandom = listCompany.random()
-                if (!userJobPositionReadRepository.existsByUserIdAndCompanyId(userId = userRandom.id, companyId = companyRandom.id)) {
-                    userJobPositionHandlerService.createOrUpdate(
-                        UserJobPosition(
-                            id = UUID.randomUUID(),
-                            title = listJobPosition.random(),
-                            isCurrent = true,
-                            companyId = companyRandom.id,
-                            userId = userRandom.id,
-                        ),
-                    )
-                }
+                val startDate = randomDate(2010, 2021)
+                val endDate = if (Random.nextBoolean()) randomDate(startDate.year, 2021) else null
+                userJobPositionHandlerService.createOrUpdate(
+                    UserJobPosition(
+                        id = UUID.randomUUID(),
+                        title = listJobPosition.random(),
+                        isCurrent = true,
+                        companyId = companyRandom.id,
+                        userId = userRandom.id,
+                        startDate = startDate,
+                        endDate = endDate,
+                    ),
+                )
             }
         }
     }
 
     companion object {
-        const val COUNT_JOB_POSITION = 40
+        const val COUNT_JOB_POSITION = 200
     }
 }

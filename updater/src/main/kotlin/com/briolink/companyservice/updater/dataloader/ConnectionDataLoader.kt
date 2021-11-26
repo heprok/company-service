@@ -3,7 +3,7 @@ package com.briolink.companyservice.updater.dataloader
 import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.handler.connection.Connection
@@ -25,7 +25,7 @@ import kotlin.random.Random
 class ConnectionDataLoader(
     private var connectionReadRepository: ConnectionReadRepository,
     private var userReadRepository: UserReadRepository,
-    private var userJobPositionReadRepository: UserJobPositionReadRepository,
+    private var employeeReadRepository: EmployeeReadRepository,
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
     private var connectionServiceHandler: ConnectionHandlerService,
@@ -37,7 +37,7 @@ class ConnectionDataLoader(
             userReadRepository.count().toInt() != 0 &&
             serviceReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0 &&
-            userJobPositionReadRepository.count().toInt() != 0
+            employeeReadRepository.count().toInt() != 0
         ) {
             val listCompany = companyReadRepository.findAll()
             val listUser = userReadRepository.findAll()
@@ -50,7 +50,8 @@ class ConnectionDataLoader(
                 ConnectionCompanyRole(UUID.randomUUID(), "Vendor", ConnectionCompanyRoleType.Seller),
             )
             val listService = serviceReadRepository.findAll()
-            val connectionStatusList = listOf(ConnectionStatus.Verified, ConnectionStatus.Pending, ConnectionStatus.InProgress)
+            val connectionStatusList =
+                listOf(ConnectionStatus.Verified, ConnectionStatus.Pending, ConnectionStatus.InProgress)
             for (i in 1..COUNT_CONNECTION) {
                 val from = listCompany.random()
                 val to = listCompany.random().let {
@@ -104,6 +105,6 @@ class ConnectionDataLoader(
     }
 
     companion object {
-        const val COUNT_CONNECTION = 2000
+        const val COUNT_CONNECTION = 0
     }
 }

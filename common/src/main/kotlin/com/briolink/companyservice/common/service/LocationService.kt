@@ -1,9 +1,9 @@
 package com.briolink.companyservice.common.service
 
 import com.briolink.companyservice.common.config.AppEndpointsProperties
-import com.briolink.companyservice.common.jpa.dto.location.LocationId
-import com.briolink.companyservice.common.jpa.dto.location.LocationInfoDto
-import com.briolink.companyservice.common.jpa.dto.location.LocationItemDto
+import com.briolink.companyservice.common.dto.location.LocationId
+import com.briolink.companyservice.common.dto.location.LocationInfoDto
+import com.briolink.companyservice.common.dto.location.LocationItemDto
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 

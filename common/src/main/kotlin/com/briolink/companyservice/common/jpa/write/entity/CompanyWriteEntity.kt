@@ -3,7 +3,7 @@ package com.briolink.companyservice.common.jpa.write.entity
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import com.briolink.companyservice.common.domain.v1_0.Occupation
-import com.briolink.companyservice.common.jpa.dto.location.LocationId
+import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumration.LocationTypeEnum
 import com.briolink.companyservice.common.util.StringUtil
 import org.hibernate.annotations.Type

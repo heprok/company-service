@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.jpa.dto.location.LocationInfoDto
+import com.briolink.companyservice.common.dto.location.LocationInfoDto
 import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
 import com.fasterxml.jackson.annotation.JsonProperty
