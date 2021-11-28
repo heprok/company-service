@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity.statistic
 
-import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID

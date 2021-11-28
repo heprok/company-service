@@ -12,8 +12,8 @@ import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
 import com.briolink.companyservice.common.dto.location.LocationId
-import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
+import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent

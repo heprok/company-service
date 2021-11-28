@@ -1,6 +1,6 @@
 package com.briolink.companyservice.api.service.connection.dto
 
-import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import java.time.Year
 import java.util.UUID
 

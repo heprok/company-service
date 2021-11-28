@@ -1,7 +1,7 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.write.entity.BaseWriteEntity
 import org.hibernate.annotations.Type
 import java.util.UUID

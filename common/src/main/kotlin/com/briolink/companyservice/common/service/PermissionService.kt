@@ -1,8 +1,8 @@
 package com.briolink.companyservice.common.service
 
-import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
-import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
+import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository

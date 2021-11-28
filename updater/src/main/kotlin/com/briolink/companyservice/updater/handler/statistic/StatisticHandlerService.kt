@@ -1,7 +1,7 @@
 package com.briolink.companyservice.updater.handler.statistic
 
-import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartItem

@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
-import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.projection.IdNameProjection
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import org.springframework.data.jpa.repository.JpaRepository

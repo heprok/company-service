@@ -4,8 +4,8 @@ import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
-import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
+import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation

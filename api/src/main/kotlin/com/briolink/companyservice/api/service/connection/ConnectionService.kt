@@ -10,7 +10,7 @@ import com.briolink.companyservice.api.service.connection.dto.SortDto
 import com.briolink.companyservice.api.service.connection.dto.TabItemDto
 import com.briolink.companyservice.common.domain.v1_0.Statistic
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
-import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.cte.RoleProjectionCte

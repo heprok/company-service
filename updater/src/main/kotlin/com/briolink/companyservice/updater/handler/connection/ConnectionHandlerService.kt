@@ -1,9 +1,9 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.CompanyRoleTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.ConnectionStatusEnum
-import com.briolink.companyservice.common.jpa.enumration.PermissionRightEnum
+import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity

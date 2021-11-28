@@ -1,4 +1,4 @@
-package com.briolink.companyservice.common.jpa.enumration
+package com.briolink.companyservice.common.jpa.enumeration
 
 import com.fasterxml.jackson.annotation.JsonValue
 

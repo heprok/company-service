@@ -3,8 +3,8 @@ package com.briolink.companyservice.api.service
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
-import com.briolink.companyservice.common.jpa.enumration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumration.UserPermissionRoleTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
+import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
