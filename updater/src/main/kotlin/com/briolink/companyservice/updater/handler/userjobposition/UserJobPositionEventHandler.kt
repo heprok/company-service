@@ -8,7 +8,7 @@ class UserJobPositionCreatedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
 ) : IEventHandler<UserJobPositionUpdatedEvent> {
     override fun handle(event: UserJobPositionUpdatedEvent) {
-        userJobPositionHandlerService.createOrUpdate(event.data)
+        userJobPositionHandlerService.create(event.data)
     }
 }
 
@@ -17,7 +17,7 @@ class UserJobPositionUpdatedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
 ) : IEventHandler<UserJobPositionUpdatedEvent> {
     override fun handle(event: UserJobPositionUpdatedEvent) {
-        userJobPositionHandlerService.createOrUpdate(event.data)
+        userJobPositionHandlerService.update(event.data)
     }
 }
 

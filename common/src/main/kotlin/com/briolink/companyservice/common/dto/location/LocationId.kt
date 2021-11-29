@@ -10,11 +10,11 @@ class LocationId(
     var type: LocationTypeEnum,
 ) {
     companion object {
-        fun fromStringId(idAndType: String): LocationId {
-            val attribute = idAndType.split(";")
+        fun fromString(typeAndId: String): LocationId {
+            val attribute = typeAndId.split(";")
             return LocationId(
-                id = attribute[0].toInt(),
-                type = LocationTypeEnum.valueOf(attribute[1]),
+                id = attribute[1].toInt(),
+                type = LocationTypeEnum.valueOf(attribute[0]),
             )
         }
     }

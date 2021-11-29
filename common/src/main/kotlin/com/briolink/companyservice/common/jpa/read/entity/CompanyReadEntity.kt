@@ -59,7 +59,7 @@ class CompanyReadEntity(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Occupation(
         @JsonProperty
-        val id: String,
+        val id: UUID,
         @JsonProperty
         val name: String,
     )

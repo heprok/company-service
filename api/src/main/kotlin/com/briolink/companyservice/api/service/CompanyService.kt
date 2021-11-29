@@ -36,7 +36,7 @@ class CompanyService(
             eventPublisher.publish(
                 CompanyCreatedEvent(
                     it.toDomain().apply {
-                        location = locationId?.let { locationService.getLocation(it)?.location }
+                        location = locationId?.let { locationService.getLocation(it)?.toString() }
                     },
                 ),
             )

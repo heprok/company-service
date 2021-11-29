@@ -1,5 +1,6 @@
 type Query {
     getCompany(slug: String!): CompanyAndUserRole!
+    getCompanyById(id: ID!) : Company!
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
     getIndustries(query: String!, companyId: ID): [Industry]!
     getOccupations(query: String!): [Occupation]!

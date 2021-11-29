@@ -49,7 +49,7 @@ class UserJobPositionDataLoader(
                 val companyRandom = listCompany.random()
                 val startDate = randomDate(2010, 2021)
                 val endDate = if (Random.nextBoolean()) randomDate(startDate.year, 2021) else null
-                userJobPositionHandlerService.createOrUpdate(
+                userJobPositionHandlerService.create(
                     UserJobPosition(
                         id = UUID.randomUUID(),
                         title = listJobPosition.random(),

@@ -10,7 +10,9 @@ import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleType
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import com.netflix.graphql.dgs.exceptions.DgsEntityNotFoundException
 import org.springframework.security.access.prepost.PreAuthorize
+import java.util.UUID
 
 @DgsComponent
 class CompanyQuery(private val companyService: CompanyService) {
@@ -28,4 +30,9 @@ class CompanyQuery(private val companyService: CompanyService) {
             },
         )
     }
+
+    @DgsQuery
+    fun getCompanyById(@InputArgument("id") id: String): Company =
+        companyService.findById(UUID.fromString(id))
+            .orElseThrow { throw DgsEntityNotFoundException("$id company not found") }.let { Company.fromEntity(it) }
 }

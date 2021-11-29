@@ -25,7 +25,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     fun getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
         companyId: UUID,
         type: Int = ConnectionStatusEnum.Verified.value
-    ): List<ConnectionReadEntity> // ktlint-disable max-line-length
+    ): List<ConnectionReadEntity>
 
     @Modifying
     @Query("delete from ConnectionReadEntity c where c.id = ?1")

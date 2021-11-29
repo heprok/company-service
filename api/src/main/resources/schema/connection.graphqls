@@ -84,7 +84,7 @@ input ConnectionFilterParameters {
     collaborationDates: YearRange
     industryIds: [ID!]
     serviceIds: [ID!]
-    location: String
+    locationId: ID
     status: [ConnectionStatus!]
 }
 

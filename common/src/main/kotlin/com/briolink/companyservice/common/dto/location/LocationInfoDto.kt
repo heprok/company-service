@@ -4,11 +4,28 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class LocationInfoDto(
     @JsonProperty
-    val country: CountryDto,
+    val country: LocationInfoType,
     @JsonProperty
-    val state: StateDto? = null,
+    val state: LocationInfoType? = null,
     @JsonProperty
-    val city: CityDto? = null,
+    val city: LocationInfoType? = null,
+) {
+    override fun toString(): String =
+        if (city != null) "${city.name}, ${state!!.name}, ${country.name}"
+        else if (state != null) "${state.name}, ${country.name}"
+        else country.name
+}
+
+data class LocationInfoType(
     @JsonProperty
-    val location: String
+    val id: Int,
+    @JsonProperty
+    val name: String,
+)
+
+data class LocationItemDto(
+    @JsonProperty
+    val id: String,
+    @JsonProperty
+    val name: String,
 )

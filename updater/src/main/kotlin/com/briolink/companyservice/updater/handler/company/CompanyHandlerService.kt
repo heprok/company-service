@@ -43,7 +43,7 @@ class CompanyHandlerService(
                         )
                     }
                 } ?: mutableListOf(),
-                occupation = company.occupation?.let { CompanyReadEntity.Occupation(it.id.toString(), it.name) },
+                occupation = company.occupation?.let { CompanyReadEntity.Occupation(it.id, it.name) },
             ).apply {
                 location = company.locationId?.let { locationService.getLocation(it) }
             }

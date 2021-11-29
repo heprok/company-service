@@ -10,6 +10,7 @@ import com.briolink.companyservice.api.types.ConnectionListOptions
 import com.briolink.companyservice.api.types.ConnectionTab
 import com.briolink.companyservice.api.types.ConnectionTabItemsCount
 import com.briolink.companyservice.api.types.IdNameItem
+import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
@@ -39,7 +40,7 @@ class ConnectionQuery(
                 collaborationEndDate = options.filter?.collaborationDates?.end,
                 industryIds = options.filter?.industryIds?.map { UUID.fromString(it) },
                 serviceIds = options.filter?.serviceIds?.map { UUID.fromString(it) },
-                location = options.filter?.location,
+                locationId = options.filter?.locationId?.let { LocationId.fromString(it) },
                 status = options.filter?.status?.map { ConnectionStatusEnum.valueOf(it.name) },
             )
             val sortDto = options.sort?.let {

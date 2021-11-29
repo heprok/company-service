@@ -15,6 +15,7 @@ import com.briolink.companyservice.api.types.Occupation
 import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.common.jpa.read.entity.*
+import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
     Company(
@@ -23,7 +24,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         website = entity.data.website,
         logo = Image(entity.data.logo),
         slug = entity.slug,
-        location = entity.data.location?.location,
+        location = entity.data.location?.toString(),
         facebook = entity.data.facebook,
         twitter = entity.data.twitter,
         description = entity.data.description,
@@ -36,7 +37,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         },
         occupation = entity.data.occupation?.let {
             Occupation(
-                id = it.id,
+                id = it.id.toString(),
                 name = it.name,
             )
         },
@@ -52,12 +53,51 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         },
     )
 
+fun Company.Companion.fromEntity(entity: CompanyWriteEntity) =
+    Company(
+        id = entity.id.toString(),
+        name = entity.name,
+        website = entity.websiteUrl,
+        logo = Image(entity.logo),
+        slug = entity.slug,
+        location = entity.getLocationId()?.toString(),
+        facebook = entity.facebook,
+        twitter = entity.twitter,
+        description = entity.description,
+        isTypePublic = entity.isTypePublic,
+        industry = entity.industry?.let {
+            Industry(
+                id = it.id.toString(),
+                name = it.name,
+            )
+        },
+        occupation = entity.occupation?.let {
+            Occupation(
+                id = it.id.toString(),
+                name = it.name,
+            )
+        },
+        keywords = entity.keywords.let { list ->
+            list.map { keyword ->
+                keyword.let {
+                    Keyword(
+                        id = it.id.toString(),
+                        name = it.name,
+                    )
+                }
+            }
+        },
+    )
+
 fun User.Companion.fromEntity(entity: EmployeeReadEntity) = User(
     id = entity.userId.toString(),
     firstName = entity.data.user.firstName,
     lastName = entity.data.user.lastName,
     jobPosition = entity.data.userJobPositions.toList()
-        .let { jobPosition -> jobPosition.find { it.second.isCurrent } ?: jobPosition.first() }.second.title,
+        .let { jobPosition ->
+            jobPosition.find { it.second.isCurrent && it.second.endDate == null }
+                ?: jobPosition.first { it.second.endDate == null }
+        }.second.title,
     slug = entity.data.user.slug,
     image = entity.data.user.image?.let { Image(url = it) },
 )
@@ -94,7 +134,7 @@ fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInf
     name = entity.data.name,
     slug = entity.slug,
     logo = entity.data.logo?.let { Image(it) },
-    location = entity.data.location?.location,
+    location = entity.data.location?.toString(),
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(

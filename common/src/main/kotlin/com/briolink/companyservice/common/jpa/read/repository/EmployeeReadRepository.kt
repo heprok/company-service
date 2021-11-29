@@ -30,16 +30,13 @@ interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, UUID> {
         @Param("image") image: String?,
     )
 
-    /*    @Modifying
-        @Query(
-            """update EmployeeReadEntity e 
-                set e.userJobPositionIds = function('array_remove', c.hiddenCompanyIds, :userJobPositionId).
-                e.data = function("json)
-            """
-        )
-        fun deleteByJobPositionId(@Param("userJobPositionId") userJobPositionId: UUID)*/
+//    @Query(
+//        """SELECT e
+//           FROM EmployeeReadEntity as e
+//           WHERE data ->>
+//        """
+//    )
     fun findByCompanyId(companyId: UUID, pageable: Pageable? = null): Page<EmployeeReadEntity>
-//    @Query("SELECT c FROM IndustryReadEntity c WHERE (:query is null or function('fts_partial', c.name, :query) = true)")
 
     @Query(
         """SELECT e

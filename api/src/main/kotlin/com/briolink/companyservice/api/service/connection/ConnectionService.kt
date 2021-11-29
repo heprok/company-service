@@ -94,8 +94,8 @@ class ConnectionService(
                     .setParameter("serviceIds", TypedParameterValue(UUIDArrayType.INSTANCE, serviceIds.toTypedArray()))
             }
 
-            if (!location.isNullOrEmpty()) {
-                cb.whereExpression("fts_partial(location, :location) = true").setParameter("location", location)
+            if (locationId != null) {
+                cb.whereExpression("${locationId.type.name.lowercase()}Id = :locationId").setParameter("locationId", locationId.id)
             }
 
             if (!status.isNullOrEmpty()) {

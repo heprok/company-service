@@ -100,7 +100,7 @@ class CompanyMutation(
                             "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
                             "locationId" -> {
                                 if (inputCompany.locationId != null) {
-                                    locationService.getLocation(LocationId.fromStringId(inputCompany.locationId)).also {
+                                    locationService.getLocation(LocationId.fromString(inputCompany.locationId)).also {
                                         if (it != null) {
                                             countryId = it.country.id
                                             stateId = it.state?.id
