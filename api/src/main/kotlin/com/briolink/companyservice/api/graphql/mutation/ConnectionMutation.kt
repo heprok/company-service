@@ -1,9 +1,9 @@
 package com.briolink.companyservice.api.graphql.mutation
 
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.service.connection.ConnectionService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
+import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.PermissionService

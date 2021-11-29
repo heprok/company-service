@@ -33,6 +33,7 @@ import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import graphql.schema.DataFetchingEnvironment
+import org.springframework.security.access.prepost.PreAuthorize
 import java.util.Objects
 import java.util.UUID
 import java.util.function.Function
@@ -78,6 +79,7 @@ class CompanyStatisticQuery(
         ) else null
 
     @DgsQuery
+    @PreAuthorize("isAuthenticated()")
     fun getCompanyStatistic(@InputArgument companyId: String, dfe: DataFetchingEnvironment): CompanyStatistic {
         val cbf = criteriaBuilderFactory.create(entityManager, Tuple::class.java)
         val cb = cbf.from(StatisticReadEntity::class.java)
@@ -85,7 +87,10 @@ class CompanyStatisticQuery(
         cb.where("companyId").eq(UUID.fromString(companyId))
 
         if (dfe.selectionSet.contains("total/connectionsNumber")) cb.select("totalConnections", "totalConnections")
-        if (dfe.selectionSet.contains("total/servicesProvidedNumber")) cb.select("totalServicesProvided", "totalServicesProvided")
+        if (dfe.selectionSet.contains("total/servicesProvidedNumber")) cb.select(
+            "totalServicesProvided",
+            "totalServicesProvided"
+        )
         if (dfe.selectionSet.contains("total/numberOfCollaborationCompanies"))
             cb.select("totalCollaborationCompanies", "totalCollaborationCompanies")
 
@@ -100,8 +105,14 @@ class CompanyStatisticQuery(
 
         if (dfe.selectionSet.contains("charts/connectionCountByYear/listByTab"))
             cb
-                .select("jsonb_get(chartConnectionCountByYearData, 'data', :dk1, 'items')", "chartConnectionCountByYearData")
-                .setParameter("dk1", dfe.selectionSet.getFields("charts/connectionCountByYear/listByTab")[0].arguments["id"])
+                .select(
+                    "jsonb_get(chartConnectionCountByYearData, 'data', :dk1, 'items')",
+                    "chartConnectionCountByYearData"
+                )
+                .setParameter(
+                    "dk1",
+                    dfe.selectionSet.getFields("charts/connectionCountByYear/listByTab")[0].arguments["id"]
+                )
 
         if (dfe.selectionSet.contains("charts/byCountry/listByTab"))
             cb
@@ -116,7 +127,10 @@ class CompanyStatisticQuery(
         if (dfe.selectionSet.contains("charts/byServicesProvided/listByService"))
             cb
                 .select("jsonb_get(chartByServicesProvidedData, 'data', :dk4, 'items')", "chartByServicesProvidedData")
-                .setParameter("dk4", dfe.selectionSet.getFields("charts/byServicesProvided/listByService")[0].arguments["id"])
+                .setParameter(
+                    "dk4",
+                    dfe.selectionSet.getFields("charts/byServicesProvided/listByService")[0].arguments["id"]
+                )
 
         val result = cb.resultList.firstOrNull()
 
@@ -130,11 +144,20 @@ class CompanyStatisticQuery(
                 object : TypeReference<List<ChartListItemWithServicesCount>>() {},
             )
         val chartByCountryData =
-            mapRawData(result?.getOrNull("chartByCountryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
+            mapRawData(
+                result?.getOrNull("chartByCountryData"),
+                object : TypeReference<List<ChartListItemWithRoles>>() {}
+            )
         val chartByIndustryData =
-            mapRawData(result?.getOrNull("chartByIndustryData"), object : TypeReference<List<ChartListItemWithRoles>>() {})
+            mapRawData(
+                result?.getOrNull("chartByIndustryData"),
+                object : TypeReference<List<ChartListItemWithRoles>>() {}
+            )
         val chartByServicesProvidedData =
-            mapRawData(result?.getOrNull("chartByServicesProvidedData"), object : TypeReference<List<ChartListItemWithUsesCount>>() {})
+            mapRawData(
+                result?.getOrNull("chartByServicesProvidedData"),
+                object : TypeReference<List<ChartListItemWithUsesCount>>() {}
+            )
 
         val companyIds = collectCompanyIds(
             chartConnectionCountByYear,

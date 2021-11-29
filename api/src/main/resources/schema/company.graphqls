@@ -36,11 +36,6 @@ input CreateCompanyInput {
     createBy: ID!
 }
 
-type CreateCompanyResult implements ResultWithUserErrors {
-    data: CompanyResultData
-    userErrors: [Error]!
-}
-
 input UpdateCompanyInput {
     name: String
     website: Url

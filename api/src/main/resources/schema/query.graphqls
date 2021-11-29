@@ -10,7 +10,6 @@ type Query {
     getServices(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
     getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
 
-
     #    ================= Connections ================
     getCompanyConnections(companyId: ID!, options: ConnectionListOptions!): ConnectionList
     #    ================ sorting filter for connection ===============

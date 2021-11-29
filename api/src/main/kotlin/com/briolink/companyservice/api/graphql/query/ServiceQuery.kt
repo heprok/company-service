@@ -1,6 +1,5 @@
 package com.briolink.companyservice.api.graphql.query
 
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
@@ -8,6 +7,7 @@ import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceList
 import com.briolink.companyservice.api.types.ServiceSort
+import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery

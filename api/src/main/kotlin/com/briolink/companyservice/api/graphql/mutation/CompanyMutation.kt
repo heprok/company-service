@@ -1,16 +1,16 @@
 package com.briolink.companyservice.api.graphql.mutation
 
-import com.briolink.companyservice.api.graphql.SecurityUtil.currentUserAccountId
+import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
-import com.briolink.companyservice.api.types.CompanyResultData
+import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CreateCompanyInput
-import com.briolink.companyservice.api.types.CreateCompanyResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
@@ -51,17 +51,13 @@ class CompanyMutation(
     }
 
     @DgsMutation
-    fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): CreateCompanyResult {
-        val company = companyService.createCompany(
+    @PreAuthorize("@servletUtil.isIntranet()")
+    fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
+        companyService.createCompany(
             name = createInputCompany.name,
             createdBy = UUID.fromString(createInputCompany.createBy),
             website = createInputCompany.website,
-        )
-        return CreateCompanyResult(
-            userErrors = listOf(),
-            data = CompanyResultData(id = company.id.toString(), name = company.name, website = company.websiteUrl),
-        )
-    }
+        ).let { Company.fromEntity(it) }
 
     @PreAuthorize("isAuthenticated()")
     @DgsMutation(field = "updateCompany")
@@ -81,7 +77,8 @@ class CompanyMutation(
         )
             userErrors.add(Error("403 Permission denied"))
         else {
-            companyService.findById(UUID.fromString(id)).orElseThrow { throw EntityNotFoundException("$id company not found") }
+            companyService.findById(UUID.fromString(id))
+                .orElseThrow { throw EntityNotFoundException("$id company not found") }
                 .apply {
                     val definitionFiled: Map<String, Any> = dfe.getArgument("input")
                     definitionFiled.forEach { (name, _) ->

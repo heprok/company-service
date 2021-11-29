@@ -1,11 +1,11 @@
 package com.briolink.companyservice.api.graphql.query
 
-import com.briolink.companyservice.api.graphql.SecurityUtil
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyAndUserRole
 import com.briolink.companyservice.api.types.PermissionRole
+import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -32,6 +32,7 @@ class CompanyQuery(private val companyService: CompanyService) {
     }
 
     @DgsQuery
+    @PreAuthorize("@servletUtil.isIntranet()")
     fun getCompanyById(@InputArgument("id") id: String): Company =
         companyService.findById(UUID.fromString(id))
             .orElseThrow { throw DgsEntityNotFoundException("$id company not found") }.let { Company.fromEntity(it) }
