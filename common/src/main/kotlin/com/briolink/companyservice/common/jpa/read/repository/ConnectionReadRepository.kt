@@ -209,8 +209,8 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                    )
                else data end
            where
-            (c.participantFromCompanyId = :companyId) or
-            (c.participantToCompanyId = :companyId)""",
+            (u.participantFromCompanyId = :companyId) or
+            (u.participantToCompanyId = :companyId)""",
     )
     fun updateCompany(
         @Param("companyId") companyId: UUID,
