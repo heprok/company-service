@@ -189,7 +189,7 @@ class ConnectionHandlerService(
             companyId = company.id,
             slug = company.slug,
             name = company.name,
-            image = company.data.logo?.toString()
+            logo = company.data.logo?.toString()
         )
     }
 

@@ -198,13 +198,13 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                when u.participantFromCompanyId = :companyId
                    then function('jsonb_sets', u.data,
                            '{participantFrom,company,slug}', :slug, text,
-                           '{participantFrom,company,image}', :image, text,
+                           '{participantFrom,company,logo}', :logo, text,
                            '{participantFrom,company,name}', :name, text
                    )
                when u.participantToCompanyId = :companyId
                    then function('jsonb_sets', u.data,
                            '{participantTo,company,slug}', :slug, text,
-                           '{participantTo,company,image}', :image, text,
+                           '{participantTo,company,logo}', :logo, text,
                            '{participantTo,company,name}', :name, text
                    )
                else data end
@@ -216,6 +216,6 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         @Param("companyId") companyId: UUID,
         @Param("slug") slug: String,
         @Param("name") name: String,
-        @Param("image") image: String? = null,
+        @Param("logo") logo: String? = null,
     )
 }
