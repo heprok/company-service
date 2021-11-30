@@ -47,7 +47,10 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     """,
         nativeQuery = true,
     )
-    fun getCollaboratorsByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
+    fun getCollaboratorsByCompanyId(
+        @Param("companyId") companyId: String,
+        @Param("query") query: String?
+    ): List<IdNameProjection>
 
     @Query(
         """
@@ -66,7 +69,10 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     """,
         nativeQuery = true,
     )
-    fun getConnectionServicesByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
+    fun getConnectionServicesByCompanyId(
+        @Param("companyId") companyId: String,
+        @Param("query") query: String?
+    ): List<IdNameProjection>
 
     @Query(
         """
@@ -85,7 +91,10 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     """,
         nativeQuery = true,
     )
-    fun getConnectionIndustriesByCompanyId(@Param("companyId") companyId: String, @Param("query") query: String?): List<IdNameProjection>
+    fun getConnectionIndustriesByCompanyId(
+        @Param("companyId") companyId: String,
+        @Param("query") query: String?
+    ): List<IdNameProjection>
 
     @Modifying
     @Query(
@@ -132,7 +141,10 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         @Param("hidden") hidden: Boolean
     )
 
-    fun existsByParticipantFromCompanyIdOrParticipantToCompanyId(participantFromCompanyId: UUID, participantToCompanyId: UUID): Boolean
+    fun existsByParticipantFromCompanyIdOrParticipantToCompanyId(
+        participantFromCompanyId: UUID,
+        participantToCompanyId: UUID
+    ): Boolean
 
     @Modifying
     @Query(
@@ -148,5 +160,62 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     fun softDeleteByIdAndCompanyId(
         @Param("id") id: UUID,
         @Param("companyId") companyId: UUID
+    )
+
+    @Modifying
+    @Query(
+        """update ConnectionReadEntity u
+           set u.data = case
+               when u.participantFromUserId = :userId
+                   then function('jsonb_sets', u.data,
+                           '{participantFrom,user,slug}', :slug, text,
+                           '{participantFrom,user,image}', :image, text,
+                           '{participantFrom,user,firstName}', :firstName, text,
+                           '{participantFrom,user,lastName}', :lastName, text
+                   )
+               when u.participantToUserId = :userId
+                   then function('jsonb_sets', u.data,
+                           '{participantTo,user,slug}', :slug, text,
+                           '{participantTo,user,image}', :image, text,
+                           '{participantTo,user,firstName}', :firstName, text,
+                           '{participantTo,user,lastName}', :lastName, text
+                   )
+               else data end
+           where u.participantFromUserId = :userId or u.participantToUserId = :userId""",
+    )
+    fun updateUser(
+        @Param("userId") userId: UUID,
+        @Param("slug") slug: String,
+        @Param("firstName") firstName: String,
+        @Param("lastName") lastName: String,
+        @Param("image") image: String? = null,
+    )
+
+    @Modifying
+    @Query(
+        """update ConnectionReadEntity u
+           set u.data = case
+               when u.participantFromCompanyId = :companyId
+                   then function('jsonb_sets', u.data,
+                           '{participantFrom,company,slug}', :slug, text,
+                           '{participantFrom,company,image}', :image, text,
+                           '{participantFrom,company,name}', :name, text
+                   )
+               when u.participantToCompanyId = :companyId
+                   then function('jsonb_sets', u.data,
+                           '{participantTo,company,slug}', :slug, text,
+                           '{participantTo,company,image}', :image, text,
+                           '{participantTo,company,name}', :name, text
+                   )
+               else data end
+           where
+            (c.participantFromCompanyId = :companyId) or
+            (c.participantToCompanyId = :companyId)""",
+    )
+    fun updateCompany(
+        @Param("companyId") companyId: UUID,
+        @Param("slug") slug: String,
+        @Param("name") name: String,
+        @Param("image") image: String? = null,
     )
 }

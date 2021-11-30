@@ -78,7 +78,10 @@ class ConnectionHandlerService(
             participantToRoleName = connection.participantTo.companyRole!!.name
             participantToRoleType = CompanyRoleTypeEnum.fromInt(connection.participantTo.companyRole!!.type.value)
             serviceIds = connection.services.map { service -> service.id }.toList()
-            dates = if (serviceMaxDate == null) Range.closedInfinite(serviceMinDate) else Range.closed(serviceMinDate, serviceMaxDate)
+            dates = if (serviceMaxDate == null) Range.closedInfinite(serviceMinDate) else Range.closed(
+                serviceMinDate,
+                serviceMaxDate
+            )
             status = ConnectionStatusEnum.fromInt(connection.status.value)
             countryId = buyerCompany.data.location?.country?.id
             stateId = buyerCompany.data.location?.state?.id
@@ -179,5 +182,24 @@ class ConnectionHandlerService(
 
     fun delete(connectionId: UUID) {
         connectionReadRepository.deleteById(connectionId)
+    }
+
+    fun updateCompany(company: CompanyReadEntity) {
+        connectionReadRepository.updateCompany(
+            companyId = company.id,
+            slug = company.slug,
+            name = company.name,
+            image = company.data.logo?.toString()
+        )
+    }
+
+    fun updateUser(user: UserReadEntity) {
+        connectionReadRepository.updateUser(
+            userId = user.id,
+            slug = user.data.slug,
+            firstName = user.data.firstName,
+            lastName = user.data.lastName,
+            image = user.data.image?.toString()
+        )
     }
 }
