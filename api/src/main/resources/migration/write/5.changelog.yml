@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: oleg@briolink.com
+      changes:
+        - dropUniqueConstraint:
+            schemaName: write
+            tableName: company
+            constraintName: company_name_key

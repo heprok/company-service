@@ -5,11 +5,9 @@ import javax.servlet.http.HttpServletRequest
 
 @Component
 class ServletUtil(private val request: HttpServletRequest) {
-    fun isIntranet(): Boolean {
-        return intranetServerNamePattern.matches(request.serverName)
-    }
+    fun isIntranet(): Boolean = intranetServerNamePattern.matches(request.serverName)
 
     companion object {
-        val intranetServerNamePattern = "[\\w]+\\.[\\w]+\\.svc\\.cluster\\.local".toRegex()
+        val intranetServerNamePattern = "[\\w-]+\\.[\\w-]+\\.svc\\.cluster\\.local$".toRegex()
     }
 }

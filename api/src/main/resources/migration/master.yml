@@ -29,3 +29,5 @@ databaseChangeLog:
       file: migration/write/3.changelog.yml
   - include:
       file: migration/write/4.changelog.yml
+  - include:
+      file: migration/write/5.changelog.yml

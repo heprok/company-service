@@ -86,7 +86,6 @@ class CompanyMutation(
                             "slug" -> this.slug = inputCompany.slug!!
                             "name" -> {
                                 if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
-                                else if (companyService.existsCompanyName(inputCompany.name)) userErrors.add(Error("Company name is exists")) // ktlint-disable max-line-length
                                 else this.name = inputCompany.name
                             }
                             "website" -> {
