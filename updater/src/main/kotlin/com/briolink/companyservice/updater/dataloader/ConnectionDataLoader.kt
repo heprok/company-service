@@ -3,7 +3,7 @@ package com.briolink.companyservice.updater.dataloader
 import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.handler.connection.Connection
@@ -25,7 +25,7 @@ import kotlin.random.Random
 class ConnectionDataLoader(
     private var connectionReadRepository: ConnectionReadRepository,
     private var userReadRepository: UserReadRepository,
-    private var employeeReadRepository: EmployeeReadRepository,
+    private var userJobPositionReadRepository: UserJobPositionReadRepository,
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
     private var connectionServiceHandler: ConnectionHandlerService,
@@ -37,7 +37,7 @@ class ConnectionDataLoader(
             userReadRepository.count().toInt() != 0 &&
             serviceReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0 &&
-            employeeReadRepository.count().toInt() != 0
+            userJobPositionReadRepository.count().toInt() != 0
         ) {
             val listCompany = companyReadRepository.findAll()
             val listUser = userReadRepository.findAll()

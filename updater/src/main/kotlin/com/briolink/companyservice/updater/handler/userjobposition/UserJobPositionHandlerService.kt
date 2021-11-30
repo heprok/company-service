@@ -1,9 +1,9 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
-import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
@@ -15,16 +15,16 @@ import javax.persistence.EntityNotFoundException
 @Transactional
 @Service
 class UserJobPositionHandlerService(
-    private val employeeReadRepository: EmployeeReadRepository,
+    private val userJobPositionReadRepository: UserJobPositionReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
     private val userReadRepository: UserReadRepository,
     private val companyHandlerService: CompanyHandlerService,
     private val statisticHandlerService: StatisticHandlerService
 ) {
-    fun create(userJobPosition: UserJobPosition) {
+    fun create(userJobPosition: UserJobPosition): UserJobPositionReadEntity {
         val userReadEntity = userReadRepository.findById(userJobPosition.userId)
             .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
-        employeeReadRepository.findByCompanyIdAndUserId(
+        userJobPositionReadRepository.findByCompanyIdAndUserId(
             companyId = userJobPosition.companyId,
             userId = userJobPosition.userId
         ).let {
@@ -33,53 +33,65 @@ class UserJobPositionHandlerService(
                     companyId = userJobPosition.companyId,
                     userId = userJobPosition.userId
                 )
-                EmployeeReadEntity(
+                UserJobPositionReadEntity(
+                    id = userJobPosition.id,
                     companyId = userJobPosition.companyId,
                     userId = userJobPosition.userId,
-                    data = EmployeeReadEntity.Data(
-                        user = EmployeeReadEntity.User(
+                    endDate = userJobPosition.endDate,
+                    data = UserJobPositionReadEntity.Data(
+                        user = UserJobPositionReadEntity.User(
                             firstName = userReadEntity.data.firstName,
                             slug = userReadEntity.data.slug,
                             lastName = userReadEntity.data.lastName,
                             image = userReadEntity.data.image,
                         ),
-                    )
-                )
-            } else it
-        }.apply {
-            data.userJobPositions[userJobPosition.id] =
-                EmployeeReadEntity.UserJobPosition(
-                    // TODO При добавлении верификации изменить
-                    status = EmployeeReadEntity.VerifyStatus.Verified,
-                    verifiedBy = null,
-                    isCurrent = userJobPosition.isCurrent,
-                    startDate = userJobPosition.startDate,
-                    endDate = userJobPosition.endDate,
-                    title = userJobPosition.title
-                )
-            userJobPositionIds.add(userJobPosition.id)
-            employeeReadRepository.save(this)
-        }
-    }
-
-    fun update(userJobPosition: UserJobPosition) {
-        employeeReadRepository.findByUserJobPositionId(userJobPositionId = userJobPosition.id).apply {
-            if (this != null) {
-                if (this.companyId != userJobPosition.companyId || this.userId != userJobPosition.userId) {
-                    delete(userJobPosition.id)
-                    create(userJobPosition)
-                } else {
-                    this.data.userJobPositions[userJobPosition.id] = EmployeeReadEntity.UserJobPosition(
-                        // TODO При добавлении верификации изменить
-                        status = EmployeeReadEntity.VerifyStatus.Verified,
+                        status = UserJobPositionReadEntity.VerifyStatus.Verified,
                         verifiedBy = null,
                         isCurrent = userJobPosition.isCurrent,
                         startDate = userJobPosition.startDate,
                         endDate = userJobPosition.endDate,
                         title = userJobPosition.title
                     )
-                    this.userJobPositionIds.add(userJobPosition.id)
-                    employeeReadRepository.save(this)
+                )
+            } else {
+                if (userJobPosition.isCurrent) {
+                    it.data.title = userJobPosition.title
+                    it.data.startDate = userJobPosition.startDate
+                    it.data.endDate = userJobPosition.endDate
+                    it
+                } else it
+            }
+        }.apply {
+            return userJobPositionReadRepository.save(this)
+        }
+    }
+
+    fun update(userJobPosition: UserJobPosition) {
+        userJobPositionReadRepository.findById(userJobPosition.id).also {
+            if (it.isEmpty) {
+                create(userJobPosition)
+            } else {
+                it.get().apply {
+                    if (this.companyId != userJobPosition.companyId || this.userId != userJobPosition.userId) {
+                        userJobPositionReadRepository.findByCompanyIdAndUserId(
+                            userId = userJobPosition.userId,
+                            companyId = userJobPosition.companyId
+                        ).apply {
+                            if (this == null) create(userJobPosition)
+                            else {
+                                data.title = userJobPosition.title
+                                data.startDate = userJobPosition.startDate
+                                data.endDate = userJobPosition.endDate
+                                data.isCurrent = userJobPosition.isCurrent
+                                userJobPositionReadRepository.save(this)
+                            }
+                        }
+                    } else {
+                        data.title = userJobPosition.title
+                        data.startDate = userJobPosition.startDate
+                        data.endDate = userJobPosition.endDate
+                        userJobPositionReadRepository.save(this)
+                    }
                 }
             }
         }
@@ -98,7 +110,7 @@ class UserJobPositionHandlerService(
     }
 
     fun updateUser(user: UserReadEntity) {
-        employeeReadRepository.updateUserByUserId(
+        userJobPositionReadRepository.updateUserByUserId(
             userId = user.id,
             slug = user.data.slug,
             firstName = user.data.firstName,
@@ -108,13 +120,6 @@ class UserJobPositionHandlerService(
     }
 
     fun delete(userJobPositionId: UUID) {
-        employeeReadRepository.findByUserJobPositionId(userJobPositionId)?.apply {
-            this.userJobPositionIds.remove(userJobPositionId)
-            this.data.userJobPositions.remove(userJobPositionId)
-            if (this.userJobPositionIds.isEmpty())
-                employeeReadRepository.deleteByUserIdAndCompanyId(userId = userId, companyId = companyId)
-            else
-                employeeReadRepository.save(this)
-        }
+        userJobPositionReadRepository.deleteById(userJobPositionId)
     }
 }

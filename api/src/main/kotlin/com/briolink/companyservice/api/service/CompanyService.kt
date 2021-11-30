@@ -74,7 +74,8 @@ class CompanyService(
     fun findById(id: UUID): Optional<CompanyWriteEntity> = companyWriteRepository.findById(id)
     fun uploadCompanyProfileImage(id: UUID, image: MultipartFile?): URL? {
         val company = findById(id).orElseThrow { throw EntityNotFoundException("company with $id not found") }
-        val imageUrl: URL? = if (image != null) awsS3Service.uploadImage("uploads/company/profile-image", image) else null
+        val imageUrl: URL? =
+            if (image != null) awsS3Service.uploadImage("uploads/company/profile-image", image) else null
         company.logo = imageUrl
         updateCompany(company)
         return imageUrl
@@ -88,7 +89,11 @@ class CompanyService(
         )?.role
     }
 
-    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleTypeEnum): UserPermissionRoleReadEntity {
+    fun setPermission(
+        companyId: UUID,
+        userId: UUID,
+        roleType: UserPermissionRoleTypeEnum
+    ): UserPermissionRoleReadEntity {
         (
             userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = companyId,
@@ -100,4 +105,6 @@ class CompanyService(
             return userPermissionRoleReadRepository.save(this)
         }
     }
+
+    fun existsCompanyName(name: String): Boolean = companyWriteRepository.existsByName(name)
 }

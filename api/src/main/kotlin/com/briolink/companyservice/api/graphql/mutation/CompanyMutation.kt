@@ -85,7 +85,8 @@ class CompanyMutation(
                         when (name) {
                             "slug" -> this.slug = inputCompany.slug!!
                             "name" -> {
-                                if (inputCompany.name.isNullOrEmpty()) userErrors.add(Error("Name must be not empty or null"))
+                                if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
+                                else if (companyService.existsCompanyName(inputCompany.name)) userErrors.add(Error("Company name is exists")) // ktlint-disable max-line-length
                                 else this.name = inputCompany.name
                             }
                             "website" -> {
@@ -115,12 +116,13 @@ class CompanyMutation(
                             "twitter" -> this.twitter = inputCompany.twitter
                             "occupationId" -> {
                                 this.occupation = inputCompany.occupationId?.let {
-                                    occupationService.findById(UUID.fromString(it))
+                                    if (it.isBlank()) null
+                                    else occupationService.findById(UUID.fromString(it))
                                         .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
                                 }
                             }
                             "occupationName" -> {
-                                if (inputCompany.occupationName.isNullOrEmpty()) userErrors.add(Error("Occupation must be not null or empty")) // ktlint-disable max-line-length
+                                if (inputCompany.occupationName.isNullOrBlank()) userErrors.add(Error("Occupation must be not null or empty")) // ktlint-disable max-line-length
                                 else this.occupation = occupationService.create(name = inputCompany.occupationName)
                             }
                             "industryId" -> {
@@ -130,7 +132,7 @@ class CompanyMutation(
                                 }
                             }
                             "industryName" -> {
-                                if (inputCompany.industryName.isNullOrEmpty()) userErrors.add(Error("Industry must be not null or empty"))
+                                if (inputCompany.industryName.isNullOrBlank()) userErrors.add(Error("Industry must be not null or empty"))
                                 else this.industry = industryService.create(name = inputCompany.industryName)
                             }
                             "keyWordIds" -> {

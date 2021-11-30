@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 11
+      author: oleg@briolink.com
+      changes:
+        - dropTable:
+            tableName: employee
+            schemaName: read
+        - createTable:
+            tableName: user_job_position
+            schemaName: read
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: date
+              - column:
+                  name: data
+                  type: jsonb
+                  constraints:
+                    nullable: false
+        - createIndex:
+            schemaName: read
+            tableName: user_job_position
+            columns:
+              - column:
+                  name: company_id
+              - column:
+                  name: end_date
+            indexName: idx_company_id_and_end_date
+        - createIndex:
+            schemaName: read
+            tableName: user_job_position
+            columns:
+              - column:
+                  name: company_id
+              - column:
+                  name: user_id
+            indexName: idx_company_id_and_user_id
+            unique: true
+

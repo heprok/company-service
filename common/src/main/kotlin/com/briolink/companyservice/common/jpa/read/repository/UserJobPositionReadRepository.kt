@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
-import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -9,18 +9,18 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.UUID
 
-interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, UUID> {
-    fun findByCompanyIdAndUserId(companyId: UUID, userId: UUID): EmployeeReadEntity?
+interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntity, UUID> {
+    fun findByCompanyIdAndUserId(companyId: UUID, userId: UUID): UserJobPositionReadEntity?
 
     @Modifying
     @Query(
-        """update EmployeeReadEntity c
-           set c.data = function('jsonb_sets', c.data,
+        """update UserJobPositionReadEntity u
+           set u.data = function('jsonb_sets', u.data,
                 '{user,slug}', :slug, text,
                 '{user,firstName}', :firstName, text,
                 '{user,lastName}', :lastName, text,
                 '{user,image}', :image, text
-           ) where c.userId = :userId""",
+           ) where u.userId = :userId""",
     )
     fun updateUserByUserId(
         @Param("userId") userId: UUID,
@@ -30,21 +30,15 @@ interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, UUID> {
         @Param("image") image: String?,
     )
 
-//    @Query(
-//        """SELECT e
-//           FROM EmployeeReadEntity as e
-//           WHERE data ->>
-//        """
-//    )
-    fun findByCompanyId(companyId: UUID, pageable: Pageable? = null): Page<EmployeeReadEntity>
-
     @Query(
-        """SELECT e
-           FROM EmployeeReadEntity as e
-           WHERE function('array_contains_element', e.userJobPositionIds, ?1) = TRUE
+        """SELECT u
+           FROM UserJobPositionReadEntity as u
+           WHERE u.endDate is null
         """
     )
-    fun findByUserJobPositionId(userJobPositionId: UUID): EmployeeReadEntity?
+    fun findByCompanyId(companyId: UUID, pageable: Pageable? = null): Page<UserJobPositionReadEntity>
 
-    fun deleteByUserIdAndCompanyId(userId: UUID, companyId: UUID): Long
+    @Modifying
+    @Query("DELETE from UserJobPositionReadEntity u where u.id = ?1")
+    override fun deleteById(id: UUID)
 }

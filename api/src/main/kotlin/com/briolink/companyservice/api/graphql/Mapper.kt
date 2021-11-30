@@ -89,15 +89,11 @@ fun Company.Companion.fromEntity(entity: CompanyWriteEntity) =
         },
     )
 
-fun User.Companion.fromEntity(entity: EmployeeReadEntity) = User(
+fun User.Companion.fromEntity(entity: UserJobPositionReadEntity) = User(
     id = entity.userId.toString(),
     firstName = entity.data.user.firstName,
     lastName = entity.data.user.lastName,
-    jobPosition = entity.data.userJobPositions.toList()
-        .let { jobPosition ->
-            jobPosition.find { it.second.isCurrent && it.second.endDate == null }
-                ?: jobPosition.first { it.second.endDate == null }
-        }.second.title,
+    jobPosition = entity.data.title,
     slug = entity.data.user.slug,
     image = entity.data.user.image?.let { Image(url = it) },
 )
