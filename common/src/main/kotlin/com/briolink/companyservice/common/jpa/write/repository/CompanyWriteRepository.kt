@@ -15,6 +15,6 @@ interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
     @Query("SELECT c FROM CompanyWriteEntity c WHERE lower(c.name) = lower(?1)")
     fun getByName(name: String): CompanyWriteEntity?
 
-    @Query("SELECT c > 0 FROM CompanyWriteEntity c WHERE lower(c.name) = lower(?1)")
+    @Query("SELECT count(c) > 0 FROM CompanyWriteEntity c WHERE lower(c.name) = lower(?1)")
     fun existsByName(name: String): Boolean
 }
