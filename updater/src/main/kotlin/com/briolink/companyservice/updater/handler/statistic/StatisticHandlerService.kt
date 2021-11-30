@@ -1,5 +1,6 @@
 package com.briolink.companyservice.updater.handler.statistic
 
+import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
@@ -91,35 +92,38 @@ class StatisticHandlerService(
             companyStatistic.chartByIndustry = getChart(companyStatistic.chartByIndustryData)
 
             // chart data by services provided
-            connectionReadEntity.data.services.forEach { service ->
-                if (service.serviceId == null) return@forEach
-                val serviceId = service.serviceId.toString()
-                val serviceName = service.serviceName
-                companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
-                    ChartDataList(serviceName, mutableListOf())
-                }.also { list ->
-                    when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
-                        -1 -> list.items.add(
-                            ChartListItemWithUsesCount(
-                                companyId = collaboratorParticipant.company.id,
-                                usesCount = 1,
-                            ),
-                        )
-                        else -> list.items[i].usesCount = list.items[i].usesCount.inc()
-                    }
-                    serviceReadRepository.findByIdOrNull(UUID.fromString(serviceId))?.apply {
-                        verifiedUses =
-                            companyStatistic.chartByServicesProvidedData.data[serviceId]!!.items.sumOf { it.usesCount }
-                        LocalDate.of(service.endDate?.value ?: Year.now().value, 1, 1).also {
-                            lastUsed =
-                                if (lastUsed == null) it
-                                else if (lastUsed!! < it) it
-                                else lastUsed
+            if (collaboratorParticipant.companyRole.type == CompanyRoleTypeEnum.Buyer) {
+                connectionReadEntity.data.services.forEach { service ->
+                    if (service.serviceId == null) return@forEach
+                    val serviceId = service.serviceId.toString()
+                    val serviceName = service.serviceName
+                    companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
+                        ChartDataList(serviceName, mutableListOf())
+                    }.also { list ->
+                        when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.company.id }) {
+                            -1 -> list.items.add(
+                                ChartListItemWithUsesCount(
+                                    companyId = collaboratorParticipant.company.id,
+                                    usesCount = 1,
+                                ),
+                            )
+                            else -> list.items[i].usesCount = list.items[i].usesCount.inc()
                         }
-                        serviceReadRepository.save(this)
+                        serviceReadRepository.findByIdOrNull(UUID.fromString(serviceId))?.apply {
+                            verifiedUses =
+                                companyStatistic.chartByServicesProvidedData.data[serviceId]!!.items.sumOf { it.usesCount }
+                            LocalDate.of(service.endDate?.value ?: Year.now().value, 1, 1).also {
+                                lastUsed =
+                                    if (lastUsed == null) it
+                                    else if (lastUsed!! < it) it
+                                    else lastUsed
+                            }
+                            serviceReadRepository.save(this)
+                        }
                     }
                 }
             }
+
             companyStatistic.chartByServicesProvided = getChart(
                 companyStatistic.chartByServicesProvidedData,
                 { it.second.items.sumOf { i -> i.usesCount } },
