@@ -33,7 +33,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query(
         """SELECT u
            FROM UserJobPositionReadEntity as u
-           WHERE u.endDate is null
+           WHERE u.endDate is null AND companyId = ?1
         """
     )
     fun findByCompanyId(companyId: UUID, pageable: Pageable? = null): Page<UserJobPositionReadEntity>
