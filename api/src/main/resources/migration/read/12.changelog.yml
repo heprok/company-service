@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            schemaName: read
+            tableName: connection_service
+            columns:
+              - column:
+                  name: collaborating_company_ids
+                  type: uuid[]
+              - column:
+                  name: data
+                  type: jsonb
+        - sql:
+            sql: create index idx_connection_service_collaborating_company_ids on read.connection_service using gin (collaborating_company_ids)

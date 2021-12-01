@@ -30,25 +30,28 @@ class ConnectionHandlerService(
 ) {
     fun createOrUpdate(connection: Connection): ConnectionReadEntity {
         val participantUsers = userReadRepository.findByIdIsIn(
-            mutableListOf(connection.participantFrom.userId!!, connection.participantTo.userId!!),
+            mutableListOf(connection.participantFrom.userId, connection.participantTo.userId),
         ).stream().collect(Collectors.toMap(UserReadEntity::id) { v -> v })
 
         val participantCompanies = companyReadRepository.findByIdIsIn(
-            mutableListOf(connection.participantFrom.companyId!!, connection.participantTo.companyId!!),
+            mutableListOf(connection.participantFrom.companyId, connection.participantTo.companyId),
         ).stream().collect(Collectors.toMap(CompanyReadEntity::id) { v -> v })
 
         val buyerCompany: CompanyReadEntity
         val sellerCompany: CompanyReadEntity
-        if (connection.participantFrom.companyRole?.type == ConnectionCompanyRoleType.Buyer) {
+        val participantBuyer: ConnectionParticipant
+        if (connection.participantFrom.companyRole.type == ConnectionCompanyRoleType.Buyer) {
             buyerCompany = participantCompanies[connection.participantFrom.companyId]!!
             sellerCompany = participantCompanies[connection.participantTo.companyId]!!
+            participantBuyer = connection.participantFrom
         } else {
             buyerCompany = participantCompanies[connection.participantTo.companyId]!!
             sellerCompany = participantCompanies[connection.participantFrom.companyId]!!
+            participantBuyer = connection.participantTo
         }
         val industry = buyerCompany.data.industry
 
-        val serviceMinDate = connection.services.minOf { it.startDate!!.value }
+        val serviceMinDate = connection.services.minOf { it.startDate.value }
         var serviceMaxDate = connection.services.maxOfOrNull { it.endDate?.value ?: -1 }
 
         if (serviceMaxDate == -1) {
@@ -62,21 +65,37 @@ class ConnectionHandlerService(
             s.companyId = sellerCompany.id
             s.serviceId = it.serviceId
             s.name = it.serviceName
-
+            s.collaboratingCompanyIds.add(participantBuyer.companyId)
+            s.data.apply {
+                connectionsInfo.add(
+                    ConnectionServiceReadEntity.ConnectionInfo(
+                        companyId = participantBuyer.companyId,
+                        roleName = participantBuyer.companyRole.name,
+                        periodUsedStart = it.startDate,
+                        periodUsedEnd = it.endDate
+                    )
+                )
+                collaboratingCompanies[participantBuyer.companyId] = ConnectionServiceReadEntity.Company(
+                    name = buyerCompany.name,
+                    logo = buyerCompany.data.logo,
+                    location = buyerCompany.data.location?.toString(),
+                    industryName = buyerCompany.data.industry?.name
+                )
+            }
             connectionServiceReadRepository.save(s)
         }
 
         connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
-            participantFromCompanyId = connection.participantFrom.companyId!!
-            participantFromUserId = connection.participantFrom.userId!!
-            participantFromRoleId = connection.participantFrom.companyRole!!.id
-            participantFromRoleName = connection.participantFrom.companyRole!!.name
-            participantFromRoleType = CompanyRoleTypeEnum.fromInt(connection.participantFrom.companyRole!!.type.value)
-            participantToCompanyId = connection.participantTo.companyId!!
-            participantToUserId = connection.participantTo.userId!!
-            participantToRoleId = connection.participantTo.companyRole!!.id
-            participantToRoleName = connection.participantTo.companyRole!!.name
-            participantToRoleType = CompanyRoleTypeEnum.fromInt(connection.participantTo.companyRole!!.type.value)
+            participantFromCompanyId = connection.participantFrom.companyId
+            participantFromUserId = connection.participantFrom.userId
+            participantFromRoleId = connection.participantFrom.companyRole.id
+            participantFromRoleName = connection.participantFrom.companyRole.name
+            participantFromRoleType = CompanyRoleTypeEnum.fromInt(connection.participantFrom.companyRole.type.value)
+            participantToCompanyId = connection.participantTo.companyId
+            participantToUserId = connection.participantTo.userId
+            participantToRoleId = connection.participantTo.companyRole.id
+            participantToRoleName = connection.participantTo.companyRole.name
+            participantToRoleType = CompanyRoleTypeEnum.fromInt(connection.participantTo.companyRole.type.value)
             serviceIds = connection.services.map { service -> service.id }.toList()
             dates = if (serviceMaxDate == null) Range.closedInfinite(serviceMinDate) else Range.closed(
                 serviceMinDate,
@@ -89,27 +108,27 @@ class ConnectionHandlerService(
             deletedCompanyIds = listOf()
             hiddenCompanyIds = mutableListOf<UUID>().apply {
                 if (!permissionService.isHavePermission(
-                        userId = connection.participantFrom.userId!!,
-                        companyId = connection.participantFrom.companyId!!,
+                        userId = connection.participantFrom.userId,
+                        companyId = connection.participantFrom.companyId,
                         accessObjectType = AccessObjectTypeEnum.Company,
                         PermissionRightEnum.ConnectionCrud,
                     )
                 )
-                    add(connection.participantFrom.companyId!!)
+                    add(connection.participantFrom.companyId)
 
                 if (!permissionService.isHavePermission(
-                        userId = connection.participantTo.userId!!,
-                        companyId = connection.participantTo.companyId!!,
+                        userId = connection.participantTo.userId,
+                        companyId = connection.participantTo.companyId,
                         accessObjectType = AccessObjectTypeEnum.Company,
                         PermissionRightEnum.ConnectionCrud,
                     )
                 )
-                    add(connection.participantTo.companyId!!)
+                    add(connection.participantTo.companyId)
             }
 
             permissionService.isHavePermission(
-                userId = connection.participantTo.userId!!,
-                companyId = connection.participantTo.companyId!!,
+                userId = connection.participantTo.userId,
+                companyId = connection.participantTo.companyId,
                 accessObjectType = AccessObjectTypeEnum.Company,
                 PermissionRightEnum.ConnectionCrud,
             )
@@ -126,15 +145,15 @@ class ConnectionHandlerService(
                     ),
                     userJobPositionTitle = connection.participantFrom.userJobPositionTitle,
                     company = ConnectionReadEntity.Company(
-                        id = connection.participantFrom.companyId!!,
+                        id = connection.participantFrom.companyId,
                         slug = participantCompanies[connection.participantFrom.companyId]!!.slug,
                         name = participantCompanies[connection.participantFrom.companyId]!!.name,
                         logo = participantCompanies[connection.participantFrom.companyId]!!.data.logo,
                     ),
                     companyRole = ConnectionReadEntity.CompanyRole(
-                        id = connection.participantFrom.companyRole!!.id,
-                        name = connection.participantFrom.companyRole!!.name,
-                        type = CompanyRoleTypeEnum.valueOf(connection.participantFrom.companyRole!!.type.name),
+                        id = connection.participantFrom.companyRole.id,
+                        name = connection.participantFrom.companyRole.name,
+                        type = CompanyRoleTypeEnum.valueOf(connection.participantFrom.companyRole.type.name),
                     ),
                 ),
                 participantTo = connection.participantTo.let {
@@ -148,14 +167,14 @@ class ConnectionHandlerService(
                         ),
                         userJobPositionTitle = it.userJobPositionTitle,
                         company = ConnectionReadEntity.Company(
-                            id = connection.participantTo.companyId!!,
-                            slug = participantCompanies[connection.participantTo.companyId!!]!!.slug,
-                            name = participantCompanies[connection.participantTo.companyId!!]!!.name,
-                            logo = participantCompanies[connection.participantTo.companyId!!]!!.data.logo,
+                            id = connection.participantTo.companyId,
+                            slug = participantCompanies[connection.participantTo.companyId]!!.slug,
+                            name = participantCompanies[connection.participantTo.companyId]!!.name,
+                            logo = participantCompanies[connection.participantTo.companyId]!!.data.logo,
                         ),
                         companyRole = it.companyRole.let { role ->
                             ConnectionReadEntity.CompanyRole(
-                                id = role!!.id,
+                                id = role.id,
                                 name = role.name,
                                 type = CompanyRoleTypeEnum.valueOf(role.type.name),
                             )
@@ -168,7 +187,7 @@ class ConnectionHandlerService(
                             id = it.id,
                             serviceId = it.serviceId,
                             serviceName = it.serviceName,
-                            startDate = it.startDate!!,
+                            startDate = it.startDate,
                             endDate = it.endDate,
                         )
                     },

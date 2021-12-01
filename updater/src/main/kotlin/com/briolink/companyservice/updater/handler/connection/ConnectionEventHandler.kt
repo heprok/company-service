@@ -15,10 +15,10 @@ class ConnectionEventHandler(
 ) : IEventHandler<ConnectionCreatedEvent> {
     override fun handle(event: ConnectionCreatedEvent) {
         val connection = event.data
-        if (connection.status != ConnectionStatus.Draft && connection.status != ConnectionStatus.Rejected) {
+        if (connection.status != ConnectionStatus.Rejected) {
             connectionHandlerService.createOrUpdate(connection).let {
-                statisticHandlerService.refreshByCompanyId(connection.participantTo.companyId!!)
-                statisticHandlerService.refreshByCompanyId(connection.participantFrom.companyId!!)
+                statisticHandlerService.refreshByCompanyId(connection.participantTo.companyId)
+                statisticHandlerService.refreshByCompanyId(connection.participantFrom.companyId)
             }
         } else if (connection.status == ConnectionStatus.Rejected) {
             connectionHandlerService.delete(connection.id)

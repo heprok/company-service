@@ -80,14 +80,14 @@ class ConnectionDataLoader(
                         id = UUID.randomUUID(),
                         participantFrom = ConnectionParticipant(
                             userId = listUser.random().id,
-                            userJobPositionTitle = null,
+                            userJobPositionTitle = "Developer",
                             companyId = from.id,
                             companyRole = listConnectionRole.shuffled()
                                 .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Seller }!!,
                         ),
                         participantTo = ConnectionParticipant(
                             userId = listUser.random().id,
-                            userJobPositionTitle = null,
+                            userJobPositionTitle = "developer",
                             companyId = to.id,
                             companyRole = listConnectionRole.shuffled()
                                 .find { connectionCompanyRole -> connectionCompanyRole.type == ConnectionCompanyRoleType.Buyer }!!,

@@ -47,20 +47,20 @@ data class ConnectionService(
     @JsonProperty
     val serviceName: String,
     @JsonProperty
-    val startDate: Year? = null,
+    val startDate: Year,
     @JsonProperty
     val endDate: Year? = null,
 )
 
 data class ConnectionParticipant(
     @JsonProperty
-    val userId: UUID? = null,
+    val userId: UUID,
     @JsonProperty
-    val userJobPositionTitle: String? = null,
+    val userJobPositionTitle: String,
     @JsonProperty
-    val companyId: UUID? = null,
+    val companyId: UUID,
     @JsonProperty
-    val companyRole: ConnectionCompanyRole? = null,
+    val companyRole: ConnectionCompanyRole,
 )
 
 data class Connection(
