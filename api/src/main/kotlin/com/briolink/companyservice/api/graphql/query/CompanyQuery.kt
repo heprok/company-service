@@ -20,9 +20,9 @@ class CompanyQuery(private val companyService: CompanyService) {
     @PreAuthorize("isAuthenticated()")
     fun getCompany(@InputArgument("slug") slug: String): CompanyAndUserRole {
         val company = companyService.getCompanyBySlug(slug)
-        val role = companyService.getPermission(company.id, SecurityUtil.currentUserAccountId)
+        val role = company?.let { companyService.getPermission(it.id, SecurityUtil.currentUserAccountId) }
         return CompanyAndUserRole(
-            company = Company.fromEntity(company),
+            company = company?.let { Company.fromEntity(it) },
             role = when (role) {
                 UserPermissionRoleTypeEnum.Employee -> PermissionRole.Employee
                 UserPermissionRoleTypeEnum.Owner -> PermissionRole.Owner

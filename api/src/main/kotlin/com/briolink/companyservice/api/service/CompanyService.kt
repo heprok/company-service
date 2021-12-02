@@ -70,7 +70,7 @@ class CompanyService(
     }
 
     fun deleteCompany(id: UUID) = companyWriteRepository.deleteById(id)
-    fun getCompanyBySlug(slug: String): CompanyReadEntity = companyReadRepository.findBySlug(slug)
+    fun getCompanyBySlug(slug: String): CompanyReadEntity? = companyReadRepository.findBySlug(slug)
     fun findById(id: UUID): Optional<CompanyWriteEntity> = companyWriteRepository.findById(id)
     fun uploadCompanyProfileImage(id: UUID, image: MultipartFile?): URL? {
         val company = findById(id).orElseThrow { throw EntityNotFoundException("company with $id not found") }
