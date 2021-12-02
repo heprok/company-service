@@ -1,6 +1,7 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.projection.CompanyIdProjection
 import com.briolink.companyservice.common.jpa.projection.IdNameProjection
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import org.springframework.data.jpa.repository.JpaRepository
@@ -218,4 +219,37 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         @Param("name") name: String,
         @Param("logo") logo: String? = null,
     )
+
+    @Query(
+        """
+        select
+            cast(result.company_id as varchar) as companyId
+        from
+        (
+            (
+                select
+                    participant_from_company_id AS company_id
+                from
+                    read.connection
+                where
+                    participant_to_company_id = cast(:companyId as uuid)
+                limit :limit offset :offset
+            ) union (
+                select
+                    participant_to_company_id AS company_id
+                from
+                    read.connection
+                where
+                    participant_from_company_id = cast(:companyId as uuid)
+                limit :limit offset :offset
+            )
+        ) as result
+    """,
+        nativeQuery = true
+    )
+    fun getCompanyIdsByCompanyId(
+        @Param("companyId") companyId: String,
+        @Param("limit") limit: Int = 10,
+        @Param("offset") offset: Int = 0
+    ): List<CompanyIdProjection>
 }

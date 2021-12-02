@@ -5,8 +5,9 @@ import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
+import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
-import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -19,7 +20,7 @@ class UserJobPositionHandlerService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val userReadRepository: UserReadRepository,
     private val companyHandlerService: CompanyHandlerService,
-    private val statisticHandlerService: StatisticHandlerService
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     fun create(userJobPosition: UserJobPosition): UserJobPositionReadEntity {
         val userReadEntity = userReadRepository.findById(userJobPosition.userId)
@@ -106,7 +107,7 @@ class UserJobPositionHandlerService(
             companyId = companyId,
             userId = userId, false,
         )
-        statisticHandlerService.refreshByCompanyId(companyId)
+        applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId))
     }
 
     fun updateUser(user: UserReadEntity) {

@@ -53,7 +53,7 @@ class UserJobPositionDataLoader(
 
     override fun loadData() {
         if (
-//            userJobPositionReadRepository.count().toInt() == 0 &&
+            userJobPositionReadRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&
             companyReadRepository.count().toInt() != 0
         ) {

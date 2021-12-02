@@ -16,26 +16,32 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.vladmihalcea.hibernate.type.range.Range
+import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
+import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.EnableAsync
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 
 @Transactional
-@Service
+@Component
+@EnableAsync
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val companyReadRepository: CompanyReadRepository,
 ) {
+    @Async
     fun refreshByCompanyId(companyId: UUID) {
         deleteStatisticByCompanyId(companyId)
         val companyStatistic = StatisticReadEntity(companyId)
-//        val companyStatistic = statisticReadRepository.findByCompanyId(companyId) ?: StatisticReadEntity(companyId)
+//        val companyStatistic = statisticReadRepository.findByCompanyId(event.companyId) ?: StatisticReadEntity(event.companyId)
 
         val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
             companyId,
@@ -186,6 +192,24 @@ class StatisticHandlerService(
 
     fun deleteStatisticByCompanyId(companyId: UUID) {
         statisticReadRepository.deleteByCompanyId(companyId)
+    }
+
+    @Async
+    @EventListener
+    fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
+        val limit = 5000
+        var offset = 0
+
+        while (true) {
+            val companyIds = connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
+            println(companyIds)
+            if (companyIds.isEmpty()) break
+            companyIds.forEach {
+                refreshByCompanyId(it.companyId)
+            }
+
+            offset += limit
+        }
     }
 
     fun <T : ChartListItem> getChart(

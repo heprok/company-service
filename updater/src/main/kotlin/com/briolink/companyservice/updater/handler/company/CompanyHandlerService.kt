@@ -9,6 +9,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.service.PermissionService
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -22,20 +23,19 @@ class CompanyHandlerService(
     private val permissionService: PermissionService
 ) {
 
-    fun createOrUpdate(company: Company): CompanyReadEntity {
-        companyReadRepository.findById(company.id).orElse(
-            CompanyReadEntity(company.id, company.slug, company.name),
-        ).apply {
+    fun createOrUpdate(entityPrevCompany: CompanyReadEntity? = null, companyDomain: Company): CompanyReadEntity {
+        val company = entityPrevCompany ?: CompanyReadEntity(companyDomain.id, companyDomain.slug, companyDomain.name)
+        company.apply {
             data = CompanyReadEntity.Data(
-                name = company.name,
-                website = company.website,
-                facebook = company.facebook,
-                twitter = company.twitter,
-                isTypePublic = company.isTypePublic,
-                logo = company.logo,
-                description = company.description,
-                industry = company.industry?.let { CompanyReadEntity.Industry(it.id, it.name) },
-                keywords = company.keywords?.let { list ->
+                name = companyDomain.name,
+                website = companyDomain.website,
+                facebook = companyDomain.facebook,
+                twitter = companyDomain.twitter,
+                isTypePublic = companyDomain.isTypePublic,
+                logo = companyDomain.logo,
+                description = companyDomain.description,
+                industry = companyDomain.industry?.let { CompanyReadEntity.Industry(it.id, it.name) },
+                keywords = companyDomain.keywords?.let { list ->
                     list.map {
                         CompanyReadEntity.Keyword(
                             it.id,
@@ -43,15 +43,21 @@ class CompanyHandlerService(
                         )
                     }
                 } ?: mutableListOf(),
-                occupation = company.occupation?.let { CompanyReadEntity.Occupation(it.id, it.name) },
+                occupation = companyDomain.occupation?.let { CompanyReadEntity.Occupation(it.id, it.name) },
             ).apply {
-                location = company.locationId?.let { locationService.getLocation(it) }
+                location = companyDomain.locationId?.let { locationService.getLocation(it) }
             }
             return companyReadRepository.save(this)
         }
     }
 
-    fun setPermission(companyId: UUID, userId: UUID, roleType: UserPermissionRoleTypeEnum): UserPermissionRoleReadEntity =
+    fun findById(companyId: UUID): CompanyReadEntity? = companyReadRepository.findByIdOrNull(companyId)
+
+    fun setPermission(
+        companyId: UUID,
+        userId: UUID,
+        roleType: UserPermissionRoleTypeEnum
+    ): UserPermissionRoleReadEntity =
         userPermissionRoleReadRepository.save(
             userPermissionRoleReadRepository.getUserPermissionRole(
                 accessObjectUuid = companyId,

@@ -9,7 +9,6 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
-import java.util.stream.Collectors
 
 @EventHandler("StatisticRefreshEvent", "1.0")
 class StatisticEventHandler(
@@ -74,7 +73,7 @@ class StatisticEventHandler(
         }
 
 //        companiesUUID.forEach {
-////            statisticHandlerService.refreshByCompanyId(it)
+// //            statisticHandlerService.refreshByCompanyId(it)
 //        }
     }
 }

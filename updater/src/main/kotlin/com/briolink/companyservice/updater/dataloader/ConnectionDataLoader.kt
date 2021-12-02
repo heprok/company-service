@@ -6,6 +6,7 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.handler.connection.Connection
 import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRole
 import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRoleType
@@ -13,7 +14,7 @@ import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerS
 import com.briolink.companyservice.updater.handler.connection.ConnectionParticipant
 import com.briolink.companyservice.updater.handler.connection.ConnectionService
 import com.briolink.companyservice.updater.handler.connection.ConnectionStatus
-import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.Year
@@ -29,7 +30,7 @@ class ConnectionDataLoader(
     private var companyReadRepository: CompanyReadRepository,
     private var serviceReadRepository: ServiceReadRepository,
     private var connectionServiceHandler: ConnectionHandlerService,
-    private val statisticHandlerService: StatisticHandlerService,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) : DataLoader() {
     override fun loadData() {
         if (
@@ -99,7 +100,7 @@ class ConnectionDataLoader(
                 )
             }
             listCompany.forEach {
-                statisticHandlerService.refreshByCompanyId(it.id)
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(it.id))
             }
         }
     }
