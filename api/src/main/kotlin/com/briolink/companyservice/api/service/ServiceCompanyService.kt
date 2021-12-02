@@ -4,7 +4,9 @@ import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.config.AppEndpointsProperties
 import com.briolink.companyservice.common.jpa.initSpec
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.betweenLastUsed
 import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
@@ -25,6 +27,7 @@ import javax.servlet.UnavailableException
 @Transactional
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
+    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     val appEndpointsProperties: AppEndpointsProperties,
 ) {
     fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
@@ -36,7 +39,13 @@ class ServiceCompanyService(
             .and(equalHide(filter?.isHide))
             .and(betweenLastUsed(filter?.lastUsed?.start, filter?.lastUsed?.end))
 
-    fun findAll(companyId: UUID, limit: Int, sort: ServiceSort, offset: Int, filter: ServiceFilter?): Page<ServiceReadEntity> =
+    fun findAll(
+        companyId: UUID,
+        limit: Int,
+        sort: ServiceSort,
+        offset: Int,
+        filter: ServiceFilter?
+    ): Page<ServiceReadEntity> =
         serviceReadRepository.findAll(
             getSpecification(filter).and(companyIdEqual(companyId)),
             PageRequest(offset, limit, Sort.by(Sort.Direction.fromString(sort.direction.name), sort.sortBy.name)),
@@ -79,4 +88,7 @@ class ServiceCompanyService(
             throw UnavailableException("CompanyService service unavailable")
         }
     }
+
+    fun getVerifyUsesByServiceId(serviceId: UUID): ConnectionServiceReadEntity? =
+        connectionServiceReadRepository.findByServiceId(serviceId)
 }

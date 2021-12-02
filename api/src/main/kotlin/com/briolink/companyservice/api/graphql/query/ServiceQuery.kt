@@ -3,10 +3,7 @@ package com.briolink.companyservice.api.graphql.query
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
-import com.briolink.companyservice.api.types.Service
-import com.briolink.companyservice.api.types.ServiceFilter
-import com.briolink.companyservice.api.types.ServiceList
-import com.briolink.companyservice.api.types.ServiceSort
+import com.briolink.companyservice.api.types.*
 import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
@@ -62,4 +59,20 @@ class ServiceQuery(
         @InputArgument("companyId") companyId: String,
         @InputArgument("filter") filter: ServiceFilter?
     ): Int = serviceCompanyService.count(companyId = UUID.fromString(companyId), filter = filter).toInt()
+
+    @DgsQuery
+    @PreAuthorize("isAuthenticated()")
+    fun getVerifyUsesByService(@InputArgument("serviceId") serviceId: String): List<CompanyInfoByServiceItem> =
+        serviceCompanyService.getVerifyUsesByServiceId(UUID.fromString(serviceId))?.let { connectionService ->
+            connectionService.data.connectionsInfo.map {
+                val company = connectionService.data.collaboratingCompanies[it.companyId]!!
+                CompanyInfoByServiceItem(
+                    company = CompanyInfoItem.fromEntity(it.companyId, company),
+                    industry = company.industryName,
+                    companyRole = it.roleName,
+                    periodUsedStart = it.periodUsedStart,
+                    periodUsedEnd = it.periodUsedEnd
+                )
+            }
+        } ?: listOf()
 }

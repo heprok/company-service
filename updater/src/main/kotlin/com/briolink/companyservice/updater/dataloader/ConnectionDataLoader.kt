@@ -67,7 +67,7 @@ class ConnectionDataLoader(
                     services.add(
                         listService.shuffled().find { service -> service.companyId == from.id }!!.let {
                             ConnectionService(
-                                id = UUID.randomUUID(),
+                                id = it.id,
                                 serviceId = if (Random.nextBoolean()) it.id else null,
                                 serviceName = it.name,
                                 startDate = startYear,

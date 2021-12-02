@@ -28,4 +28,6 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
         @Param("industryName") industryName: String? = null,
         @Param("location") location: String? = null,
     )
+
+    fun findByServiceId(serviceId: UUID): ConnectionServiceReadEntity?
 }

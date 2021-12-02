@@ -16,6 +16,7 @@ import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.common.jpa.read.entity.*
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
+import java.util.UUID
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
     Company(
@@ -131,6 +132,14 @@ fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInf
     slug = entity.slug,
     logo = entity.data.logo?.let { Image(it) },
     location = entity.data.location?.toString(),
+)
+
+fun CompanyInfoItem.Companion.fromEntity(id: UUID, entity: ConnectionServiceReadEntity.Company) = CompanyInfoItem(
+    id = id.toString(),
+    name = entity.name,
+    slug = entity.slug,
+    logo = entity.logo?.let { Image(it) },
+    location = entity.location,
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(

@@ -38,3 +38,11 @@ input ServiceFilter {
     lastUsed: RangeYear,
     isHide: Boolean
 }
+
+type CompanyInfoByServiceItem {
+    company: CompanyInfoItem!
+    industry: String
+    companyRole: String!
+    periodUsedStart: Year!
+    periodUsedEnd: Year
+}
