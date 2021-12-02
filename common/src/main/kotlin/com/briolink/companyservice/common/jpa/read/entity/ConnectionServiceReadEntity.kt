@@ -30,12 +30,12 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
     lateinit var name: String
 
     @Type(type = "uuid-array")
-    @Column(name = "collaborating_company_ids")
-    var collaboratingCompanyIds: MutableSet<UUID> = mutableSetOf()
+    @Column(name = "collaborating_company_ids", columnDefinition = "uuid[]")
+    var collaboratingCompanyIds: MutableList<UUID> = mutableListOf()
 
     @Type(type = "jsonb")
     @Column(name = "data")
-    var data: Data = Data()
+    lateinit var data: Data
 
     data class Data(
         @JsonProperty
@@ -49,6 +49,8 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
         val name: String,
         @JsonProperty
         val logo: URL? = null,
+        @JsonProperty
+        val slug: String,
         @JsonProperty
         val location: String? = null,
         @JsonProperty

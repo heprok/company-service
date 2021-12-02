@@ -24,6 +24,7 @@ create index idx_connection_deleted_user_ids on read.employee using gin (deleted
 alter table read.employee drop column deleted_user_ids
 alter table read.connection drop column dates_collaboration;
 delete from read.connection;
+delete from read.connection_service;
 delete from public.databasechangelog where orderexecuted = 7
 
 select start_collaboration, end_collaboration from "read"."connection"

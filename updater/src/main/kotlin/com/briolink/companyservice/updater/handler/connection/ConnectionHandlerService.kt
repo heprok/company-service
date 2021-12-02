@@ -59,29 +59,35 @@ class ConnectionHandlerService(
         }
 
         connection.services.forEach {
-            val s = connectionServiceReadRepository.findById(it.id).orElse(ConnectionServiceReadEntity())
+            val s = connectionServiceReadRepository.findById(it.id).orElse(
+                ConnectionServiceReadEntity().apply {
+                    data = ConnectionServiceReadEntity.Data()
+                }
+            )
 
             if (s.id == null) s.id = it.id
             s.companyId = sellerCompany.id
             s.serviceId = it.serviceId
             s.name = it.serviceName
-            s.collaboratingCompanyIds.add(participantBuyer.companyId)
-            s.data.apply {
-                connectionsInfo.add(
-                    ConnectionServiceReadEntity.ConnectionInfo(
-                        companyId = participantBuyer.companyId,
-                        roleName = participantBuyer.companyRole.name,
-                        periodUsedStart = it.startDate,
-                        periodUsedEnd = it.endDate
-                    )
-                )
-                collaboratingCompanies[participantBuyer.companyId] = ConnectionServiceReadEntity.Company(
+            if (!s.collaboratingCompanyIds.contains(participantBuyer.companyId)) {
+                s.data.collaboratingCompanies[participantBuyer.companyId] = ConnectionServiceReadEntity.Company(
                     name = buyerCompany.name,
                     logo = buyerCompany.data.logo,
                     location = buyerCompany.data.location?.toString(),
-                    industryName = buyerCompany.data.industry?.name
+                    industryName = buyerCompany.data.industry?.name,
+                    slug = buyerCompany.slug
                 )
+                s.collaboratingCompanyIds.add(participantBuyer.companyId)
             }
+            s.data.connectionsInfo.add(
+                ConnectionServiceReadEntity.ConnectionInfo(
+                    companyId = participantBuyer.companyId,
+                    roleName = participantBuyer.companyRole.name,
+                    periodUsedStart = it.startDate,
+                    periodUsedEnd = it.endDate
+                )
+            )
+
             connectionServiceReadRepository.save(s)
         }
 

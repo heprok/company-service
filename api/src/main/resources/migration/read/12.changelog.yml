@@ -10,8 +10,14 @@ databaseChangeLog:
               - column:
                   name: collaborating_company_ids
                   type: uuid[]
+                  defaultValueComputed: array[]::uuid[]
+                  constraints:
+                    nullable: false
               - column:
                   name: data
                   type: jsonb
+                  defaultValueComputed: "'{\"collaboratingCompanies\": {}, \"connectionsInfo\": []}'::jsonb"
+                  constraints:
+                    nullable: false
         - sql:
             sql: create index idx_connection_service_collaborating_company_ids on read.connection_service using gin (collaborating_company_ids)

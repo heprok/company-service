@@ -97,7 +97,7 @@ class StatisticHandlerService(
                     if (service.serviceId != null) {
                         val serviceId = service.serviceId.toString()
                         val serviceName = service.serviceName
-                        companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceName) {
+                        companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
                             ChartDataList(serviceName, mutableListOf())
                         }.also { list ->
                             when (
