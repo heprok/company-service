@@ -7,21 +7,22 @@ import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadE
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
+import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
+import org.springframework.context.ApplicationEventPublisher
 
 @EventHandler("StatisticRefreshEvent", "1.0")
 class StatisticEventHandler(
     private val companyReadRepository: CompanyReadRepository,
-//    private val statisticHandlerService: StatisticHandlerService,
     private val connectionReadRepository: ConnectionReadRepository,
-    private val connectionServiceReadRepository: ConnectionServiceReadRepository
+    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<StatisticRefreshEvent> {
     override fun handle(event: StatisticRefreshEvent) {
-//        val companiesUUID = event.data.companyId.let {
-//            if (it == null) companyReadRepository.getAllCompanyUUID() else listOf(it)
-//        }
-
+        event.data.companyId.let { if (it == null) companyReadRepository.getAllCompanyUUID() else listOf(it) }
+            .forEach { applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(it)) }
+        connectionServiceReadRepository.deleteAll()
         val companies = companyReadRepository.findAll()
         connectionReadRepository.findAll().forEach { connection ->
 
