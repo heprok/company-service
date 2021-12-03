@@ -20,58 +20,62 @@ class StatisticEventHandler(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<StatisticRefreshEvent> {
     override fun handle(event: StatisticRefreshEvent) {
-        event.data.companyId.let { if (it == null) companyReadRepository.getAllCompanyUUID() else listOf(it) }
-            .forEach { applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(it)) }
         connectionServiceReadRepository.deleteAll()
         val companies = companyReadRepository.findAll()
-        connectionReadRepository.findAll().forEach { connection ->
 
-            val buyerCompany: CompanyReadEntity
-            val sellerCompany: CompanyReadEntity
-            val companyRole: String
-            if (connection.participantFromRoleType == CompanyRoleTypeEnum.Buyer) {
-                buyerCompany = companies.first { it.id == connection.participantFromCompanyId }!!
-                sellerCompany = companies.first { it.id == connection.participantToCompanyId }
-                companyRole = connection.participantFromRoleName
-            } else {
-                buyerCompany = companies.first { it.id == connection.participantToCompanyId }!!
-                sellerCompany = companies.first { it.id == connection.participantFromCompanyId }!!
-                companyRole = connection.participantFromRoleName
-            }
+        event.data.companyId.let { if (it == null) companyReadRepository.getAllCompanyUUID() else listOf(it) }
+            .forEach { companyId ->
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId))
+                connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(companyId)
+                    .forEach { connection ->
 
-            connection.data.services.forEach {
-                val s = connectionServiceReadRepository.findById(it.id).orElse(
-                    ConnectionServiceReadEntity().apply {
-                        data = ConnectionServiceReadEntity.Data()
+                        val buyerCompany: CompanyReadEntity
+                        val sellerCompany: CompanyReadEntity
+                        val companyRole: String
+                        if (connection.participantFromRoleType == CompanyRoleTypeEnum.Buyer) {
+                            buyerCompany = companies.first { it.id == connection.participantFromCompanyId }!!
+                            sellerCompany = companies.first { it.id == connection.participantToCompanyId }
+                            companyRole = connection.participantFromRoleName
+                        } else {
+                            buyerCompany = companies.first { it.id == connection.participantToCompanyId }!!
+                            sellerCompany = companies.first { it.id == connection.participantFromCompanyId }!!
+                            companyRole = connection.participantFromRoleName
+                        }
+
+                        connection.data.services.forEach {
+                            val s = connectionServiceReadRepository.findById(it.id).orElse(
+                                ConnectionServiceReadEntity().apply {
+                                    data = ConnectionServiceReadEntity.Data()
+                                }
+                            )
+
+                            if (s.id == null) s.id = it.id
+                            s.companyId = sellerCompany.id
+                            s.serviceId = it.serviceId
+                            s.name = it.serviceName
+                            if (!s.collaboratingCompanyIds.contains(buyerCompany.id)) {
+                                s.data.collaboratingCompanies[buyerCompany.id] = ConnectionServiceReadEntity.Company(
+                                    name = buyerCompany.name,
+                                    logo = buyerCompany.data.logo,
+                                    location = buyerCompany.data.location?.toString(),
+                                    industryName = buyerCompany.data.industry?.name,
+                                    slug = buyerCompany.slug
+                                )
+                                s.collaboratingCompanyIds.add(buyerCompany.id)
+                            }
+                            s.data.connectionsInfo.add(
+                                ConnectionServiceReadEntity.ConnectionInfo(
+                                    companyId = buyerCompany.id,
+                                    roleName = companyRole,
+                                    periodUsedStart = it.startDate,
+                                    periodUsedEnd = it.endDate
+                                )
+                            )
+
+                            connectionServiceReadRepository.save(s)
+                        }
                     }
-                )
-
-                if (s.id == null) s.id = it.id
-                s.companyId = sellerCompany.id
-                s.serviceId = it.serviceId
-                s.name = it.serviceName
-                if (!s.collaboratingCompanyIds.contains(buyerCompany.id)) {
-                    s.data.collaboratingCompanies[buyerCompany.id] = ConnectionServiceReadEntity.Company(
-                        name = buyerCompany.name,
-                        logo = buyerCompany.data.logo,
-                        location = buyerCompany.data.location?.toString(),
-                        industryName = buyerCompany.data.industry?.name,
-                        slug = buyerCompany.slug
-                    )
-                    s.collaboratingCompanyIds.add(buyerCompany.id)
-                }
-                s.data.connectionsInfo.add(
-                    ConnectionServiceReadEntity.ConnectionInfo(
-                        companyId = buyerCompany.id,
-                        roleName = companyRole,
-                        periodUsedStart = it.startDate,
-                        periodUsedEnd = it.endDate
-                    )
-                )
-
-                connectionServiceReadRepository.save(s)
             }
-        }
 
 //        companiesUUID.forEach {
 // //            statisticHandlerService.refreshByCompanyId(it)
