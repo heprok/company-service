@@ -1,6 +1,8 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -29,5 +31,5 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
         @Param("location") location: String? = null,
     )
 
-    fun findByServiceId(serviceId: UUID): ConnectionServiceReadEntity?
+    fun findByServiceId(serviceId: UUID, pageable: Pageable? = null): Page<ConnectionServiceReadEntity>
 }

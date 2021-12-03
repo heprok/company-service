@@ -46,3 +46,8 @@ type CompanyInfoByServiceItem {
     periodUsedStart: Year!
     periodUsedEnd: Year
 }
+
+type CompanyInfoByServiceList implements PaginatedList {
+    items: [CompanyInfoByServiceItem]!
+    totalItems: Int!
+}

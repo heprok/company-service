@@ -89,6 +89,6 @@ class ServiceCompanyService(
         }
     }
 
-    fun getVerifyUsesByServiceId(serviceId: UUID): ConnectionServiceReadEntity? =
-        connectionServiceReadRepository.findByServiceId(serviceId)
+    fun getVerifyUsesByServiceId(serviceId: UUID, limit: Int = 10, offset: Int = 0): Page<ConnectionServiceReadEntity> =
+        connectionServiceReadRepository.findByServiceId(serviceId, PageRequest(offset = offset, limit = limit))
 }

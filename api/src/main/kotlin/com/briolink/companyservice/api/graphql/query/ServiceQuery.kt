@@ -62,17 +62,34 @@ class ServiceQuery(
 
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getVerifyUsesByService(@InputArgument("serviceId") serviceId: String): List<CompanyInfoByServiceItem> =
-        serviceCompanyService.getVerifyUsesByServiceId(UUID.fromString(serviceId))?.let { connectionService ->
-            connectionService.data.connectionsInfo.map {
-                val company = connectionService.data.collaboratingCompanies[it.companyId]!!
-                CompanyInfoByServiceItem(
-                    company = CompanyInfoItem.fromEntity(it.companyId, company),
-                    industry = company.industryName,
-                    companyRole = it.roleName,
-                    periodUsedStart = it.periodUsedStart,
-                    periodUsedEnd = it.periodUsedEnd
-                )
-            }
-        } ?: listOf()
+    fun getVerifyUsesByService(
+        @InputArgument("serviceId") serviceId: String,
+        @InputArgument("limit") limit: Int,
+        @InputArgument("offset") offset: Int,
+    ): CompanyInfoByServiceList {
+        val result = mutableListOf<CompanyInfoByServiceItem>()
+        val page = serviceCompanyService.getVerifyUsesByServiceId(
+            serviceId = UUID.fromString(serviceId),
+            limit = limit,
+            offset = offset
+        )
+        page.forEach { connectionService ->
+            result.addAll(
+                connectionService.data.connectionsInfo.map {
+                    val company = connectionService.data.collaboratingCompanies[it.companyId]!!
+                    CompanyInfoByServiceItem(
+                        company = CompanyInfoItem.fromEntity(it.companyId, company),
+                        industry = company.industryName,
+                        companyRole = it.roleName,
+                        periodUsedStart = it.periodUsedStart,
+                        periodUsedEnd = it.periodUsedEnd
+                    )
+                }
+            )
+        }
+        return CompanyInfoByServiceList(
+            items = result,
+            totalItems = page.totalElements.toInt()
+        )
+    }
 }
