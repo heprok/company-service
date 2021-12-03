@@ -1,22 +1,8 @@
 package com.briolink.companyservice.api.graphql
 
-import com.briolink.companyservice.api.types.Company
-import com.briolink.companyservice.api.types.CompanyInfoItem
-import com.briolink.companyservice.api.types.Connection
-import com.briolink.companyservice.api.types.ConnectionCompanyRole
-import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
-import com.briolink.companyservice.api.types.ConnectionParticipant
-import com.briolink.companyservice.api.types.ConnectionService
-import com.briolink.companyservice.api.types.ConnectionStatus
-import com.briolink.companyservice.api.types.Image
-import com.briolink.companyservice.api.types.Industry
-import com.briolink.companyservice.api.types.Keyword
-import com.briolink.companyservice.api.types.Occupation
-import com.briolink.companyservice.api.types.Service
-import com.briolink.companyservice.api.types.User
-import com.briolink.companyservice.common.jpa.read.entity.*
+import com.briolink.companyservice.api.types.* // ktlint-disable no-wildcard-imports
+import com.briolink.companyservice.common.jpa.read.entity.* // ktlint-disable no-wildcard-imports
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
-import java.util.UUID
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
     Company(
@@ -134,12 +120,20 @@ fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInf
     location = entity.data.location?.toString(),
 )
 
-fun CompanyInfoItem.Companion.fromEntity(id: UUID, entity: ConnectionServiceReadEntity.Company) = CompanyInfoItem(
-    id = id.toString(),
+fun CompanyInfoItem.Companion.fromEntity(entity: ConnectionServiceReadEntity.Company) = CompanyInfoItem(
+    id = entity.id.toString(),
     name = entity.name,
     slug = entity.slug,
     logo = entity.logo?.let { Image(it) },
     location = entity.location,
+)
+
+fun CompanyInfoByServiceItem.Companion.fromEntity(entity: ConnectionServiceReadEntity) = CompanyInfoByServiceItem(
+    company = CompanyInfoItem.fromEntity(entity.data.company),
+    industry = entity.data.company.industryName,
+    companyRole = entity.data.roleName,
+    periodUsedStart = entity.data.periodUsedStart,
+    periodUsedEnd = entity.data.periodUsedEnd,
 )
 
 fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(

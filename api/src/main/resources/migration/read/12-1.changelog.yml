@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12-1
+      author: oleg@briolink.com
+      changes:
+        - delete:
+            schemaName: read
+            tableName: connection_service
+        - dropIndex:
+            tableName: connection_service
+            schemaName: read
+            indexName: idx_connection_service_collaborating_company_ids
+        - dropColumn:
+            schemaName: read
+            tableName: connection_service
+            columns:
+              - column:
+                  name: collaborating_company_ids
+        - addColumn:
+            schemaName: read
+            tableName: connection_service
+            columns:
+              - column:
+                  name: collaborating_company_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hidden
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: connection_service
+            schemaName: read
+            indexName: ids_connection_service_service_id
+            columns:
+              - column:
+                  name: service_id
+        - createIndex:
+            tableName: connection_service
+            schemaName: read
+            indexName: ids_connection_service_collaborating_company_id
+            columns:
+              - column:
+                  name: collaborating_company_id

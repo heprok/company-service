@@ -3,8 +3,10 @@ package com.briolink.companyservice.api.service
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.config.AppEndpointsProperties
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity_.hidden
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
@@ -88,7 +90,20 @@ class ServiceCompanyService(
             throw UnavailableException("CompanyService service unavailable")
         }
     }
+//
+//    @Query(
+//        """SELECT c
+//           FROM ConnectionServiceReadEntity
+//
+//        """
+//    )
 
     fun getVerifyUsesByServiceId(serviceId: UUID, limit: Int = 10, offset: Int = 0): Page<ConnectionServiceReadEntity> =
-        connectionServiceReadRepository.findByServiceId(serviceId, PageRequest(offset = offset, limit = limit))
+        connectionServiceReadRepository.findByServiceId(
+            serviceId,
+            hidden = false,
+            deleted = false,
+            status = ConnectionStatusEnum.Verified.value,
+            pageable = PageRequest(offset = offset, limit = limit)
+        )
 }

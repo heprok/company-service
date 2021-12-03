@@ -58,39 +58,6 @@ class ConnectionHandlerService(
             serviceMaxDate = null
         }
 
-        connection.services.forEach {
-            val s = connectionServiceReadRepository.findById(it.id).orElse(
-                ConnectionServiceReadEntity().apply {
-                    data = ConnectionServiceReadEntity.Data()
-                }
-            )
-
-            if (s.id == null) s.id = it.id
-            s.companyId = sellerCompany.id
-            s.serviceId = it.serviceId
-            s.name = it.serviceName
-            if (!s.collaboratingCompanyIds.contains(participantBuyer.companyId)) {
-                s.data.collaboratingCompanies[participantBuyer.companyId] = ConnectionServiceReadEntity.Company(
-                    name = buyerCompany.name,
-                    logo = buyerCompany.data.logo,
-                    location = buyerCompany.data.location?.toString(),
-                    industryName = buyerCompany.data.industry?.name,
-                    slug = buyerCompany.slug
-                )
-                s.collaboratingCompanyIds.add(participantBuyer.companyId)
-            }
-            s.data.connectionsInfo.add(
-                ConnectionServiceReadEntity.ConnectionInfo(
-                    companyId = participantBuyer.companyId,
-                    roleName = participantBuyer.companyRole.name,
-                    periodUsedStart = it.startDate,
-                    periodUsedEnd = it.endDate
-                )
-            )
-
-            connectionServiceReadRepository.save(s)
-        }
-
         connectionReadRepository.findById(connection.id).orElse(ConnectionReadEntity(connection.id)).apply {
             participantFromCompanyId = connection.participantFrom.companyId
             participantFromUserId = connection.participantFrom.userId
@@ -200,6 +167,33 @@ class ConnectionHandlerService(
                 ),
                 industry = industry?.name,
             )
+
+            connection.services.forEach {
+                val s = connectionServiceReadRepository.findById(it.id).orElse(ConnectionServiceReadEntity())
+
+                if (s.id == null) s.id = it.id
+                s.companyId = sellerCompany.id
+                s.collaboratingCompanyId = buyerCompany.id
+                s.serviceId = it.serviceId
+                s.name = it.serviceName
+                s.status = status
+                s.hidden = hiddenCompanyIds.contains(sellerCompany.id)
+                s.deleted = deletedCompanyIds.contains(sellerCompany.id)
+                s.data = ConnectionServiceReadEntity.Data(
+                    company = ConnectionServiceReadEntity.Company(
+                        id = buyerCompany.id,
+                        name = buyerCompany.name,
+                        logo = buyerCompany.data.logo,
+                        location = buyerCompany.data.location?.toString(),
+                        industryName = buyerCompany.data.industry?.name,
+                        slug = buyerCompany.slug
+                    ),
+                    roleName = participantBuyer.companyRole.name,
+                    periodUsedStart = it.startDate,
+                    periodUsedEnd = it.endDate
+                )
+                connectionServiceReadRepository.save(s)
+            }
 
             return connectionReadRepository.save(this)
         }

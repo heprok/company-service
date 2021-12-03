@@ -1,5 +1,7 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.net.URL
@@ -29,22 +31,45 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
     @Column(name = "name", nullable = false, length = 200)
     lateinit var name: String
 
-    @Type(type = "uuid-array")
-    @Column(name = "collaborating_company_ids", columnDefinition = "uuid[]")
-    var collaboratingCompanyIds: MutableList<UUID> = mutableListOf()
+    @Type(type = "pg-uuid")
+    @Column(name = "collaborating_company_id")
+    lateinit var collaboratingCompanyId: UUID
+
+    @Column(name = "hidden", nullable = false)
+    var hidden: Boolean = false
+
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false
+
+    @Column(name = "status", nullable = false)
+    private var _status: Int = ConnectionStatusEnum.Pending.value
+
+    var status: ConnectionStatusEnum
+        get() = ConnectionStatusEnum.fromInt(_status)
+        set(value) {
+            _status = value.value
+        }
 
     @Type(type = "jsonb")
     @Column(name = "data")
     lateinit var data: Data
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty
-        var collaboratingCompanies: MutableMap<UUID, Company> = mutableMapOf(),
+        val company: Company,
         @JsonProperty
-        var connectionsInfo: MutableList<ConnectionInfo> = mutableListOf()
+        val roleName: String,
+        @JsonProperty
+        val periodUsedStart: Year,
+        @JsonProperty
+        val periodUsedEnd: Year?
     )
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Company(
+        @JsonProperty
+        val id: UUID,
         @JsonProperty
         val name: String,
         @JsonProperty
@@ -55,16 +80,5 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
         val location: String? = null,
         @JsonProperty
         val industryName: String? = null,
-    )
-
-    data class ConnectionInfo(
-        @JsonProperty
-        val companyId: UUID,
-        @JsonProperty
-        val roleName: String,
-        @JsonProperty
-        val periodUsedStart: Year,
-        @JsonProperty
-        val periodUsedEnd: Year?
     )
 }

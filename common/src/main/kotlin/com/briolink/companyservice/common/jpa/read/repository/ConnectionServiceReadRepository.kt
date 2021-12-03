@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -14,13 +15,13 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
     @Query(
         """UPDATE ConnectionServiceReadEntity c
            SET c.data = function('jsonb_sets', c.data,
-                           '{collaboratingCompanies,:companyId,slug}', :slug, text,
-                           '{collaboratingCompanies,:companyId,location}', :location, text,
-                           '{collaboratingCompanies,:companyId,industryName}', :industryName, text,
-                           '{collaboratingCompanies,:companyId,logo}', :logo, text,
-                           '{collaboratingCompanies,:companyId,name}', :name, text
+                           '{company,slug}', :slug, text,
+                           '{company,location}', :location, text,
+                           '{company,industryName}', :industryName, text,
+                           '{company,logo}', :logo, text,
+                           '{company,name}', :name, text
                )    
-           WHERE function('array_contains_element', c.collaboratingCompanyIds, :companyId) = TRUE """,
+           WHERE c.collaboratingCompanyId = :companyId""",
     )
     fun updateCompany(
         @Param("companyId") companyId: UUID,
@@ -31,5 +32,17 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
         @Param("location") location: String? = null,
     )
 
-    fun findByServiceId(serviceId: UUID, pageable: Pageable? = null): Page<ConnectionServiceReadEntity>
+    @Query(
+        """SELECT c
+            FROM ConnectionServiceReadEntity c
+            WHERE c.serviceId = :serviceId AND c.hidden = :hidden AND c.deleted = :deleted AND c._status = :status
+        """
+    )
+    fun findByServiceId(
+        @Param("serviceId") serviceId: UUID,
+        @Param("hidden") hidden: Boolean = false,
+        @Param("deleted") deleted: Boolean = false,
+        @Param("status") status: Int = ConnectionStatusEnum.Verified.value,
+        @Param("pageable") pageable: Pageable? = null
+    ): Page<ConnectionServiceReadEntity>
 }

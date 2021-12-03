@@ -3,7 +3,7 @@ package com.briolink.companyservice.api.graphql.query
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
-import com.briolink.companyservice.api.types.*
+import com.briolink.companyservice.api.types.* // ktlint-disable no-wildcard-imports
 import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
@@ -67,28 +67,15 @@ class ServiceQuery(
         @InputArgument("limit") limit: Int,
         @InputArgument("offset") offset: Int,
     ): CompanyInfoByServiceList {
-        val result = mutableListOf<CompanyInfoByServiceItem>()
         val page = serviceCompanyService.getVerifyUsesByServiceId(
             serviceId = UUID.fromString(serviceId),
             limit = limit,
             offset = offset
         )
-        page.forEach { connectionService ->
-            result.addAll(
-                connectionService.data.connectionsInfo.map {
-                    val company = connectionService.data.collaboratingCompanies[it.companyId]!!
-                    CompanyInfoByServiceItem(
-                        company = CompanyInfoItem.fromEntity(it.companyId, company),
-                        industry = company.industryName,
-                        companyRole = it.roleName,
-                        periodUsedStart = it.periodUsedStart,
-                        periodUsedEnd = it.periodUsedEnd
-                    )
-                }
-            )
-        }
         return CompanyInfoByServiceList(
-            items = result,
+            items = page.content.map {
+                CompanyInfoByServiceItem.fromEntity(it)
+            },
             totalItems = page.totalElements.toInt()
         )
     }

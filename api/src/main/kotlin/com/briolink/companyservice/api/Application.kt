@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
-@SpringBootApplication(scanBasePackages = ["com.briolink.companyservice"])
+@SpringBootApplication
 @EntityScan(
     basePackages = [
         "com.briolink.companyservice.common.jpa.read.entity",
