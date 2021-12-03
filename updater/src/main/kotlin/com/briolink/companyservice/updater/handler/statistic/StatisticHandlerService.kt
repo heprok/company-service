@@ -14,6 +14,7 @@ import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartTabItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
@@ -36,6 +37,7 @@ class StatisticHandlerService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val companyReadRepository: CompanyReadRepository,
+    private val connectionServiceReadRepository: ConnectionServiceReadRepository
 ) {
     @Async
     fun refreshByCompanyId(companyId: UUID) {
@@ -144,6 +146,14 @@ class StatisticHandlerService(
             val minDateService = connectionReadEntity.data.services.minOf { it.startDate.value }
             val maxDateService = connectionReadEntity.data.services.maxOf { it.endDate?.value ?: Year.now().value }
             val rangeYearDateService = Range.closed(minDateService, maxDateService)
+            val sellerId = if (connectionReadEntity.participantFromRoleType == CompanyRoleTypeEnum.Seller)
+                connectionReadEntity.participantFromCompanyId else connectionReadEntity.participantToCompanyId
+            connectionReadEntity.data.services.forEach {
+                val s = connectionServiceReadRepository.findById(it.id).get()
+                s.hidden = connectionReadEntity.hiddenCompanyIds.contains(sellerId)
+                s.deleted = connectionReadEntity.deletedCompanyIds.contains(sellerId)
+                connectionServiceReadRepository.save(s)
+            }
 //            val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
             for (year in rangeYearDateService.lower()..rangeYearDateService.upper()) {
                 companyStatistic.chartConnectionCountByYearData.data.getOrPut(year.toString()) {
@@ -201,7 +211,8 @@ class StatisticHandlerService(
         var offset = 0
 
         while (true) {
-            val companyIds = connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
+            val companyIds =
+                connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
             println(companyIds)
             if (companyIds.isEmpty()) break
             companyIds.forEach {

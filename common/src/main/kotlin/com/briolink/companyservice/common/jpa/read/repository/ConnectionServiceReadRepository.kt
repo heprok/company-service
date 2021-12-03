@@ -32,6 +32,18 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
         @Param("location") location: String? = null,
     )
 
+//    @Modifying
+//    @Query(
+//        """UPDATE ConnectionServiceReadEntity c
+//           SET c.hidden = :hidden
+//           WHERE c.id IN (:connectionServiceIds) AND c.hidden <> :hidden
+//        """
+//    )
+//    fun changeVisibilityByIds(
+//        @Param("connectionServiceIds") connectionServiceIds: List<UUID>,
+//        @Param("hidden") hidden: Boolean
+//    )
+
     @Query(
         """SELECT c
             FROM ConnectionServiceReadEntity c

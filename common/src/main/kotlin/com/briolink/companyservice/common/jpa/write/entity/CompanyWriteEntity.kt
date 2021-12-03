@@ -104,7 +104,7 @@ class CompanyWriteEntity(
 
     @PrePersist
     fun prePersist() {
-        slug = StringUtil.slugify(name, true)
+        slug = StringUtil.slugify("$name ", true)
     }
 
     fun toDomain() = Company(
