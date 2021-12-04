@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12-3
+      author: oleg@briolink.com
+      changes:
+        - dropNotNullConstraint:
+            columnName: deleted
+            schemaName: read
+            tableName: connection_service
