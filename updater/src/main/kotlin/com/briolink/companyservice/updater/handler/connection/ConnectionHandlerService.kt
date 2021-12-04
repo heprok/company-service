@@ -177,10 +177,10 @@ class ConnectionHandlerService(
                 s.companyId = sellerCompany.id
                 s.collaboratingCompanyId = buyerCompany.id
                 s.serviceId = it.serviceId
+                s.connectionId = connection.id
                 s.name = it.serviceName
                 s.status = status
                 s.hidden = hiddenCompanyIds.contains(sellerCompany.id)
-                s.deleted = deletedCompanyIds.contains(sellerCompany.id)
                 s.data = ConnectionServiceReadEntity.Data(
                     company = ConnectionServiceReadEntity.Company(
                         id = buyerCompany.id,

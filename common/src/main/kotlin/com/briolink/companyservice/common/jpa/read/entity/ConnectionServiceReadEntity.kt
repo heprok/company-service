@@ -28,6 +28,10 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
     @Column(name = "service_id")
     var serviceId: UUID? = null
 
+    @Type(type = "pg-uuid")
+    @Column(name = "connection_id")
+    lateinit var connectionId: UUID
+
     @Column(name = "name", nullable = false, length = 200)
     lateinit var name: String
 
@@ -37,9 +41,6 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
 
     @Column(name = "hidden", nullable = false)
     var hidden: Boolean = false
-
-    @Column(name = "deleted", nullable = false)
-    var deleted: Boolean = false
 
     @Column(name = "status", nullable = false)
     private var _status: Int = ConnectionStatusEnum.Pending.value

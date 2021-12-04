@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12-1
+      author: oleg@briolink.com
+      changes:
+        - delete:
+            schemaName: read
+            tableName: connection_service
+        - addColumn:
+            schemaName: read
+            tableName: connection_service
+            columns:
+              - column:
+                  name: connection_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - dropBolumn:
+            schemaName: read
+            tableName: connection_service
+            columns:
+              - column:
+                  name: deleted
+        - createIndex:
+            tableName: connection_service
+            schemaName: read
+            indexName: ids_connection_service_connection_id
+            columns:
+              - column:
+                  name: connection_id

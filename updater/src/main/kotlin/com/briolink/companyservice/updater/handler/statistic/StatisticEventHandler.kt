@@ -47,10 +47,10 @@ class StatisticEventHandler(
                             s.collaboratingCompanyId = buyerCompany.id
                             s.companyId = sellerCompany.id
                             s.serviceId = it.serviceId
+                            s.connectionId = connection.id
                             s.name = it.serviceName
                             s.status = connection.status
                             s.hidden = connection.hiddenCompanyIds.contains(sellerCompany.id)
-                            s.deleted = connection.deletedCompanyIds.contains(sellerCompany.id)
                             s.data = ConnectionServiceReadEntity.Data(
                                 company = ConnectionServiceReadEntity.Company(
                                     id = buyerCompany.id,

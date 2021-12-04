@@ -151,7 +151,6 @@ class StatisticHandlerService(
             connectionReadEntity.data.services.forEach {
                 val s = connectionServiceReadRepository.findById(it.id).get()
                 s.hidden = connectionReadEntity.hiddenCompanyIds.contains(sellerId)
-                s.deleted = connectionReadEntity.deletedCompanyIds.contains(sellerId)
                 connectionServiceReadRepository.save(s)
             }
 //            val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
@@ -213,7 +212,6 @@ class StatisticHandlerService(
         while (true) {
             val companyIds =
                 connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
-            println(companyIds)
             if (companyIds.isEmpty()) break
             companyIds.forEach {
                 refreshByCompanyId(it.companyId)

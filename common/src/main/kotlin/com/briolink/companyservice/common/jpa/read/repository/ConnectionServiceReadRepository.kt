@@ -44,16 +44,47 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
 //        @Param("hidden") hidden: Boolean
 //    )
 
+    @Modifying
+    @Query(
+        """
+            UPDATE ConnectionServiceReadEntity c
+            SET c.hidden = :hidden
+            WHERE
+               c.connectionId = :connectionId AND c.hidden <> :hidden
+           """,
+    )
+    fun changeVisibilityByConnectionId(
+        @Param("connectionId") connectionId: UUID,
+        @Param("hidden") hidden: Boolean
+    )
+
+    @Query(
+        """SELECT c.serviceId
+            FROM ConnectionServiceReadEntity c
+            WHERE c.connectionId = :connectionId
+        """
+    )
+    fun getServiceIdsByConnectionId(@Param("connectionId") connectionId: UUID): List<UUID>
+
+    @Modifying
+    @Query(
+        """
+            DELETE ConnectionServiceReadEntity c
+            WHERE
+               c.connectionId = :connectionId
+           """,
+    )
+    fun deleteByConnectionId(@Param("connectionId") connectionId: UUID)
+
     @Query(
         """SELECT c
             FROM ConnectionServiceReadEntity c
-            WHERE c.serviceId = :serviceId AND c.hidden = :hidden AND c.deleted = :deleted AND c._status = :status
+            WHERE c.serviceId = :serviceId AND c.hidden = :hidden AND c._status = :status
         """
     )
     fun findByServiceId(
         @Param("serviceId") serviceId: UUID,
         @Param("hidden") hidden: Boolean = false,
-        @Param("deleted") deleted: Boolean = false,
         @Param("status") status: Int = ConnectionStatusEnum.Verified.value,
         @Param("pageable") pageable: Pageable? = null
     ): Page<ConnectionServiceReadEntity>

@@ -31,4 +31,8 @@ class CompanyServiceHandlerService(
     fun deleteById(id: UUID) {
         serviceReadRepository.deleteById(id)
     }
+
+    fun refreshVerifyUses(serviceId: UUID) {
+        serviceReadRepository.refreshVerifyUses(serviceId)
+    }
 }

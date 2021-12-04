@@ -6,7 +6,6 @@ import com.briolink.companyservice.common.config.AppEndpointsProperties
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity_.hidden
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
@@ -102,7 +101,6 @@ class ServiceCompanyService(
         connectionServiceReadRepository.findByServiceId(
             serviceId,
             hidden = false,
-            deleted = false,
             status = ConnectionStatusEnum.Verified.value,
             pageable = PageRequest(offset = offset, limit = limit)
         )

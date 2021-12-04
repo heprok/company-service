@@ -24,6 +24,15 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     fun toggleVisibilityByIdAndCompanyId(serviceId: UUID, companyId: UUID)
 
     @Modifying
+    @Query(
+        """UPDATE ServiceReadEntity s 
+            SET s.verifiedUses = (SELECT count(cs.serviceId) FROM ConnectionServiceReadEntity cs WHERE serviceId = ?1 AND cs.hidden = false)
+            WHERE s.id = ?1
+        """
+    )
+    fun refreshVerifyUses(serviceId: UUID)
+
+    @Modifying
     @Query("DELETE from ServiceReadEntity c where c.id = ?1")
     override fun deleteById(id: UUID)
 }

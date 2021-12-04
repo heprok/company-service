@@ -8,13 +8,16 @@ import com.blazebit.persistence.WhereBuilder
 import com.briolink.companyservice.api.service.connection.dto.FiltersDto
 import com.briolink.companyservice.api.service.connection.dto.SortDto
 import com.briolink.companyservice.api.service.connection.dto.TabItemDto
+import com.briolink.companyservice.common.domain.v1_0.CompanyServiceRefreshVerifyUses
 import com.briolink.companyservice.common.domain.v1_0.Statistic
+import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.cte.RoleProjectionCte
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.array.UUIDArrayType
 import org.hibernate.jpa.TypedParameterValue
@@ -28,6 +31,7 @@ import javax.persistence.Tuple
 @Transactional
 class ConnectionService(
     private val connectionReadRepository: ConnectionReadRepository,
+    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     private val entityManager: EntityManager,
     private val eventPublisher: EventPublisher,
     private val criteriaBuilderFactory: CriteriaBuilderFactory
@@ -95,7 +99,8 @@ class ConnectionService(
             }
 
             if (locationId != null) {
-                cb.whereExpression("${locationId.type.name.lowercase()}Id = :locationId").setParameter("locationId", locationId.id)
+                cb.whereExpression("${locationId.type.name.lowercase()}Id = :locationId")
+                    .setParameter("locationId", locationId.id)
             }
 
             if (!status.isNullOrEmpty()) {
@@ -154,7 +159,11 @@ class ConnectionService(
     fun existsConnectionByCompany(companyId: UUID): Boolean =
         connectionReadRepository.existsByParticipantFromCompanyIdOrParticipantToCompanyId(companyId, companyId)
 
-    fun setActiveTab(companyId: UUID, tab: String?, cb: CriteriaBuilder<ConnectionReadEntity>): CriteriaBuilder<ConnectionReadEntity> {
+    fun setActiveTab(
+        companyId: UUID,
+        tab: String?,
+        cb: CriteriaBuilder<ConnectionReadEntity>
+    ): CriteriaBuilder<ConnectionReadEntity> {
 
         if (tab != null) {
             val tabType = tab.take(1).toInt()
@@ -195,12 +204,26 @@ class ConnectionService(
             .map { IndustryReadEntity(id = it.id, name = it.name) }
 
     fun changeVisibilityByIdAndCompanyId(companyId: UUID, connectionId: UUID, isHide: Boolean) {
-        connectionReadRepository.changeVisibilityByIdAndCompanyId(connectionId = connectionId, companyId = companyId, hidden = isHide)
+        connectionReadRepository.changeVisibilityByIdAndCompanyId(
+            connectionId = connectionId,
+            companyId = companyId,
+            hidden = isHide
+        )
+        connectionServiceReadRepository.changeVisibilityByConnectionId(connectionId, isHide)
+        refreshVerifyUsesByConnectionId(connectionId)
         eventPublisher.publishAsync(StatisticRefreshEvent(Statistic(companyId)))
+    }
+
+    fun refreshVerifyUsesByConnectionId(connectionId: UUID) {
+        connectionServiceReadRepository.getServiceIdsByConnectionId(connectionId).forEach {
+            eventPublisher.publishAsync(RefreshConnectionServiceEvent(CompanyServiceRefreshVerifyUses(serviceId = it)))
+        }
     }
 
     fun deleteConnectionInCompany(connectionId: UUID, companyId: UUID) {
         connectionReadRepository.softDeleteByIdAndCompanyId(id = connectionId, companyId = companyId)
+        refreshVerifyUsesByConnectionId(connectionId)
+        connectionServiceReadRepository.deleteByConnectionId(connectionId = connectionId)
         eventPublisher.publishAsync(StatisticRefreshEvent(Statistic(companyId)))
     }
 }

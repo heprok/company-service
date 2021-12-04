@@ -1,5 +1,6 @@
 package com.briolink.companyservice.updater.handler.companyservice
 
+import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
@@ -15,6 +16,15 @@ class CompanyServiceCreatedEventHandler(
 ) : IEventHandler<CompanyServiceCreatedEvent> {
     override fun handle(event: CompanyServiceCreatedEvent) {
         companyServiceHandlerService.createOrUpdate(event.data)
+    }
+}
+
+@EventHandler("RefreshConnectionServiceEvent", "1.0")
+class RefreshConnectionServiceEventHandler(
+    private val companyServiceHandlerService: CompanyServiceHandlerService
+) : IEventHandler<RefreshConnectionServiceEvent> {
+    override fun handle(event: RefreshConnectionServiceEvent) {
+        companyServiceHandlerService.refreshVerifyUses(event.data.serviceId)
     }
 }
 
