@@ -57,14 +57,14 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         """
         SELECT cast(connection_service.id as varchar), connection_service.name FROM read.connection_service as connection_service
             WHERE
-                (:query is null or connection_service.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true) 
+                (:query is null or connection_service.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true) AND connection_service.hidden = false
                 AND EXISTS (
                 SELECT 1 FROM
                     read.connection as connection
                 WHERE
                     (
                     (connection.participant_to_company_id = cast(:companyId as uuid) OR connection.participant_from_company_id = cast(:companyId as uuid))
-                    AND connection.service_ids @> ARRAY[connection_service.id] )
+                    AND connection.service_ids @> ARRAY[connection_service.id] ) 
                     LIMIT 1
                 ) LIMIT 10
     """,
