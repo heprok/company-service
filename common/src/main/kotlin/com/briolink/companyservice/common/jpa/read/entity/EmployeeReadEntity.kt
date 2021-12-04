@@ -12,10 +12,10 @@ import javax.persistence.Id
 import javax.persistence.IdClass
 import javax.persistence.Table
 
-class EmployeePK(
-    var companyId: UUID,
-    var userId: UUID
-) : Serializable
+class EmployeePK() : Serializable {
+    lateinit var companyId: UUID
+    lateinit var userId: UUID
+}
 
 @Table(name = "employee", schema = "read")
 @Entity

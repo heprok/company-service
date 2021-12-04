@@ -198,7 +198,7 @@ class StatisticHandlerService(
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = companyStatistic.chartByServicesProvidedData.data.size
-        statisticReadRepository.save(companyStatistic)
+        statisticReadRepository.saveAndFlush(companyStatistic)
         println(list.count())
         print(" ------------ end")
     }
@@ -212,7 +212,6 @@ class StatisticHandlerService(
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         val limit = 5000
         var offset = 0
-        refreshByCompanyId(event.companyId)
         while (true) {
             val companyIds =
                 connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
