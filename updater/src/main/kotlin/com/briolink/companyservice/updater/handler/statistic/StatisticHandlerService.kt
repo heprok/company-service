@@ -149,9 +149,10 @@ class StatisticHandlerService(
             val sellerId = if (connectionReadEntity.participantFromRoleType == CompanyRoleTypeEnum.Seller)
                 connectionReadEntity.participantFromCompanyId else connectionReadEntity.participantToCompanyId
             connectionReadEntity.data.services.forEach {
-                val s = connectionServiceReadRepository.findById(it.id).get()
-                s.hidden = connectionReadEntity.hiddenCompanyIds.contains(sellerId)
-                connectionServiceReadRepository.save(s)
+                connectionServiceReadRepository.findByIdOrNull(it.id)?.apply {
+                    hidden = connectionReadEntity.hiddenCompanyIds.contains(sellerId)
+                    connectionServiceReadRepository.save(this)
+                }
             }
 //            val createdYear = connectionReadEntity.created.atZone(ZoneId.systemDefault()).year.toString()
             for (year in rangeYearDateService.lower()..rangeYearDateService.upper()) {
@@ -211,11 +212,10 @@ class StatisticHandlerService(
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         val limit = 5000
         var offset = 0
-
+        refreshByCompanyId(event.companyId)
         while (true) {
             val companyIds =
                 connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
-            refreshByCompanyId(event.companyId)
             if (companyIds.isEmpty()) break
             companyIds.forEach {
                 refreshByCompanyId(it.companyId)
