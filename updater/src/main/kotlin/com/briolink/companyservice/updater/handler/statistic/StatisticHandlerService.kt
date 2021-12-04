@@ -212,6 +212,7 @@ class StatisticHandlerService(
         while (true) {
             val companyIds =
                 connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
+            refreshByCompanyId(event.companyId)
             if (companyIds.isEmpty()) break
             companyIds.forEach {
                 refreshByCompanyId(it.companyId)
