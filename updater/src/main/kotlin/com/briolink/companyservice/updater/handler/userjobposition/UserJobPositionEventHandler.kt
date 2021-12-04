@@ -6,8 +6,7 @@ import com.briolink.event.annotation.EventHandlers
 
 @EventHandlers(
     EventHandler("UserJobPositionCreatedEvent", "1.0"),
-    EventHandler("UserJobPositionCreatedEvent", "1.0")
-
+    EventHandler("UserJobPositionUpdatedEvent", "1.0")
 )
 class UserJobPositionCreatedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
