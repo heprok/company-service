@@ -100,7 +100,7 @@ class ConnectionDataLoader(
                 )
             }
             listCompany.forEach {
-                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(it.id))
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(it.id, false))
             }
         }
     }

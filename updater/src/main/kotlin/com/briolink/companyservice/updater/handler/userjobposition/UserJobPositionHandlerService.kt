@@ -180,7 +180,7 @@ class UserJobPositionHandlerService(
             companyId = companyId,
             userId = userId, false,
         )
-        applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId))
+        applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
     }
 
     fun updateUser(user: UserReadEntity) {

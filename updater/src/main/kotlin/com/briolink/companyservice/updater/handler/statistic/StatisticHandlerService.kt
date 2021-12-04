@@ -210,17 +210,19 @@ class StatisticHandlerService(
     @Async
     @EventListener
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
-        val limit = 5000
-        var offset = 0
-        while (true) {
-            val companyIds =
-                connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
-            if (companyIds.isEmpty()) break
-            companyIds.forEach {
-                refreshByCompanyId(it.companyId)
+        refreshByCompanyId(event.companyId)
+        if (event.isUpdateCollaborating) {
+            val limit = 5000
+            var offset = 0
+            while (true) {
+                val companyIds =
+                    connectionReadRepository.getCompanyIdsByCompanyId(event.companyId.toString(), limit, offset)
+                if (companyIds.isEmpty()) break
+                companyIds.forEach {
+                    refreshByCompanyId(it.companyId)
+                }
+                offset += limit
             }
-
-            offset += limit
         }
     }
 

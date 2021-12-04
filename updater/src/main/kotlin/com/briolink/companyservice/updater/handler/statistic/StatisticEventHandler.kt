@@ -23,7 +23,7 @@ class StatisticEventHandler(
         val companies = companyReadRepository.findAll()
         event.data.companyId.let { if (it == null) companyReadRepository.getAllCompanyUUID() else listOf(it) }
             .forEach { companyId ->
-                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId))
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
                 connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(companyId)
                     .forEach { connection ->
                         val buyerCompany: CompanyReadEntity

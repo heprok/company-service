@@ -28,7 +28,7 @@ class CompanyEventHandler(
                 connectionHandlerService.updateCompany(it)
                 connectionServiceHandlerService.updateCompany(it)
                 if (it.data.industry?.id != prevIndustryId || it.data.location?.country?.id != prevCountryId) {
-                    applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.id))
+                    applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.id, true))
                 }
             }
         }
