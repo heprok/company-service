@@ -152,6 +152,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
             slug = entity.data.participantFrom.company.slug,
             logo = entity.data.participantFrom.company.logo?.let { logo -> Image(logo) },
             name = entity.data.participantFrom.company.name,
+            occupation = entity.data.participantFrom.company.occupation,
         ),
         companyRole = ConnectionCompanyRole(
             id = entity.participantFromRoleId.toString(),
@@ -173,6 +174,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
             slug = entity.data.participantTo.company.slug,
             logo = entity.data.participantTo.company.logo?.let { logo -> Image(logo) },
             name = entity.data.participantTo.company.name,
+            occupation = entity.data.participantTo.company.occupation,
         ),
         companyRole = ConnectionCompanyRole(
             id = entity.participantToRoleId.toString(),

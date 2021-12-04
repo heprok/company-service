@@ -200,24 +200,25 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                    then function('jsonb_sets', u.data,
                            '{participantFrom,company,slug}', :slug, text,
                            '{participantFrom,company,logo}', :logo, text,
+                           '{participantFrom,company,occupation}', :occupation, text,
                            '{participantFrom,company,name}', :name, text
                    )
                when u.participantToCompanyId = :companyId
                    then function('jsonb_sets', u.data,
                            '{participantTo,company,slug}', :slug, text,
                            '{participantTo,company,logo}', :logo, text,
+                           '{participantTo,company,occupation}', :occupation, text,
                            '{participantTo,company,name}', :name, text
                    )
                else data end
-           where
-            (u.participantFromCompanyId = :companyId) or
-            (u.participantToCompanyId = :companyId)""",
+           where u.participantFromCompanyId = :companyId or u.participantToCompanyId = :companyId""",
     )
     fun updateCompany(
         @Param("companyId") companyId: UUID,
-        @Param("slug") slug: String,
         @Param("name") name: String,
+        @Param("slug") slug: String,
         @Param("logo") logo: String? = null,
+        @Param("occupation") occupation: String? = null,
     )
 
     @Query(

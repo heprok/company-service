@@ -177,5 +177,7 @@ class ConnectionReadEntity(
         val logo: URL?,
         @JsonProperty
         val name: String,
+        @JsonProperty
+        val occupation: String? = null,
     )
 }

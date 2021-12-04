@@ -48,6 +48,7 @@ type CompanyInfoItem {
     name: String!
     logo: Image
     location: String
+    occupation: String
 }
 
 type ChartConnectionCountByYear {

@@ -26,6 +26,8 @@ class CompanyHandlerService(
     fun createOrUpdate(entityPrevCompany: CompanyReadEntity? = null, companyDomain: Company): CompanyReadEntity {
         val company = entityPrevCompany ?: CompanyReadEntity(companyDomain.id, companyDomain.slug, companyDomain.name)
         company.apply {
+            name = companyDomain.name
+            slug = companyDomain.slug
             data = CompanyReadEntity.Data(
                 name = companyDomain.name,
                 website = companyDomain.website,

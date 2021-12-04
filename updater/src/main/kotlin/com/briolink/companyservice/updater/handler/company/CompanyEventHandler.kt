@@ -3,7 +3,6 @@ package com.briolink.companyservice.updater.handler.company
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
-import com.briolink.companyservice.updater.handler.connection.ConnectionServiceHandlerService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
@@ -16,7 +15,6 @@ import org.springframework.context.ApplicationEventPublisher
 class CompanyEventHandler(
     private val companyHandlerService: CompanyHandlerService,
     private val connectionHandlerService: ConnectionHandlerService,
-    private val connectionServiceHandlerService: ConnectionServiceHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<CompanyCreatedEvent> {
     override fun handle(event: CompanyCreatedEvent) {
