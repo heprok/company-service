@@ -1,8 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -36,7 +34,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
            WHERE u.endDate is null AND companyId = ?1
         """
     )
-    fun findByCompanyId(companyId: UUID, pageable: Pageable? = null): Page<UserJobPositionReadEntity>
+    fun findByCompanyIdAndEndDateNull(companyId: UUID): List<UserJobPositionReadEntity>
 
     @Modifying
     @Query("DELETE from UserJobPositionReadEntity u where u.id = ?1")

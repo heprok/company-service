@@ -19,7 +19,6 @@ class UserJobPositionReadEntity(
     @Type(type = "pg-uuid")
     @Column(name = "id", nullable = false)
     val id: UUID,
-
     @Type(type = "pg-uuid")
     @Column(name = "company_id", nullable = false)
     var companyId: UUID,
@@ -29,7 +28,7 @@ class UserJobPositionReadEntity(
     var userId: UUID,
 
     @Column(name = "end_date")
-    val endDate: LocalDate? = null,
+    var endDate: LocalDate? = null,
 
     @Type(type = "jsonb")
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")

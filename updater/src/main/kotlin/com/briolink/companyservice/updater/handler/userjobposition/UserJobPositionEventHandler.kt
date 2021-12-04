@@ -2,24 +2,29 @@ package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
+import com.briolink.event.annotation.EventHandlers
 
-@EventHandler("UserJobPositionCreatedEvent", "1.0")
+@EventHandlers(
+    EventHandler("UserJobPositionCreatedEvent", "1.0"),
+    EventHandler("UserJobPositionCreatedEvent", "1.0")
+
+)
 class UserJobPositionCreatedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
 ) : IEventHandler<UserJobPositionUpdatedEvent> {
     override fun handle(event: UserJobPositionUpdatedEvent) {
-        userJobPositionHandlerService.create(event.data)
+        userJobPositionHandlerService.createOrUpdate(event.data)
     }
 }
 
-@EventHandler("UserJobPositionUpdatedEvent", "1.0")
-class UserJobPositionUpdatedEventHandler(
-    private val userJobPositionHandlerService: UserJobPositionHandlerService,
-) : IEventHandler<UserJobPositionUpdatedEvent> {
-    override fun handle(event: UserJobPositionUpdatedEvent) {
-        userJobPositionHandlerService.update(event.data)
-    }
-}
+// @EventHandler("UserJobPositionUpdatedEvent", "1.0")
+// class UserJobPositionUpdatedEventHandler(
+//    private val userJobPositionHandlerService: UserJobPositionHandlerService,
+// ) : IEventHandler<UserJobPositionUpdatedEvent> {
+//    override fun handle(event: UserJobPositionUpdatedEvent) {
+//        userJobPositionHandlerService.update(event.data)
+//    }
+// }
 
 @EventHandler("UserJobPositionDeletedEvent", "1.0")
 class UserJobPositionDeletedEventHandler(

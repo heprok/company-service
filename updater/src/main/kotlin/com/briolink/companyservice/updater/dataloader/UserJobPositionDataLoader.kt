@@ -74,8 +74,7 @@ class UserJobPositionDataLoader(
                     startDate = startDate,
                     endDate = endDate,
                 )
-                if (Random.nextBoolean()) userJobPositionHandlerService.create(userJobPosition)
-                else userJobPositionHandlerService.update(userJobPosition)
+                userJobPositionHandlerService.createOrUpdate(userJobPosition)
             }
         }
     }
