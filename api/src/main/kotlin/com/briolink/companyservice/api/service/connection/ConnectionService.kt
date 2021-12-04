@@ -211,12 +211,12 @@ class ConnectionService(
         )
         connectionServiceReadRepository.changeVisibilityByConnectionId(connectionId, isHide)
         refreshVerifyUsesByConnectionId(connectionId)
-        eventPublisher.publishAsync(StatisticRefreshEvent(Statistic(companyId)))
+        eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))
     }
 
     fun refreshVerifyUsesByConnectionId(connectionId: UUID) {
         connectionServiceReadRepository.getServiceIdsByConnectionId(connectionId).forEach {
-            eventPublisher.publishAsync(RefreshConnectionServiceEvent(CompanyServiceRefreshVerifyUses(serviceId = it)))
+            eventPublisher.publish(RefreshConnectionServiceEvent(CompanyServiceRefreshVerifyUses(serviceId = it)))
         }
     }
 
@@ -224,6 +224,6 @@ class ConnectionService(
         connectionReadRepository.softDeleteByIdAndCompanyId(id = connectionId, companyId = companyId)
         refreshVerifyUsesByConnectionId(connectionId)
         connectionServiceReadRepository.deleteByConnectionId(connectionId = connectionId)
-        eventPublisher.publishAsync(StatisticRefreshEvent(Statistic(companyId)))
+        eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))
     }
 }
