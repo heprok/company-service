@@ -10,6 +10,7 @@ import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -201,6 +202,9 @@ class UserJobPositionHandlerService(
     }
 
     fun delete(userJobPositionId: UUID) {
-        userJobPositionReadRepository.deleteById(userJobPositionId)
+        userJobPositionReadRepository.findByIdOrNull(userJobPositionId)?.also {
+            userJobPositionReadRepository.delete(it)
+            refreshEmployeesByCompanyId(it.companyId)
+        }
     }
 }
