@@ -73,7 +73,7 @@ class UserJobPositionHandlerService(
                     userJobPositionReadRepository.save(this)
                 }
                 prevCompanyId?.let { refreshEmployeesByCompanyId(it) }
-                refreshEmployeesByCompanyId(userJobPosition.id)
+                refreshEmployeesByCompanyId(userJobPosition.companyId)
             }
         }
     }
