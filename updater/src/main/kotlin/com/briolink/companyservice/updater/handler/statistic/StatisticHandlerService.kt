@@ -49,7 +49,6 @@ class StatisticHandlerService(
             companyId,
             ConnectionStatusEnum.Verified.value
         )
-        println(list.count())
         val collaborationCompanyIds = mutableSetOf<UUID>()
         list.forEach { connectionReadEntity ->
             val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
@@ -102,7 +101,7 @@ class StatisticHandlerService(
             // chart data by services provided
             if (collaboratorParticipant.companyRole.type == CompanyRoleTypeEnum.Buyer) {
                 connectionReadEntity.data.services.forEach { service ->
-                    if (service.serviceId != null) {
+                    if (service.serviceId != null && service.slug != "-1") {
                         val serviceId = service.serviceId.toString()
                         val serviceName = service.serviceName
                         companyStatistic.chartByServicesProvidedData.data.getOrPut(serviceId) {
@@ -195,12 +194,11 @@ class StatisticHandlerService(
                 withoutOther = true,
             ) { it.sortedBy { el -> el.first.toInt() } }
         }
+
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = companyStatistic.chartByServicesProvidedData.data.size
         statisticReadRepository.saveAndFlush(companyStatistic)
-        println(list.count())
-        print(" ------------ end")
     }
 
     fun deleteStatisticByCompanyId(companyId: UUID) {

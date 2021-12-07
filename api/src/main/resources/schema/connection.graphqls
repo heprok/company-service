@@ -17,7 +17,7 @@ type ConnectionService {
     id: ID!
     serviceId: ID
     name: String!
-    slug: String
+    slug: String!
     startDate: Year!
     endDate: Year
 }

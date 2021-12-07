@@ -148,6 +148,8 @@ class ConnectionReadEntity(
         @JsonProperty
         val serviceId: UUID?,
         @JsonProperty
+        var slug: String = "-1",
+        @JsonProperty
         val serviceName: String,
         @JsonProperty
         val startDate: Year,

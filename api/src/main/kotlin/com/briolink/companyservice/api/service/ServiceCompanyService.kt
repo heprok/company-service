@@ -56,16 +56,10 @@ class ServiceCompanyService(
         serviceReadRepository.count(getSpecification(filter).and(companyIdEqual(companyId)))
 
     fun countServiceByCompany(companyId: UUID) = serviceReadRepository.existsByCompanyId(companyId)
-    fun toggleVisibilityByIdAndCompanyId(companyId: UUID, serviceId: UUID) {
-        serviceReadRepository.toggleVisibilityByIdAndCompanyId(serviceId = serviceId, companyId = companyId)
-    }
 
-    fun deleteServiceInCompany(serviceId: UUID, authorization: String): Boolean {
+    fun deleteServiceInCompany(serviceId: UUID): Boolean {
         val webClient = MonoGraphQLClient.createWithWebClient(
             WebClient.create(appEndpointsProperties.companyservice),
-            headersConsumer = {
-                it.add("Authorization", authorization)
-            },
         )
 
         val result = webClient.reactiveExecuteQuery(
@@ -89,13 +83,33 @@ class ServiceCompanyService(
             throw UnavailableException("CompanyService service unavailable")
         }
     }
-//
-//    @Query(
-//        """SELECT c
-//           FROM ConnectionServiceReadEntity
-//
-//        """
-//    )
+
+    fun toggleVisibilityByIdAndCompanyId(serviceId: UUID, companyId: UUID): Boolean {
+        val webClient = MonoGraphQLClient.createWithWebClient(
+            WebClient.create(appEndpointsProperties.companyservice),
+        )
+
+        val result = webClient.reactiveExecuteQuery(
+            """
+                mutation hideServiceLocal(${'$'}serviceId: ID!) {
+                  hideServiceLocal(serviceId: ${'$'}serviceId) {
+                    success
+                  }
+                }
+                """,
+            mapOf(
+                "serviceId" to serviceId,
+            ),
+        ).block() ?: throw UnavailableException("CompanyService service unavailable")
+
+        return try {
+            val success = result.extractValue<Boolean>("hideServiceLocal.success")
+            serviceReadRepository.toggleVisibilityByIdAndCompanyId(serviceId = serviceId, companyId = companyId)
+            success
+        } catch (e: Exception) {
+            throw UnavailableException("CompanyService service unavailable")
+        }
+    }
 
     fun getVerifyUsesByServiceId(serviceId: UUID, limit: Int = 10, offset: Int = 0): Page<ConnectionServiceReadEntity> =
         connectionServiceReadRepository.findByServiceId(

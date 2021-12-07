@@ -11,7 +11,6 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.RequestHeader
 import java.util.UUID
 
 @DgsComponent
@@ -52,8 +51,7 @@ class ServiceMutation(
     @PreAuthorize("isAuthenticated()")
     fun deleteCompanyService(
         @InputArgument("serviceId") serviceId: String,
-        @InputArgument("companyId") companyId: String,
-        @RequestHeader("Authorization") authorization: String
+        @InputArgument("companyId") companyId: String
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                 companyId = UUID.fromString(companyId),
@@ -63,8 +61,7 @@ class ServiceMutation(
             )
         ) {
             serviceCompanyService.deleteServiceInCompany(
-                serviceId = UUID.fromString(serviceId),
-                authorization = authorization,
+                serviceId = UUID.fromString(serviceId)
             )
             DelOrHideResult(
                 success = true,

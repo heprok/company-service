@@ -189,6 +189,7 @@ fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
             name = service.serviceName,
             startDate = service.startDate,
             endDate = service.endDate,
+            slug = service.slug,
         )
     },
     status = ConnectionStatus.valueOf(entity.status.name),

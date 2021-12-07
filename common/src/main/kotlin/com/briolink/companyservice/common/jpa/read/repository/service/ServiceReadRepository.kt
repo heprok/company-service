@@ -23,6 +23,11 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     )
     fun toggleVisibilityByIdAndCompanyId(serviceId: UUID, companyId: UUID)
 
+    @Query(
+        """SELECT s FROM ServiceReadEntity s WHERE s.isHide = false"""
+    )
+    fun findAllAndNotHidden(): List<ServiceReadEntity>
+
     @Modifying
     @Query(
         """UPDATE ServiceReadEntity s 
@@ -35,4 +40,11 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     @Modifying
     @Query("DELETE from ServiceReadEntity c where c.id = ?1")
     override fun deleteById(id: UUID)
+
+    @Query("SELECT data ->>'slug' FROM read.service WHERE id = ?1 AND is_hidden = false", nativeQuery = true)
+    fun getSlugOrNullByServiceIdAndNotHidden(serviceId: UUID): String?
+
+    @Modifying
+    @Query("UPDATE ServiceReadEntity s SET s.isHide = true WHERE s.id = ?1")
+    fun hideById(id: UUID)
 }

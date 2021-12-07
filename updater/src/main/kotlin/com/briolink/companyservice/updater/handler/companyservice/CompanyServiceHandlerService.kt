@@ -18,14 +18,16 @@ class CompanyServiceHandlerService(
             companyId = service.companyId
             name = service.name
             price = service.price
-            verifiedUses = service.verifiedUses
-            lastUsed = service.lastUsed
             data = ServiceReadEntity.Data(
                 logo = service.logo,
                 slug = service.slug,
             )
             serviceReadRepository.save(this)
         }
+    }
+
+    fun hideById(id: UUID) {
+        serviceReadRepository.hideById(id)
     }
 
     fun deleteById(id: UUID) {
