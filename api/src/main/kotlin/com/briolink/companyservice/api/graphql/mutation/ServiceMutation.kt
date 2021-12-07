@@ -61,7 +61,8 @@ class ServiceMutation(
             )
         ) {
             serviceCompanyService.deleteServiceInCompany(
-                serviceId = UUID.fromString(serviceId)
+                serviceId = UUID.fromString(serviceId),
+                userId = currentUserAccountId
             )
             DelOrHideResult(
                 success = true,

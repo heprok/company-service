@@ -57,21 +57,22 @@ class ServiceCompanyService(
 
     fun countServiceByCompany(companyId: UUID) = serviceReadRepository.existsByCompanyId(companyId)
 
-    fun deleteServiceInCompany(serviceId: UUID): Boolean {
+    fun deleteServiceInCompany(serviceId: UUID, userId: UUID): Boolean {
         val webClient = MonoGraphQLClient.createWithWebClient(
             WebClient.create(appEndpointsProperties.companyservice),
         )
 
         val result = webClient.reactiveExecuteQuery(
             """
-                mutation deleteServiceLocal(${'$'}serviceId: ID!) {
-                  deleteServiceLocal(serviceId: ${'$'}serviceId) {
+                mutation deleteServiceLocal(${'$'}serviceId: ID!, ${'$'}userId: ID! ) {
+                  deleteServiceLocal(serviceId: ${'$'}serviceId, userId: ${'$'}userId) {
                     success
                   }
                 }
                 """,
             mapOf(
                 "serviceId" to serviceId,
+                "userId" to userId,
             ),
         ).block() ?: throw UnavailableException("CompanyService service unavailable")
 
