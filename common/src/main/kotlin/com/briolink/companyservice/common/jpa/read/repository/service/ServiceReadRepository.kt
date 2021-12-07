@@ -47,4 +47,6 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     @Modifying
     @Query("UPDATE ServiceReadEntity s SET s.isHide = true WHERE s.id = ?1")
     fun hideById(id: UUID)
+
+    fun countByCompanyIdAndIsHide(companyId: UUID, isHide: Boolean = false): Long
 }
