@@ -44,6 +44,14 @@ Deploy to Development:
   only:
     - dev
 
+Deploy to Demo:
+  <<: *base_deploy
+  environment:
+    name: demo
+    url: https://companyservice-service.demo.briolink.net
+  only:
+    - demo
+
 Cleanup:
   stage: cleanup
   script:
