@@ -1,6 +1,0 @@
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: https://auth.test.briolink.net/auth/realms/briolink/protocol/openid-connect/certs

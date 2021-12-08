@@ -4,8 +4,3 @@ server:
 spring:
   jpa:
     show-sql: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: https://auth.dev.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
