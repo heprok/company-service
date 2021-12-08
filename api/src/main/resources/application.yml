@@ -3,6 +3,11 @@ server:
   error:
     include-stacktrace: never
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://auth.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
   profiles:
     active: ${env.spring_profiles_active:local}
   servlet:
