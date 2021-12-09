@@ -44,7 +44,10 @@ class ServiceReadEntity(
     var created: LocalDate? = LocalDate.now()
 
     @Column(name = "is_hidden")
-    var isHide: Boolean = false
+    var hidden: Boolean = false
+
+    @Column(name = "is_deleted")
+    var deleted: Boolean = false
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(

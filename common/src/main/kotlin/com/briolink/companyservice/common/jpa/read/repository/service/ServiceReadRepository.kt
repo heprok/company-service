@@ -1,32 +1,57 @@
 package com.briolink.companyservice.common.jpa.read.repository.service
 
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import java.util.UUID
 
 interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpecificationExecutor<ServiceReadEntity> {
-    fun findByCompanyIdIs(companyId: UUID, pageable: Pageable? = null): Page<ServiceReadEntity>
-
     fun existsByCompanyId(companyId: UUID): Boolean
 
     @Modifying
     @Query(
         """
-        UPDATE read.service SET is_hidden = NOT is_hidden where id = ?1 and company_id = ?2
+        UPDATE read.service SET is_hidden = NOT is_hidden WHERE id = ?1 AND company_id = ?2
     """,
         nativeQuery = true,
     )
     fun toggleVisibilityByIdAndCompanyId(serviceId: UUID, companyId: UUID)
 
+    @Modifying
     @Query(
-        """SELECT s FROM ServiceReadEntity s WHERE s.isHide = false"""
+        """UPDATE ServiceReadEntity s
+           SET s.hidden = :hidden
+           WHERE s.id = :id""",
     )
-    fun findAllAndNotHidden(): List<ServiceReadEntity>
+    fun setHidden(
+        @Param("id") id: UUID,
+        @Param("hidden") hidden: Boolean
+    )
+
+    @Query(
+        "SELECT data ->>'slug' FROM read.service WHERE id = ?1",
+        nativeQuery = true
+    )
+    fun getSlugById(serviceId: UUID): String?
+
+    @Modifying
+    @Query(
+        """UPDATE ServiceReadEntity s
+           SET s.deleted = :deleted
+           WHERE s.id = :id""",
+    )
+    fun setDeleted(
+        @Param("id") id: UUID,
+        @Param("deleted") deleted: Boolean
+    )
+
+    @Query(
+        """SELECT s FROM ServiceReadEntity s WHERE s.hidden = false AND s.deleted = false"""
+    )
+    fun findAllAndNotHiddenAndNotDeleted(): List<ServiceReadEntity>
 
     @Modifying
     @Query(
@@ -38,15 +63,14 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     fun refreshVerifyUses(serviceId: UUID)
 
     @Modifying
-    @Query("DELETE from ServiceReadEntity c where c.id = ?1")
+    @Query("DELETE from ServiceReadEntity c WHERE c.id = ?1")
     override fun deleteById(id: UUID)
 
-    @Query("SELECT data ->>'slug' FROM read.service WHERE id = ?1 AND is_hidden = false", nativeQuery = true)
-    fun getSlugOrNullByServiceIdAndNotHidden(serviceId: UUID): String?
+    @Query(
+        "SELECT data ->>'slug' FROM read.service WHERE id = ?1 AND is_hidden = false AND is_deleted = false",
+        nativeQuery = true
+    )
+    fun getSlugOrNullByServiceIdAndNotHiddenAndNotDeleted(serviceId: UUID): String?
 
-    @Modifying
-    @Query("UPDATE ServiceReadEntity s SET s.isHide = true WHERE s.id = ?1")
-    fun hideById(id: UUID)
-
-    fun countByCompanyIdAndIsHide(companyId: UUID, isHide: Boolean = false): Long
+    fun countByCompanyIdAndHiddenAndDeleted(companyId: UUID, hidden: Boolean = false, deleted: Boolean = false): Long
 }

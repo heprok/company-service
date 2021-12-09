@@ -1,6 +1,7 @@
 package com.briolink.companyservice.updater.handler.companyservice
 
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,6 +11,7 @@ import java.util.UUID
 @Service
 class CompanyServiceHandlerService(
     private val serviceReadRepository: ServiceReadRepository,
+    private val connectionReadRepository: ConnectionReadRepository,
 ) {
     fun createOrUpdate(service: CompanyService) {
         serviceReadRepository.findById(service.id).orElse(
@@ -26,12 +28,17 @@ class CompanyServiceHandlerService(
         }
     }
 
-    fun hideById(id: UUID) {
-        serviceReadRepository.hideById(id)
+    fun setHidden(serviceId: UUID, hidden: Boolean) {
+        serviceReadRepository.setHidden(serviceId, hidden)
+        if (hidden) connectionReadRepository.updateServiceSlug(serviceId.toString(), "-1")
+        else connectionReadRepository.updateServiceSlug(
+            serviceId.toString(), serviceReadRepository.getSlugById(serviceId) ?: "-1"
+        )
     }
 
-    fun deleteById(id: UUID) {
-        serviceReadRepository.deleteById(id)
+    fun deleteById(serviceId: UUID) {
+        serviceReadRepository.setDeleted(serviceId, true)
+        connectionReadRepository.updateServiceSlug(serviceId.toString(), "-1")
     }
 
     fun refreshVerifyUses(serviceId: UUID) {

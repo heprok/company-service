@@ -17,7 +17,7 @@ class StatisticEventHandler(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<StatisticRefreshEvent> {
     override fun handle(event: StatisticRefreshEvent) {
-        val services = serviceReadRepository.findAllAndNotHidden()
+        val services = serviceReadRepository.findAllAndNotHiddenAndNotDeleted()
         event.data.companyId.let { if (it == null) companyReadRepository.getAllCompanyUUID() else listOf(it) }
             .forEach { companyId ->
                 applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))

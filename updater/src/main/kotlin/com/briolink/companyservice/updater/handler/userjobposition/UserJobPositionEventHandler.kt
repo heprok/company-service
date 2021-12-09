@@ -16,15 +16,6 @@ class UserJobPositionCreatedEventHandler(
     }
 }
 
-// @EventHandler("UserJobPositionUpdatedEvent", "1.0")
-// class UserJobPositionUpdatedEventHandler(
-//    private val userJobPositionHandlerService: UserJobPositionHandlerService,
-// ) : IEventHandler<UserJobPositionUpdatedEvent> {
-//    override fun handle(event: UserJobPositionUpdatedEvent) {
-//        userJobPositionHandlerService.update(event.data)
-//    }
-// }
-
 @EventHandler("UserJobPositionDeletedEvent", "1.0")
 class UserJobPositionDeletedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,

@@ -16,9 +16,15 @@ fun companyIdEqual(companyId: UUID): Specification<ServiceReadEntity> {
 fun equalHide(hide: Boolean?): Specification<ServiceReadEntity>? {
     return if (hide != null) {
         Specification<ServiceReadEntity> { root, _, builder ->
-            builder.equal(root.get(ServiceReadEntity_.isHide), hide)
+            builder.equal(root.get(ServiceReadEntity_.hidden), hide)
         }
     } else null
+}
+
+fun isNotDeleted(): Specification<ServiceReadEntity> {
+    return Specification<ServiceReadEntity> { root, _, builder ->
+        builder.equal(root.get(ServiceReadEntity_.deleted), false)
+    }
 }
 
 fun betweenPrice(start: Double?, end: Double?): Specification<ServiceReadEntity>? {

@@ -107,7 +107,7 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
     companyId = entity.companyId.toString(),
     verifiedUses = entity.verifiedUses,
     lastUsed = entity.lastUsed,
-    isHide = entity.isHide,
+    isHide = entity.hidden,
     image = entity.data.logo.let { Image(url = it) },
     slug = entity.data.slug,
 )

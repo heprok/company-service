@@ -2,7 +2,6 @@ package com.briolink.companyservice.updater.handler.companyservice
 
 import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
@@ -32,12 +31,10 @@ class RefreshConnectionServiceEventHandler(
 @EventHandler("CompanyServiceDeletedEvent", "1.0")
 class ServiceDeletedEventHandler(
     private val companyServiceHandlerService: CompanyServiceHandlerService,
-    private val connectionServiceHandlerService: ConnectionHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<CompanyServiceDeletedEvent> {
     override fun handle(event: CompanyServiceDeletedEvent) {
         companyServiceHandlerService.deleteById(event.data.id)
-        connectionServiceHandlerService.hideOrDeletedServiceByConnectionIds(event.data.affectedConnections, event.data.id)
         applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false))
     }
 }
@@ -45,12 +42,10 @@ class ServiceDeletedEventHandler(
 @EventHandler("CompanyServiceHideEvent", "1.0")
 class ServiceHideEventHandler(
     private val companyServiceHandlerService: CompanyServiceHandlerService,
-    private val connectionServiceHandlerService: ConnectionHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<CompanyServiceHideEvent> {
     override fun handle(event: CompanyServiceHideEvent) {
-        companyServiceHandlerService.hideById(event.data.id)
-        connectionServiceHandlerService.hideOrDeletedServiceByConnectionIds(event.data.affectedConnections, event.data.id)
+        companyServiceHandlerService.setHidden(event.data.id, event.data.hidden)
         applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false))
     }
 }

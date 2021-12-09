@@ -14,11 +14,11 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
 
     @Query(
         """
-        select c from ConnectionReadEntity c
+        SELECT c from ConnectionReadEntity c
         where 
-            (c.participantToCompanyId = ?1 or c.participantFromCompanyId = ?1) and
-            c._status = ?2 and (
-                function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE and
+            (c.participantToCompanyId = ?1 or c.participantFromCompanyId = ?1) AND
+            c._status = ?2 AND (
+                function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE AND
                 function('array_contains_element', c.deletedCompanyIds, ?1) = FALSE
             )
     """,
@@ -101,15 +101,15 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     @Query(
         """
             UPDATE ConnectionReadEntity c
-            SET c.hiddenCompanyIds = case
-               when :hidden = true
-                   then function('array_append', c.hiddenCompanyIds, :companyId)
-               when :hidden = false
-                   then function('array_remove', c.hiddenCompanyIds, :companyId)
-               else c.hiddenCompanyIds end
+            SET c.hiddenCompanyIds = CASE
+               WHEN :hidden = true
+                   THEN function('array_appEND', c.hiddenCompanyIds, :companyId)
+               WHEN :hidden = false
+                   THEN function('array_remove', c.hiddenCompanyIds, :companyId)
+               ELSE c.hiddenCompanyIds END
            WHERE
-               c.id = :id and
-               (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) and
+               c.id = :id AND
+               (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) AND
                function('array_contains_element', c.hiddenCompanyIds, :companyId) <> :hidden
            """,
     )
@@ -123,12 +123,12 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     @Query(
         """
             UPDATE ConnectionReadEntity c
-            SET c.hiddenCompanyIds = case
-               when :hidden = true
-                   then function('array_append', c.hiddenCompanyIds, :companyId)
-               when :hidden = false
-                   then function('array_remove', c.hiddenCompanyIds, :companyId)
-               else c.hiddenCompanyIds end
+            SET c.hiddenCompanyIds = CASE
+               WHEN :hidden = true
+                   THEN function('array_appEND', c.hiddenCompanyIds, :companyId)
+               WHEN :hidden = false
+                   THEN function('array_remove', c.hiddenCompanyIds, :companyId)
+               ELSE c.hiddenCompanyIds END
            WHERE
                (c.participantFromCompanyId = :companyId OR c.participantToCompanyId = :companyId) AND
                (c.participantFromUserId = :userId OR c.participantToUserId = :userId) AND
@@ -151,10 +151,10 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     @Query(
         """
            UPDATE ConnectionReadEntity c
-           SET c.deletedCompanyIds = function('array_append', c.deletedCompanyIds, :companyId)
+           SET c.deletedCompanyIds = function('array_appEND', c.deletedCompanyIds, :companyId)
            WHERE
-               c.id = :id and
-               (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) and
+               c.id = :id AND
+               (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) AND
                function('array_contains_element', c.deletedCompanyIds, :companyId) = false
                """,
     )
@@ -165,23 +165,23 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
 
     @Modifying
     @Query(
-        """update ConnectionReadEntity u
-           set u.data = case
-               when u.participantFromUserId = :userId
-                   then function('jsonb_sets', u.data,
+        """UPDATE ConnectionReadEntity u
+           set u.data = CASE
+               WHEN u.participantFromUserId = :userId
+                   THEN function('jsonb_sets', u.data,
                            '{participantFrom,user,slug}', :slug, text,
                            '{participantFrom,user,image}', :image, text,
                            '{participantFrom,user,firstName}', :firstName, text,
                            '{participantFrom,user,lastName}', :lastName, text
                    )
-               when u.participantToUserId = :userId
-                   then function('jsonb_sets', u.data,
+               WHEN u.participantToUserId = :userId
+                   THEN function('jsonb_sets', u.data,
                            '{participantTo,user,slug}', :slug, text,
                            '{participantTo,user,image}', :image, text,
                            '{participantTo,user,firstName}', :firstName, text,
                            '{participantTo,user,lastName}', :lastName, text
                    )
-               else data end
+               ELSE data END
            where u.participantFromUserId = :userId or u.participantToUserId = :userId""",
     )
     fun updateUser(
@@ -194,23 +194,23 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
 
     @Modifying
     @Query(
-        """update ConnectionReadEntity u
-           set u.data = case
-               when u.participantFromCompanyId = :companyId
-                   then function('jsonb_sets', u.data,
+        """UPDATE ConnectionReadEntity u
+           set u.data = CASE
+               WHEN u.participantFromCompanyId = :companyId
+                   THEN function('jsonb_sets', u.data,
                            '{participantFrom,company,slug}', :slug, text,
                            '{participantFrom,company,logo}', :logo, text,
                            '{participantFrom,company,occupation}', :occupation, text,
                            '{participantFrom,company,name}', :name, text
                    )
-               when u.participantToCompanyId = :companyId
-                   then function('jsonb_sets', u.data,
+               WHEN u.participantToCompanyId = :companyId
+                   THEN function('jsonb_sets', u.data,
                            '{participantTo,company,slug}', :slug, text,
                            '{participantTo,company,logo}', :logo, text,
                            '{participantTo,company,occupation}', :occupation, text,
                            '{participantTo,company,name}', :name, text
                    )
-               else data end
+               ELSE data END
            where u.participantFromCompanyId = :companyId or u.participantToCompanyId = :companyId""",
     )
     fun updateCompany(
@@ -223,22 +223,22 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
 
     @Query(
         """
-        select
+        SELECT
             cast(result.company_id as varchar) as companyId
-        from
+        FROM
         (
             (
-                select
+                SELECT
                     participant_from_company_id AS company_id
-                from
+                FROM
                     read.connection
                 where
                     participant_to_company_id = cast(:companyId as uuid)
                 limit :limit offset :offset
             ) union (
-                select
+                SELECT
                     participant_to_company_id AS company_id
-                from
+                FROM
                     read.connection
                 where
                     participant_from_company_id = cast(:companyId as uuid)
@@ -253,4 +253,27 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         @Param("limit") limit: Int = 10,
         @Param("offset") offset: Int = 0
     ): List<CompanyIdProjection>
+
+    @Modifying
+    @Query(
+        """
+        UPDATE read.connection
+        set
+           data = jsonb_set(data, '{services}', 
+           (
+              SELECT
+                 jsonb_agg( 
+                     CASE
+                        WHEN e ->> 'serviceId' = :serviceId
+                        THEN jsonb_set(e, '{slug}', to_jsonb(cast(:slug as varchar))) 
+                        ELSE e 
+                     END
+                 )
+             from jsonb_array_elements(data -> 'services') e
+            )
+        ) 
+        where data -> 'services' @> cast(concat('[{"serviceId": "', :serviceId, '"}]') as jsonb)""",
+        nativeQuery = true
+    )
+    fun updateServiceSlug(@Param("serviceId") serviceId: String, @Param("slug") slug: String)
 }

@@ -166,7 +166,9 @@ class ConnectionHandlerService(
                             serviceName = it.serviceName,
                             startDate = it.startDate,
                             endDate = it.endDate,
-                            slug = if (it.serviceId != null) serviceReadRepository.getSlugOrNullByServiceIdAndNotHidden(it.serviceId)
+                            slug = if (it.serviceId != null) serviceReadRepository.getSlugOrNullByServiceIdAndNotHiddenAndNotDeleted(
+                                it.serviceId
+                            )
                                 ?: "-1" else "-1"
                         )
                     },
@@ -227,16 +229,5 @@ class ConnectionHandlerService(
             lastName = user.data.lastName,
             image = user.data.image?.toString()
         )
-    }
-
-    fun hideOrDeletedServiceByConnectionIds(affectedConnections: ArrayList<UUID>, serviceId: UUID) {
-        connectionReadRepository.findAllById(affectedConnections).forEach { connection ->
-            connection.data.services.forEach { connectionService ->
-                if (connectionService.serviceId == serviceId) {
-                    connectionService.slug = "-1"
-                }
-            }
-            connectionReadRepository.save(connection)
-        }
     }
 }

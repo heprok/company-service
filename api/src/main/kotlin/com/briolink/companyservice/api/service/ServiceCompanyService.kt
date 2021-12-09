@@ -8,11 +8,7 @@ import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.service.betweenLastUsed
-import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
-import com.briolink.companyservice.common.jpa.read.repository.service.companyIdEqual
-import com.briolink.companyservice.common.jpa.read.repository.service.equalHide
+import com.briolink.companyservice.common.jpa.read.repository.service.*
 import com.briolink.companyservice.common.util.PageRequest
 import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import org.springframework.data.domain.Page
@@ -31,13 +27,11 @@ class ServiceCompanyService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     val appEndpointsProperties: AppEndpointsProperties,
 ) {
-    fun getByCompanyId(id: UUID, limit: Int, offset: Int): Page<ServiceReadEntity> =
-        serviceReadRepository.findByCompanyIdIs(id, PageRequest(offset, limit))
-
     fun getSpecification(filter: ServiceFilter?): Specification<ServiceReadEntity> =
         initSpec<ServiceReadEntity>()
             .and(betweenPrice(filter?.cost?.start, filter?.cost?.end))
             .and(equalHide(filter?.isHide))
+            .and(isNotDeleted())
             .and(betweenLastUsed(filter?.lastUsed?.start, filter?.lastUsed?.end))
 
     fun findAll(
