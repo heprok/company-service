@@ -197,7 +197,7 @@ class StatisticHandlerService(
 
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
-        companyStatistic.totalServicesProvided = serviceReadRepository.countByCompanyIdAndHiddenAndDeleted(companyId).toInt()
+        companyStatistic.totalServicesProvided = companyStatistic.chartByServicesProvidedData.data.size
         statisticReadRepository.saveAndFlush(companyStatistic)
     }
 
