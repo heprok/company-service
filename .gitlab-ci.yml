@@ -4,8 +4,9 @@ stages:
   - cleanup
 
 .base_werf: &base_werf
-  - type trdl && . $(trdl use werf 1.2 ea)
+  - source "$(~/bin/trdl use werf 1.2 stable)"
   - type werf && source $(werf ci-env gitlab --as-file --platform linux/amd64)
+  - aws eks --region us-east-2 update-kubeconfig --name briolink-dev
   - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${WERF_REPO}
 
 Build and Publish:
@@ -16,7 +17,7 @@ Build and Publish:
   except:
     - schedules
   tags:
-    - briolink-devops
+    - docker_spot_runner
 
 .base_deploy: &base_deploy
   stage: deploy
@@ -26,13 +27,13 @@ Build and Publish:
   dependencies:
     - Build and Publish
   tags:
-    - briolink-devops
+    - docker_spot_runner
 
 Deploy to Test:
   <<: *base_deploy
   environment:
     name: test
-    url: https://company-service.test.briolink.net
+    url: https://company-service.test.briolink.com
   only:
     - test
 
@@ -40,7 +41,7 @@ Deploy to Development:
   <<: *base_deploy
   environment:
     name: dev
-    url: https://company-service.dev.briolink.net
+    url: https://company-service.dev.briolink.com
   only:
     - dev
 
@@ -60,4 +61,4 @@ Cleanup:
   only:
     - schedules
   tags:
-    - briolink-devops
+    - docker_spot_runner
