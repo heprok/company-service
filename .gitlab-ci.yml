@@ -33,7 +33,7 @@ Deploy to Test:
   <<: *base_deploy
   environment:
     name: test
-    url: https://company-service.test.briolink.net
+    url: https://company-service.test.briolink.com
   only:
     - test
 
@@ -41,7 +41,7 @@ Deploy to Development:
   <<: *base_deploy
   environment:
     name: dev
-    url: https://company-service.dev.briolink.net
+    url: https://company-service.dev.briolink.com
   only:
     - dev
 
