@@ -13,7 +13,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://auth.dev.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
+          jwk-set-uri: https://auth.dev.briolink.com/auth/realms/briolink/protocol/openid-connect/certs
 app:
   app-endpoints:
     companyservice: http://192.168.0.23:8090/
