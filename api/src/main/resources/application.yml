@@ -7,7 +7,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://auth.${env.spring_profiles_active}.briolink.net/auth/realms/briolink/protocol/openid-connect/certs
+          jwk-set-uri: https://auth.${env.spring_profiles_active}.briolink.com/auth/realms/briolink/protocol/openid-connect/certs
   profiles:
     active: ${env.spring_profiles_active:local}
   servlet:
