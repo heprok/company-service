@@ -25,7 +25,7 @@ class RefreshConnectionServiceEventHandler(
     private val companyServiceHandlerService: CompanyServiceHandlerService
 ) : IEventHandler<RefreshConnectionServiceEvent> {
     override fun handle(event: RefreshConnectionServiceEvent) {
-        companyServiceHandlerService.refreshVerifyUses(event.data.serviceId)
+        runAfterTxCommit { companyServiceHandlerService.refreshVerifyUses(event.data.serviceId) }
     }
 }
 
