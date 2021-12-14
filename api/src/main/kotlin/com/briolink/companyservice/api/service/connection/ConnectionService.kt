@@ -8,8 +8,12 @@ import com.blazebit.persistence.WhereBuilder
 import com.briolink.companyservice.api.service.connection.dto.FiltersDto
 import com.briolink.companyservice.api.service.connection.dto.SortDto
 import com.briolink.companyservice.api.service.connection.dto.TabItemDto
+import com.briolink.companyservice.common.domain.v1_0.CompanyConnectionDeletedEventData
+import com.briolink.companyservice.common.domain.v1_0.CompanyConnectionHideEventData
 import com.briolink.companyservice.common.domain.v1_0.CompanyServiceRefreshVerifyUses
 import com.briolink.companyservice.common.domain.v1_0.Statistic
+import com.briolink.companyservice.common.event.v1_0.CompanyConnectionChangeVisibilityEvent
+import com.briolink.companyservice.common.event.v1_0.CompanyConnectionDeletedEvent
 import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
@@ -203,13 +207,22 @@ class ConnectionService(
         connectionReadRepository.getConnectionIndustriesByCompanyId(companyId, query = query?.ifBlank { null })
             .map { IndustryReadEntity(id = it.id, name = it.name) }
 
-    fun changeVisibilityByIdAndCompanyId(companyId: UUID, connectionId: UUID, isHide: Boolean) {
+    fun changeVisibilityByIdAndCompanyId(companyId: UUID, connectionId: UUID, hidden: Boolean) {
         connectionReadRepository.changeVisibilityByIdAndCompanyId(
             connectionId = connectionId,
             companyId = companyId,
-            hidden = isHide
+            hidden = hidden
         )
-        connectionServiceReadRepository.changeVisibilityByConnectionId(connectionId, isHide)
+        connectionServiceReadRepository.changeVisibilityByConnectionId(connectionId, hidden)
+        eventPublisher.publish(
+            CompanyConnectionChangeVisibilityEvent(
+                CompanyConnectionHideEventData(
+                    companyId = companyId,
+                    connectionId = connectionId,
+                    hidden = hidden
+                )
+            )
+        )
         refreshVerifyUsesByConnectionId(connectionId)
         eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))
     }
@@ -222,6 +235,14 @@ class ConnectionService(
 
     fun deleteConnectionInCompany(connectionId: UUID, companyId: UUID) {
         connectionReadRepository.softDeleteByIdAndCompanyId(id = connectionId, companyId = companyId)
+        eventPublisher.publish(
+            CompanyConnectionDeletedEvent(
+                CompanyConnectionDeletedEventData(
+                    companyId = companyId,
+                    connectionId = connectionId,
+                )
+            )
+        )
         refreshVerifyUsesByConnectionId(connectionId)
         connectionServiceReadRepository.deleteByConnectionId(connectionId = connectionId)
         eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))

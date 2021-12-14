@@ -23,7 +23,7 @@ class ConnectionMutation(
     fun hide(
         @InputArgument("companyId") companyId: String,
         @InputArgument("connectionId") connectionId: String,
-        @InputArgument("isHide") isHide: Boolean
+        @InputArgument("isHide") hidden: Boolean
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                 companyId = UUID.fromString(companyId),
@@ -35,7 +35,7 @@ class ConnectionMutation(
             connectionService.changeVisibilityByIdAndCompanyId(
                 companyId = UUID.fromString(companyId),
                 connectionId = UUID.fromString(connectionId),
-                isHide = isHide,
+                hidden = hidden,
             )
             DelOrHideResult(
                 success = true,
