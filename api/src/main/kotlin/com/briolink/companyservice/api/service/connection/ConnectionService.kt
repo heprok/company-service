@@ -244,8 +244,8 @@ class ConnectionService(
                 )
             )
         )
-        runAfterTxCommit { refreshVerifyUsesByConnectionId(connectionId) }
         connectionServiceReadRepository.deleteByConnectionId(connectionId = connectionId)
+        runAfterTxCommit { refreshVerifyUsesByConnectionId(connectionId) }
         eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))
     }
 }
