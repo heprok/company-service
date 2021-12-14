@@ -27,6 +27,8 @@ class ConnectionEventHandler(
                                 false
                             )
                         )
+                    }
+                    runAfterTxCommit {
                         applicationEventPublisher.publishEvent(
                             RefreshStatisticByCompanyId(
                                 connection.participantFrom.companyId,

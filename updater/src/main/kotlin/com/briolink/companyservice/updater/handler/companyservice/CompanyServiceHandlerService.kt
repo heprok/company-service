@@ -3,6 +3,7 @@ package com.briolink.companyservice.updater.handler.companyservice
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.runAfterTxCommit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -42,6 +43,6 @@ class CompanyServiceHandlerService(
     }
 
     fun refreshVerifyUses(serviceId: UUID) {
-        serviceReadRepository.refreshVerifyUses(serviceId)
+        runAfterTxCommit { serviceReadRepository.refreshVerifyUses(serviceId) }
     }
 }
