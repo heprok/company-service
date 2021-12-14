@@ -1,4 +1,4 @@
-FROM arm64v8/gradle:jdk11-openj9 as builder
+FROM --platform=linux/arm64/v8 public.ecr.aws/docker/library/gradle:jdk11-hotspot as builder
 
 WORKDIR /app
 COPY . .
@@ -8,7 +8,7 @@ ENV CI_DEPLOY_PASSWORD="${CI_DEPLOY_PASSWORD}"
 
 RUN gradle updater:bootJar --no-daemon
 
-FROM arm64v8/openjdk:11-jdk-slim
+FROM --platform=linux/arm64/v8 public.ecr.aws/docker/library/openjdk:11-jdk-slim
 
 COPY --from=builder /app/updater/build/libs/*.jar /application.jar
 
