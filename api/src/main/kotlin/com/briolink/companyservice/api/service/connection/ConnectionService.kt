@@ -214,6 +214,7 @@ class ConnectionService(
             companyId = companyId,
             hidden = hidden
         )
+
         connectionServiceReadRepository.changeVisibilityByConnectionId(connectionId, hidden)
         eventPublisher.publish(
             CompanyConnectionChangeVisibilityEvent(
