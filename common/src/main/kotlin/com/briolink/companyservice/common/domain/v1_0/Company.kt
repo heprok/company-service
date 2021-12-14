@@ -1,7 +1,6 @@
 package com.briolink.companyservice.common.domain.v1_0
 
 import com.briolink.companyservice.common.dto.location.LocationId
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID
@@ -24,14 +23,6 @@ data class Company(
     @JsonProperty
     val locationId: LocationId? = null,
     @JsonProperty
-    var location: String? = null,
-    @JsonProperty
-    val country: String? = null,
-    @JsonProperty
-    val state: String? = null,
-    @JsonProperty
-    val city: String? = null,
-    @JsonProperty
     val facebook: String? = null,
     @JsonProperty
     val twitter: String? = null,
@@ -44,7 +35,6 @@ data class Company(
     @JsonProperty
     val keywords: ArrayList<Keyword>? = ArrayList()
 ) : Domain {
-    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Keyword(
         @JsonProperty
         val id: UUID,

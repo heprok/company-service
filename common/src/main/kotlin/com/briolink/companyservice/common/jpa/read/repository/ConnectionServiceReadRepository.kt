@@ -61,7 +61,7 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
     @Query(
         """SELECT c.serviceId
             FROM ConnectionServiceReadEntity c
-            WHERE c.connectionId = :connectionId
+            WHERE c.connectionId = :connectionId AND c.serviceId IS NOT NULL
         """
     )
     fun getServiceIdsByConnectionId(@Param("connectionId") connectionId: UUID): List<UUID>
