@@ -22,6 +22,7 @@ import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.cte.RoleProjectionCte
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
+import com.briolink.companyservice.common.jpa.runAfterTxCommit
 import com.briolink.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.array.UUIDArrayType
 import org.hibernate.jpa.TypedParameterValue
@@ -223,7 +224,7 @@ class ConnectionService(
                 )
             )
         )
-        refreshVerifyUsesByConnectionId(connectionId)
+        runAfterTxCommit { refreshVerifyUsesByConnectionId(connectionId) }
         eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))
     }
 
@@ -243,7 +244,7 @@ class ConnectionService(
                 )
             )
         )
-        refreshVerifyUsesByConnectionId(connectionId)
+        runAfterTxCommit { refreshVerifyUsesByConnectionId(connectionId) }
         connectionServiceReadRepository.deleteByConnectionId(connectionId = connectionId)
         eventPublisher.publish(StatisticRefreshEvent(Statistic(companyId)))
     }
