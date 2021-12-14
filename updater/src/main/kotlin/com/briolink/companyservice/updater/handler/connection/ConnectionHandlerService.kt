@@ -42,7 +42,6 @@ class ConnectionHandlerService(
         val buyerCompany: CompanyReadEntity
         val sellerCompany: CompanyReadEntity
         val participantBuyer: ConnectionParticipant
-
         if (connection.participantFrom.companyRole.type == ConnectionCompanyRoleType.Buyer) {
             buyerCompany = participantCompanies[connection.participantFrom.companyId]!!
             sellerCompany = participantCompanies[connection.participantTo.companyId]!!

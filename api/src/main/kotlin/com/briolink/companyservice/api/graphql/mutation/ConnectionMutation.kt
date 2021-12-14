@@ -18,9 +18,9 @@ class ConnectionMutation(
     private val connectionService: ConnectionService,
     private val permissionService: PermissionService,
 ) {
-    @DgsMutation(field = "hideCompanyConnection")
+    @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun hide(
+    fun hideCompanyConnection(
         @InputArgument("companyId") companyId: String,
         @InputArgument("connectionId") connectionId: String,
         @InputArgument("isHide") hidden: Boolean
@@ -49,9 +49,9 @@ class ConnectionMutation(
         }
     }
 
-    @DgsMutation(field = "deleteCompanyConnection")
+    @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun delete(
+    fun deleteCompanyConnection(
         @InputArgument("companyId") companyId: String,
         @InputArgument("connectionId") connectionId: String
     ): DelOrHideResult {

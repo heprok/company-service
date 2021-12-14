@@ -26,13 +26,6 @@ fun <Root> fetchRelations(relationNames: List<String>): Specification<Root> {
     }
 }
 
-fun <Root> distinctRootEntity(): Specification<Root> {
-    return Specification { _, query, _ ->
-        query.distinct(true)
-        null
-    }
-}
-
 fun CriteriaBuilder.matchBoolMode(firstParam: Expression<*>, secondParam: Expression<*>): Expression<out Double> {
     return function("match_bool_mode", Double::class.java, firstParam, secondParam)
 }
