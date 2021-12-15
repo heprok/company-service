@@ -6,9 +6,6 @@ import java.time.Instant
 import java.time.Year
 import java.util.UUID
 
-data class ConnectionCreatedEvent(override val data: Connection) : Event<Connection>("1.0")
-data class ConnectionUpdatedEvent(override val data: Connection) : Event<Connection>("1.0")
-
 enum class ConnectionStatus(val value: Int) {
     @JsonProperty("1")
     Draft(1),
@@ -81,3 +78,6 @@ data class Connection(
     @JsonProperty
     var created: Instant,
 )
+
+data class ConnectionCreatedEvent(override val data: Connection) : Event<Connection>("1.0")
+data class ConnectionUpdatedEvent(override val data: Connection) : Event<Connection>("1.0")

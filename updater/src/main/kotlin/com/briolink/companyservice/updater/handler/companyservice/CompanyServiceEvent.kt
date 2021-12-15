@@ -5,11 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID
 
-data class CompanyServiceCreatedEvent(override val data: CompanyService) : Event<CompanyService>("1.0")
-data class CompanyServiceUpdatedEvent(override val data: CompanyService) : Event<CompanyService>("1.0")
-data class CompanyServiceDeletedEvent(override val data: CompanyServiceDeletedData) : Event<CompanyServiceDeletedData>("1.0")
-data class CompanyServiceHideEvent(override val data: CompanyServiceHideData) : Event<CompanyServiceHideData>("1.0")
-
 data class CompanyService(
     @JsonProperty
     val id: UUID,
@@ -40,3 +35,8 @@ data class CompanyServiceHideData(
     @JsonProperty
     val hidden: Boolean,
 )
+
+data class CompanyServiceCreatedEvent(override val data: CompanyService) : Event<CompanyService>("1.0")
+data class CompanyServiceUpdatedEvent(override val data: CompanyService) : Event<CompanyService>("1.0")
+data class CompanyServiceDeletedEvent(override val data: CompanyServiceDeletedData) : Event<CompanyServiceDeletedData>("1.0")
+data class CompanyServiceHideEvent(override val data: CompanyServiceHideData) : Event<CompanyServiceHideData>("1.0")

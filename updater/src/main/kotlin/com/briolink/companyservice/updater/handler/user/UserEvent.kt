@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID
 
-data class UserCreatedEvent(override val data: User) : Event<User>("1.0")
-data class UserUpdatedEvent(override val data: User) : Event<User>("1.0")
-
 data class User(
     @JsonProperty
     val id: UUID,
@@ -28,3 +25,6 @@ data class User(
     @JsonProperty
     val facebook: String? = null,
 )
+
+data class UserCreatedEvent(override val data: User) : Event<User>("1.0")
+data class UserUpdatedEvent(override val data: User) : Event<User>("1.0")
