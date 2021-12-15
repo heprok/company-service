@@ -50,6 +50,7 @@ class StatisticHandlerService(
             ConnectionStatusEnum.Verified.value
         )
         val collaborationCompanyIds = mutableSetOf<UUID>()
+        val servicesProvidedIds = mutableSetOf<UUID>()
         list.forEach { connectionReadEntity ->
             val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
                 connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
@@ -101,6 +102,7 @@ class StatisticHandlerService(
             // chart data by services provided
             if (collaboratorParticipant.companyRole.type == CompanyRoleTypeEnum.Buyer) {
                 connectionReadEntity.data.services.forEach { service ->
+                    service.serviceId?.let { servicesProvidedIds.add(it) }
                     if (service.serviceId != null && service.slug != "-1") {
                         val serviceId = service.serviceId.toString()
                         val serviceName = service.serviceName
@@ -197,7 +199,7 @@ class StatisticHandlerService(
 
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
-        companyStatistic.totalServicesProvided = companyStatistic.chartByServicesProvidedData.data.size
+        companyStatistic.totalServicesProvided = servicesProvidedIds.count()
         statisticReadRepository.saveAndFlush(companyStatistic)
     }
 
