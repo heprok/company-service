@@ -1,6 +1,7 @@
 package com.briolink.companyservice.updater.handler.companyservice
 
 import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
+import com.briolink.companyservice.common.jpa.runAfterTxCommit
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
@@ -24,7 +25,7 @@ class RefreshConnectionServiceEventHandler(
     private val companyServiceHandlerService: CompanyServiceHandlerService
 ) : IEventHandler<RefreshConnectionServiceEvent> {
     override fun handle(event: RefreshConnectionServiceEvent) {
-        companyServiceHandlerService.refreshVerifyUses(event.data.serviceId)
+        runAfterTxCommit { companyServiceHandlerService.refreshVerifyUses(event.data.serviceId) }
     }
 }
 
@@ -35,7 +36,7 @@ class ServiceDeletedEventHandler(
 ) : IEventHandler<CompanyServiceDeletedEvent> {
     override fun handle(event: CompanyServiceDeletedEvent) {
         companyServiceHandlerService.deleteById(event.data.id)
-        applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false))
+        runAfterTxCommit { applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false)) }
     }
 }
 
@@ -46,6 +47,6 @@ class ServiceHideEventHandler(
 ) : IEventHandler<CompanyServiceHideEvent> {
     override fun handle(event: CompanyServiceHideEvent) {
         companyServiceHandlerService.setHidden(event.data.id, event.data.hidden)
-        applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false))
+        runAfterTxCommit { applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false)) }
     }
 }

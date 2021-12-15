@@ -3,7 +3,7 @@ package com.briolink.companyservice.common.dto.location
 import com.briolink.companyservice.common.jpa.enumeration.LocationTypeEnum
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class LocationId(
+data class LocationId(
     @JsonProperty
     var id: Int,
     @JsonProperty

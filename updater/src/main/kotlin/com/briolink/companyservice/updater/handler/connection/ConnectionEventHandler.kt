@@ -19,8 +19,18 @@ class ConnectionEventHandler(
         if (connection.status != ConnectionStatus.Rejected) {
             connectionHandlerService.createOrUpdate(connection).let {
                 if (connection.status == ConnectionStatus.Verified) {
-                    applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(connection.participantTo.companyId, false))
-                    applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(connection.participantFrom.companyId, false))
+                    applicationEventPublisher.publishEvent(
+                        RefreshStatisticByCompanyId(
+                            connection.participantTo.companyId,
+                            false
+                        )
+                    )
+                    applicationEventPublisher.publishEvent(
+                        RefreshStatisticByCompanyId(
+                            connection.participantFrom.companyId,
+                            false
+                        )
+                    )
                 }
             }
         } else if (connection.status == ConnectionStatus.Rejected) {
