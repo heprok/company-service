@@ -18,12 +18,12 @@ class ConnectionMutation(
     private val connectionService: ConnectionService,
     private val permissionService: PermissionService,
 ) {
-    @DgsMutation(field = "hideCompanyConnection")
+    @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun hide(
+    fun hideCompanyConnection(
         @InputArgument("companyId") companyId: String,
         @InputArgument("connectionId") connectionId: String,
-        @InputArgument("isHide") isHide: Boolean
+        @InputArgument("isHide") hidden: Boolean
     ): DelOrHideResult {
         return if (permissionService.isHavePermission(
                 companyId = UUID.fromString(companyId),
@@ -35,7 +35,7 @@ class ConnectionMutation(
             connectionService.changeVisibilityByIdAndCompanyId(
                 companyId = UUID.fromString(companyId),
                 connectionId = UUID.fromString(connectionId),
-                isHide = isHide,
+                hidden = hidden,
             )
             DelOrHideResult(
                 success = true,
@@ -49,9 +49,9 @@ class ConnectionMutation(
         }
     }
 
-    @DgsMutation(field = "deleteCompanyConnection")
+    @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun delete(
+    fun deleteCompanyConnection(
         @InputArgument("companyId") companyId: String,
         @InputArgument("connectionId") connectionId: String
     ): DelOrHideResult {

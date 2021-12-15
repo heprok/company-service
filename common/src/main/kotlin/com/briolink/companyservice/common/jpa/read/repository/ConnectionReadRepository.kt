@@ -103,7 +103,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
             UPDATE ConnectionReadEntity c
             SET c.hiddenCompanyIds = CASE
                WHEN :hidden = true
-                   THEN function('array_appEND', c.hiddenCompanyIds, :companyId)
+                   THEN function('array_append', c.hiddenCompanyIds, :companyId)
                WHEN :hidden = false
                    THEN function('array_remove', c.hiddenCompanyIds, :companyId)
                ELSE c.hiddenCompanyIds END
@@ -125,7 +125,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
             UPDATE ConnectionReadEntity c
             SET c.hiddenCompanyIds = CASE
                WHEN :hidden = true
-                   THEN function('array_appEND', c.hiddenCompanyIds, :companyId)
+                   THEN function('array_append', c.hiddenCompanyIds, :companyId)
                WHEN :hidden = false
                    THEN function('array_remove', c.hiddenCompanyIds, :companyId)
                ELSE c.hiddenCompanyIds END
@@ -151,7 +151,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     @Query(
         """
            UPDATE ConnectionReadEntity c
-           SET c.deletedCompanyIds = function('array_appEND', c.deletedCompanyIds, :companyId)
+           SET c.deletedCompanyIds = function('array_append', c.deletedCompanyIds, :companyId)
            WHERE
                c.id = :id AND
                (c.participantFromCompanyId = :companyId or c.participantToCompanyId = :companyId) AND
