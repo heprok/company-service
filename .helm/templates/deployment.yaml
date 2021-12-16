@@ -1,82 +1,60 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.werf.name }}
+  name: {{ .Values.werf.name }}-api
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.werf.name }}
+      app: {{ .Values.werf.name }}-api
   strategy:
     type: RollingUpdate
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Values.werf.name }}
+        app: {{ .Values.werf.name }}-api
     spec:
       containers:
         - name: {{ .Values.werf.name }}-api
-          command: ["java","-jar","application.jar"]
+          command: ["java", "-jar", "application.jar"]
           image: {{ .Values.werf.image.api }}
           workingDir: /
           ports:
             - containerPort: 8080
               protocol: TCP
           env:
-            - name: spring_profiles_active
-              value: {{ .Values.werf.env | quote }}
+{{ include "app.envVars" . | indent 12 }}
             - name: S3_BUCKET_NAME
-              value: briolink
-            - name: DB_HOST
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.werf.name }}
-                  key: dbHost
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbPort
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbUsername
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbPassword
+                  key: s3BucketName
+      serviceAccountName: {{ .Values.werf.name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.werf.name }}-updater
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.werf.name }}-updater
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.werf.name }}-updater
+    spec:
+      containers:
         - name: {{ .Values.werf.name }}-updater
-          command: ["java","-jar","application.jar"]
+          command: ["java", "-jar", "application.jar"]
           image: {{ .Values.werf.image.updater }}
           workingDir: /
           ports:
             - containerPort: 8085
               protocol: TCP
           env:
-            - name: spring_profiles_active
-              value: {{ .Values.werf.env | quote }}
-            - name: S3_BUCKET_NAME
-              value: briolink
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbHost
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbPort
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbUsername
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.werf.name }}
-                  key: dbPassword
+{{ include "app.envVars" . | indent 12 }}
       serviceAccountName: {{ .Values.werf.name }}

@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.werf.name }}
 spec:
   selector:
-    app: {{ .Values.werf.name }}
+    app: {{ .Values.werf.name }}-api
   ports:
     - name: http
       port: 8080
