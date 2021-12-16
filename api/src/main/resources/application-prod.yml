@@ -1,6 +1,11 @@
+server:
+  error:
+    include-stacktrace: never
 spring:
+  jpa:
+    show-sql: false
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://auth.briolink.com/auth/realms/briolink/protocol/openid-connect/certs
+          jwk-set-uri: https://auth.app.briolink.com/auth/realms/briolink/protocol/openid-connect/certs
