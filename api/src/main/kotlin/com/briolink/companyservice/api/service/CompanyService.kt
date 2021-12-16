@@ -37,10 +37,10 @@ class CompanyService(
     }
 
     fun createCompany(name: String, website: URL?, createdBy: UUID): CompanyWriteEntity {
-        val companyWrite = if (website == null)
-            companyWriteRepository.getByName(name)
-        else
-            companyWriteRepository.getByNameOrWebsite(name, website.host)
+        val companyWrite = companyWriteRepository.getByName(name).let {
+            if (it == null && website != null) companyWriteRepository.getByWebsite(website.host)
+            else it
+        }
 
         return companyWrite ?: CompanyWriteEntity(name = name, createdBy = createdBy).apply {
             websiteUrl = website
