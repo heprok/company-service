@@ -40,6 +40,8 @@ cloud:
 dgs:
   graphql:
     path: /
+    introspection:
+      enabled: false
 app:
   app-endpoints:
     companyservice: http://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
