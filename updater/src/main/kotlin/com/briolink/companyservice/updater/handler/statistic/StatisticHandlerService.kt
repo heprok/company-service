@@ -19,18 +19,17 @@ import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepos
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.vladmihalcea.hibernate.type.range.Range
-import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionalEventListener
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 
-@Transactional
-@Component
+@Service
 @EnableAsync
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
@@ -40,6 +39,7 @@ class StatisticHandlerService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository
 ) {
     @Async
+    @Transactional
     fun refreshByCompanyId(companyId: UUID) {
         deleteStatisticByCompanyId(companyId)
         val companyStatistic = StatisticReadEntity(companyId)
@@ -49,6 +49,8 @@ class StatisticHandlerService(
             companyId,
             ConnectionStatusEnum.Verified.value
         )
+        println(list)
+        println(companyId)
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()
         list.forEach { connectionReadEntity ->
@@ -200,7 +202,7 @@ class StatisticHandlerService(
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = servicesProvidedIds.count()
-        statisticReadRepository.saveAndFlush(companyStatistic)
+        statisticReadRepository.save(companyStatistic)
     }
 
     fun deleteStatisticByCompanyId(companyId: UUID) {
@@ -208,7 +210,8 @@ class StatisticHandlerService(
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener
+    @Transactional
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         refreshByCompanyId(event.companyId)
         if (event.isUpdateCollaborating) {
