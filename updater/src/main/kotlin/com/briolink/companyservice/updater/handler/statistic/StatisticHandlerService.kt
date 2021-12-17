@@ -211,6 +211,7 @@ class StatisticHandlerService(
 
     @Async
     @TransactionalEventListener
+    @Transactional
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         refreshByCompanyId(event.companyId)
         if (event.isUpdateCollaborating) {
