@@ -1,6 +1,5 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.jpa.runAfterTxCommit
 import com.briolink.companyservice.updater.handler.statistic.StatisticHandlerService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
@@ -19,7 +18,7 @@ class ConnectionEventHandler(
         if (connection.status != ConnectionStatus.Rejected) {
             connectionHandlerService.createOrUpdate(connection).also {
                 if (connection.status == ConnectionStatus.Verified) {
-                    runAfterTxCommit { statisticHandlerService.refreshByCompanyId(it.participantToCompanyId) }
+                    statisticHandlerService.refreshByCompanyId(it.participantToCompanyId)
                     statisticHandlerService.refreshByCompanyId(it.participantFromCompanyId)
                 }
             }

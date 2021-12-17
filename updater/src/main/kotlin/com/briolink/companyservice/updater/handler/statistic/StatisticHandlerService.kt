@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionalEventListener
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
@@ -40,6 +41,7 @@ class StatisticHandlerService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository
 ) {
     @Async
+    @TransactionalEventListener
     fun refreshByCompanyId(companyId: UUID) {
         deleteStatisticByCompanyId(companyId)
         val companyStatistic = StatisticReadEntity(companyId)
