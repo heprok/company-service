@@ -19,7 +19,6 @@ import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepos
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.vladmihalcea.hibernate.type.range.Range
-import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
@@ -30,7 +29,6 @@ import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 
-@Transactional
 @Service
 @EnableAsync
 class StatisticHandlerService(
@@ -41,7 +39,7 @@ class StatisticHandlerService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository
 ) {
     @Async
-    @TransactionalEventListener
+    @Transactional
     fun refreshByCompanyId(companyId: UUID) {
         deleteStatisticByCompanyId(companyId)
         val companyStatistic = StatisticReadEntity(companyId)
@@ -212,7 +210,7 @@ class StatisticHandlerService(
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         refreshByCompanyId(event.companyId)
         if (event.isUpdateCollaborating) {
