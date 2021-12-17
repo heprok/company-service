@@ -20,7 +20,7 @@ class ConnectionEventHandler(
             connectionHandlerService.createOrUpdate(connection).also {
                 if (connection.status == ConnectionStatus.Verified) {
                     runAfterTxCommit { statisticHandlerService.refreshByCompanyId(it.participantToCompanyId) }
-                    runAfterTxCommit { statisticHandlerService.refreshByCompanyId(it.participantFromCompanyId) }
+                    statisticHandlerService.refreshByCompanyId(it.participantFromCompanyId)
                 }
             }
         } else if (connection.status == ConnectionStatus.Rejected) {
