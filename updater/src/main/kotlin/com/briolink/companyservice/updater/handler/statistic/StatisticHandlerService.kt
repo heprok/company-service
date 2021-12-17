@@ -23,14 +23,14 @@ import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 
 @Transactional
-@Component
+@Service
 @EnableAsync
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
@@ -49,6 +49,8 @@ class StatisticHandlerService(
             companyId,
             ConnectionStatusEnum.Verified.value
         )
+        println(list)
+        println(companyId)
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()
         list.forEach { connectionReadEntity ->
@@ -200,7 +202,7 @@ class StatisticHandlerService(
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = servicesProvidedIds.count()
-        statisticReadRepository.saveAndFlush(companyStatistic)
+        statisticReadRepository.save(companyStatistic)
     }
 
     fun deleteStatisticByCompanyId(companyId: UUID) {
