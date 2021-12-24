@@ -8,3 +8,4 @@ import com.briolink.event.Event
 data class CompanyCreatedEvent(override val data: Company) : Event<Domain>("1.0")
 data class CompanyUpdatedEvent(override val data: Company) : Event<Domain>("1.0")
 data class CompanyStatisticEvent(override val data: CompanyStatistic) : Event<Domain>("1.0")
+data class CompanySyncEvent(override val data: Company) : Event<Domain>("1.0")

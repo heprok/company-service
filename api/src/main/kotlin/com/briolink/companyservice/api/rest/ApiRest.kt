@@ -4,6 +4,7 @@ import com.briolink.companyservice.api.dataloader.CompanyDataLoader
 import com.briolink.companyservice.api.dataloader.IndustryDataLoader
 import com.briolink.companyservice.api.dataloader.KeywordDataLoader
 import com.briolink.companyservice.api.dataloader.OccupationDataLoader
+import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.common.domain.v1_0.Statistic
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import com.briolink.event.publisher.EventPublisher
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1")
 class ApiRest(
     private val eventPublisher: EventPublisher,
+    private val companyService: CompanyService,
     private val companyDataLoader: CompanyDataLoader,
     private val industryDataLoader: IndustryDataLoader,
     private val occupationDataLoader: OccupationDataLoader,
@@ -36,6 +38,12 @@ class ApiRest(
         occupationDataLoader.loadData()
         keywordDataLoader.loadData()
         companyDataLoader.loadData()
+        return ResponseEntity.ok(1)
+    }
+
+    @GetMapping("/sync/search-service")
+    fun syncSearchService(): ResponseEntity<Int> {
+        companyService.publishSyncEvent()
         return ResponseEntity.ok(1)
     }
 }

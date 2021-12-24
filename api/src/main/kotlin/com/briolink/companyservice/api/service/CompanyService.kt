@@ -2,6 +2,7 @@ package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
+import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
@@ -95,6 +96,12 @@ class CompanyService(
             ).apply {
             role = roleType
             return userPermissionRoleReadRepository.save(this)
+        }
+    }
+
+    fun publishSyncEvent() {
+        companyWriteRepository.findAll().forEach {
+            eventPublisher.publishAsync(CompanySyncEvent(it.toDomain()))
         }
     }
 
