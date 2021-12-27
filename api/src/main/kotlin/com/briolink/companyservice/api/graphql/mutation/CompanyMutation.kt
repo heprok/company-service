@@ -57,6 +57,7 @@ class CompanyMutation(
             name = createInputCompany.name,
             imageUrl = createInputCompany.logo,
             industryName = createInputCompany.industryName,
+            description = createInputCompany.description,
             createdBy = UUID.fromString(createInputCompany.createBy),
             website = createInputCompany.website,
         ).let { Company.fromEntity(it) }

@@ -36,6 +36,7 @@ input CreateCompanyInput {
     name: String!
     website: Url
     logo: Url
+    description: String
     industryName: String
     createBy: ID!
 }

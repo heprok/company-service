@@ -42,6 +42,7 @@ class CompanyService(
         name: String,
         website: URL?,
         imageUrl: URL?,
+        description: String?,
         industryName: String?,
         createdBy: UUID
     ): CompanyWriteEntity {
@@ -53,6 +54,7 @@ class CompanyService(
         return companyWrite ?: CompanyWriteEntity(name = name, createdBy = createdBy).apply {
             websiteUrl = website
             logo = s3ImageUrl
+            this.description = description
             industry = industryWrite
             companyWriteRepository.save(this).also {
                 eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
