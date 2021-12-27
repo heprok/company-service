@@ -6,6 +6,10 @@ logging:
 server:
   error:
     include-stacktrace: always
+dgs:
+  graphql:
+    introspection:
+      enabled: true
 spring:
   jpa:
     show-sql: true
