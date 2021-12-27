@@ -217,7 +217,7 @@ class StatisticHandlerService(
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = servicesProvidedIds.count()
 
-        publishStats(companyId, companyStatistic.totalConnections, participantCompanyRole)
+        publishStats(companyId, list.count(), participantCompanyRole)
         statisticReadRepository.save(companyStatistic)
     }
 
