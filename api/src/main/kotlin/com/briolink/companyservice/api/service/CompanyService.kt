@@ -26,6 +26,7 @@ import javax.persistence.EntityNotFoundException
 class CompanyService(
     private val companyReadRepository: CompanyReadRepository,
     private val companyWriteRepository: CompanyWriteRepository,
+    private val industryService: IndustryService,
     val eventPublisher: EventPublisher,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val awsS3Service: AwsS3Service,
@@ -37,15 +38,23 @@ class CompanyService(
         }
     }
 
-    fun createCompany(name: String, website: URL?, createdBy: UUID): CompanyWriteEntity {
-        val companyWrite = companyWriteRepository.getByName(name).let {
-            if (it == null && website != null) companyWriteRepository.getByWebsite(website.host)
-            else it
-        }
+    fun createCompany(
+        name: String,
+        website: URL?,
+        imageUrl: URL?,
+        industryName: String?,
+        createdBy: UUID
+    ): CompanyWriteEntity {
+        val companyWrite = if (website != null) companyWriteRepository.getByWebsite(website.host) else null
+        val industryWrite = industryName?.let { industryService.create(industryName) }
+        val s3ImageUrl = if (imageUrl != null)
+            awsS3Service.uploadImage("uploads/company/profile-image", imageUrl) else null
 
         return companyWrite ?: CompanyWriteEntity(name = name, createdBy = createdBy).apply {
             websiteUrl = website
-            companyWriteRepository.save(this).let {
+            logo = s3ImageUrl
+            industry = industryWrite
+            companyWriteRepository.save(this).also {
                 eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
             }
         }

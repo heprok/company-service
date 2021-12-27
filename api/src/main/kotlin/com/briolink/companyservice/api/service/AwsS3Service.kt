@@ -17,6 +17,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.io.InputStream
 import java.net.URL
 import java.util.UUID
 
@@ -55,6 +56,22 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             throw clientException
         }
 
+    fun uploadFile(key: String, inputStream: InputStream, metadata: ObjectMetadata, acl: String? = null): URL =
+        try {
+            metadata.setHeader(DEFAULT_HEADER_ACL_KEY, acl ?: DEFAULT_HEADER_ACL_VALUE)
+            s3Client.putObject(bucketName, key, inputStream, metadata)
+            s3Client.getUrl(bucketName, key)
+        } catch (ioe: IOException) {
+            logger.error { "IOException: ${ioe.message}" }
+            throw ioe
+        } catch (serviceException: AmazonServiceException) {
+            logger.error { "AmazonServiceException: ${serviceException.message}" }
+            throw serviceException
+        } catch (clientException: AmazonClientException) {
+            logger.error { "AmazonClientException: ${clientException.message}" }
+            throw clientException
+        }
+
     fun uploadTempImage(file: MultipartFile): String =
         if (isImageFile(file.contentType)) {
             val objectName = generateObjectName()
@@ -70,6 +87,24 @@ class AwsS3Service(private val s3Client: AmazonS3) {
         } else {
             throw FileTypeException()
         }
+
+    fun uploadImage(path: String, imageUrl: URL): URL {
+        val urlConnection = imageUrl.openConnection()
+
+        if (isImageFile(urlConnection.contentType)) {
+            val inputStream = imageUrl.openStream()
+            val metadata = ObjectMetadata()
+            metadata.contentType = urlConnection.contentType
+            metadata.contentLength = urlConnection.contentLengthLong
+            return uploadFile(
+                key = "$path/${generateObjectName()}.${IMAGE_FILE_TYPE[urlConnection.contentType]}",
+                inputStream = inputStream,
+                metadata = metadata
+            )
+        } else {
+            throw FileTypeException()
+        }
+    }
 
     fun deleteFile(key: String) =
         try {
@@ -103,5 +138,6 @@ class AwsS3Service(private val s3Client: AmazonS3) {
     }
 
     private fun generateObjectName(): String = UUID.randomUUID().toString().replace("-", "")
-    private fun isImageFile(contentType: String?): Boolean = contentType != null && IMAGE_FILE_TYPE.containsKey(contentType)
+    private fun isImageFile(contentType: String?): Boolean =
+        contentType != null && IMAGE_FILE_TYPE.containsKey(contentType)
 }

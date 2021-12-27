@@ -55,6 +55,8 @@ class CompanyMutation(
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
         companyService.createCompany(
             name = createInputCompany.name,
+            imageUrl = createInputCompany.logo,
+            industryName = createInputCompany.industryName,
             createdBy = UUID.fromString(createInputCompany.createBy),
             website = createInputCompany.website,
         ).let { Company.fromEntity(it) }
