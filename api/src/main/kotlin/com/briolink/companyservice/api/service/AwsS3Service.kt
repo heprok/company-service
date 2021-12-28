@@ -96,11 +96,17 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             val metadata = ObjectMetadata()
             metadata.contentType = urlConnection.contentType
             metadata.contentLength = urlConnection.contentLengthLong
+            println(metadata.contentType)
+            println(metadata.contentLength)
+            println("$path/${generateObjectName()}.${IMAGE_FILE_TYPE[urlConnection.contentType]}")
+
             return uploadFile(
                 key = "$path/${generateObjectName()}.${IMAGE_FILE_TYPE[urlConnection.contentType]}",
                 inputStream = inputStream,
                 metadata = metadata
-            )
+            ).also {
+                inputStream.close()
+            }
         } else {
             throw FileTypeException()
         }
