@@ -56,6 +56,8 @@ class StatisticHandlerService(
             companyId,
             ConnectionStatusEnum.Verified.value
         )
+        println(list)
+        println(companyId)
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()
         val participantCompanyRole = mutableSetOf<ConnectionReadEntity.CompanyRole>()
@@ -216,7 +218,6 @@ class StatisticHandlerService(
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = servicesProvidedIds.count()
-
         publishStats(companyId, list.count(), participantCompanyRole)
         statisticReadRepository.save(companyStatistic)
     }
