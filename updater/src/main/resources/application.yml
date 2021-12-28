@@ -33,3 +33,5 @@ app:
 event:
   listener:
     sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo
+  publisher:
+    sns-name: bl-network-${env.spring_profiles_active}.fifo

@@ -22,6 +22,8 @@ type CompanyAndUserRole {
 type CompanyResultData {
     id: ID!
     name: String!
+    logo: Url
+    industry: Industry
     website: Url
 }
 
@@ -33,6 +35,9 @@ type UpdateCompanyResult implements ResultWithUserErrors {
 input CreateCompanyInput {
     name: String!
     website: Url
+    logo: Url
+    description: String
+    industryName: String
     createBy: ID!
 }
 
