@@ -1,7 +1,12 @@
 package com.briolink.companyservice.updater.handler.statistic
 
+import com.briolink.companyservice.common.domain.v1_0.CompanyStatistic
+import com.briolink.companyservice.common.domain.v1_0.ConnectionCompanyRoleData
+import com.briolink.companyservice.common.domain.v1_0.ConnectionCompanyRoleType
+import com.briolink.companyservice.common.event.v1_0.CompanyStatisticEvent
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartItem
@@ -18,6 +23,7 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceR
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
+import com.briolink.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.range.Range
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
@@ -36,7 +42,8 @@ class StatisticHandlerService(
     private val connectionReadRepository: ConnectionReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val companyReadRepository: CompanyReadRepository,
-    private val connectionServiceReadRepository: ConnectionServiceReadRepository
+    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
+    private val eventPublisher: EventPublisher,
 ) {
     @Async
     @Transactional
@@ -53,9 +60,18 @@ class StatisticHandlerService(
         println(companyId)
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()
+        val participantCompanyRole = mutableSetOf<ConnectionReadEntity.CompanyRole>()
+
         list.forEach { connectionReadEntity ->
-            val collaboratorParticipant = if (connectionReadEntity.participantFromCompanyId == companyId)
-                connectionReadEntity.data.participantTo else connectionReadEntity.data.participantFrom
+            val collaboratorParticipant: ConnectionReadEntity.Participant
+
+            if (connectionReadEntity.participantFromCompanyId == companyId) {
+                collaboratorParticipant = connectionReadEntity.data.participantTo
+                participantCompanyRole.add(connectionReadEntity.data.participantFrom.companyRole)
+            } else {
+                collaboratorParticipant = connectionReadEntity.data.participantFrom
+                participantCompanyRole.add(connectionReadEntity.data.participantTo.companyRole)
+            }
 
             val collaboratorCompany = companyReadRepository.findById(collaboratorParticipant.company.id).get()
             collaborationCompanyIds.add(collaboratorCompany.id)
@@ -202,6 +218,7 @@ class StatisticHandlerService(
         companyStatistic.totalConnections = list.count()
         companyStatistic.totalCollaborationCompanies = collaborationCompanyIds.count()
         companyStatistic.totalServicesProvided = servicesProvidedIds.count()
+        publishStats(companyId, list.count(), participantCompanyRole)
         statisticReadRepository.save(companyStatistic)
     }
 
@@ -227,6 +244,28 @@ class StatisticHandlerService(
                 offset += limit
             }
         }
+    }
+
+    private fun publishStats(
+        companyId: UUID,
+        numberOfVerifications: Int,
+        listCompanyRole: Set<ConnectionReadEntity.CompanyRole>
+    ) {
+        eventPublisher.publishAsync(
+            CompanyStatisticEvent(
+                CompanyStatistic(
+                    companyId = companyId,
+                    numberOfVerifications = numberOfVerifications,
+                    companyRoles = listCompanyRole.map {
+                        ConnectionCompanyRoleData(
+                            id = it.id,
+                            name = it.name,
+                            type = ConnectionCompanyRoleType.valueOf(it.type.name)
+                        )
+                    } as ArrayList<ConnectionCompanyRoleData>
+                )
+            )
+        )
     }
 
     fun <T : ChartListItem> getChart(
