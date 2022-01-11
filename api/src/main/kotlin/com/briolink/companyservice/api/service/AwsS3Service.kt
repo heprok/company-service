@@ -88,7 +88,7 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             throw FileTypeException()
         }
 
-    fun uploadImage(path: String, imageUrl: URL): URL {
+    fun uploadImage(path: String, imageUrl: URL): URL? {
         val urlConnection = imageUrl.openConnection()
 
         if (isImageFile(urlConnection.contentType)) {
@@ -105,7 +105,8 @@ class AwsS3Service(private val s3Client: AmazonS3) {
                 inputStream.close()
             }
         } else {
-            throw FileTypeException()
+            return null
+//            throw FileTypeException()
         }
     }
 
@@ -121,8 +122,6 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             val sourceKey = "$tempDirPath/$key"
             val objectInfo = s3Client.getObjectMetadata(bucketName, sourceKey)
             val destinationKey = "$path/$key.${IMAGE_FILE_TYPE[objectInfo.contentType]}"
-            println(sourceKey)
-            println(destinationKey)
             s3Client.copyObject(
                 CopyObjectRequest(bucketName, sourceKey, bucketName, destinationKey).apply {
                     accessControlList = AccessControlList().apply {
