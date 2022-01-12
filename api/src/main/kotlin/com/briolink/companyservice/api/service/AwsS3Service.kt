@@ -105,12 +105,9 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             )
             inputStream.close()
             return url
-        } else {
+        } else
             return null
 //            throw FileTypeException()
-        } else {
-            throw FileTypeException()
-        }
     }
 
     fun deleteFile(key: String) =
