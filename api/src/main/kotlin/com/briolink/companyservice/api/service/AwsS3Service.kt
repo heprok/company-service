@@ -98,19 +98,14 @@ class AwsS3Service(private val s3Client: AmazonS3) {
 //            metadata.contentLength = urlConnection.contentLengthLong
 
             val url = uploadFile(
-            return uploadFile(
                 key = "$path/${generateObjectName()}.${IMAGE_FILE_TYPE[urlConnection.contentType]}",
                 inputStream = inputStream,
-                metadata = metadata
+                metadata = metadata,
             )
             inputStream.close()
             return url
-        } else {
+        } else
             return null
-//            throw FileTypeException()
-        } else {
-            throw FileTypeException()
-        }
     }
 
     fun deleteFile(key: String) =
