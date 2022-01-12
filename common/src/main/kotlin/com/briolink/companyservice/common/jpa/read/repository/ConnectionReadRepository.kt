@@ -140,7 +140,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         @Param("companyId") companyId: UUID,
         @Param("userId") userId: UUID,
         @Param("hidden") hidden: Boolean
-    )
+    ): Int
 
     fun existsByParticipantFromCompanyIdOrParticipantToCompanyId(
         participantFromCompanyId: UUID,

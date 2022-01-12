@@ -95,8 +95,12 @@ class UserJobPositionHandlerService(
         connectionReadRepository.changeVisibilityByCompanyIdAndUserId(
             companyId = companyId,
             userId = userId, false,
-        )
-        applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
+        ).also {
+            if (it > 0) {
+                println("PUBLISH EVENT TO RESFRESH STATS")
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
+            }
+        }
     }
 
     fun updateUser(user: UserReadEntity) {
