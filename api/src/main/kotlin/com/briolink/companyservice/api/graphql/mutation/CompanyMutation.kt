@@ -41,15 +41,6 @@ class CompanyMutation(
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @DgsMutation
-    fun getAllPermission(
-        @InputArgument("userId") userId: String?
-    ): Boolean {
-        permissionService.addAllPermissionByUserId(userId = userId?.let { UUID.fromString(it) } ?: currentUserAccountId)
-        return true
-    }
-
     @DgsMutation
     @PreAuthorize("@servletUtil.isIntranet()")
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
