@@ -70,7 +70,6 @@ class CompanyMutation(
         dfe: DataFetchingEnvironment
     ): UpdateCompanyResult {
         val userErrors = mutableListOf<Error>()
-
         if (!permissionService.isHavePermission(
                 accessObjectType = AccessObjectTypeEnum.Company,
                 userId = currentUserAccountId,

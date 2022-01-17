@@ -22,3 +22,7 @@ app:
   app-endpoints:
     companyservice: http://192.168.0.23:8090/
     locationservice: http://192.168.0.23:8070/
+permission-service:
+  api:
+    url: http://192.168.0.60:8200
+    version: 1

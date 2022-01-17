@@ -21,7 +21,6 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-
     // FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -51,14 +50,6 @@ dependencies {
 
     kapt("jakarta.annotation:jakarta.annotation-api")
 
-    //querydsl
-//    implementation("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
-//    implementation("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}")
-////    compile("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
-//    kapt("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}:jpa")
-    // JSR-330 javax.inject annotations - required by querydsl
-
-//    annotationProcessor(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa", )
 }
 
 dependencyManagement {

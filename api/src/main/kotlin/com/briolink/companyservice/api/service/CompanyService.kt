@@ -13,6 +13,7 @@ import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRole
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.permission.service.PermissionsService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -27,7 +28,8 @@ class CompanyService(
     private val companyReadRepository: CompanyReadRepository,
     private val companyWriteRepository: CompanyWriteRepository,
     private val industryService: IndustryService,
-    val eventPublisher: EventPublisher,
+    private val eventPublisher: EventPublisher,
+    private val permissionService: PermissionsService,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val awsS3Service: AwsS3Service,
 ) {
