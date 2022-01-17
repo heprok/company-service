@@ -4,16 +4,13 @@ import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.event.publisher.EventPublisher
-import com.briolink.permission.service.PermissionsService
+import com.briolink.permission.service.PermissionService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -29,7 +26,7 @@ class CompanyService(
     private val companyWriteRepository: CompanyWriteRepository,
     private val industryService: IndustryService,
     private val eventPublisher: EventPublisher,
-    private val permissionService: PermissionsService,
+    private val permissionService: PermissionService,
     private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
     private val awsS3Service: AwsS3Service,
 ) {
@@ -93,23 +90,6 @@ class CompanyService(
             accessObjectType = AccessObjectTypeEnum.Company.value,
             userId = userId,
         )?.role
-    }
-
-    fun setPermission(
-        companyId: UUID,
-        userId: UUID,
-        roleType: UserPermissionRoleTypeEnum
-    ): UserPermissionRoleReadEntity {
-        (
-            userPermissionRoleReadRepository.getUserPermissionRole(
-                accessObjectUuid = companyId,
-                userId = userId,
-                accessObjectType = AccessObjectTypeEnum.CompanyService.value,
-            ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)
-            ).apply {
-            role = roleType
-            return userPermissionRoleReadRepository.save(this)
-        }
     }
 
     fun publishSyncEvent() {

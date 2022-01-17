@@ -5,7 +5,6 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.* // ktlint-disable no-wildcard-imports
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument

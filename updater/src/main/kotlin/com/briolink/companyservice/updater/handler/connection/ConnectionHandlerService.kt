@@ -1,9 +1,7 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
-import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
@@ -13,7 +11,7 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
-import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.companyservice.common.service.PermissionServiceOld
 import com.vladmihalcea.hibernate.type.range.Range
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,7 +26,7 @@ class ConnectionHandlerService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val permissionService: PermissionService,
+    private val permissionServiceOld: PermissionServiceOld,
 ) {
     fun createOrUpdate(connection: Connection): ConnectionReadEntity {
         val participantUsers = userReadRepository.findByIdIsIn(
@@ -82,7 +80,7 @@ class ConnectionHandlerService(
             cityId = buyerCompany.data.location?.city?.id
             deletedCompanyIds = listOf()
             hiddenCompanyIds = mutableListOf<UUID>().apply {
-                if (!permissionService.isHavePermission(
+                if (!permissionServiceOld.isHavePermission(
                         userId = connection.participantFrom.userId,
                         companyId = connection.participantFrom.companyId,
                         accessObjectType = AccessObjectTypeEnum.Company,
@@ -91,7 +89,7 @@ class ConnectionHandlerService(
                 )
                     add(connection.participantFrom.companyId)
 
-                if (!permissionService.isHavePermission(
+                if (!permissionServiceOld.isHavePermission(
                         userId = connection.participantTo.userId,
                         companyId = connection.participantTo.companyId,
                         accessObjectType = AccessObjectTypeEnum.Company,
@@ -101,7 +99,7 @@ class ConnectionHandlerService(
                     add(connection.participantTo.companyId)
             }
 
-            permissionService.isHavePermission(
+            permissionServiceOld.isHavePermission(
                 userId = connection.participantTo.userId,
                 companyId = connection.participantTo.companyId,
                 accessObjectType = AccessObjectTypeEnum.Company,

@@ -6,7 +6,6 @@ import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyAndUserRole
 import com.briolink.companyservice.api.types.PermissionRole
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument

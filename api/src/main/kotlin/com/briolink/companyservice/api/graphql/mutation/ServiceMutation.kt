@@ -4,9 +4,9 @@ import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
-import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.permission.enumeration.PermissionRightEnum
+import com.briolink.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -24,11 +24,11 @@ class ServiceMutation(
         @InputArgument("companyId") companyId: String,
         @InputArgument("serviceId") serviceId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                companyId = UUID.fromString(companyId),
+        return if (permissionService.isHavaPermission(
+                accessObjectId = UUID.fromString(companyId),
                 permissionRight = PermissionRightEnum.ServiceCrud,
                 userId = currentUserAccountId,
-                accessObjectType = AccessObjectTypeEnum.CompanyService,
+                accessObjectType = AccessObjectTypeEnum.Company
             )
         ) {
             serviceCompanyService.toggleVisibilityByIdAndCompanyId(
@@ -47,17 +47,17 @@ class ServiceMutation(
         }
     }
 
-    @DgsMutation(field = "deleteCompanyService")
+    @DgsMutation
     @PreAuthorize("isAuthenticated()")
     fun deleteCompanyService(
         @InputArgument("serviceId") serviceId: String,
         @InputArgument("companyId") companyId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                companyId = UUID.fromString(companyId),
+        return if (permissionService.isHavaPermission(
+                accessObjectId = UUID.fromString(companyId),
                 permissionRight = PermissionRightEnum.ServiceCrud,
                 userId = currentUserAccountId,
-                accessObjectType = AccessObjectTypeEnum.CompanyService,
+                accessObjectType = AccessObjectTypeEnum.Company
             )
         ) {
             serviceCompanyService.deleteServiceInCompany(

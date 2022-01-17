@@ -9,7 +9,7 @@ import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import com.briolink.event.publisher.EventPublisher
 import com.briolink.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.permission.enumeration.PermissionRoleEnum
-import com.briolink.permission.service.PermissionsService
+import com.briolink.permission.service.PermissionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,7 +26,7 @@ class ApiRest(
     private val industryDataLoader: IndustryDataLoader,
     private val occupationDataLoader: OccupationDataLoader,
     private val keywordDataLoader: KeywordDataLoader,
-    private val permissionService: PermissionsService
+    private val permissionService: PermissionService
 ) {
     @GetMapping("/statistic/refresh")
     fun refreshStatistic(): ResponseEntity<Int> {

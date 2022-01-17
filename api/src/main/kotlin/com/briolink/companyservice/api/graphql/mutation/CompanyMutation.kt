@@ -11,11 +11,12 @@ import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
+import com.briolink.companyservice.api.util.StringUtil
 import com.briolink.companyservice.common.dto.location.LocationId
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.LocationService
-import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.permission.enumeration.PermissionRightEnum
+import com.briolink.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -41,20 +42,11 @@ class CompanyMutation(
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @DgsMutation
-    fun getAllPermission(
-        @InputArgument("userId") userId: String?
-    ): Boolean {
-        permissionService.addAllPermissionByUserId(userId = userId?.let { UUID.fromString(it) } ?: currentUserAccountId)
-        return true
-    }
-
     @DgsMutation
     @PreAuthorize("@servletUtil.isIntranet()")
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
         companyService.createCompany(
-            name = createInputCompany.name,
+            name = StringUtil.trimAllSpaces(createInputCompany.name),
             imageUrl = createInputCompany.logo,
             industryName = createInputCompany.industryName,
             description = createInputCompany.description,
@@ -70,10 +62,10 @@ class CompanyMutation(
         dfe: DataFetchingEnvironment
     ): UpdateCompanyResult {
         val userErrors = mutableListOf<Error>()
-        if (!permissionService.isHavePermission(
+        if (!permissionService.isHavaPermission(
                 accessObjectType = AccessObjectTypeEnum.Company,
                 userId = currentUserAccountId,
-                companyId = UUID.fromString(id),
+                accessObjectId = UUID.fromString(id),
                 permissionRight = PermissionRightEnum.EditCompanyProfile,
             )
         )
@@ -88,7 +80,7 @@ class CompanyMutation(
                             "slug" -> this.slug = inputCompany.slug!!
                             "name" -> {
                                 if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
-                                else this.name = inputCompany.name
+                                else this.name = StringUtil.trimAllSpaces(inputCompany.name)
                             }
                             "website" -> {
                                 if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))

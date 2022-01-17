@@ -4,9 +4,9 @@ import com.briolink.companyservice.api.service.connection.ConnectionService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
-import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.permission.enumeration.PermissionRightEnum
+import com.briolink.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -16,7 +16,7 @@ import java.util.UUID
 @DgsComponent
 class ConnectionMutation(
     private val connectionService: ConnectionService,
-    private val permissionService: PermissionService,
+    private val permissionService: PermissionService
 ) {
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
@@ -25,11 +25,11 @@ class ConnectionMutation(
         @InputArgument("connectionId") connectionId: String,
         @InputArgument("isHide") hidden: Boolean
     ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                companyId = UUID.fromString(companyId),
+        return if (permissionService.isHavaPermission(
+                accessObjectId = UUID.fromString(companyId),
                 userId = SecurityUtil.currentUserAccountId,
                 permissionRight = PermissionRightEnum.ConnectionCrud,
-                accessObjectType = AccessObjectTypeEnum.Connection,
+                accessObjectType = AccessObjectTypeEnum.Company,
             )
         ) {
             connectionService.changeVisibilityByIdAndCompanyId(
@@ -55,11 +55,11 @@ class ConnectionMutation(
         @InputArgument("companyId") companyId: String,
         @InputArgument("connectionId") connectionId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                companyId = UUID.fromString(companyId),
-                permissionRight = PermissionRightEnum.ConnectionCrud,
+        return if (permissionService.isHavaPermission(
+                accessObjectId = UUID.fromString(companyId),
                 userId = SecurityUtil.currentUserAccountId,
-                accessObjectType = AccessObjectTypeEnum.Connection,
+                permissionRight = PermissionRightEnum.ConnectionCrud,
+                accessObjectType = AccessObjectTypeEnum.Company,
             )
         ) {
             connectionService.deleteConnectionInCompany(
