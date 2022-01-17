@@ -21,7 +21,6 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-
     // FasterXML
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -37,7 +36,7 @@ dependencies {
 
     // Netflix DGS
     implementation(
-            platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"),
+        platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"),
     )
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
@@ -45,16 +44,19 @@ dependencies {
     // kotlin-logging
     implementation("io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_JVM}")
 
+    // CSV
+    implementation("com.opencsv:opencsv:${Versions.OPEN_CSV}")
+
     // MapStruct
     implementation("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
     kapt("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
 
     kapt("jakarta.annotation:jakarta.annotation-api")
 
-    //querydsl
+    // querydsl
 //    implementation("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
 //    implementation("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}")
-////    compile("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
+// //    compile("com.querydsl:querydsl-jpa:${Versions.QUERY_DSL}")
 //    kapt("com.querydsl:querydsl-apt:${Versions.QUERY_DSL}:jpa")
     // JSR-330 javax.inject annotations - required by querydsl
 
@@ -81,10 +83,9 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
     packageName = "com.briolink.companyservice.api"
     language = "kotlin"
     typeMapping = mutableMapOf(
-            "Url" to "java.net.URL",
-            "Upload" to "org.springframework.web.multipart.MultipartFile",
-            "Year" to "java.time.Year",
+        "Url" to "java.net.URL",
+        "Upload" to "org.springframework.web.multipart.MultipartFile",
+        "Year" to "java.time.Year",
     )
     generatedSourcesDir = "${project.buildDir.absolutePath}/dgs-codegen"
 }
-

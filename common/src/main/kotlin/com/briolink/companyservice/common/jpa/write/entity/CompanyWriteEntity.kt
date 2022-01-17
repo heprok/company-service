@@ -80,7 +80,7 @@ class CompanyWriteEntity(
     var websiteUrl: URL?
         get() = website?.let { URL("https://$it") }
         set(value) {
-            website = value?.host
+            website = value?.host?.replace(Regex("^www."), "")
         }
 
     fun getLocationId(): LocationId? {

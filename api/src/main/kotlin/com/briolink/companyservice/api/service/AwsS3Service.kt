@@ -72,6 +72,8 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             throw clientException
         }
 
+    fun getUrl(key: String) = s3Client.getUrl(bucketName, key)
+
     fun uploadTempImage(file: MultipartFile): String =
         if (isImageFile(file.contentType)) {
             val objectName = generateObjectName()
