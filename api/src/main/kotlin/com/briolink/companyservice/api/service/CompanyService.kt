@@ -12,6 +12,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
+import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.event.publisher.EventPublisher
 import com.opencsv.bean.CsvBindByName
 import com.opencsv.bean.CsvToBean
@@ -30,7 +31,6 @@ import javax.persistence.EntityNotFoundException
 
 @Service
 @Transactional
-@Async
 class CompanyService(
     private val companyReadRepository: CompanyReadRepository,
     private val companyWriteRepository: CompanyWriteRepository,
@@ -56,7 +56,7 @@ class CompanyService(
             lateinit var name: String
 
             @CsvBindByName
-            val website: String? = null
+            var website: String? = null
 
             @CsvBindByName
             val logotype: String? = null
@@ -76,31 +76,30 @@ class CompanyService(
 
         csvToBean.parse().forEach { company ->
             var isUpdateCompany = false
-            val listCompany = companyWriteRepository.getAllByName(company.name)
-            if (listCompany.isEmpty()) {
+            company.name = StringUtil.trimAllSpaces(company.name)
+            val companyWriteEntity = getByNameAndWebsite(company.name, StringUtil.prepareUrl(company.website))
+            if (companyWriteEntity == null) {
                 logger.error(company.name + " company not exist")
                 return@forEach
             }
-            listCompany.forEach {
-                if (company.logotype != null) {
-                    val logoUrl = awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, URL(company.logotype))
-                    if (logoUrl == null) {
-                        companyListNotUploadImage.add(company.name)
-                        logger.error(company.name + " not download image " + company.logotype)
-                    } else {
-                        it.logo = logoUrl
-                        isUpdateCompany = true
-                    }
-                }
-
-                if (company.website != null) {
-                    it.websiteUrl = URL("https://" + company.website)
+            if (company.logotype != null && companyWriteEntity.logo != null) {
+                val logoUrl = awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, URL(company.logotype))
+                if (logoUrl == null) {
+                    companyListNotUploadImage.add(company.name)
+                    logger.error(company.name + " not download image " + company.logotype)
+                } else {
+                    companyWriteEntity.logo = logoUrl
                     isUpdateCompany = true
                 }
-
-                if (isUpdateCompany)
-                    updateCompany(it)
             }
+
+            if (company.website != null && companyWriteEntity.websiteUrl != StringUtil.prepareUrl(company.website)) {
+                companyWriteEntity.websiteUrl = StringUtil.prepareUrl(company.website)
+                isUpdateCompany = true
+            }
+
+            if (isUpdateCompany)
+                updateCompany(companyWriteEntity)
         }
         csvStream.close()
         companyListNotUploadImage.forEach {
@@ -117,8 +116,7 @@ class CompanyService(
         industryName: String?,
         createdBy: UUID
     ): CompanyWriteEntity {
-        val companyWrite =
-            if (website != null) companyWriteRepository.getByWebsite(website.host.replace(Regex("^www."), "")) else null
+        val companyWrite = getByNameAndWebsite(name, website)
         val industryWrite = industryName?.let { industryService.create(industryName) }
         val s3ImageUrl = if (imageUrl != null)
             awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, imageUrl) else null
@@ -135,7 +133,7 @@ class CompanyService(
     }
 
     fun isExistWebsite(website: URL): Boolean {
-        return companyWriteRepository.existsByWebsite(website.host.replace(Regex("^www."), ""))
+        return companyWriteRepository.existsByWebsite(website.host)
     }
 
     fun updateCompany(company: CompanyWriteEntity): Company {
@@ -164,6 +162,10 @@ class CompanyService(
             userId = userId,
         )?.role
     }
+
+    fun getByNameAndWebsite(name: String, website: URL?): CompanyWriteEntity? =
+        companyWriteRepository.getByNameIgnoreCaseAndWebsiteIgnoreCase(name, website?.host)
+            ?: if (website != null) companyWriteRepository.getByWebsite(website.host) else null
 
     fun setPermission(
         companyId: UUID,

@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6
+      author: oleg@briolink.com
+      changes:
+        - sql:
+            sql: CREATE UNIQUE INDEX idx_company_upper_name_upper_website ON write.company(upper(name), upper(website))
+        - addPrimaryKey:
+            columnNames: company_id, keyword_id
+            constraintName: pk_companies_keywords
+            tableName: companies_keywords
+            schemaName: write
