@@ -9,15 +9,7 @@ import com.briolink.companyservice.common.util.StringUtil
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.util.UUID
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.JoinColumn
-import javax.persistence.JoinTable
-import javax.persistence.ManyToMany
-import javax.persistence.ManyToOne
-import javax.persistence.PrePersist
-import javax.persistence.Table
+import javax.persistence.*
 
 @Table(name = "company", schema = "write")
 @Entity
@@ -78,7 +70,7 @@ class CompanyWriteEntity(
     private var website: String? = null
 
     var websiteUrl: URL?
-        get() = website?.let { URL("https://$it") }
+        get() = website?.let { StringUtil.prepareUrl(it) }
         set(value) {
             website = value?.host
         }

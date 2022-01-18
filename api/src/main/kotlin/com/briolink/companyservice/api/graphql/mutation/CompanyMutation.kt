@@ -16,6 +16,7 @@ import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.companyservice.common.util.StringUtil
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -41,25 +42,16 @@ class CompanyMutation(
         return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @DgsMutation
-    fun getAllPermission(
-        @InputArgument("userId") userId: String?
-    ): Boolean {
-        permissionService.addAllPermissionByUserId(userId = userId?.let { UUID.fromString(it) } ?: currentUserAccountId)
-        return true
-    }
-
     @DgsMutation
     @PreAuthorize("@servletUtil.isIntranet()")
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
         companyService.createCompany(
-            name = createInputCompany.name,
+            name = StringUtil.trimAllSpaces(createInputCompany.name),
             imageUrl = createInputCompany.logo,
             industryName = createInputCompany.industryName,
             description = createInputCompany.description,
             createdBy = UUID.fromString(createInputCompany.createBy),
-            website = createInputCompany.website,
+            website = StringUtil.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
     @PreAuthorize("isAuthenticated()")
@@ -89,7 +81,7 @@ class CompanyMutation(
                             "slug" -> this.slug = inputCompany.slug!!
                             "name" -> {
                                 if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
-                                else this.name = inputCompany.name
+                                else this.name = StringUtil.trimAllSpaces(inputCompany.name)
                             }
                             "website" -> {
                                 if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))

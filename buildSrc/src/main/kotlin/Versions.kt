@@ -11,6 +11,7 @@ object Versions {
     const val SPOTLESS = "5.14.1"
     const val KOTLIN_LOGGING_JVM = "2.0.11"
     const val HIBERNATE_TYPES_55 = "2.12.1"
+    const val OPEN_CSV = "5.2"
     const val IBM_ICU4J = "69.1"
     const val LIQUIBASE_CORE = "4.4.3"
     const val MAPSTRUCT = "1.4.2.Final"
