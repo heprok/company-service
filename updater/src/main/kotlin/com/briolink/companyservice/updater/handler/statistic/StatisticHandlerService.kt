@@ -7,7 +7,16 @@ import com.briolink.companyservice.common.event.v1_0.CompanyStatisticEvent
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.statistic.*
+import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartItem
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartList
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoles
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithServicesCount
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithUsesCount
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartTabItem
+import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
@@ -16,19 +25,18 @@ import com.briolink.companyservice.common.jpa.read.repository.service.ServiceRea
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.range.Range
-import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionalEventListener
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 
 @Service
 @EnableAsync
-@Transactional
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
@@ -38,31 +46,16 @@ class StatisticHandlerService(
     private val eventPublisher: EventPublisher,
 ) {
     @Async
+    @Transactional
     fun refreshByCompanyId(companyId: UUID) {
-        val companyStatistic = statisticReadRepository.findById(companyId).let {
-            if (it.isEmpty)
-                StatisticReadEntity(companyId)
-            else it.get().apply {
-                chartByCountry = Chart(tabs = mutableListOf(), items = mutableListOf())
-                chartByIndustry = Chart(tabs = mutableListOf(), items = mutableListOf())
-                chartConnectionCountByYear = Chart(tabs = mutableListOf(), items = mutableListOf())
-                chartByServicesProvided = Chart(tabs = mutableListOf(), items = mutableListOf())
-
-                chartByCountryData = ChartList<ChartListItemWithRoles>().apply { data = mutableMapOf() }
-                chartByIndustryData = ChartList<ChartListItemWithRoles>().apply { data = mutableMapOf() }
-                chartConnectionCountByYearData =
-                    ChartList<ChartListItemWithServicesCount>().apply { data = mutableMapOf() }
-                chartByServicesProvidedData = ChartList<ChartListItemWithUsesCount>().apply { data = mutableMapOf() }
-            }
-        }
-
+        deleteStatisticByCompanyId(companyId)
+        val companyStatistic = StatisticReadEntity(companyId)
 //        val companyStatistic = statisticReadRepository.findByCompanyId(event.companyId) ?: StatisticReadEntity(event.companyId)
 
         val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
             companyId,
             ConnectionStatusEnum.Verified.value
         )
-
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()
         val participantCompanyRole = mutableSetOf<ConnectionReadEntity.CompanyRole>()
@@ -232,7 +225,8 @@ class StatisticHandlerService(
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener
+    @Transactional
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         refreshByCompanyId(event.companyId)
         if (event.isUpdateCollaborating) {
