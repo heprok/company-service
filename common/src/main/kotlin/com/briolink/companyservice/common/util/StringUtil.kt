@@ -1,6 +1,7 @@
 package com.briolink.companyservice.common.util
 
 import com.ibm.icu.text.Transliterator
+import java.net.URL
 import java.util.Locale
 
 object StringUtil {
@@ -26,5 +27,13 @@ object StringUtil {
         return transliterator.transliterate(input)
     }
 
-    fun replaceNonWord(str: String, replaceSymbol: String = " "): String = str.replace("[^\\p{L}\\p{N}_]+", replaceSymbol)
+    fun replaceNonWord(str: String, replaceSymbol: String = " "): String =
+        str.replace("[^\\p{L}\\p{N}_]+", replaceSymbol)
+
+    fun trimAllSpaces(str: String) = str.trim().replace(Regex("[\\s]{2,}"), " ")
+    fun prepareUrl(str: String?): URL? = str?.let {
+        URL("https://" + trimAllSpaces(it).replace(Regex("^https?:\\/\\/"), "").replace(Regex("^www."), ""))
+    }
+
+    fun prepareUrl(url: URL?): URL? = prepareUrl(url?.toString())
 }

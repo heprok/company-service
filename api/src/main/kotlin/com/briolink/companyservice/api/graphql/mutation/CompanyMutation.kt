@@ -5,17 +5,14 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
-import com.briolink.companyservice.api.types.Company
-import com.briolink.companyservice.api.types.CreateCompanyInput
-import com.briolink.companyservice.api.types.Error
-import com.briolink.companyservice.api.types.UpdateCompanyInput
-import com.briolink.companyservice.api.types.UpdateCompanyResult
+import com.briolink.companyservice.api.types.*
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.companyservice.common.util.StringUtil
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -50,7 +47,7 @@ class CompanyMutation(
             industryName = createInputCompany.industryName,
             description = createInputCompany.description,
             createdBy = UUID.fromString(createInputCompany.createBy),
-            website = createInputCompany.website,
+            website = StringUtil.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
     @PreAuthorize("isAuthenticated()")
