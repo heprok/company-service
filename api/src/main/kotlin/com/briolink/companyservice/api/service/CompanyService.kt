@@ -120,7 +120,10 @@ class CompanyService(
         val industryWrite = industryName?.let { industryService.create(industryName) }
         val s3ImageUrl = if (imageUrl != null)
             awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, imageUrl) else null
-
+        if(companyWrite != null && s3ImageUrl != null && companyWrite.logo == null ) {
+            companyWrite.logo = s3ImageUrl
+            updateCompany(companyWrite)
+        }
         return companyWrite ?: CompanyWriteEntity(name = name, createdBy = createdBy).apply {
             websiteUrl = website
             logo = s3ImageUrl
