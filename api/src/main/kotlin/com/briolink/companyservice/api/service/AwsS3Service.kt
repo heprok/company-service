@@ -72,6 +72,8 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             throw clientException
         }
 
+    fun getUrl(key: String) = s3Client.getUrl(bucketName, key)
+
     fun uploadTempImage(file: MultipartFile): String =
         if (isImageFile(file.contentType)) {
             val objectName = generateObjectName()
@@ -100,14 +102,12 @@ class AwsS3Service(private val s3Client: AmazonS3) {
             val url = uploadFile(
                 key = "$path/${generateObjectName()}.${IMAGE_FILE_TYPE[urlConnection.contentType]}",
                 inputStream = inputStream,
-                metadata = metadata
+                metadata = metadata,
             )
             inputStream.close()
             return url
-        } else {
+        } else
             return null
-//            throw FileTypeException()
-        }
     }
 
     fun deleteFile(key: String) =

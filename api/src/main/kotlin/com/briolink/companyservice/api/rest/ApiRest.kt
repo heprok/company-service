@@ -13,6 +13,7 @@ import com.briolink.permission.service.PermissionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
@@ -46,9 +47,15 @@ class ApiRest(
         return ResponseEntity.ok(1)
     }
 
-    @GetMapping("/sync/search-service")
-    fun syncSearchService(): ResponseEntity<Int> {
-        companyService.publishSyncEvent()
+//    @GetMapping("/sync/search-service")
+//    fun syncSearchService(): ResponseEntity<Int> {
+//        companyService.publishSyncEvent()
+//        return ResponseEntity.ok(1)
+//    }
+
+    @GetMapping("/load-logo/{pathCsv}")
+    fun loadLogoCompany(@PathVariable pathCsv: String): ResponseEntity<Int> {
+        companyService.importLogoFromCSV(pathCsv)
         return ResponseEntity.ok(1)
     }
 

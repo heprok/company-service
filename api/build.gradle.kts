@@ -5,7 +5,6 @@ plugins {
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.spring")
-//    kotlin("com.ewerk.gradle.plugins.querydsl")
 }
 
 dependencies {
@@ -36,10 +35,13 @@ dependencies {
 
     // Netflix DGS
     implementation(
-            platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"),
+        platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"),
     )
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
+
+    // CSV
+    implementation("com.opencsv:opencsv:${Versions.OPEN_CSV}")
 
     // kotlin-logging
     implementation("io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_JVM}")
@@ -49,7 +51,6 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
 
     kapt("jakarta.annotation:jakarta.annotation-api")
-
 }
 
 dependencyManagement {
@@ -72,10 +73,9 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
     packageName = "com.briolink.companyservice.api"
     language = "kotlin"
     typeMapping = mutableMapOf(
-            "Url" to "java.net.URL",
-            "Upload" to "org.springframework.web.multipart.MultipartFile",
-            "Year" to "java.time.Year",
+        "Url" to "java.net.URL",
+        "Upload" to "org.springframework.web.multipart.MultipartFile",
+        "Year" to "java.time.Year",
     )
     generatedSourcesDir = "${project.buildDir.absolutePath}/dgs-codegen"
 }
-

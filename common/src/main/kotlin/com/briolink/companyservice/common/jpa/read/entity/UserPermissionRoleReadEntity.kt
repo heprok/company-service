@@ -1,6 +1,8 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
 import com.briolink.companyservice.common.jpa.write.entity.BaseWriteEntity
+import com.briolink.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.permission.enumeration.PermissionRoleEnum
 import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.Column
@@ -20,15 +22,15 @@ class UserPermissionRoleReadEntity(
     var userId: UUID,
 
     @Column(name = "access_object_type", nullable = false)
-    private var _accessObjectType: Int = AccessObjectTypeEnum.Company.value,
+    private var _accessObjectType: Int = AccessObjectTypeEnum.Company.id,
 
     @Column(name = "role", nullable = false)
-    private var _role: Int = UserPermissionRoleTypeEnum.Employee.value
+    private var _role: Int = PermissionRoleEnum.Employee.id
 
 ) : BaseWriteEntity() {
 
     var accessObjectType: AccessObjectTypeEnum
-        get() = AccessObjectTypeEnum.fromInt(_accessObjectType)
+        get() = AccessObjectTypeEnum.fromId(_accessObjectType)
         set(value) {
             _accessObjectType = value.value
         }

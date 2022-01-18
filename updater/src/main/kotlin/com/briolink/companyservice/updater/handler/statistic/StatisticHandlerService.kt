@@ -25,18 +25,19 @@ import com.briolink.companyservice.common.jpa.read.repository.service.ServiceRea
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.range.Range
+import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.event.TransactionalEventListener
 import java.time.LocalDate
 import java.time.Year
 import java.util.UUID
 
 @Service
 @EnableAsync
+@Transactional
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
@@ -46,18 +47,31 @@ class StatisticHandlerService(
     private val eventPublisher: EventPublisher,
 ) {
     @Async
-    @Transactional
     fun refreshByCompanyId(companyId: UUID) {
-        deleteStatisticByCompanyId(companyId)
-        val companyStatistic = StatisticReadEntity(companyId)
+        val companyStatistic = statisticReadRepository.findById(companyId).let {
+            if (it.isEmpty)
+                StatisticReadEntity(companyId)
+            else it.get().apply {
+                chartByCountry = Chart(tabs = mutableListOf(), items = mutableListOf())
+                chartByIndustry = Chart(tabs = mutableListOf(), items = mutableListOf())
+                chartConnectionCountByYear = Chart(tabs = mutableListOf(), items = mutableListOf())
+                chartByServicesProvided = Chart(tabs = mutableListOf(), items = mutableListOf())
+
+                chartByCountryData = ChartList<ChartListItemWithRoles>().apply { data = mutableMapOf() }
+                chartByIndustryData = ChartList<ChartListItemWithRoles>().apply { data = mutableMapOf() }
+                chartConnectionCountByYearData =
+                    ChartList<ChartListItemWithServicesCount>().apply { data = mutableMapOf() }
+                chartByServicesProvidedData = ChartList<ChartListItemWithUsesCount>().apply { data = mutableMapOf() }
+            }
+        }
+
 //        val companyStatistic = statisticReadRepository.findByCompanyId(event.companyId) ?: StatisticReadEntity(event.companyId)
 
         val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
             companyId,
             ConnectionStatusEnum.Verified.value
         )
-        println(list)
-        println(companyId)
+
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()
         val participantCompanyRole = mutableSetOf<ConnectionReadEntity.CompanyRole>()
@@ -227,8 +241,7 @@ class StatisticHandlerService(
     }
 
     @Async
-    @TransactionalEventListener
-    @Transactional
+    @EventListener
     fun updateByCompanyId(event: RefreshStatisticByCompanyId) {
         refreshByCompanyId(event.companyId)
         if (event.isUpdateCollaborating) {

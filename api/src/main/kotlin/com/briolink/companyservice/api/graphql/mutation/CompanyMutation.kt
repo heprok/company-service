@@ -11,9 +11,9 @@ import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
-import com.briolink.companyservice.api.util.StringUtil
 import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.service.LocationService
+import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.permission.enumeration.PermissionRightEnum
 import com.briolink.permission.service.PermissionService
@@ -51,7 +51,7 @@ class CompanyMutation(
             industryName = createInputCompany.industryName,
             description = createInputCompany.description,
             createdBy = UUID.fromString(createInputCompany.createBy),
-            website = createInputCompany.website,
+            website = StringUtil.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
     @PreAuthorize("isAuthenticated()")
