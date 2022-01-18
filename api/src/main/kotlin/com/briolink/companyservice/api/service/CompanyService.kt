@@ -189,7 +189,7 @@ class CompanyService(
 
     fun publishSyncEvent() {
         companyWriteRepository.findAll().forEach {
-            eventPublisher.publishAsync(CompanySyncEvent(it.toDomain()))
+            eventPublisher.publishAsync(CompanyUpdatedEvent(it.toDomain()))
         }
     }
 
