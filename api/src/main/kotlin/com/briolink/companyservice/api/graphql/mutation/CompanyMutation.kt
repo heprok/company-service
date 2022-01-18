@@ -5,7 +5,11 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
-import com.briolink.companyservice.api.types.*
+import com.briolink.companyservice.api.types.Company
+import com.briolink.companyservice.api.types.CreateCompanyInput
+import com.briolink.companyservice.api.types.Error
+import com.briolink.companyservice.api.types.UpdateCompanyInput
+import com.briolink.companyservice.api.types.UpdateCompanyResult
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
@@ -42,7 +46,7 @@ class CompanyMutation(
     @PreAuthorize("@servletUtil.isIntranet()")
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
         companyService.createCompany(
-            name = createInputCompany.name,
+            name = StringUtil.trimAllSpaces(createInputCompany.name),
             imageUrl = createInputCompany.logo,
             industryName = createInputCompany.industryName,
             description = createInputCompany.description,
@@ -77,7 +81,7 @@ class CompanyMutation(
                             "slug" -> this.slug = inputCompany.slug!!
                             "name" -> {
                                 if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
-                                else this.name = inputCompany.name
+                                else this.name = StringUtil.trimAllSpaces(inputCompany.name)
                             }
                             "website" -> {
                                 if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))

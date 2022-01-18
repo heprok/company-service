@@ -133,7 +133,7 @@ class CompanyService(
     }
 
     fun isExistWebsite(website: URL): Boolean {
-        return companyWriteRepository.existsByWebsite(website.host)
+        return companyWriteRepository.existsByWebsite(StringUtil.prepareUrl(website)!!.host)
     }
 
     fun updateCompany(company: CompanyWriteEntity): Company {
