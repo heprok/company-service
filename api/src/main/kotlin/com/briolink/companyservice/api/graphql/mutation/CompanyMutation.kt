@@ -62,11 +62,11 @@ class CompanyMutation(
         dfe: DataFetchingEnvironment
     ): UpdateCompanyResult {
         val userErrors = mutableListOf<Error>()
-        if (!permissionService.isHavaPermission(
+        if (!permissionService.isHavePermission(
                 accessObjectType = AccessObjectTypeEnum.Company,
                 userId = currentUserAccountId,
                 accessObjectId = UUID.fromString(id),
-                permissionRight = PermissionRightEnum.EditCompanyProfile,
+                permissionRight = PermissionRightEnum.IsCanEditCompanyProfile,
             )
         )
             userErrors.add(Error("403 Permission denied"))

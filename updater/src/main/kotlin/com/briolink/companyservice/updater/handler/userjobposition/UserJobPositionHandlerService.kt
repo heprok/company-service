@@ -1,14 +1,20 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
+import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
+import com.briolink.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.permission.enumeration.PermissionRoleEnum
+import com.briolink.permission.exception.exist.PermissionRoleExistException
+import com.briolink.permission.service.PermissionService
+import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -22,7 +28,7 @@ class UserJobPositionHandlerService(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val companyHandlerService: CompanyHandlerService,
+    private val permissionService: PermissionService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val employeeReadRepository: EmployeeReadRepository,
 ) {
@@ -30,18 +36,16 @@ class UserJobPositionHandlerService(
         val userReadEntity = userReadRepository.findById(userJobPosition.userId)
             .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
         var prevCompanyId: UUID? = null
-        userJobPositionReadRepository.findById(userJobPosition.id).also {
-            if (it.isEmpty) {
-                addEmployeeAndConnectionsHideOpen(
-                    companyId = userJobPosition.companyId,
-                    userId = userJobPosition.userId
-                )
+        userJobPositionReadRepository.findById(userJobPosition.id).also { userJobPositionReadEntityOptional ->
+            if (userJobPositionReadEntityOptional.isEmpty) {
                 userJobPositionReadRepository.save(
                     UserJobPositionReadEntity(
                         id = userJobPosition.id,
                         companyId = userJobPosition.companyId,
                         userId = userJobPosition.userId,
                         endDate = userJobPosition.endDate,
+                        // TODO replace verify status
+                        _status = UserJobPositionVerifyStatusEnum.Verified.value,
                         data = UserJobPositionReadEntity.Data(
                             user = UserJobPositionReadEntity.User(
                                 firstName = userReadEntity.data.firstName,
@@ -49,7 +53,6 @@ class UserJobPositionHandlerService(
                                 lastName = userReadEntity.data.lastName,
                                 image = userReadEntity.data.image,
                             ),
-                            status = UserJobPositionReadEntity.VerifyStatus.Verified,
                             verifiedBy = null,
                             isCurrent = userJobPosition.isCurrent,
                             startDate = userJobPosition.startDate,
@@ -58,9 +61,12 @@ class UserJobPositionHandlerService(
                         )
                     )
                 )
+
+                if (addEmployee(userJobPosition.companyId, userJobPosition.userId))
+                    hideConnection(userJobPosition.companyId, userJobPosition.userId, false)
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             } else {
-                it.get().apply {
+                userJobPositionReadEntityOptional.get().apply {
                     if (companyId != userJobPosition.companyId) {
                         prevCompanyId = companyId
                         companyId = userJobPosition.companyId
@@ -87,14 +93,22 @@ class UserJobPositionHandlerService(
         }
     }
 
-    fun addEmployeeAndConnectionsHideOpen(userId: UUID, companyId: UUID) {
-        companyHandlerService.addEmployee(
-            companyId = companyId,
-            userId = userId
-        )
+    private fun addEmployee(userId: UUID, companyId: UUID): Boolean {
+        return try {
+            permissionService.createPermissionRole(
+                userId = userId,
+                accessObjectType = AccessObjectTypeEnum.Company,
+                accessObjectId = companyId,
+                permissionRole = PermissionRoleEnum.Employee
+            ) != null
+        } catch (_: PermissionRoleExistException) {
+            false
+        }
+    }
+
+    fun hideConnection(userId: UUID, companyId: UUID, hidden: Boolean = false) {
         connectionReadRepository.changeVisibilityByCompanyIdAndUserId(
-            companyId = companyId,
-            userId = userId, false,
+            companyId = companyId, userId = userId, hidden = hidden,
         ).also {
             if (it > 0) {
                 println("PUBLISH EVENT TO RESFRESH STATS")
@@ -125,5 +139,36 @@ class UserJobPositionHandlerService(
             userJobPositionReadRepository.delete(it)
             refreshEmployeesByCompanyId(it.companyId)
         }
+    }
+
+    fun deleteUserPermission(userId: UUID, companyId: UUID) {
+        userJobPositionReadRepository.deleteUserPermission(userId, companyId).also {
+            if (it > 0)
+                refreshEmployeesByCompanyId(companyId)
+        }
+    }
+
+    fun addUserPermission(userPermission: UserPermissionRoleReadEntity) {
+        userJobPositionReadRepository.updateUserPermission(
+            userId = userPermission.userId,
+            companyId = userPermission.accessObjectUuid,
+            level = userPermission.data.level,
+            permissionRoleId = userPermission.role.id,
+            enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights) // ktlint-disable max-line-length
+        ).also {
+            if (it > 0)
+                refreshEmployeesByCompanyId(userPermission.accessObjectUuid)
+        }
+//        userJobPositionReadRepository.findByCompanyIdAndUserId(
+//            userId = userPermission.userId,
+//            companyId = userPermission.accessObjectUuid
+//        ).forEach {
+//            it.data.userPermission = UserJobPositionReadEntity.UserPermission(
+//                role = userPermission.role,
+//                level = userPermission.data.level,
+//                rights = userPermission.data.enabledPermissionRights
+//            )
+//            userJobPositionReadRepository.save(it)
+//        }
     }
 }

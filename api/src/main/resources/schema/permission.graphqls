@@ -1,0 +1,23 @@
+type UserPermission {
+    role: PermissionRole!
+    rights: [PermissionRight!]!
+}
+
+enum PermissionRole {
+    Owner
+    Admin
+    Superuser
+    Employee
+}
+
+enum PermissionRight {
+    IsCanEditOwner
+    IsCanEditAdmin
+    IsCanEditSuperuser
+    IsCanEditCompanyProfile
+    IsCanEditEmployees
+    IsCanEditProject
+    IsCanEditCompanyService
+    IsCanEditNeedsExchange
+    IsCanCreateProject
+}

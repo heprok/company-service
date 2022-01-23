@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
-class ConnectionMutation(
+class PermissionMutation(
     private val connectionService: ConnectionService,
     private val permissionService: PermissionService
 ) {
@@ -36,35 +36,6 @@ class ConnectionMutation(
                 companyId = UUID.fromString(companyId),
                 connectionId = UUID.fromString(connectionId),
                 hidden = hidden,
-            )
-            DelOrHideResult(
-                success = true,
-                userErrors = listOf(),
-            )
-        } else {
-            DelOrHideResult(
-                success = false,
-                userErrors = listOf(Error("403 Permission denied")),
-            )
-        }
-    }
-
-    @DgsMutation
-    @PreAuthorize("isAuthenticated()")
-    fun deleteCompanyConnection(
-        @InputArgument("companyId") companyId: String,
-        @InputArgument("connectionId") connectionId: String
-    ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                accessObjectId = UUID.fromString(companyId),
-                userId = SecurityUtil.currentUserAccountId,
-                permissionRight = PermissionRightEnum.IsCanEditProject,
-                accessObjectType = AccessObjectTypeEnum.Company,
-            )
-        ) {
-            connectionService.deleteConnectionInCompany(
-                companyId = UUID.fromString(companyId),
-                connectionId = UUID.fromString(connectionId),
             )
             DelOrHideResult(
                 success = true,

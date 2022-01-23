@@ -1,8 +1,34 @@
 package com.briolink.companyservice.api.graphql
 
-import com.briolink.companyservice.api.types.* // ktlint-disable no-wildcard-imports
-import com.briolink.companyservice.common.jpa.read.entity.* // ktlint-disable no-wildcard-imports
+import com.briolink.companyservice.api.types.Company
+import com.briolink.companyservice.api.types.CompanyInfoByServiceItem
+import com.briolink.companyservice.api.types.CompanyInfoItem
+import com.briolink.companyservice.api.types.Connection
+import com.briolink.companyservice.api.types.ConnectionCompanyRole
+import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
+import com.briolink.companyservice.api.types.ConnectionParticipant
+import com.briolink.companyservice.api.types.ConnectionService
+import com.briolink.companyservice.api.types.ConnectionStatus
+import com.briolink.companyservice.api.types.Image
+import com.briolink.companyservice.api.types.Industry
+import com.briolink.companyservice.api.types.Keyword
+import com.briolink.companyservice.api.types.Occupation
+import com.briolink.companyservice.api.types.PermissionRight
+import com.briolink.companyservice.api.types.PermissionRole
+import com.briolink.companyservice.api.types.Service
+import com.briolink.companyservice.api.types.User
+import com.briolink.companyservice.api.types.UserJobPosition
+import com.briolink.companyservice.api.types.UserPermission
+import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
+import com.briolink.permission.model.UserPermissionRights
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
     Company(
@@ -85,6 +111,7 @@ fun User.Companion.fromEntity(entity: EmployeeReadEntity) = User(
     image = entity.data.user.image?.let { Image(url = it) },
 )
 
+fun UserJobPosition.Companion.fromEntity(entity:)
 fun Industry.Companion.fromEntity(entity: IndustryReadEntity) = Industry(
     id = entity.id.toString(),
     name = entity.name,
@@ -98,6 +125,11 @@ fun Keyword.Companion.fromEntity(entity: KeywordReadEntity) = Keyword(
 fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
     id = entity.id.toString(),
     name = entity.name,
+)
+
+fun UserPermission.Companion.fromModel(model: UserPermissionRights) = UserPermission(
+    role = PermissionRole.valueOf(model.permissionRole.name),
+    rights = model.permissionRights.map { PermissionRight.valueOf(it.name) }
 )
 
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(

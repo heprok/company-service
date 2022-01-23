@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
+import com.briolink.permission.enumeration.PermissionRoleEnum
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
@@ -53,7 +54,8 @@ class EmployeeReadEntity(
                     lastName = userJobPosition.data.user.lastName,
                     image = userJobPosition.data.user.image
                 ),
-                jobPosition = userJobPosition.data.title
+                jobPosition = userJobPosition.data.title,
+                permissionRole = userJobPosition.data.userPermission?.role
             )
         )
     }
@@ -64,6 +66,8 @@ class EmployeeReadEntity(
         var user: User,
         @JsonProperty
         var jobPosition: String,
+        @JsonProperty
+        var permissionRole: PermissionRoleEnum? = null
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

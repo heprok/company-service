@@ -19,7 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
-class ServiceQuery(
+class PermissionQuery(
     private val serviceCompanyService: ServiceCompanyService,
     private val permissionService: PermissionService,
 ) {

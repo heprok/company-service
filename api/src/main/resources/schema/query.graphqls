@@ -1,7 +1,7 @@
 type Query {
-    getCompany(slug: String!): CompanyAndUserRole!
+    getCompany(slug: String!): CompanyAndUserPermission!
     getCompanyById(id: ID!) : Company!
-    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
+    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0 ): UserList!
     getIndustries(query: String!, companyId: ID): [Industry]!
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
@@ -16,14 +16,11 @@ type Query {
     getCompanyConnectionTabs(companyId: ID!): [ConnectionTab]!
     getCompanyConnectionCollaborators(companyId: ID!, query: String): [IdNameItem]!
     getCompanyConnectionServices(companyId: ID!, query: String): [IdNameItem]!
-    #    -------------------------- filters ----------------------
-    #    getConnectionTabsRole(companyId: ID!) : [ConnectionRole]!
-    #    getCollaborators(companyId: ID!, query: String!): [Collaborator]!
-    #    getCollaboratorRoles(companyId: ID!, query: String!): [ConnectionRole]!
-    #    getServicesProvided(companyId: ID!, query: String!): [ServiceProvided]!
 
-    #    =============== statistic ===================
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
     getLocations(query: String!): [Location]
+    #    ================ Employees editor ===============
+    getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : UserList!
+    getCompanyEmployeesEditorTabs(companyId: ID!): [EmployeesEditorTab!]!
 }

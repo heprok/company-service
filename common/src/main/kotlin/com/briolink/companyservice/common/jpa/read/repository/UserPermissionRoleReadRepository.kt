@@ -2,6 +2,7 @@ package com.briolink.companyservice.common.jpa.read.repository
 
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.UUID
@@ -67,4 +68,10 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
 //    ): Boolean
 
     fun findByAccessObjectUuidAndUserId(accessObjectUuid: UUID, userId: UUID): List<UserPermissionRoleReadEntity>
+
+    @Modifying
+    @Query("DELETE UserPermissionRoleReadEntity c WHERE c.id = ?1")
+    override fun deleteById(id: UUID)
+
+    fun existsByAccessObjectUuidAndUserId(accessObjectUuid: UUID, userId: UUID): Boolean
 }

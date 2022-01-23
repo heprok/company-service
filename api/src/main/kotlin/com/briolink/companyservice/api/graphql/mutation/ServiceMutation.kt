@@ -24,9 +24,9 @@ class ServiceMutation(
         @InputArgument("companyId") companyId: String,
         @InputArgument("serviceId") serviceId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavaPermission(
+        return if (permissionService.isHavePermission(
                 accessObjectId = UUID.fromString(companyId),
-                permissionRight = PermissionRightEnum.ServiceCrud,
+                permissionRight = PermissionRightEnum.IsCanEditCompanyService,
                 userId = currentUserAccountId,
                 accessObjectType = AccessObjectTypeEnum.Company
             )
@@ -53,9 +53,9 @@ class ServiceMutation(
         @InputArgument("serviceId") serviceId: String,
         @InputArgument("companyId") companyId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavaPermission(
+        return if (permissionService.isHavePermission(
                 accessObjectId = UUID.fromString(companyId),
-                permissionRight = PermissionRightEnum.ServiceCrud,
+                permissionRight = PermissionRightEnum.IsCanEditCompanyService,
                 userId = currentUserAccountId,
                 accessObjectType = AccessObjectTypeEnum.Company
             )

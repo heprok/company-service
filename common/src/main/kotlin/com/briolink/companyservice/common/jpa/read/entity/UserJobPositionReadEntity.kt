@@ -1,6 +1,8 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.fasterxml.jackson.annotation.JsonFormat
+import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
+import com.briolink.permission.enumeration.PermissionRightEnum
+import com.briolink.permission.enumeration.PermissionRoleEnum
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
@@ -19,6 +21,7 @@ class UserJobPositionReadEntity(
     @Type(type = "pg-uuid")
     @Column(name = "id", nullable = false)
     val id: UUID,
+
     @Type(type = "pg-uuid")
     @Column(name = "company_id", nullable = false)
     var companyId: UUID,
@@ -26,6 +29,9 @@ class UserJobPositionReadEntity(
     @Type(type = "pg-uuid")
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
+
+    @Column(name = "status", nullable = false)
+    private var _status: Int = UserJobPositionVerifyStatusEnum.Pending.value,
 
     @Column(name = "end_date")
     var endDate: LocalDate? = null,
@@ -35,17 +41,18 @@ class UserJobPositionReadEntity(
     var data: Data
 ) : BaseReadEntity() {
 
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    enum class VerifyStatus {
-        Pending, Verified, Rejected
-    }
+    var status: UserJobPositionVerifyStatusEnum
+        get() = UserJobPositionVerifyStatusEnum.fromInt(_status)
+        set(value) {
+            _status = value.value
+        }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty
         var user: User,
         @JsonProperty
-        var status: VerifyStatus = VerifyStatus.Verified,
+        var userPermission: UserPermission? = null,
         @JsonProperty
         var title: String,
         @JsonProperty
@@ -68,5 +75,14 @@ class UserJobPositionReadEntity(
         var lastName: String,
         @JsonProperty
         var image: URL? = null,
+    )
+
+    data class UserPermission(
+        @JsonProperty
+        val role: PermissionRoleEnum,
+        @JsonProperty
+        val level: Int,
+        @JsonProperty
+        val rights: List<PermissionRightEnum>
     )
 }

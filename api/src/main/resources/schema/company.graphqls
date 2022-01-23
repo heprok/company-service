@@ -14,9 +14,9 @@ type Company {
     keywords: [Keyword]!
 }
 
-type CompanyAndUserRole {
+type CompanyAndUserPermission {
     company: Company
-    role: PermissionRole
+    userPermission: UserPermission
 }
 
 type CompanyResultData {

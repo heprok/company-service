@@ -3,8 +3,29 @@ type User {
     firstName: String!
     lastName: String!
     slug: String!
-    jobPosition: String
+    jobPosition: UserJobPosition
     image: Image
+    permission: UserPermission
+}
+
+type UserJobPosition {
+    title: String!
+    startDate: Date!
+    endDate: Date
+}
+
+input EmployeesEditorListOptions {
+    limit: Int! = 10
+    offset: Int! = 0
+    tabId: ID
+    filter: EmployeesEditorFilterParameters
+}
+
+input EmployeesEditorFilterParameters {
+    workRangeYear: YearRange
+    jobPositionTitle: String
+    isOnlyPermission: Boolean
+    permissionRole: [PermissionRole]
 }
 
 type UserList implements PaginatedList {
