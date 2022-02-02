@@ -7,8 +7,8 @@ import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
-import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.location.service.LocationService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -47,7 +47,7 @@ class CompanyHandlerService(
                 } ?: mutableListOf(),
                 occupation = companyDomain.occupation?.let { CompanyReadEntity.Occupation(it.id, it.name) },
             ).apply {
-                location = companyDomain.locationId?.let { locationService.getLocation(it) }
+                location = companyDomain.locationId?.let { locationService.getLocationInfo(it) }
             }
             return companyReadRepository.save(this)
         }

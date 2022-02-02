@@ -39,6 +39,7 @@ allprojects {
 subprojects {
     repositories {
         mavenCentral()
+        mavenLocal()
         maven {
             url = uri("https://gitlab.com/api/v4/projects/29889174/packages/maven")
 
@@ -48,7 +49,7 @@ subprojects {
 
             credentials(HttpHeaderCredentials::class) {
                 name = "Deploy-Token"
-                value =  System.getenv("CI_DEPLOY_PASSWORD")
+                value = System.getenv("CI_DEPLOY_PASSWORD")
             }
         }
     }
@@ -64,6 +65,7 @@ subprojects {
         // Briolnik Event
         implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
         implementation("me.paulschwarz:spring-dotenv:${Versions.SPRING_DOTENV}")
+        implementation("com.briolink:location:${Versions.BRIOLINK_LOCATION}")
     }
 }
 
