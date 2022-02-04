@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.dto.location.LocationInfoDto
+import com.briolink.lib.location.model.LocationMinInfo
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
@@ -38,8 +38,8 @@ class CompanyReadEntity(
         var website: URL? = null,
         @JsonProperty
         var description: String? = null,
-        @JsonProperty()
-        var location: LocationInfoDto? = null,
+        @JsonProperty
+        var location: LocationMinInfo? = null,
         @JsonProperty
         var logo: URL? = null,
         @JsonProperty

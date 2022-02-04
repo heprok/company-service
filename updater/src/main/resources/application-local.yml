@@ -9,4 +9,7 @@ spring:
 app:
   app-endpoints:
     companyservice: http://192.168.0.23:8090/
-    locationservice: http://192.168.0.23:8070/
+location-service:
+  api:
+    url: http://192.168.0.23:8070/
+    version: 1

@@ -1,7 +1,7 @@
 package com.briolink.companyservice.api.service.connection.dto
 
-import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.lib.location.model.LocationId
 import java.time.Year
 import java.util.UUID
 

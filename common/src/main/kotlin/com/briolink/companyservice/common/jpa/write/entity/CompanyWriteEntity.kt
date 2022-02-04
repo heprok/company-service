@@ -3,13 +3,21 @@ package com.briolink.companyservice.common.jpa.write.entity
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import com.briolink.companyservice.common.domain.v1_0.Occupation
-import com.briolink.companyservice.common.dto.location.LocationId
-import com.briolink.companyservice.common.jpa.enumeration.LocationTypeEnum
 import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.location.enumeration.TypeLocationEnum
+import com.briolink.lib.location.model.LocationId
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.util.UUID
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
+import javax.persistence.ManyToOne
+import javax.persistence.PrePersist
+import javax.persistence.Table
 
 @Table(name = "company", schema = "write")
 @Entity
@@ -79,17 +87,17 @@ class CompanyWriteEntity(
         return if (cityId != null)
             LocationId(
                 id = cityId!!,
-                type = LocationTypeEnum.City,
+                type = TypeLocationEnum.City,
             )
         else if (stateId != null)
             LocationId(
                 id = stateId!!,
-                type = LocationTypeEnum.State,
+                type = TypeLocationEnum.State,
             )
         else if (countryId != null)
             LocationId(
                 id = countryId!!,
-                type = LocationTypeEnum.Country,
+                type = TypeLocationEnum.Country,
             )
         else null
     }

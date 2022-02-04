@@ -11,12 +11,13 @@ import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
-import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
-import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.service.PermissionService
 import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.location.model.LocationId
+import com.briolink.lib.location.model.LocationMinInfo
+import com.briolink.lib.location.service.LocationService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -92,13 +93,17 @@ class CompanyMutation(
                             "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
                             "locationId" -> {
                                 if (inputCompany.locationId != null) {
-                                    locationService.getLocation(LocationId.fromString(inputCompany.locationId)).also {
-                                        if (it != null) {
-                                            countryId = it.country.id
-                                            stateId = it.state?.id
-                                            cityId = it.city?.id
-                                        } else userErrors.add(Error("Not find location for ${inputCompany.locationId}"))
-                                    }
+                                    locationService.getLocationInfo(
+                                        LocationId.fromString(inputCompany.locationId),
+                                        LocationMinInfo::class.java
+                                    )
+                                        .also {
+                                            if (it != null) {
+                                                countryId = it.country.id
+                                                stateId = it.state?.id
+                                                cityId = it.city?.id
+                                            } else userErrors.add(Error("Not find location for ${inputCompany.locationId}"))
+                                        }
                                     return@forEach
                                 } else {
                                     countryId = null

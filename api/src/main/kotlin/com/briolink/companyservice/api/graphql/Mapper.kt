@@ -1,7 +1,28 @@
 package com.briolink.companyservice.api.graphql
 
-import com.briolink.companyservice.api.types.* // ktlint-disable no-wildcard-imports
-import com.briolink.companyservice.common.jpa.read.entity.* // ktlint-disable no-wildcard-imports
+import com.briolink.companyservice.api.types.Company
+import com.briolink.companyservice.api.types.CompanyInfoByServiceItem
+import com.briolink.companyservice.api.types.CompanyInfoItem
+import com.briolink.companyservice.api.types.Connection
+import com.briolink.companyservice.api.types.ConnectionCompanyRole
+import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
+import com.briolink.companyservice.api.types.ConnectionParticipant
+import com.briolink.companyservice.api.types.ConnectionService
+import com.briolink.companyservice.api.types.ConnectionStatus
+import com.briolink.companyservice.api.types.Image
+import com.briolink.companyservice.api.types.Industry
+import com.briolink.companyservice.api.types.Keyword
+import com.briolink.companyservice.api.types.Occupation
+import com.briolink.companyservice.api.types.Service
+import com.briolink.companyservice.api.types.User
+import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
