@@ -25,5 +25,5 @@ type Query {
     #    =============== statistic ===================
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
-    getLocations(query: String!): [Location]
+    getLocations(query: String): [Location]
 }

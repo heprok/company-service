@@ -4,8 +4,8 @@ import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.util.StringUtil
-import com.briolink.location.enumeration.TypeLocationEnum
-import com.briolink.location.model.LocationId
+import com.briolink.lib.location.enumeration.TypeLocationEnum
+import com.briolink.lib.location.model.LocationId
 import org.hibernate.annotations.Type
 import java.net.URL
 import java.util.UUID

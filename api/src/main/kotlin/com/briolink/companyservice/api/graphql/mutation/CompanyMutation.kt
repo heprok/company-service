@@ -15,8 +15,9 @@ import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.service.PermissionService
 import com.briolink.companyservice.common.util.StringUtil
-import com.briolink.location.model.LocationId
-import com.briolink.location.service.LocationService
+import com.briolink.lib.location.model.LocationId
+import com.briolink.lib.location.model.LocationMinInfo
+import com.briolink.lib.location.service.LocationService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -92,7 +93,10 @@ class CompanyMutation(
                             "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
                             "locationId" -> {
                                 if (inputCompany.locationId != null) {
-                                    locationService.getLocationInfo(LocationId.fromString(inputCompany.locationId))
+                                    locationService.getLocationInfo(
+                                        LocationId.fromString(inputCompany.locationId),
+                                        LocationMinInfo::class.java
+                                    )
                                         .also {
                                             if (it != null) {
                                                 countryId = it.country.id

@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.domain.v1_0
 
-import com.briolink.location.model.LocationId
+import com.briolink.lib.location.model.LocationId
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID

@@ -40,16 +40,19 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
-            url = uri("https://gitlab.com/api/v4/projects/29889174/packages/maven")
-
-            authentication {
-                create<HttpHeaderAuthentication>("header")
-            }
-
-            credentials(HttpHeaderCredentials::class) {
-                name = "Deploy-Token"
-                value = System.getenv("CI_DEPLOY_PASSWORD")
+        setOf(
+            29889174, // Briolink Event lib
+            33422039, // Briolink Location lib
+        ).forEach {
+            maven {
+                url = uri("https://gitlab.com/api/v4/projects/$it/packages/maven")
+                authentication {
+                    create<HttpHeaderAuthentication>("header")
+                }
+                credentials(HttpHeaderCredentials::class) {
+                    name = "Deploy-Token"
+                    value = System.getenv("CI_DEPLOY_PASSWORD")
+                }
             }
         }
     }
@@ -65,7 +68,7 @@ subprojects {
         // Briolnik Event
         implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
         implementation("me.paulschwarz:spring-dotenv:${Versions.SPRING_DOTENV}")
-        implementation("com.briolink:location:${Versions.BRIOLINK_LOCATION}")
+        implementation("com.briolink.lib:location:${Versions.BRIOLINK_LOCATION}")
     }
 }
 
