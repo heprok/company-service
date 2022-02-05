@@ -9,9 +9,9 @@ import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceList
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.permission.enumeration.PermissionRightEnum
-import com.briolink.permission.service.PermissionService
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument

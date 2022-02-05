@@ -14,9 +14,9 @@ import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.service.LocationService
 import com.briolink.companyservice.common.util.StringUtil
-import com.briolink.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.permission.enumeration.PermissionRightEnum
-import com.briolink.permission.service.PermissionService
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument

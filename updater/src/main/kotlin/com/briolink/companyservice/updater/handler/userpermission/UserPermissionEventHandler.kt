@@ -4,7 +4,7 @@ import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositi
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
-import com.briolink.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 
 @EventHandlers(
     EventHandler("UserPermissionCreatedEvent", "1.0"),

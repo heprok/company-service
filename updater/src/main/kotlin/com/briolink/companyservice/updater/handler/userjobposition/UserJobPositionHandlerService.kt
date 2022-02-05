@@ -10,10 +10,10 @@ import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadReposi
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.permission.enumeration.PermissionRoleEnum
-import com.briolink.permission.exception.exist.PermissionRoleExistException
-import com.briolink.permission.service.PermissionService
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.exception.exist.PermissionRoleExistException
+import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull

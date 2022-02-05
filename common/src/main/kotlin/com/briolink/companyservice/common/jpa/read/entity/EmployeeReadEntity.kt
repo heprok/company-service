@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type

@@ -7,9 +7,9 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.common.domain.v1_0.Statistic
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import com.briolink.event.publisher.EventPublisher
-import com.briolink.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.permission.enumeration.PermissionRoleEnum
-import com.briolink.permission.service.PermissionService
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.service.PermissionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

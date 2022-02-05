@@ -1,9 +1,9 @@
 package com.briolink.companyservice.updater.handler.userpermission
 
 import com.briolink.event.Event
-import com.briolink.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.permission.enumeration.PermissionRightEnum
-import com.briolink.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 

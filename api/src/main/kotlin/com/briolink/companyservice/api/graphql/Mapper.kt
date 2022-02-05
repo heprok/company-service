@@ -28,7 +28,7 @@ import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
-import com.briolink.permission.model.UserPermissionRights
+import com.briolink.lib.permission.model.UserPermissionRights
 
 fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
     Company(
