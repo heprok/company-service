@@ -1,12 +1,17 @@
 package com.briolink.companyservice.updater.dataloader
 
 import com.briolink.companyservice.common.dataloader.DataLoader
+import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.service.PermissionService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -19,6 +24,8 @@ class UserJobPositionDataLoader(
     var userReadRepository: UserReadRepository,
     var companyReadRepository: CompanyReadRepository,
     var companyHandlerService: CompanyHandlerService,
+    var userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
+    var permissionService: PermissionService,
     var userJobPositionHandlerService: UserJobPositionHandlerService
 
 ) : DataLoader() {
@@ -49,6 +56,29 @@ class UserJobPositionDataLoader(
         UUID.randomUUID(),
         UUID.randomUUID(),
         UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
     )
 
     override fun loadData() {
@@ -61,10 +91,11 @@ class UserJobPositionDataLoader(
             val listUser = userReadRepository.findAll()
 
             for (i in 1..COUNT_JOB_POSITION) {
+
                 val userRandom = listUser.random()
                 val companyRandom = listCompany.random()
                 val startDate = randomDate(2010, 2021)
-                val endDate = if (Random.nextBoolean()) randomDate(startDate.year, 2021) else null
+                val endDate = if (Random.nextBoolean()) randomDate(2010, 2021, startDate) else null
                 val userJobPosition = UserJobPosition(
                     id = listUserJobPosition.random(),
                     title = listJobPosition.random(),
@@ -75,6 +106,37 @@ class UserJobPositionDataLoader(
                     endDate = endDate,
                 )
                 userJobPositionHandlerService.createOrUpdate(userJobPosition)
+
+                try {
+                    val permissionRole = permissionService.createPermissionRole(
+                        userId = userRandom.id,
+                        accessObjectType = AccessObjectTypeEnum.Company,
+                        accessObjectId = companyRandom.id,
+                        permissionRole = PermissionRoleEnum.values().random()
+                    ) ?: throw RuntimeException("Don`t create permission role")
+
+                    val permissionRights = permissionService.getUserPermissionRights(
+                        userId = permissionRole.userId,
+                        accessObjectId = permissionRole.accessObjectId,
+                        accessObjectType = permissionRole.accessObjectType
+                    ) ?: throw RuntimeException("Don`t get permission rights")
+
+                    val userPermissionRoleRead = userPermissionRoleReadRepository.save(
+                        UserPermissionRoleReadEntity(
+                            id = permissionRole.id,
+                            accessObjectUuid = permissionRole.accessObjectId,
+                            userId = permissionRole.userId,
+                            _accessObjectType = permissionRole.accessObjectType.id,
+                            _role = permissionRole.permissionRole.id,
+                            data = UserPermissionRoleReadEntity.Data(
+                                level = permissionRole.permissionRole.level,
+                                enabledPermissionRights = permissionRights.permissionRights
+                            )
+                        )
+                    )
+                    userJobPositionHandlerService.addUserPermission(userPermissionRoleRead)
+                } catch (_: Exception) {
+                }
             }
         }
     }

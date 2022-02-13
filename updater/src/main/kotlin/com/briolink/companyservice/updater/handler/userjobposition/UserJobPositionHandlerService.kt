@@ -14,6 +14,7 @@ import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.exist.PermissionRoleExistException
 import com.briolink.lib.permission.service.PermissionService
+import com.vladmihalcea.hibernate.type.range.Range
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
@@ -43,9 +44,9 @@ class UserJobPositionHandlerService(
                         id = userJobPosition.id,
                         companyId = userJobPosition.companyId,
                         userId = userJobPosition.userId,
-                        endDate = userJobPosition.endDate,
                         // TODO replace verify status
                         _status = UserJobPositionVerifyStatusEnum.Verified.value,
+                    ).apply {
                         data = UserJobPositionReadEntity.Data(
                             user = UserJobPositionReadEntity.User(
                                 firstName = userReadEntity.data.firstName,
@@ -54,12 +55,20 @@ class UserJobPositionHandlerService(
                                 image = userReadEntity.data.image,
                             ),
                             verifiedBy = null,
-                            isCurrent = userJobPosition.isCurrent,
-                            startDate = userJobPosition.startDate,
-                            endDate = userJobPosition.endDate,
-                            title = userJobPosition.title
                         )
-                    )
+
+                        userFullName = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
+                        userFullNameTsv = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
+
+                        jobTitle = userJobPosition.title
+                        jobTitleTsv = userJobPosition.title
+
+                        dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
+                        else Range.open(userJobPosition.startDate, userJobPosition.endDate)
+                        if (userJobPosition.isCurrent)
+                            userJobPositionReadRepository.removeCurrent(userJobPosition.userId)
+                        isCurrent = userJobPosition.isCurrent
+                    }
                 )
 
                 if (addEmployee(userJobPosition.companyId, userJobPosition.userId))
@@ -71,11 +80,11 @@ class UserJobPositionHandlerService(
                         prevCompanyId = companyId
                         companyId = userJobPosition.companyId
                     }
-                    endDate = userJobPosition.endDate
-                    data.isCurrent = userJobPosition.isCurrent
-                    data.startDate = userJobPosition.startDate
-                    data.endDate = userJobPosition.endDate
-                    data.title = userJobPosition.title
+                    dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
+                    else Range.open(userJobPosition.startDate, userJobPosition.endDate)
+                    isCurrent = userJobPosition.isCurrent
+                    jobTitle = userJobPosition.title
+                    jobTitleTsv = userJobPosition.title
                     userJobPositionReadRepository.save(this)
                 }
                 prevCompanyId?.let { refreshEmployeesByCompanyId(it) }
@@ -87,7 +96,7 @@ class UserJobPositionHandlerService(
     fun refreshEmployeesByCompanyId(companyId: UUID) {
         employeeReadRepository.deleteAllByCompanyId(companyId)
         val userInCompany = mutableSetOf<UUID>()
-        userJobPositionReadRepository.findByCompanyIdAndEndDateNull(companyId).sortedBy { it.data.isCurrent }.forEach {
+        userJobPositionReadRepository.findByCompanyIdAndEndDateNull(companyId).sortedBy { it.isCurrent }.forEach {
             if (userInCompany.add(it.userId))
                 employeeReadRepository.save(EmployeeReadEntity.fromUserJobPosition(it))
         }
@@ -111,7 +120,6 @@ class UserJobPositionHandlerService(
             companyId = companyId, userId = userId, hidden = hidden,
         ).also {
             if (it > 0) {
-                println("PUBLISH EVENT TO RESFRESH STATS")
                 applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
             }
         }
@@ -153,6 +161,7 @@ class UserJobPositionHandlerService(
             userId = userPermission.userId,
             companyId = userPermission.accessObjectUuid,
             level = userPermission.data.level,
+            rightsIds = userPermission.data.enabledPermissionRights.map { it.id }.toTypedArray(),
             permissionRoleId = userPermission.role.id,
             enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights) // ktlint-disable max-line-length
         ).also {

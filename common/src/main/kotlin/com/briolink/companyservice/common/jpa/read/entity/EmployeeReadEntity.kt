@@ -1,11 +1,10 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.lib.permission.enumeration.PermissionRoleEnum
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.briolink.lib.permission.model.UserPermissionRights
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.io.Serializable
-import java.net.URL
+import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -41,44 +40,42 @@ class EmployeeReadEntity(
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     var data: Data
 ) : BaseReadEntity() {
-
     companion object {
         fun fromUserJobPosition(userJobPosition: UserJobPositionReadEntity) = EmployeeReadEntity(
             userId = userJobPosition.userId,
             companyId = userJobPosition.companyId,
             userJobPositionId = userJobPosition.id,
             data = Data(
-                user = User(
-                    firstName = userJobPosition.data.user.firstName,
-                    slug = userJobPosition.data.user.slug,
-                    lastName = userJobPosition.data.user.lastName,
-                    image = userJobPosition.data.user.image
+                user = userJobPosition.data.user,
+                jobPosition = UserJobPosition(
+                    id = userJobPosition.id,
+                    title = userJobPosition.jobTitle,
+                    startDate = userJobPosition.dates.lower(),
+                    endDate = if (userJobPosition.dates.hasUpperBound()) userJobPosition.dates.upper() else null
+
                 ),
-                jobPosition = userJobPosition.data.title,
-                permissionRole = userJobPosition.data.userPermission?.role
+                userPermission = userJobPosition.data.userPermission
             )
         )
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty
-        var user: User,
+        var user: UserJobPositionReadEntity.User,
         @JsonProperty
-        var jobPosition: String,
+        var jobPosition: UserJobPosition,
         @JsonProperty
-        var permissionRole: PermissionRoleEnum? = null
+        var userPermission: UserPermissionRights? = null
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class User(
+    data class UserJobPosition(
         @JsonProperty
-        var firstName: String,
+        var id: UUID,
         @JsonProperty
-        var slug: String,
+        var title: String,
         @JsonProperty
-        var lastName: String,
+        var startDate: LocalDate,
         @JsonProperty
-        var image: URL? = null,
+        var endDate: LocalDate? = null,
     )
 }

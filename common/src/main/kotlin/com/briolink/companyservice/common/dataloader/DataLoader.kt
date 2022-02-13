@@ -15,10 +15,10 @@ abstract class DataLoader : CommandLineRunner {
 
     abstract fun loadData()
 
-    fun randomDate(startYear: Int, endYear: Int): LocalDate {
-        val day: Int = Random.nextInt(1, 28)
-        val month: Int = Random.nextInt(1, 12)
-        val year: Int = Random.nextInt(startYear, endYear)
+    fun randomDate(startYear: Int, endYear: Int, minDate: LocalDate? = null): LocalDate {
+        val day: Int = Random.nextInt(minDate?.dayOfMonth ?: 1, 28)
+        val month: Int = Random.nextInt(minDate?.month?.value ?: 1, 12)
+        val year: Int = Random.nextInt(minDate?.year ?: startYear, endYear)
         return LocalDate.of(year, month, day)
     }
 

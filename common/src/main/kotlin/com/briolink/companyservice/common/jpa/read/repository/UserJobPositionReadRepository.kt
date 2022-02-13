@@ -12,13 +12,26 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
 
     @Modifying
     @Query(
-        """update UserJobPositionReadEntity u
-           set u.data = function('jsonb_sets', u.data,
+        """UPDATE UserJobPositionReadEntity u
+           SET u.isCurrent = false
+           WHERE u.userId = ?1
+        """
+    )
+    fun removeCurrent(userId: UUID): Int
+
+    @Modifying
+    @Query(
+        """UPDATE UserJobPositionReadEntity u
+            
+           SET u.data = function('jsonb_sets', u.data,
                 '{user,slug}', :slug, text,
                 '{user,firstName}', :firstName, text,
                 '{user,lastName}', :lastName, text,
                 '{user,image}', :image, text
-           ) where u.userId = :userId""",
+           ),
+                u.userFullName = CONCAT(:firstName, ' ', :lastName),
+                u.userFullNameTsv = to_tsvector('simple', CONCAT(:firstName, ' ', :lastName))
+            where u.userId = :userId""",
     )
     fun updateUserByUserId(
         @Param("userId") userId: UUID,
@@ -33,7 +46,10 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         """UPDATE UserJobPositionReadEntity u
            SET u.data = function('jsonb_sets', u.data,
                 '{userPermission}', 'null', text
-            ) WHERE u.userId = ?1 AND u.companyId = ?2
+            ), 
+            u.permissionLevel = 0, 
+            u._rights = array()
+            WHERE u.userId = ?1 AND u.companyId = ?2
         """
     )
     fun deleteUserPermission(
@@ -45,10 +61,12 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query(
         """UPDATE UserJobPositionReadEntity u
            SET u.data = function('jsonb_sets', u.data,
-                '{userPermission,level}', :level, int,
                 '{userPermission,role}', :permissionRoleId, int,
                 '{userPermission,rights}', :enabledPermissionRightsJson, jsonb
-            ) WHERE u.userId = :userId AND u.companyId = :companyId
+            ),
+                u.permissionLevel = :level,
+                u._rights = :rightIds
+            WHERE u.userId = :userId AND u.companyId = :companyId
         """
     )
     fun updateUserPermission(
@@ -57,12 +75,13 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         @Param("level") level: Int,
         @Param("permissionRoleId") permissionRoleId: Int,
         @Param("enabledPermissionRightsJson") enabledPermissionRightsJson: String,
+        @Param("rightIds") rightsIds: Array<Int>
     ): Int
 
     @Query(
         """SELECT u
            FROM UserJobPositionReadEntity as u
-           WHERE u.endDate is null AND companyId = ?1
+           WHERE upper(u.dates) is null AND companyId = ?1 AND u.dates != 'empty'
         """
     )
     fun findByCompanyIdAndEndDateNull(companyId: UUID): List<UserJobPositionReadEntity>
@@ -71,7 +90,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query("DELETE from UserJobPositionReadEntity u where u.id = ?1")
     override fun deleteById(id: UUID)
 
-    @Query("SELECT (count(u) > 0) FROM UserJobPositionReadEntity u WHERE u.companyId = ?1 AND u.userId = ?2 AND u._status = ?3 AND u.endDate is null")
+    @Query("SELECT (count(u) > 0) FROM UserJobPositionReadEntity u WHERE u.companyId = ?1 AND u.userId = ?2 AND u._status = ?3 AND upper(u.dates) is null")
     fun existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
         companyId: UUID,
         userId: UUID,

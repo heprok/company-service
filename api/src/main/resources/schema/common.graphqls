@@ -23,6 +23,11 @@ type TabItemsCount {
     count: Int!
 }
 
+input DateRange {
+    start: Date
+    end: Date
+}
+
 input RangeInt {
     start: Int
     end: Int

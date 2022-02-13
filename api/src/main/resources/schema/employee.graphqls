@@ -1,0 +1,25 @@
+type Employee {
+    user: User!
+    jobPositions: [UserJobPosition]
+    permission: UserPermission
+}
+
+input EmployeesEditorListOptions {
+    limit: Int! = 10
+    offset: Int! = 0
+    isUserWithPermission: Boolean! = false
+    isCurrentEmployees: Boolean! = true
+    filter: EmployeesEditorFilterParameters
+}
+
+input EmployeesEditorFilterParameters {
+    workDateRange: DateRange
+    jobPositionTitles: [String!]
+    rights: [PermissionRight!]
+    search: String
+}
+
+type EmployeeList implements PaginatedList {
+    items: [Employee!]!
+    totalItems: Int!
+}
