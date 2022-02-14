@@ -14,11 +14,14 @@ import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.sync.enumeration.ServiceEnum
+import com.briolink.lib.sync.model.PeriodDateTime
 import com.opencsv.bean.CsvBindByName
 import com.opencsv.bean.CsvToBean
 import com.opencsv.bean.CsvToBeanBuilder
 import com.opencsv.bean.HeaderColumnNameMappingStrategy
 import mu.KLogging
+import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -120,7 +123,7 @@ class CompanyService(
         val industryWrite = industryName?.let { industryService.create(industryName) }
         val s3ImageUrl = if (imageUrl != null)
             awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, imageUrl) else null
-        if(companyWrite != null && s3ImageUrl != null && companyWrite.logo == null ) {
+        if (companyWrite != null && s3ImageUrl != null && companyWrite.logo == null) {
             companyWrite.logo = s3ImageUrl
             updateCompany(companyWrite)
         }
@@ -187,11 +190,34 @@ class CompanyService(
         }
     }
 
-    fun publishSyncEvent() {
-        companyWriteRepository.findAll().forEach {
-            eventPublisher.publishAsync(CompanyUpdatedEvent(it.toDomain()))
+    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
+        var pageRequest = PageRequest.of(0, 200)
+        var pageCompany = if (period == null) companyWriteRepository.findAll(pageRequest)
+        else companyWriteRepository.findByCreatedOrChangedBetween(period.startInstants, period.endInstant, pageRequest)
+        var indexElement = 0
+        while (!pageCompany.isEmpty) {
+            pageRequest = pageRequest.next()
+            pageCompany.content.forEach {
+                indexElement += 1
+                eventPublisher.publish(
+                    CompanySyncEvent(
+                        service = ServiceEnum.Company,
+                        indexRow = indexElement.toLong(),
+                        totalElements = pageCompany.totalElements,
+                        syncId = syncId,
+                        isLastData = true,
+                        data = it.toDomain()
+                    )
+                )
+            }
+            pageCompany = if (period == null) companyWriteRepository.findAll(pageRequest)
+            else companyWriteRepository.findByCreatedOrChangedBetween(
+                period.startInstants,
+                period.endInstant,
+                pageRequest
+            )
         }
-    }
 
-    fun existsCompanyName(name: String): Boolean = companyWriteRepository.existsByName(name)
+        fun existsCompanyName(name: String): Boolean = companyWriteRepository.existsByName(name)
+    }
 }

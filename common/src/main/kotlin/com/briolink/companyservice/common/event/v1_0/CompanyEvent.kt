@@ -11,9 +11,10 @@ data class CompanyCreatedEvent(override val data: Company) : Event<Domain>("1.0"
 data class CompanyUpdatedEvent(override val data: Company) : Event<Domain>("1.0")
 data class CompanyStatisticEvent(override val data: CompanyStatistic) : Event<Domain>("1.0")
 data class CompanySyncEvent(
-    override val rowId: Int,
     override val service: ServiceEnum,
-    override val totalRow: Int,
-    override val syncServiceId: Int,
+    override val indexRow: Long,
+    override val totalElements: Long,
+    override val syncId: Int,
+    override val isLastData: Boolean = true,
     override val data: Company
 ) : Event<Domain>("1.0"), ISyncEvent

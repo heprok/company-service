@@ -1,10 +1,14 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
+import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.OccupationWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRepository
-import com.briolink.companyservice.common.mapper.OccupationMapper
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.sync.enumeration.ServiceEnum
+import com.briolink.lib.sync.model.PeriodDateTime
+import org.springframework.data.domain.PageRequest
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -15,8 +19,6 @@ class OccupationService(
     private val occupationWriteRepository: OccupationWriteRepository,
     private val eventPublisher: EventPublisher,
 ) {
-    val mapper = OccupationMapper.INSTANCE
-
     fun create(name: String): OccupationWriteEntity =
         occupationWriteRepository.findByName(name) ?: OccupationWriteEntity().apply {
             this.name = name
@@ -26,4 +28,38 @@ class OccupationService(
         }
 
     fun findById(id: UUID) = occupationWriteRepository.findById(id)
+
+    @Async
+    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
+        var pageRequest = PageRequest.of(0, 200)
+        var page = if (period == null) occupationWriteRepository.findAll(pageRequest)
+        else occupationWriteRepository.findByCreatedOrChangedBetween(
+            period.startInstants,
+            period.endInstant,
+            pageRequest
+        )
+        var indexRow = 0
+        while (!page.isEmpty) {
+            pageRequest = pageRequest.next()
+            page.content.forEach {
+                indexRow += 1
+                eventPublisher.publish(
+                    OccupationSyncEvent(
+                        service = ServiceEnum.Company,
+                        indexRow = indexRow.toLong(),
+                        totalElements = page.totalElements,
+                        syncId = syncId,
+                        isLastData = false,
+                        data = it.toDomain()
+                    )
+                )
+            }
+            page = if (period == null) occupationWriteRepository.findAll(pageRequest)
+            else occupationWriteRepository.findByCreatedOrChangedBetween(
+                period.startInstants,
+                period.endInstant,
+                pageRequest
+            )
+        }
+    }
 }

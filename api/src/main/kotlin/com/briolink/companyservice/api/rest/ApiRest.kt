@@ -42,12 +42,6 @@ class ApiRest(
         return ResponseEntity.ok(1)
     }
 
-    @GetMapping("/sync/search-service")
-    fun syncSearchService(): ResponseEntity<Int> {
-        companyService.publishSyncEvent()
-        return ResponseEntity.ok(1)
-    }
-
     @GetMapping("/load-logo/{pathCsv}")
     fun loadLogoCompany(@PathVariable pathCsv: String): ResponseEntity<Int> {
         companyService.importLogoFromCSV(pathCsv)

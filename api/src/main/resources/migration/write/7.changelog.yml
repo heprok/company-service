@@ -18,3 +18,48 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: true
+        - addColumn:
+            schemaName: write
+            tableName: keyword
+            columns:
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - addColumn:
+            schemaName: write
+            tableName: industry
+            columns:
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - addColumn:
+            schemaName: write
+            tableName: occupation
+            columns:
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed
+                  type: timestamp
+                  constraints:
+                    nullable: true
