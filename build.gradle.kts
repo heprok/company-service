@@ -43,7 +43,7 @@ subprojects {
         setOf(
             29889174, // Briolink Event lib
             33422039, // Briolink Location lib
-//            33688770, // Briolink Sync lib
+            33688770, // Briolink Sync lib
         ).forEach {
             maven {
                 url = uri("https://gitlab.com/api/v4/projects/$it/packages/maven")

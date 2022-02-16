@@ -1,6 +1,7 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.domain.v1_0.Company
+import com.briolink.companyservice.common.domain.v1_0.CompanySyncData
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
@@ -201,12 +202,13 @@ class CompanyService(
                 indexElement += 1
                 eventPublisher.publish(
                     CompanySyncEvent(
-                        service = ServiceEnum.Company,
-                        indexRow = indexElement.toLong(),
-                        totalElements = pageCompany.totalElements,
-                        syncId = syncId,
-                        isLastData = true,
-                        data = it.toDomain()
+                        CompanySyncData(
+                            service = ServiceEnum.Company,
+                            indexObjectSync = indexElement.toLong(),
+                            totalObjectSync = pageCompany.totalElements,
+                            syncId = syncId,
+                            objectSync = it.toDomain()
+                        )
                     )
                 )
             }

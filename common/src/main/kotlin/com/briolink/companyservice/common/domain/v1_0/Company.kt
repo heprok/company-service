@@ -1,6 +1,8 @@
 package com.briolink.companyservice.common.domain.v1_0
 
 import com.briolink.lib.location.model.LocationId
+import com.briolink.lib.sync.ISyncData
+import com.briolink.lib.sync.enumeration.ServiceEnum
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID
@@ -42,3 +44,16 @@ data class Company(
         val name: String,
     )
 }
+
+data class CompanySyncData(
+    @JsonProperty
+    override val indexObjectSync: Long,
+    @JsonProperty
+    override val totalObjectSync: Long,
+    @JsonProperty
+    override val objectSync: Company,
+    @JsonProperty
+    override val service: ServiceEnum,
+    @JsonProperty
+    override val syncId: Int
+) : ISyncData<Company>, Domain

@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.service
 
+import com.briolink.companyservice.common.domain.v1_0.KeywordSyncData
 import com.briolink.companyservice.common.event.v1_0.KeywordCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.KeywordSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
@@ -52,12 +53,13 @@ class KeywordService(
                 indexRow += 1
                 eventPublisher.publish(
                     KeywordSyncEvent(
-                        service = ServiceEnum.Company,
-                        indexRow = indexRow.toLong(),
-                        totalElements = page.totalElements,
-                        syncId = syncId,
-                        isLastData = false,
-                        data = it.toDomain()
+                        KeywordSyncData(
+                            service = ServiceEnum.Company,
+                            indexObjectSync = indexRow.toLong(),
+                            totalObjectSync = page.totalElements,
+                            syncId = syncId,
+                            objectSync = it.toDomain()
+                        )
                     )
                 )
             }

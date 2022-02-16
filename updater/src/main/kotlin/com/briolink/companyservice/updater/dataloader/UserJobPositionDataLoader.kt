@@ -5,7 +5,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.handler.company.CompanyHandlerService
-import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
+import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionEventData
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -65,7 +65,7 @@ class UserJobPositionDataLoader(
                 val companyRandom = listCompany.random()
                 val startDate = randomDate(2010, 2021)
                 val endDate = if (Random.nextBoolean()) randomDate(startDate.year, 2021) else null
-                val userJobPosition = UserJobPosition(
+                val userJobPosition = UserJobPositionEventData(
                     id = listUserJobPosition.random(),
                     title = listJobPosition.random(),
                     isCurrent = Random.nextBoolean(),

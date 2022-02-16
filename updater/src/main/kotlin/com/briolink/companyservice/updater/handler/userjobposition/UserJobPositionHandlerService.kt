@@ -26,22 +26,22 @@ class UserJobPositionHandlerService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val employeeReadRepository: EmployeeReadRepository,
 ) {
-    fun createOrUpdate(userJobPosition: UserJobPosition) {
-        val userReadEntity = userReadRepository.findById(userJobPosition.userId)
-            .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
+    fun createOrUpdate(userJobPositionEventData: UserJobPositionEventData) {
+        val userReadEntity = userReadRepository.findById(userJobPositionEventData.userId)
+            .orElseThrow { throw EntityNotFoundException(userJobPositionEventData.userId.toString() + " user not found") }
         var prevCompanyId: UUID? = null
-        userJobPositionReadRepository.findById(userJobPosition.id).also {
+        userJobPositionReadRepository.findById(userJobPositionEventData.id).also {
             if (it.isEmpty) {
                 addEmployeeAndConnectionsHideOpen(
-                    companyId = userJobPosition.companyId,
-                    userId = userJobPosition.userId
+                    companyId = userJobPositionEventData.companyId,
+                    userId = userJobPositionEventData.userId
                 )
                 userJobPositionReadRepository.save(
                     UserJobPositionReadEntity(
-                        id = userJobPosition.id,
-                        companyId = userJobPosition.companyId,
-                        userId = userJobPosition.userId,
-                        endDate = userJobPosition.endDate,
+                        id = userJobPositionEventData.id,
+                        companyId = userJobPositionEventData.companyId,
+                        userId = userJobPositionEventData.userId,
+                        endDate = userJobPositionEventData.endDate,
                         data = UserJobPositionReadEntity.Data(
                             user = UserJobPositionReadEntity.User(
                                 firstName = userReadEntity.data.firstName,
@@ -51,29 +51,29 @@ class UserJobPositionHandlerService(
                             ),
                             status = UserJobPositionReadEntity.VerifyStatus.Verified,
                             verifiedBy = null,
-                            isCurrent = userJobPosition.isCurrent,
-                            startDate = userJobPosition.startDate,
-                            endDate = userJobPosition.endDate,
-                            title = userJobPosition.title
+                            isCurrent = userJobPositionEventData.isCurrent,
+                            startDate = userJobPositionEventData.startDate,
+                            endDate = userJobPositionEventData.endDate,
+                            title = userJobPositionEventData.title
                         )
                     )
                 )
-                refreshEmployeesByCompanyId(userJobPosition.companyId)
+                refreshEmployeesByCompanyId(userJobPositionEventData.companyId)
             } else {
                 it.get().apply {
-                    if (companyId != userJobPosition.companyId) {
+                    if (companyId != userJobPositionEventData.companyId) {
                         prevCompanyId = companyId
-                        companyId = userJobPosition.companyId
+                        companyId = userJobPositionEventData.companyId
                     }
-                    endDate = userJobPosition.endDate
-                    data.isCurrent = userJobPosition.isCurrent
-                    data.startDate = userJobPosition.startDate
-                    data.endDate = userJobPosition.endDate
-                    data.title = userJobPosition.title
+                    endDate = userJobPositionEventData.endDate
+                    data.isCurrent = userJobPositionEventData.isCurrent
+                    data.startDate = userJobPositionEventData.startDate
+                    data.endDate = userJobPositionEventData.endDate
+                    data.title = userJobPositionEventData.title
                     userJobPositionReadRepository.save(this)
                 }
                 prevCompanyId?.let { refreshEmployeesByCompanyId(it) }
-                refreshEmployeesByCompanyId(userJobPosition.companyId)
+                refreshEmployeesByCompanyId(userJobPositionEventData.companyId)
             }
         }
     }

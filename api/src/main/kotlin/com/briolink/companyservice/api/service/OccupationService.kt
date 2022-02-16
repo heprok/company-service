@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.service
 
+import com.briolink.companyservice.common.domain.v1_0.OccupationSyncData
 import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.OccupationWriteEntity
@@ -45,12 +46,14 @@ class OccupationService(
                 indexRow += 1
                 eventPublisher.publish(
                     OccupationSyncEvent(
-                        service = ServiceEnum.Company,
-                        indexRow = indexRow.toLong(),
-                        totalElements = page.totalElements,
-                        syncId = syncId,
-                        isLastData = false,
-                        data = it.toDomain()
+                        OccupationSyncData(
+                            service = ServiceEnum.Company,
+                            indexObjectSync = indexRow.toLong(),
+                            totalObjectSync = page.totalElements,
+                            syncId = syncId,
+                            objectSync = it.toDomain()
+                        )
+
                     )
                 )
             }
