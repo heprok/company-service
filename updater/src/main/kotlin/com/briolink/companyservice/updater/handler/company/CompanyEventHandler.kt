@@ -55,9 +55,9 @@ class CompanySyncEventHandler(
         try {
             val company = companyHandlerService.findById(syncData.objectSync.id)
             companyHandlerService.createOrUpdate(company, syncData.objectSync).also {
-//                connectionHandlerService.updateCompany(it)
-//                connectionServiceHandlerService.updateCompany(it)
-//                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(syncData.objectSync.id, false))
+                connectionHandlerService.updateCompany(it)
+                connectionServiceHandlerService.updateCompany(it)
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(syncData.objectSync.id, false))
             }
         } catch (ex: Exception) {
             syncService.sendSyncError(

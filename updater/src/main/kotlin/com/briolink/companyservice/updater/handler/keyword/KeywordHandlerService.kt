@@ -17,7 +17,10 @@ class KeywordHandlerService(
         entityPrevKeyword: KeywordReadEntity? = null,
         keywordEventData: Keyword
     ): KeywordReadEntity {
-        val keyword = entityPrevKeyword ?: KeywordReadEntity(keywordEventData.id, keywordEventData.name)
+        val keyword = entityPrevKeyword ?: keywordReadRepository.findByNameOrNull(keywordEventData.name) ?: KeywordReadEntity(
+            keywordEventData.id,
+            keywordEventData.name,
+        )
         return keywordReadRepository.save(keyword)
     }
 

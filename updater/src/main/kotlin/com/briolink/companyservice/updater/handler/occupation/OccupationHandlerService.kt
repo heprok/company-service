@@ -15,9 +15,13 @@ class OccupationHandlerService(
 ) {
     fun createOrUpdate(
         entityPrevOccupation: OccupationReadEntity? = null,
-        keywordEventData: Occupation
+        occupationEventData: Occupation
     ): OccupationReadEntity {
-        val occupation = entityPrevOccupation ?: OccupationReadEntity(keywordEventData.id, keywordEventData.name)
+        val occupation =
+            entityPrevOccupation ?: occupationReadRepository.findByNameOrNull(occupationEventData.name) ?: OccupationReadEntity(
+                occupationEventData.id,
+                occupationEventData.name,
+            )
         return occupationReadRepository.save(occupation)
     }
 

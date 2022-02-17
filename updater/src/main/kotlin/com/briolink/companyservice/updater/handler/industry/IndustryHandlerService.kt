@@ -17,7 +17,11 @@ class IndustryHandlerService(
         entityPrevIndustry: IndustryReadEntity? = null,
         industryEventData: Industry
     ): IndustryReadEntity {
-        val industry = entityPrevIndustry ?: IndustryReadEntity(industryEventData.id, industryEventData.name)
+
+        val industry = entityPrevIndustry ?: industryReadRepository.findByNameOrNull(industryEventData.name) ?: IndustryReadEntity(
+            industryEventData.id,
+            industryEventData.name,
+        )
         return industryReadRepository.save(industry)
     }
 
