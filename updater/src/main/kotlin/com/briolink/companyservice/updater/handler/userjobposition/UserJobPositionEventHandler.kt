@@ -38,6 +38,10 @@ class UserJobPositionSyncEventHandler(
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.UserJobPosition)
+            return
+        }
         try {
             userJobPositionHandlerService.createOrUpdate(syncData.objectSync)
         } catch (ex: Exception) {
@@ -47,8 +51,8 @@ class UserJobPositionSyncEventHandler(
                     updater = UpdaterEnum.Company,
                     syncId = syncData.syncId,
                     exception = ex,
-                    indexObjectSync = syncData.indexObjectSync
-                )
+                    indexObjectSync = syncData.indexObjectSync,
+                ),
             )
         }
         if (syncData.indexObjectSync == syncData.totalObjectSync)
