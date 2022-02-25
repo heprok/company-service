@@ -38,6 +38,7 @@ allprojects {
 
 subprojects {
     repositories {
+        println(System.getenv("SSH_AUTH_SOCK"))
         mavenCentral()
         mavenLocal()
         setOf(

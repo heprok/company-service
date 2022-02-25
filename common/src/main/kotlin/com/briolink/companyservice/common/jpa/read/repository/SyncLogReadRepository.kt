@@ -28,7 +28,7 @@ interface SyncLogReadRepository : JpaRepository<SyncLogReadEntity, SyncLogId>, I
      * @query must be contain 'ON CONFLICT DO NOTHING'
      */
     @Modifying
-    @Query("INSERT INTO read.sync_log(sync_id, service, sync_object) VALUES(?1, ?2, ?3) ON CONFLICT DO NOTHING", nativeQuery = true)
+    @Query("INSERT INTO read.sync_log(sync_id, service, object_sync) VALUES(?1, ?2, ?3) ON CONFLICT DO NOTHING", nativeQuery = true)
     override fun insert(syncId: Int, serviceId: Int, objectSync: Int)
 
     @Transactional
