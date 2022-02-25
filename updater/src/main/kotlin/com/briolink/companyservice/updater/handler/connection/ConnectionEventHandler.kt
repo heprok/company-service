@@ -1,11 +1,11 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.jpa.enumeration.ObjectSyncEnum
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import com.briolink.lib.sync.enumeration.UpdaterEnum
 import com.briolink.lib.sync.model.SyncError
 import org.springframework.context.ApplicationEventPublisher
@@ -52,7 +52,7 @@ class ConnectionSyncEventHandler(
     override fun handle(event: ConnectionSyncEvent) {
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSync(syncData.syncId, syncData.service)
+            syncService.startSyncForService(syncData.syncId, syncData.service)
         try {
             val connection = syncData.objectSync
             if (connection.status != ConnectionStatus.Rejected) {

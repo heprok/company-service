@@ -1,53 +1,44 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.jpa.enumeration.ObjectSyncEnum
+import com.briolink.lib.sync.ISyncLogEntity
+import com.briolink.lib.sync.SyncLogId
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import com.briolink.lib.sync.enumeration.ServiceEnum
-import java.io.Serializable
 import java.time.Instant
+import javax.persistence.AttributeOverride
+import javax.persistence.AttributeOverrides
 import javax.persistence.Column
+import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.IdClass
 import javax.persistence.Table
-
-class SyncLogPK() : Serializable {
-    var syncId: Int = 0
-    var _objectSync: Int = 0
-    var _service: Int = 0
-}
 
 @Table(name = "sync_log", schema = "read")
 @Entity
-@IdClass(SyncLogPK::class)
 class SyncLogReadEntity(
-    @Id
-    @Column(name = "sync_id", nullable = false)
-    var syncId: Int,
-
-    @Id
-    @Column(name = "object_sync")
-    private var _objectSync: Int,
-
-    @Id
-    @Column(name = "service")
-    private var _service: Int,
+    @AttributeOverrides(
+        AttributeOverride(name = "syncId", column = Column(name = "sync_id")),
+        AttributeOverride(name = "_objectSync", column = Column(name = "object_sync")),
+        AttributeOverride(name = "_service", column = Column(name = "service")),
+    )
+    @EmbeddedId
+    override var id: SyncLogId,
 
     @Column(name = "completed")
-    var completed: Instant? = null,
+    override var completed: Instant? = null,
 
     @Column(name = "with_error")
-    var withError: Boolean = false
+    override var withError: Boolean = false
 
-) : BaseReadEntity() {
+) : BaseReadEntity(), ISyncLogEntity {
     var objectSync: ObjectSyncEnum
-        get() = ObjectSyncEnum.fromInt(_objectSync)
+        get() = ObjectSyncEnum.fromInt(id._objectSync)
         set(value) {
-            _objectSync = value.value
+            id._objectSync = value.value
         }
 
     var service: ServiceEnum
-        get() = ServiceEnum.ofId(_service)
+        get() = ServiceEnum.ofId(id._service)
         set(value) {
-            _service = value.id
+            id._service = value.id
         }
 }

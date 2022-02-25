@@ -2,10 +2,10 @@ package com.briolink.companyservice.updater.handler.occupation
 
 import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
-import com.briolink.companyservice.common.jpa.enumeration.ObjectSyncEnum
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import com.briolink.lib.sync.enumeration.UpdaterEnum
 import com.briolink.lib.sync.model.SyncError
 
@@ -26,7 +26,7 @@ class OccupationSyncEventHandler(
     override fun handle(event: OccupationSyncEvent) {
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSync(syncData.syncId, syncData.service)
+            syncService.startSyncForService(syncData.syncId, syncData.service)
         try {
             val objectSync = syncData.objectSync
             val occupation = occupationHandlerService.findById(objectSync.id)

@@ -2,10 +2,10 @@ package com.briolink.companyservice.updater.handler.industry
 
 import com.briolink.companyservice.common.event.v1_0.IndustryCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.IndustrySyncEvent
-import com.briolink.companyservice.common.jpa.enumeration.ObjectSyncEnum
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import com.briolink.lib.sync.enumeration.UpdaterEnum
 import com.briolink.lib.sync.model.SyncError
 
@@ -26,7 +26,7 @@ class IndustrySyncEventHandler(
     override fun handle(event: IndustrySyncEvent) {
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSync(syncData.syncId, syncData.service)
+            syncService.startSyncForService(syncData.syncId, syncData.service)
         try {
             val objectSync = syncData.objectSync
             val industry = industryHandlerService.findById(objectSync.id)

@@ -1,10 +1,10 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
-import com.briolink.companyservice.common.jpa.enumeration.ObjectSyncEnum
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import com.briolink.lib.sync.enumeration.UpdaterEnum
 import com.briolink.lib.sync.model.SyncError
 
@@ -37,7 +37,7 @@ class UserJobPositionSyncEventHandler(
     override fun handle(event: UserJobPositionSyncEvent) {
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSync(syncData.syncId, syncData.service)
+            syncService.startSyncForService(syncData.syncId, syncData.service)
         try {
             userJobPositionHandlerService.createOrUpdate(syncData.objectSync)
         } catch (ex: Exception) {

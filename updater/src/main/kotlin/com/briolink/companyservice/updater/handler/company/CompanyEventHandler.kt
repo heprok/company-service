@@ -2,7 +2,6 @@ package com.briolink.companyservice.updater.handler.company
 
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
-import com.briolink.companyservice.common.jpa.enumeration.ObjectSyncEnum
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import com.briolink.companyservice.updater.handler.connection.ConnectionServiceHandlerService
@@ -10,6 +9,7 @@ import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import com.briolink.lib.sync.enumeration.UpdaterEnum
 import com.briolink.lib.sync.model.SyncError
 import org.springframework.context.ApplicationEventPublisher
@@ -51,7 +51,7 @@ class CompanySyncEventHandler(
     override fun handle(event: CompanySyncEvent) {
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSync(syncData.syncId, syncData.service)
+            syncService.startSyncForService(syncData.syncId, syncData.service)
         try {
             val company = companyHandlerService.findById(syncData.objectSync.id)
             companyHandlerService.createOrUpdate(company, syncData.objectSync).also {
