@@ -91,7 +91,7 @@ data class ConnectionSyncData(
     @JsonProperty
     override val totalObjectSync: Long,
     @JsonProperty
-    override val objectSync: ConnectionEventData
+    override val objectSync: ConnectionEventData?
 ) : ISyncData<ConnectionEventData>
 
 data class ConnectionCreatedEvent(override val data: ConnectionEventData) : Event<ConnectionEventData>("1.0")

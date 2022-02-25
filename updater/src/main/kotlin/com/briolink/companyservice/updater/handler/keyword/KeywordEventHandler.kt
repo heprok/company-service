@@ -27,10 +27,13 @@ class KeywordSyncEventHandler(
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.CompanyKeyword)
+            return
+        }
         try {
-            val objectSync = syncData.objectSync
-            val keyword = keywordHandlerService.findById(objectSync.id)
-            keywordHandlerService.createOrUpdate(keyword, objectSync)
+            val keyword = keywordHandlerService.findById(syncData.objectSync!!.id)
+            keywordHandlerService.createOrUpdate(keyword, syncData.objectSync!!)
         } catch (ex: Exception) {
             syncService.sendSyncError(
                 syncError = SyncError(

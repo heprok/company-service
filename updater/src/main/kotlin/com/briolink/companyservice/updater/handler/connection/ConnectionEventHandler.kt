@@ -53,6 +53,10 @@ class ConnectionSyncEventHandler(
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Connection)
+            return
+        }
         try {
             val connection = syncData.objectSync
             if (connection.status != ConnectionStatus.Rejected) {
@@ -87,6 +91,6 @@ class ConnectionSyncEventHandler(
             )
         }
         if (syncData.indexObjectSync == syncData.totalObjectSync)
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Company)
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Connection)
     }
 }

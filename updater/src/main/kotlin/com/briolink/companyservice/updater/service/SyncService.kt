@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Service
 class SyncService(
-    syncWebClient: SyncWebClient,
-    private val syncLogReadRepository: SyncLogReadRepository
-) : AbstractSyncService(syncWebClient) {
-    override val repository = syncLogReadRepository
+    override val syncWebClient: SyncWebClient,
+    override val syncLogRepository: SyncLogReadRepository
+) : AbstractSyncService() {
     override val CURRENT_UPDATER: UpdaterEnum = UpdaterEnum.Company
-
     override fun getListSyncLogIdAtCompany(syncId: Int): List<SyncLogId> =
         listOf(
             SyncLogId().apply {

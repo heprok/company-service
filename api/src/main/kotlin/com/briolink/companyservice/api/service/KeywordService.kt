@@ -46,6 +46,20 @@ class KeywordService(
         var pageRequest = PageRequest.of(0, 200)
         var page = if (period == null) keywordWriteRepository.findAll(pageRequest)
         else keywordWriteRepository.findByCreatedOrChangedBetween(period.startInstants, period.endInstant, pageRequest)
+        if (page.totalElements.toInt() == 0) {
+            eventPublisher.publish(
+                KeywordSyncEvent(
+                    KeywordSyncData(
+                        indexObjectSync = 1,
+                        totalObjectSync = 1,
+                        objectSync = null,
+                        syncId = syncId,
+                        service = ServiceEnum.Company,
+                    ),
+                ),
+            )
+            return
+        }
         var indexRow = 0
         while (!page.isEmpty) {
             pageRequest = pageRequest.next()
@@ -58,16 +72,16 @@ class KeywordService(
                             indexObjectSync = indexRow.toLong(),
                             totalObjectSync = page.totalElements,
                             syncId = syncId,
-                            objectSync = it.toDomain()
-                        )
-                    )
+                            objectSync = it.toDomain(),
+                        ),
+                    ),
                 )
             }
             page = if (period == null) keywordWriteRepository.findAll(pageRequest)
             else keywordWriteRepository.findByCreatedOrChangedBetween(
                 period.startInstants,
                 period.endInstant,
-                pageRequest
+                pageRequest,
             )
         }
     }

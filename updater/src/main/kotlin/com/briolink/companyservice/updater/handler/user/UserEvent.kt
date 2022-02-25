@@ -33,7 +33,7 @@ data class UserSyncData(
     override val service: ServiceEnum,
     override val syncId: Int,
     override val totalObjectSync: Long,
-    override val objectSync: UserEventData,
+    override val objectSync: UserEventData?,
 ) : ISyncData<UserEventData>
 
 data class UserCreatedEvent(override val data: UserEventData) : Event<UserEventData>("1.0")

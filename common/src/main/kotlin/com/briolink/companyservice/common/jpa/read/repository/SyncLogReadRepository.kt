@@ -38,6 +38,6 @@ interface SyncLogReadRepository : JpaRepository<SyncLogReadEntity, SyncLogId>, I
 
     @Transactional
     @Modifying
-    @Query("UPDATE SyncLogReadEntity s SET s.completed = ?4, s.withError = ?5 WHERE s.id.syncId = ?1 AND s.id._objectSync = ?2 AND s.id._service = ?3")
+    @Query("UPDATE SyncLogReadEntity s SET s.completed = ?4, s.withError = ?5 WHERE s.id.syncId = ?1 AND s.id._objectSync = ?3 AND s.id._service = ?2")
     override fun update(syncId: Int, serviceId: Int, objectSync: Int, completed: Instant?, withError: Boolean)
 }

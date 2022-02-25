@@ -18,7 +18,7 @@ data class OccupationSyncData(
     @JsonProperty
     override val totalObjectSync: Long,
     @JsonProperty
-    override val objectSync: Occupation,
+    override val objectSync: Occupation?,
     @JsonProperty
     override val service: ServiceEnum,
     @JsonProperty

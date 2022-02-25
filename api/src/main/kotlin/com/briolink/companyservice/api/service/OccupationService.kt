@@ -1,6 +1,8 @@
 package com.briolink.companyservice.api.service
 
+import com.briolink.companyservice.common.domain.v1_0.KeywordSyncData
 import com.briolink.companyservice.common.domain.v1_0.OccupationSyncData
+import com.briolink.companyservice.common.event.v1_0.KeywordSyncEvent
 import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.OccupationWriteEntity
@@ -37,8 +39,24 @@ class OccupationService(
         else occupationWriteRepository.findByCreatedOrChangedBetween(
             period.startInstants,
             period.endInstant,
-            pageRequest
+            pageRequest,
         )
+
+        if (page.totalElements.toInt() == 0) {
+            eventPublisher.publish(
+                KeywordSyncEvent(
+                    KeywordSyncData(
+                        indexObjectSync = 1,
+                        totalObjectSync = 1,
+                        objectSync = null,
+                        syncId = syncId,
+                        service = ServiceEnum.Company,
+                    ),
+                ),
+            )
+            return
+        }
+
         var indexRow = 0
         while (!page.isEmpty) {
             pageRequest = pageRequest.next()
@@ -51,17 +69,17 @@ class OccupationService(
                             indexObjectSync = indexRow.toLong(),
                             totalObjectSync = page.totalElements,
                             syncId = syncId,
-                            objectSync = it.toDomain()
-                        )
+                            objectSync = it.toDomain(),
+                        ),
 
-                    )
+                    ),
                 )
             }
             page = if (period == null) occupationWriteRepository.findAll(pageRequest)
             else occupationWriteRepository.findByCreatedOrChangedBetween(
                 period.startInstants,
                 period.endInstant,
-                pageRequest
+                pageRequest,
             )
         }
     }

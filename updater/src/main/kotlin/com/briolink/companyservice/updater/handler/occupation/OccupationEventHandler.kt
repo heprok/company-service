@@ -25,12 +25,18 @@ class OccupationSyncEventHandler(
 ) : IEventHandler<OccupationSyncEvent> {
     override fun handle(event: OccupationSyncEvent) {
         val syncData = event.data
+        println(syncData.objectSync)
+        println(syncData.indexObjectSync)
+        println(syncData.totalObjectSync)
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.CompanyOccupation)
+            return
+        }
         try {
-            val objectSync = syncData.objectSync
-            val occupation = occupationHandlerService.findById(objectSync.id)
-            occupationHandlerService.createOrUpdate(occupation, objectSync)
+            val occupation = occupationHandlerService.findById(syncData.objectSync!!.id)
+            occupationHandlerService.createOrUpdate(occupation, syncData.objectSync!!)
         } catch (ex: Exception) {
             syncService.sendSyncError(
                 syncError = SyncError(

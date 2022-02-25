@@ -51,7 +51,7 @@ data class CompanySyncData(
     @JsonProperty
     override val totalObjectSync: Long,
     @JsonProperty
-    override val objectSync: Company,
+    override val objectSync: Company?,
     @JsonProperty
     override val service: ServiceEnum,
     @JsonProperty

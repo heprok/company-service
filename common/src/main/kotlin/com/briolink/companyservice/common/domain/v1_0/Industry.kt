@@ -18,7 +18,7 @@ data class IndustrySyncData(
     @JsonProperty
     override val totalObjectSync: Long,
     @JsonProperty
-    override val objectSync: Industry,
+    override val objectSync: Industry?,
     @JsonProperty
     override val service: ServiceEnum,
     @JsonProperty

@@ -27,10 +27,13 @@ class IndustrySyncEventHandler(
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.CompanyIndustry)
+            return
+        }
         try {
-            val objectSync = syncData.objectSync
-            val industry = industryHandlerService.findById(objectSync.id)
-            industryHandlerService.createOrUpdate(industry, objectSync)
+            val industry = industryHandlerService.findById(syncData.objectSync!!.id)
+            industryHandlerService.createOrUpdate(industry, syncData.objectSync!!)
         } catch (ex: Exception) {
             syncService.sendSyncError(
                 syncError = SyncError(
@@ -38,8 +41,8 @@ class IndustrySyncEventHandler(
                     updater = UpdaterEnum.Company,
                     syncId = syncData.syncId,
                     exception = ex,
-                    indexObjectSync = syncData.indexObjectSync
-                )
+                    indexObjectSync = syncData.indexObjectSync,
+                ),
             )
         }
         if (syncData.indexObjectSync == syncData.totalObjectSync)

@@ -50,14 +50,18 @@ class CompanySyncEventHandler(
 ) : IEventHandler<CompanySyncEvent> {
     override fun handle(event: CompanySyncEvent) {
         val syncData = event.data
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Company)
+            return
+        }
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
         try {
-            val company = companyHandlerService.findById(syncData.objectSync.id)
-            companyHandlerService.createOrUpdate(company, syncData.objectSync).also {
-                connectionHandlerService.updateCompany(it)
-                connectionServiceHandlerService.updateCompany(it)
-                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(syncData.objectSync.id, false))
+            val company = companyHandlerService.findById(syncData.objectSync!!.id)
+            companyHandlerService.createOrUpdate(company, syncData.objectSync!!).also {
+//                connectionHandlerService.updateCompany(it)
+//                connectionServiceHandlerService.updateCompany(it)
+//                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(syncData.objectSync!!.id, false))
             }
         } catch (ex: Exception) {
             syncService.sendSyncError(
@@ -66,8 +70,8 @@ class CompanySyncEventHandler(
                     updater = UpdaterEnum.Company,
                     syncId = syncData.syncId,
                     exception = ex,
-                    indexObjectSync = syncData.indexObjectSync
-                )
+                    indexObjectSync = syncData.indexObjectSync,
+                ),
             )
         }
         if (syncData.indexObjectSync == syncData.totalObjectSync)

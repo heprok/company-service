@@ -18,7 +18,7 @@ data class KeywordSyncData(
     @JsonProperty
     override val totalObjectSync: Long,
     @JsonProperty
-    override val objectSync: Keyword,
+    override val objectSync: Keyword?,
     @JsonProperty
     override val service: ServiceEnum,
     @JsonProperty

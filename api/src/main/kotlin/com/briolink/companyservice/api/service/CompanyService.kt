@@ -2,9 +2,11 @@ package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.CompanySyncData
+import com.briolink.companyservice.common.domain.v1_0.KeywordSyncData
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
+import com.briolink.companyservice.common.event.v1_0.KeywordSyncEvent
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
@@ -193,30 +195,44 @@ class CompanyService(
 
     fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
         var pageRequest = PageRequest.of(0, 200)
-        var pageCompany = if (period == null) companyWriteRepository.findAll(pageRequest)
+        var page = if (period == null) companyWriteRepository.findAll(pageRequest)
         else companyWriteRepository.findByCreatedOrChangedBetween(period.startInstants, period.endInstant, pageRequest)
+        if (page.totalElements.toInt() == 0) {
+            eventPublisher.publish(
+                KeywordSyncEvent(
+                    KeywordSyncData(
+                        indexObjectSync = 1,
+                        totalObjectSync = 1,
+                        objectSync = null,
+                        syncId = syncId,
+                        service = ServiceEnum.Company,
+                    ),
+                ),
+            )
+            return
+        }
         var indexElement = 0
-        while (!pageCompany.isEmpty) {
+        while (!page.isEmpty) {
             pageRequest = pageRequest.next()
-            pageCompany.content.forEach {
+            page.content.forEach {
                 indexElement += 1
                 eventPublisher.publish(
                     CompanySyncEvent(
                         CompanySyncData(
                             service = ServiceEnum.Company,
                             indexObjectSync = indexElement.toLong(),
-                            totalObjectSync = pageCompany.totalElements,
+                            totalObjectSync = page.totalElements,
                             syncId = syncId,
-                            objectSync = it.toDomain()
-                        )
-                    )
+                            objectSync = it.toDomain(),
+                        ),
+                    ),
                 )
             }
-            pageCompany = if (period == null) companyWriteRepository.findAll(pageRequest)
+            page = if (period == null) companyWriteRepository.findAll(pageRequest)
             else companyWriteRepository.findByCreatedOrChangedBetween(
                 period.startInstants,
                 period.endInstant,
-                pageRequest
+                pageRequest,
             )
         }
 

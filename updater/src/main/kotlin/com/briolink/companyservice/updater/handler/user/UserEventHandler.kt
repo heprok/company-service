@@ -40,6 +40,10 @@ class UserSyncEventHandler(
         val syncData = event.data
         if (syncData.indexObjectSync.toInt() == 1)
             syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (syncData.objectSync == null) {
+            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.User)
+            return
+        }
         try {
             userHandlerService.createOrUpdate(syncData.objectSync).also {
                 userJobPositionHandlerService.updateUser(it)
