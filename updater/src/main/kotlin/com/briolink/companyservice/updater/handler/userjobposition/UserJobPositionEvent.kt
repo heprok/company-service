@@ -43,7 +43,7 @@ data class UserJobPositionSyncData(
     @JsonProperty
     override val totalObjectSync: Long,
     @JsonProperty
-    override val objectSync: UserJobPositionEventData,
+    override val objectSync: UserJobPositionEventData?,
 ) : ISyncData<UserJobPositionEventData>
 
 data class UserJobPositionCreatedEvent(override val data: UserJobPositionEventData) :
