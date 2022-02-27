@@ -90,6 +90,7 @@ class CompanyMutation(
                                 else this.websiteUrl = inputCompany.website
                             }
                             "description" -> this.description = inputCompany.description
+                            "shortDescription" -> this.shortDescription = inputCompany.shortDescription
                             "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
                             "locationId" -> {
                                 if (inputCompany.locationId != null) {
