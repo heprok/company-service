@@ -19,6 +19,8 @@ data class Company(
     @JsonProperty
     val description: String? = null,
     @JsonProperty
+    val shortDescription: String? = null,
+    @JsonProperty
     val isTypePublic: Boolean = true,
     @JsonProperty
     val locationId: LocationId? = null,
