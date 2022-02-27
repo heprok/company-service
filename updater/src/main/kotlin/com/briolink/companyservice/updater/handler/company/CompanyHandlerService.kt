@@ -35,6 +35,7 @@ class CompanyHandlerService(
                 facebook = companyDomain.facebook,
                 twitter = companyDomain.twitter,
                 isTypePublic = companyDomain.isTypePublic,
+                shortDescription = companyDomain.shortDescription,
                 logo = companyDomain.logo,
                 description = companyDomain.description,
                 industry = companyDomain.industry?.let { CompanyReadEntity.Industry(it.id, it.name) },

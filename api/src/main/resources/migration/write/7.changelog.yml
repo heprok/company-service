@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            tableName: company
+            schemaName: write
+            columns:
+              - column:
+                  name: short_description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true

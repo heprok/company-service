@@ -1,7 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
 import com.briolink.lib.location.model.LocationMinInfo
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.net.URL
@@ -30,7 +29,6 @@ class CompanyReadEntity(
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty
         var name: String,
@@ -47,6 +45,8 @@ class CompanyReadEntity(
         @JsonProperty
         var facebook: String? = null,
         @JsonProperty
+        var shortDescription: String? = null,
+        @JsonProperty
         var twitter: String? = null,
         @JsonProperty
         var industry: Industry? = null,
@@ -56,7 +56,6 @@ class CompanyReadEntity(
         var keywords: List<Keyword?> = mutableListOf<Keyword>(),
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Occupation(
         @JsonProperty
         val id: UUID,
@@ -64,7 +63,6 @@ class CompanyReadEntity(
         val name: String,
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Industry(
         @JsonProperty
         val id: UUID,
@@ -72,7 +70,6 @@ class CompanyReadEntity(
         val name: String,
     )
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Keyword(
         @JsonProperty
         val id: UUID,
