@@ -1,16 +1,15 @@
 package com.briolink.companyservice.api.service
 
-import com.briolink.companyservice.common.domain.v1_0.KeywordSyncData
 import com.briolink.companyservice.common.event.v1_0.KeywordCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.KeywordSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.KeywordWriteRepository
 import com.briolink.companyservice.common.mapper.KeywordMapper
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.sync.SyncData
+import com.briolink.lib.sync.SyncUtil
 import com.briolink.lib.sync.enumeration.ServiceEnum
 import com.briolink.lib.sync.model.PeriodDateTime
-import org.springframework.data.domain.PageRequest
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -41,47 +40,30 @@ class KeywordService(
 
     fun findById(id: UUID) = keywordWriteRepository.findById(id)
 
-    @Async
-    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
-        var pageRequest = PageRequest.of(0, 200)
-        var page = if (period == null) keywordWriteRepository.findAll(pageRequest)
-        else keywordWriteRepository.findByCreatedOrChangedBetween(period.startInstants, period.endInstant, pageRequest)
-        if (page.totalElements.toInt() == 0) {
-            eventPublisher.publish(
-                KeywordSyncEvent(
-                    KeywordSyncData(
-                        indexObjectSync = 1,
-                        totalObjectSync = 1,
-                        objectSync = null,
-                        syncId = syncId,
-                        service = ServiceEnum.Company,
-                    ),
+    private fun publishKeywordSyncEvent(
+        syncId: Int,
+        objectIndex: Long,
+        totalObjects: Long,
+        entity: KeywordWriteEntity?
+    ) {
+        eventPublisher.publishAsync(
+            KeywordSyncEvent(
+                SyncData(
+                    objectIndex = objectIndex,
+                    totalObjects = totalObjects,
+                    objectSync = entity?.toDomain(),
+                    syncId = syncId,
+                    service = ServiceEnum.Company,
                 ),
-            )
-            return
-        }
-        var indexRow = 0
-        while (!page.isEmpty) {
-            pageRequest = pageRequest.next()
-            page.content.forEach {
-                indexRow += 1
-                eventPublisher.publish(
-                    KeywordSyncEvent(
-                        KeywordSyncData(
-                            service = ServiceEnum.Company,
-                            indexObjectSync = indexRow.toLong(),
-                            totalObjectSync = page.totalElements,
-                            syncId = syncId,
-                            objectSync = it.toDomain(),
-                        ),
-                    ),
-                )
-            }
-            page = if (period == null) keywordWriteRepository.findAll(pageRequest)
-            else keywordWriteRepository.findByCreatedOrChangedBetween(
-                period.startInstants,
-                period.endInstant,
-                pageRequest,
+            ),
+        )
+    }
+
+    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
+        SyncUtil.publishSyncEvent(period, keywordWriteRepository) { indexElement, totalElements, entity ->
+            publishKeywordSyncEvent(
+                syncId, indexElement, totalElements,
+                entity as KeywordWriteEntity?,
             )
         }
     }

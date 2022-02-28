@@ -1,12 +1,9 @@
 package com.briolink.companyservice.api.service
 
 import com.briolink.companyservice.common.domain.v1_0.Company
-import com.briolink.companyservice.common.domain.v1_0.CompanySyncData
-import com.briolink.companyservice.common.domain.v1_0.KeywordSyncData
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
-import com.briolink.companyservice.common.event.v1_0.KeywordSyncEvent
 import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
@@ -17,6 +14,8 @@ import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.sync.SyncData
+import com.briolink.lib.sync.SyncUtil
 import com.briolink.lib.sync.enumeration.ServiceEnum
 import com.briolink.lib.sync.model.PeriodDateTime
 import com.opencsv.bean.CsvBindByName
@@ -24,7 +23,6 @@ import com.opencsv.bean.CsvToBean
 import com.opencsv.bean.CsvToBeanBuilder
 import com.opencsv.bean.HeaderColumnNameMappingStrategy
 import mu.KLogging
-import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -193,49 +191,33 @@ class CompanyService(
         }
     }
 
-    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
-        var pageRequest = PageRequest.of(0, 200)
-        var page = if (period == null) companyWriteRepository.findAll(pageRequest)
-        else companyWriteRepository.findByCreatedOrChangedBetween(period.startInstants, period.endInstant, pageRequest)
-        if (page.totalElements.toInt() == 0) {
-            eventPublisher.publish(
-                KeywordSyncEvent(
-                    KeywordSyncData(
-                        indexObjectSync = 1,
-                        totalObjectSync = 1,
-                        objectSync = null,
-                        syncId = syncId,
-                        service = ServiceEnum.Company,
-                    ),
+    private fun publishCompanySyncEvent(
+        syncId: Int,
+        objectIndex: Long,
+        totalObjects: Long,
+        entity: CompanyWriteEntity?
+    ) {
+        eventPublisher.publishAsync(
+            CompanySyncEvent(
+                SyncData(
+                    objectIndex = objectIndex,
+                    totalObjects = totalObjects,
+                    objectSync = entity?.toDomain(),
+                    syncId = syncId,
+                    service = ServiceEnum.Company,
                 ),
-            )
-            return
-        }
-        var indexElement = 0
-        while (!page.isEmpty) {
-            pageRequest = pageRequest.next()
-            page.content.forEach {
-                indexElement += 1
-                eventPublisher.publish(
-                    CompanySyncEvent(
-                        CompanySyncData(
-                            service = ServiceEnum.Company,
-                            indexObjectSync = indexElement.toLong(),
-                            totalObjectSync = page.totalElements,
-                            syncId = syncId,
-                            objectSync = it.toDomain(),
-                        ),
-                    ),
-                )
-            }
-            page = if (period == null) companyWriteRepository.findAll(pageRequest)
-            else companyWriteRepository.findByCreatedOrChangedBetween(
-                period.startInstants,
-                period.endInstant,
-                pageRequest,
-            )
-        }
-
-        fun existsCompanyName(name: String): Boolean = companyWriteRepository.existsByName(name)
+            ),
+        )
     }
+
+    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
+        SyncUtil.publishSyncEvent(period, companyWriteRepository) { indexElement, totalElements, entity ->
+            publishCompanySyncEvent(
+                syncId, indexElement, totalElements,
+                entity as CompanyWriteEntity?,
+            )
+        }
+    }
+
+    fun existsCompanyName(name: String): Boolean = companyWriteRepository.existsByName(name)
 }
