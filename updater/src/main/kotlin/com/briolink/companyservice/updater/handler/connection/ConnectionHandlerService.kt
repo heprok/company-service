@@ -30,7 +30,7 @@ class ConnectionHandlerService(
     private val userReadRepository: UserReadRepository,
     private val permissionService: PermissionService,
 ) {
-    fun createOrUpdate(connection: Connection): ConnectionReadEntity {
+    fun createOrUpdate(connection: ConnectionEventData): ConnectionReadEntity {
         val participantUsers = userReadRepository.findByIdIsIn(
             mutableListOf(connection.participantFrom.userId, connection.participantTo.userId),
         ).stream().collect(Collectors.toMap(UserReadEntity::id) { v -> v })

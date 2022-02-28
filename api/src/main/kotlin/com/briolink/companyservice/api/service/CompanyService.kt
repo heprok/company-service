@@ -14,6 +14,10 @@ import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.sync.SyncData
+import com.briolink.lib.sync.SyncUtil
+import com.briolink.lib.sync.enumeration.ServiceEnum
+import com.briolink.lib.sync.model.PeriodDateTime
 import com.opencsv.bean.CsvBindByName
 import com.opencsv.bean.CsvToBean
 import com.opencsv.bean.CsvToBeanBuilder
@@ -120,7 +124,7 @@ class CompanyService(
         val industryWrite = industryName?.let { industryService.create(industryName) }
         val s3ImageUrl = if (imageUrl != null)
             awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, imageUrl) else null
-        if(companyWrite != null && s3ImageUrl != null && companyWrite.logo == null ) {
+        if (companyWrite != null && s3ImageUrl != null && companyWrite.logo == null) {
             companyWrite.logo = s3ImageUrl
             updateCompany(companyWrite)
         }
@@ -187,9 +191,31 @@ class CompanyService(
         }
     }
 
-    fun publishSyncEvent() {
-        companyWriteRepository.findAll().forEach {
-            eventPublisher.publishAsync(CompanyUpdatedEvent(it.toDomain()))
+    private fun publishCompanySyncEvent(
+        syncId: Int,
+        objectIndex: Long,
+        totalObjects: Long,
+        entity: CompanyWriteEntity?
+    ) {
+        eventPublisher.publishAsync(
+            CompanySyncEvent(
+                SyncData(
+                    objectIndex = objectIndex,
+                    totalObjects = totalObjects,
+                    objectSync = entity?.toDomain(),
+                    syncId = syncId,
+                    service = ServiceEnum.Company,
+                ),
+            ),
+        )
+    }
+
+    fun publishSyncEvent(syncId: Int, period: PeriodDateTime? = null) {
+        SyncUtil.publishSyncEvent(period, companyWriteRepository) { indexElement, totalElements, entity ->
+            publishCompanySyncEvent(
+                syncId, indexElement, totalElements,
+                entity as CompanyWriteEntity?,
+            )
         }
     }
 

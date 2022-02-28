@@ -6,8 +6,11 @@ import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.lib.location.enumeration.TypeLocationEnum
 import com.briolink.lib.location.model.LocationId
+import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
+import org.hibernate.annotations.UpdateTimestamp
 import java.net.URL
+import java.time.Instant
 import java.util.UUID
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -104,6 +107,14 @@ class CompanyWriteEntity(
             )
         else null
     }
+
+    @CreationTimestamp
+    @Column(name = "created", nullable = false)
+    lateinit var created: Instant
+
+    @UpdateTimestamp
+    @Column(name = "changed")
+    var changed: Instant? = null
 
     @PrePersist
     fun prePersist() {

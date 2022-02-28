@@ -13,7 +13,7 @@ class CompanyServiceHandlerService(
     private val serviceReadRepository: ServiceReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
 ) {
-    fun createOrUpdate(service: CompanyService) {
+    fun createOrUpdate(service: CompanyServiceEventData) {
         serviceReadRepository.findById(service.id).orElse(
             ServiceReadEntity(service.id),
         ).apply {

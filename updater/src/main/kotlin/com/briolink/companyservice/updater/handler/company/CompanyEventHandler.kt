@@ -1,12 +1,16 @@
 package com.briolink.companyservice.updater.handler.company
 
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
+import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import com.briolink.companyservice.updater.handler.connection.ConnectionServiceHandlerService
+import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.SyncEventHandler
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import org.springframework.context.ApplicationEventPublisher
 
 @EventHandlers(
@@ -32,5 +36,31 @@ class CompanyEventHandler(
                 }
             }
         }
+    }
+}
+
+@EventHandler("CompanySyncEvent", "1.0")
+class CompanySyncEventHandler(
+    private val companyHandlerService: CompanyHandlerService,
+    private val connectionHandlerService: ConnectionHandlerService,
+    private val connectionServiceHandlerService: ConnectionServiceHandlerService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    syncService: SyncService,
+) : SyncEventHandler<CompanySyncEvent>(ObjectSyncEnum.Company, syncService) {
+    override fun handle(event: CompanySyncEvent) {
+        val syncData = event.data
+        if (!objectSyncStarted(syncData)) return
+        try {
+            val objectSync = syncData.objectSync!!
+            val company = companyHandlerService.findById(objectSync.id)
+            companyHandlerService.createOrUpdate(company, objectSync).also {
+                connectionHandlerService.updateCompany(it)
+                connectionServiceHandlerService.updateCompany(it)
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(objectSync.id, false))
+            }
+        } catch (ex: Exception) {
+            sendError(syncData, ex)
+        }
+        objectSyncCompleted(syncData)
     }
 }

@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 15
+      author: oleg@briolink.com
+      changes:
+        - createTable:
+            tableName: sync_log
+            schemaName: read
+            columns:
+              - column:
+                  name: sync_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_sync
+                  type: int
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service
+                  type: int
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: completed
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: with_error
+                  type: boolean
+                  constraints:
+                    nullable: true

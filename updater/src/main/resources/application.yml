@@ -38,3 +38,7 @@ location-service:
   api:
     url: http://location-service.${env.spring_profiles_active}.svc.cluster.local/
     version: 1
+sync-service:
+  api:
+    url: http://sync-service.${env.spring_profiles_active}.svc.cluster.local/
+    version: 1

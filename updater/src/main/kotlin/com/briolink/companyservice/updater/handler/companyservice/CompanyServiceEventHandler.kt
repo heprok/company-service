@@ -3,9 +3,12 @@ package com.briolink.companyservice.updater.handler.companyservice
 import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
 import com.briolink.companyservice.common.jpa.runAfterTxCommit
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
+import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.SyncEventHandler
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import org.springframework.context.ApplicationEventPublisher
 
 @EventHandlers(
@@ -36,7 +39,14 @@ class ServiceDeletedEventHandler(
 ) : IEventHandler<CompanyServiceDeletedEvent> {
     override fun handle(event: CompanyServiceDeletedEvent) {
         companyServiceHandlerService.deleteById(event.data.id)
-        runAfterTxCommit { applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false)) }
+        runAfterTxCommit {
+            applicationEventPublisher.publishEvent(
+                RefreshStatisticByCompanyId(
+                    event.data.companyId,
+                    false
+                )
+            )
+        }
     }
 }
 
@@ -47,6 +57,31 @@ class ServiceHideEventHandler(
 ) : IEventHandler<CompanyServiceHideEvent> {
     override fun handle(event: CompanyServiceHideEvent) {
         companyServiceHandlerService.setHidden(event.data.id, event.data.hidden)
-        runAfterTxCommit { applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.companyId, false)) }
+        runAfterTxCommit {
+            applicationEventPublisher.publishEvent(
+                RefreshStatisticByCompanyId(
+                    event.data.companyId,
+                    false
+                )
+            )
+        }
+    }
+}
+
+@EventHandler("CompanyServiceSyncEvent", "1.0")
+class CompanyServiceSyncEventHandler(
+    private val companyServiceHandlerService: CompanyServiceHandlerService,
+    syncService: SyncService,
+) : SyncEventHandler<CompanyServiceSyncEvent>(ObjectSyncEnum.CompanyService, syncService) {
+    override fun handle(event: CompanyServiceSyncEvent) {
+        val syncData = event.data
+        if (!objectSyncStarted(syncData)) return
+        try {
+            val objectSync = syncData.objectSync!!
+            companyServiceHandlerService.createOrUpdate(objectSync)
+        } catch (ex: Exception) {
+            sendError(syncData, ex)
+        }
+        objectSyncCompleted(syncData)
     }
 }
