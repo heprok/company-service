@@ -28,11 +28,6 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-              - column:
-                  name: changed
-                  type: timestamp
-                  constraints:
-                    nullable: true
         - addColumn:
             schemaName: write
             tableName: industry
@@ -43,11 +38,6 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-              - column:
-                  name: changed
-                  type: timestamp
-                  constraints:
-                    nullable: true
         - addColumn:
             schemaName: write
             tableName: occupation
@@ -58,8 +48,3 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-              - column:
-                  name: changed
-                  type: timestamp
-                  constraints:
-                    nullable: true

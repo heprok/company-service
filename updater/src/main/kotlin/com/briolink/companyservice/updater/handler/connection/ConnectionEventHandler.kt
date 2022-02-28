@@ -5,9 +5,8 @@ import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.SyncEventHandler
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
-import com.briolink.lib.sync.enumeration.UpdaterEnum
-import com.briolink.lib.sync.model.SyncError
 import org.springframework.context.ApplicationEventPublisher
 
 @EventHandlers(
@@ -46,19 +45,14 @@ class ConnectionEventHandler(
 @EventHandler("ConnectionSyncEvent", "1.0")
 class ConnectionSyncEventHandler(
     private val connectionHandlerService: ConnectionHandlerService,
-    private val syncService: SyncService,
-    private val applicationEventPublisher: ApplicationEventPublisher
-) : IEventHandler<ConnectionSyncEvent> {
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    syncService: SyncService,
+) : SyncEventHandler<ConnectionSyncEvent>(ObjectSyncEnum.Connection, syncService) {
     override fun handle(event: ConnectionSyncEvent) {
         val syncData = event.data
-        if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSyncForService(syncData.syncId, syncData.service)
-        if (syncData.objectSync == null) {
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Connection)
-            return
-        }
+        if (!objectSyncStarted(syncData)) return
         try {
-            val connection = syncData.objectSync
+            val connection = syncData.objectSync!!
             if (connection.status != ConnectionStatus.Rejected) {
                 connectionHandlerService.createOrUpdate(connection).also {
                     if (connection.status == ConnectionStatus.Verified) {
@@ -80,17 +74,8 @@ class ConnectionSyncEventHandler(
                 connectionHandlerService.delete(connection.id)
             }
         } catch (ex: Exception) {
-            syncService.sendSyncError(
-                syncError = SyncError(
-                    service = syncData.service,
-                    updater = UpdaterEnum.Company,
-                    syncId = syncData.syncId,
-                    exception = ex,
-                    indexObjectSync = syncData.indexObjectSync
-                )
-            )
+            sendError(syncData, ex)
         }
-        if (syncData.indexObjectSync == syncData.totalObjectSync)
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Connection)
+        objectSyncCompleted(syncData)
     }
 }

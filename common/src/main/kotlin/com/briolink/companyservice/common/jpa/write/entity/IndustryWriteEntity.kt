@@ -2,7 +2,6 @@ package com.briolink.companyservice.common.jpa.write.entity
 
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -17,10 +16,6 @@ class IndustryWriteEntity : BaseWriteEntity() {
     @CreationTimestamp
     @Column(name = "created", nullable = false)
     lateinit var created: Instant
-
-    @UpdateTimestamp
-    @Column(name = "changed")
-    var changed: Instant? = null
 
     fun toDomain(): Industry = Industry(
         id = id!!,

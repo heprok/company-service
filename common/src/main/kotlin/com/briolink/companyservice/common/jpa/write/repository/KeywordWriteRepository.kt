@@ -13,6 +13,6 @@ interface KeywordWriteRepository : JpaRepository<KeywordWriteEntity, UUID>, Base
     @Query("SELECT c FROM KeywordWriteEntity c WHERE lower(c.name) = lower(?1)")
     fun findByName(name: String): KeywordWriteEntity?
 
-    @Query("SELECT c from KeywordWriteEntity c WHERE c.created BETWEEN ?1 AND ?2 OR c.changed BETWEEN ?1 AND ?2")
+    @Query("SELECT c from KeywordWriteEntity c WHERE c.created BETWEEN ?1 AND ?2")
     override fun findByPeriod(start: Instant, end: Instant, pageable: Pageable): Page<KeywordWriteEntity>
 }

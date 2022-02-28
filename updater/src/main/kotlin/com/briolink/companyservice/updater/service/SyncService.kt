@@ -1,7 +1,7 @@
 package com.briolink.companyservice.updater.service
 
 import com.briolink.companyservice.common.jpa.read.repository.SyncLogReadRepository
-import com.briolink.lib.sync.AbstractSyncService
+import com.briolink.lib.sync.BaseSyncService
 import com.briolink.lib.sync.SyncLogId
 import com.briolink.lib.sync.SyncWebClient
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 class SyncService(
     override val syncWebClient: SyncWebClient,
     override val syncLogRepository: SyncLogReadRepository
-) : AbstractSyncService() {
+) : BaseSyncService() {
     override val CURRENT_UPDATER: UpdaterEnum = UpdaterEnum.Company
     override fun getListSyncLogIdAtCompany(syncId: Int): List<SyncLogId> =
         listOf(

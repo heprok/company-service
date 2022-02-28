@@ -9,9 +9,8 @@ import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
 import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.sync.SyncEventHandler
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
-import com.briolink.lib.sync.enumeration.UpdaterEnum
-import com.briolink.lib.sync.model.SyncError
 import org.springframework.context.ApplicationEventPublisher
 
 @EventHandlers(
@@ -43,38 +42,25 @@ class CompanyEventHandler(
 @EventHandler("CompanySyncEvent", "1.0")
 class CompanySyncEventHandler(
     private val companyHandlerService: CompanyHandlerService,
-    private val syncService: SyncService,
     private val connectionHandlerService: ConnectionHandlerService,
     private val connectionServiceHandlerService: ConnectionServiceHandlerService,
-    private val applicationEventPublisher: ApplicationEventPublisher
-) : IEventHandler<CompanySyncEvent> {
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    syncService: SyncService,
+) : SyncEventHandler<CompanySyncEvent>(ObjectSyncEnum.Company, syncService) {
     override fun handle(event: CompanySyncEvent) {
         val syncData = event.data
-        if (syncData.objectSync == null) {
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Company)
-            return
-        }
-        if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSyncForService(syncData.syncId, syncData.service)
+        if (!objectSyncStarted(syncData)) return
         try {
-            val company = companyHandlerService.findById(syncData.objectSync!!.id)
-            companyHandlerService.createOrUpdate(company, syncData.objectSync!!).also {
-//                connectionHandlerService.updateCompany(it)
-//                connectionServiceHandlerService.updateCompany(it)
-//                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(syncData.objectSync!!.id, false))
+            val objectSync = syncData.objectSync!!
+            val company = companyHandlerService.findById(objectSync.id)
+            companyHandlerService.createOrUpdate(company, objectSync).also {
+                connectionHandlerService.updateCompany(it)
+                connectionServiceHandlerService.updateCompany(it)
+                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(objectSync.id, false))
             }
         } catch (ex: Exception) {
-            syncService.sendSyncError(
-                syncError = SyncError(
-                    service = syncData.service,
-                    updater = UpdaterEnum.Company,
-                    syncId = syncData.syncId,
-                    exception = ex,
-                    indexObjectSync = syncData.indexObjectSync,
-                ),
-            )
+            sendError(syncData, ex)
         }
-        if (syncData.indexObjectSync == syncData.totalObjectSync)
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.Company)
+        objectSyncCompleted(syncData)
     }
 }

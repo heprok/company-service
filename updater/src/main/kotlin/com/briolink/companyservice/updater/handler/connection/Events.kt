@@ -1,8 +1,8 @@
 package com.briolink.companyservice.updater.handler.connection
 
 import com.briolink.event.Event
-import com.briolink.lib.sync.ISyncData
-import com.briolink.lib.sync.enumeration.ServiceEnum
+import com.briolink.lib.sync.SyncData
+import com.briolink.lib.sync.SyncEvent
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Instant
 import java.time.Year
@@ -81,19 +81,6 @@ data class ConnectionEventData(
     var created: Instant,
 )
 
-data class ConnectionSyncData(
-    @JsonProperty
-    override val indexObjectSync: Long,
-    @JsonProperty
-    override val service: ServiceEnum,
-    @JsonProperty
-    override val syncId: Int,
-    @JsonProperty
-    override val totalObjectSync: Long,
-    @JsonProperty
-    override val objectSync: ConnectionEventData?
-) : ISyncData<ConnectionEventData>
-
 data class ConnectionCreatedEvent(override val data: ConnectionEventData) : Event<ConnectionEventData>("1.0")
 data class ConnectionUpdatedEvent(override val data: ConnectionEventData) : Event<ConnectionEventData>("1.0")
-data class ConnectionSyncEvent(override val data: ConnectionSyncData) : Event<ConnectionSyncData>("1.0")
+data class ConnectionSyncEvent(override val data: SyncData<ConnectionEventData>) : SyncEvent<ConnectionEventData>("1.0")

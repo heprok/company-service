@@ -5,9 +5,8 @@ import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.event.IEventHandler
 import com.briolink.event.annotation.EventHandler
+import com.briolink.lib.sync.SyncEventHandler
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
-import com.briolink.lib.sync.enumeration.UpdaterEnum
-import com.briolink.lib.sync.model.SyncError
 
 @EventHandler("OccupationCreatedEvent", "1.0")
 class OccupationEventHandler(
@@ -21,34 +20,18 @@ class OccupationEventHandler(
 @EventHandler("OccupationSyncEvent", "1.0")
 class OccupationSyncEventHandler(
     private val occupationHandlerService: OccupationHandlerService,
-    private val syncService: SyncService,
-) : IEventHandler<OccupationSyncEvent> {
+    syncService: SyncService,
+) : SyncEventHandler<OccupationSyncEvent>(ObjectSyncEnum.CompanyOccupation, syncService) {
     override fun handle(event: OccupationSyncEvent) {
         val syncData = event.data
-        println(syncData.objectSync)
-        println(syncData.indexObjectSync)
-        println(syncData.totalObjectSync)
-        if (syncData.indexObjectSync.toInt() == 1)
-            syncService.startSyncForService(syncData.syncId, syncData.service)
-        if (syncData.objectSync == null) {
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.CompanyOccupation)
-            return
-        }
+        if (!objectSyncStarted(syncData)) return
         try {
-            val occupation = occupationHandlerService.findById(syncData.objectSync!!.id)
-            occupationHandlerService.createOrUpdate(occupation, syncData.objectSync!!)
+            val objectSync = syncData.objectSync!!
+            val occupation = occupationHandlerService.findById(objectSync.id)
+            occupationHandlerService.createOrUpdate(occupation, objectSync)
         } catch (ex: Exception) {
-            syncService.sendSyncError(
-                syncError = SyncError(
-                    service = syncData.service,
-                    updater = UpdaterEnum.Company,
-                    syncId = syncData.syncId,
-                    exception = ex,
-                    indexObjectSync = syncData.indexObjectSync
-                )
-            )
+            sendError(syncData, ex)
         }
-        if (syncData.indexObjectSync == syncData.totalObjectSync)
-            syncService.completedObjectSync(syncData.syncId, syncData.service, ObjectSyncEnum.CompanyOccupation)
+        objectSyncCompleted(syncData)
     }
 }

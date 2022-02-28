@@ -13,6 +13,6 @@ interface IndustryWriteRepository : JpaRepository<IndustryWriteEntity, UUID>, Ba
     @Query("SELECT c FROM IndustryWriteEntity c WHERE lower(c.name) = lower(?1)")
     fun findByName(name: String): IndustryWriteEntity?
 
-    @Query("SELECT c from IndustryWriteEntity c WHERE c.created BETWEEN ?1 AND ?2 OR c.changed BETWEEN ?1 AND ?2")
+    @Query("SELECT c from IndustryWriteEntity c WHERE c.created BETWEEN ?1 AND ?2")
     override fun findByPeriod(start: Instant, end: Instant, pageable: Pageable): Page<IndustryWriteEntity>
 }
