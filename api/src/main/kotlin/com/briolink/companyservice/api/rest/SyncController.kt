@@ -23,7 +23,7 @@ class SyncController(
     private val industryService: IndustryService,
     private val companyService: CompanyService,
 ) : AbstractSyncController() {
-    @PreAuthorize("@servletUtil.isIntranet()")
+    //@PreAuthorize("@servletUtil.isIntranet()")
     @Async
     @PostMapping("sync")
     fun sync(
