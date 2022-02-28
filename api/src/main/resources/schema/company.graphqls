@@ -4,6 +4,7 @@ type Company {
     website: Url
     logo: Image
     description: String
+    shortDescription: String,
     slug: String!
     isTypePublic: Boolean!
     facebook: String
@@ -46,6 +47,7 @@ input UpdateCompanyInput {
     website: Url
     slug: String
     description: String
+    shortDescription: String
     isTypePublic: Boolean
     locationId: ID
     facebook: String

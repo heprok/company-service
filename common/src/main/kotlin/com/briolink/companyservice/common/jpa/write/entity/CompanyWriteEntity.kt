@@ -37,6 +37,9 @@ class CompanyWriteEntity(
     @Column(name = "description")
     var description: String? = null,
 
+    @Column(name = "short_description", length = 255)
+    var shortDescription: String? = null,
+
     @Column(name = "isTypePublic")
     var isTypePublic: Boolean = true,
 
@@ -123,6 +126,7 @@ class CompanyWriteEntity(
         name = name,
         website = websiteUrl,
         description = description,
+        shortDescription = shortDescription,
         slug = slug,
         logo = logo,
         isTypePublic = isTypePublic,
