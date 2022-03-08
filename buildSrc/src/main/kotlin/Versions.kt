@@ -17,6 +17,6 @@ object Versions {
     const val MAPSTRUCT = "1.4.2.Final"
     const val BRIOLINK_EVENT = "0.3.2-SNAPSHOT"
     const val BRIOLINK_LOCATION = "0.2.1-SNAPSHOT"
-    const val BRIOLINK_SYNC = "0.1.5-SNAPSHOT"
+    const val BRIOLINK_SYNC = "0.1.6-SNAPSHOT"
     const val JACKSON_MODULE = "2.13.0-rc2"
 }
