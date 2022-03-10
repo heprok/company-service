@@ -6,6 +6,9 @@ import com.blazebit.persistence.ParameterHolder
 import com.blazebit.persistence.WhereBuilder
 import com.briolink.companyservice.api.service.employee.dto.EmployeeListFilter
 import com.briolink.companyservice.api.service.employee.dto.EmployeeListRequest
+import com.briolink.companyservice.api.service.employee.dto.EmployeeTab
+import com.briolink.companyservice.api.service.employee.dto.EmployeeTabFilter
+import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
@@ -30,9 +33,19 @@ class EmployeeService(
         val cbf = criteriaBuilderFactory.create(entityManager, UserJobPositionReadEntity::class.java)
         val cb = cbf.from(UserJobPositionReadEntity::class.java)
         cb.where("companyId").eq(request.companyId)
-        if (request.isCurrentEmployees) cb.whereExpression("upper(dates) is null") else cb.whereExpression("upper(dates) is not null")
-        if (request.isUserWithPermission) cb.whereExpression("permissionLevel BETWEEN 0 AND 3")
+
+        when (request.tab) {
+            EmployeeTab.Current -> cb.whereExpression("upper(dates) is null")
+            EmployeeTab.Former -> cb.whereExpression("upper(dates) is not null")
+        }
+
+        if (request.forConfirmation) cb.where("_status").eq(UserJobPositionVerifyStatusEnum.Pending.value)
+        else cb.where("_status").eq(UserJobPositionVerifyStatusEnum.Verified.value)
+
+        if (request.isOnlyUserWithPermission) cb.whereExpression("permissionLevel BETWEEN 0 AND 3")
+
         cb.whereExpression("dates != 'empty'")
+
         if (request.filters != null) applyFilters(request.filters, cb)
 
         return cb.orderByDesc("permissionLevel").orderByDesc("id").page(request.offset, request.limit).resultList
@@ -56,6 +69,52 @@ class EmployeeService(
 
         return cb
     }
+
+    private fun getTabCurrentEmployees(
+        companyId: UUID,
+        filters: EmployeeListFilter?,
+        withCount: Boolean = false
+    ): EmployeeTabFilter {
+        val tab = EmployeeTabFilter(tab = EmployeeTab.Current, value = 0)
+        if (withCount) {
+            val cbf = criteriaBuilderFactory.create(entityManager, UserJobPositionReadEntity::class.java)
+            val cb = cbf.from(UserJobPositionReadEntity::class.java)
+            cb.where("companyId").eq(companyId)
+            cb.whereExpression("upper(dates) is null")
+            cb.whereExpression("dates != 'empty'")
+            if (filters != null) applyFilters(filters, cb)
+            tab.value = cb.queryRootCountQuery.resultList[0].toInt()
+        }
+
+        return tab
+    }
+
+    private fun getTabFormerEmployees(
+        companyId: UUID,
+        filters: EmployeeListFilter?,
+        withCount: Boolean = false
+    ): EmployeeTabFilter {
+        val tab = EmployeeTabFilter(tab = EmployeeTab.Former, value = 0)
+        if (withCount) {
+            val cbf = criteriaBuilderFactory.create(entityManager, UserJobPositionReadEntity::class.java)
+            val cb = cbf.from(UserJobPositionReadEntity::class.java)
+            cb.where("companyId").eq(companyId)
+            cb.whereExpression("upper(dates) is not null")
+            cb.whereExpression("dates != 'empty'")
+            if (filters != null) applyFilters(filters, cb)
+            tab.value = cb.queryRootCountQuery.resultList[0].toInt()
+        }
+
+        return tab
+    }
+
+    fun getTabs(companyId: UUID, filters: EmployeeListFilter?, withCount: Boolean = false): List<EmployeeTabFilter> {
+        return listOf(
+            getTabCurrentEmployees(companyId, filters, withCount),
+            getTabFormerEmployees(companyId, filters, withCount)
+        )
+    }
+
 //
 //    fun getEmployees(companyId: UUID, limit: Int, offset: Int) : Page<UserJobPositionReadEntity> {
 //        userJobPositionReadRepository.getEmployees(companyId, PageRequest(offset, limit))

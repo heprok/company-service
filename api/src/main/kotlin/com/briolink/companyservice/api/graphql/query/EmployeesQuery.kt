@@ -7,7 +7,9 @@ import com.briolink.companyservice.api.service.employee.dto.EmployeeListFilter
 import com.briolink.companyservice.api.service.employee.dto.EmployeeListRequest
 import com.briolink.companyservice.api.types.Employee
 import com.briolink.companyservice.api.types.EmployeeList
+import com.briolink.companyservice.api.types.EmployeesEditorFilterParameters
 import com.briolink.companyservice.api.types.EmployeesEditorListOptions
+import com.briolink.companyservice.api.types.EmployeesListCountByItem
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserList
 import com.briolink.lib.permission.AllowedRights
@@ -38,25 +40,35 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @PreAuthorize("isAuthenticated() && @permissionUtil.check(#companyId, 'IsCanEditEmployees')")
+    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+//    @PreAuthorize("isAuthenticated()")
+    fun getEmployeesTabs(
+        @InputArgument("companyId") accessObjectId: String,
+        @InputArgument filter: EmployeesEditorFilterParameters?
+    ): List<EmployeesListCountByItem> {
+        val filter = EmployeeListFilter(
+            workDateRange = filter?.workDateRange?.let { DateRange(it.start, it.end) },
+            jobPositionTitles = filter?.jobPositionTitles,
+            rights = filter?.rights?.map { PermissionRightEnum.valueOf(it.name) },
+            search = filter?.search,
+        )
+
+        return employeeService.getTabs(UUID.fromString(accessObjectId), filter, true).map {
+            EmployeesListCountByItem(
+                com.briolink.companyservice.api.types.EmployeeTab.valueOf(it.tab.name),
+                value = it.value
+            )
+        }
+    }
+
+    @DgsQuery
+    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+//    @PreAuthorize("isAuthenticated()")
     fun getCompanyEmployeesEditor(
-        @InputArgument companyId: String,
+        @InputArgument("companyId") accessObjectId: String,
         @InputArgument options: EmployeesEditorListOptions,
     ): EmployeeList {
-        val request = EmployeeListRequest(
-            companyId = UUID.fromString(companyId),
-            filters = EmployeeListFilter(
-                workDateRange = options.filter?.workDateRange?.let { DateRange(it.start, it.end) },
-                jobPositionTitles = options.filter?.jobPositionTitles,
-                rights = options.filter?.rights?.map { PermissionRightEnum.valueOf(it.name) },
-                search = options.filter?.search,
-            ),
-            limit = options.limit,
-            offset = options.offset,
-            isUserWithPermission = options.isUserWithPermission,
-            isCurrentEmployees = options.isCurrentEmployees,
-
-        )
+        val request = EmployeeListRequest.fromType(accessObjectId, options)
 
         val items = employeeService.getListByCompanyId(request)
 
@@ -67,14 +79,17 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @AllowedRights(AccessObjectTypeEnum.Company, "$accessObjectId", [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
     fun getConfirmationEmployees(
         @InputArgument("companyId") accessObjectId: String,
-        @InputArgument query: String?,
+        @InputArgument options: EmployeesEditorListOptions,
     ): EmployeeList {
-
+        val request = EmployeeListRequest.fromType(accessObjectId, options)
+        request.forConfirmation = true
+        val items = employeeService.getListByCompanyId(request)
         return EmployeeList(
-            items = listOf(), totalItems = 0,
+            items = items.map { Employee.fromEntity(it) },
+            totalItems = items.totalSize.toInt(),
         )
     }
 }

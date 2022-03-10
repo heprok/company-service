@@ -40,7 +40,7 @@ class CompanyHandlerService(
                 } ?: mutableListOf(),
                 occupation = companyDomain.occupation?.let { CompanyReadEntity.Occupation(it.id, it.name) },
             ).apply {
-                location = companyDomain.locationId?.let { locationService.getLocation(it) }
+//                location = companyDomain.locationId?.let { locationService.getLocation(it) }
             }
             return companyReadRepository.save(this)
         }

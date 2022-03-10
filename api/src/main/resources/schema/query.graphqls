@@ -25,6 +25,7 @@ type Query {
     getLocations(query: String!): [Location]
 
     #    ================ Employees editor ===============
+    getEmployeesTabs(companyId: ID!, filter: EmployeesEditorFilterParameters): [EmployeesListCountByItem!]!
     getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : EmployeeList!
-    getConfirmationEmployees(companyId: ID!, query: String): EmployeeList!
+    getConfirmationEmployees(companyId: ID!, options: EmployeesEditorListOptions!): EmployeeList!
 }

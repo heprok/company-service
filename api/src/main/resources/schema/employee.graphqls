@@ -7,8 +7,8 @@ type Employee {
 input EmployeesEditorListOptions {
     limit: Int! = 10
     offset: Int! = 0
-    isUserWithPermission: Boolean! = false
-    isCurrentEmployees: Boolean! = true
+    isOnlyUserWithPermission: Boolean = false
+    tab: EmployeeTab
     filter: EmployeesEditorFilterParameters
 }
 
@@ -27,4 +27,19 @@ type EmployeeList implements PaginatedList {
 type EditEmployeeRightResult implements BaseResult & ResultWithUserErrors {
     success: Boolean!
     userErrors: [Error]!
+}
+
+type ConfirmEmployeeResult implements BaseResult & ResultWithUserErrors {
+    success: Boolean!
+    userErrors: [Error]!
+}
+
+type EmployeesListCountByItem {
+    tab: EmployeeTab!
+    value: Int!
+}
+
+enum EmployeeTab {
+    Current,
+    Former
 }

@@ -18,15 +18,15 @@ type Mutation{
     hideCompanyConnection(companyId: ID!, connectionId: ID!, isHide: Boolean!) : DelOrHideResult!
     deleteCompanyConnection(companyId: ID!, connectionId: ID!) : DelOrHideResult!
     #    User ( company Stuff)
-#    createEmployee(input: CreateUserInput!) : User!
+    #    createEmployee(input: CreateUserInput!) : User!
     getAllPermission(userId: ID) : Boolean
     # Service
     hideCompanyService(companyId: ID!, serviceId: ID!): DelOrHideResult!
     deleteCompanyService(companyId: ID!, serviceId: ID!) : DelOrHideResult!
 
     #    ================ Employee editor ===============
-    deleteEmployee(userId: ID!, isFull: Boolean!): DelOrHideResult!
-    editEmployeeRight(userId: ID, rights: [PermissionRight]): EditEmployeeRightResult!
-    confirmEmployee(userId: ID, accept: Boolean!): DelOrHideResult
+    deleteEmployee(companyId: ID!, userId: ID!, isFull: Boolean!): DelOrHideResult!
+    editEmployeeRight(companyId: ID!, userId: ID!, rights: [PermissionRight]!): EditEmployeeRightResult!
+    confirmEmployee(companyId: ID!, userId: ID!, accept: Boolean!): ConfirmEmployeeResult!
 
 }
