@@ -26,4 +26,5 @@ type Query {
 
     #    ================ Employees editor ===============
     getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : EmployeeList!
+    getConfirmationEmployees(companyId: ID!, query: String): EmployeeList!
 }

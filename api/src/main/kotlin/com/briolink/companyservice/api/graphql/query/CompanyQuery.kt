@@ -34,7 +34,7 @@ class CompanyQuery(
         }
         return CompanyAndUserPermission(
             company = company?.let { Company.fromEntity(it) },
-            userPermission = role?.let { UserPermission.fromModel(role) }
+            userPermission = role?.let { UserPermission.fromModel(role) },
         )
     }
 

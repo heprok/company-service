@@ -23,3 +23,8 @@ type EmployeeList implements PaginatedList {
     items: [Employee!]!
     totalItems: Int!
 }
+
+type EditEmployeeRightResult implements BaseResult & ResultWithUserErrors {
+    success: Boolean!
+    userErrors: [Error]!
+}

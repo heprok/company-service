@@ -23,4 +23,10 @@ type Mutation{
     # Service
     hideCompanyService(companyId: ID!, serviceId: ID!): DelOrHideResult!
     deleteCompanyService(companyId: ID!, serviceId: ID!) : DelOrHideResult!
+
+    #    ================ Employee editor ===============
+    deleteEmployee(userId: ID!, isFull: Boolean!): DelOrHideResult!
+    editEmployeeRight(userId: ID, rights: [PermissionRight]): EditEmployeeRightResult!
+    confirmEmployee(userId: ID, accept: Boolean!): DelOrHideResult
+
 }

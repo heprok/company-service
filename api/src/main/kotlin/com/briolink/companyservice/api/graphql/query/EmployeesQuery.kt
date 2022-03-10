@@ -10,6 +10,8 @@ import com.briolink.companyservice.api.types.EmployeeList
 import com.briolink.companyservice.api.types.EmployeesEditorListOptions
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserList
+import com.briolink.lib.permission.AllowedRights
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -47,12 +49,12 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
                 workDateRange = options.filter?.workDateRange?.let { DateRange(it.start, it.end) },
                 jobPositionTitles = options.filter?.jobPositionTitles,
                 rights = options.filter?.rights?.map { PermissionRightEnum.valueOf(it.name) },
-                search = options.filter?.search
+                search = options.filter?.search,
             ),
             limit = options.limit,
             offset = options.offset,
             isUserWithPermission = options.isUserWithPermission,
-            isCurrentEmployees = options.isCurrentEmployees
+            isCurrentEmployees = options.isCurrentEmployees,
 
         )
 
@@ -61,6 +63,18 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
         return EmployeeList(
             items = items.map { Employee.fromEntity(it) },
             totalItems = items.totalSize.toInt(),
+        )
+    }
+
+    @DgsQuery
+    @AllowedRights(AccessObjectTypeEnum.Company, "$accessObjectId", [PermissionRightEnum.IsCanEditEmployees])
+    fun getConfirmationEmployees(
+        @InputArgument("companyId") accessObjectId: String,
+        @InputArgument query: String?,
+    ): EmployeeList {
+
+        return EmployeeList(
+            items = listOf(), totalItems = 0,
         )
     }
 }

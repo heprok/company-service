@@ -23,9 +23,12 @@ class PermissionQuery(
     private val serviceCompanyService: ServiceCompanyService,
     private val permissionService: PermissionService,
 ) {
+//    getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : EmployeeList!
+//    getConfirmationEmployees(companyId: ID!, query: String): EmployeeList!
+
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getServices(
+    fun getCompanyEmployeesEditor(
         @InputArgument("companyId") companyId: String,
         @InputArgument("sort") sort: ServiceSort,
         @InputArgument("limit") limit: Int,
