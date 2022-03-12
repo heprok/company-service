@@ -58,21 +58,21 @@ class UserJobPositionHandlerService(
                         )
 
                         userFullName = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
-                        userFullNameTsv = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
+                        userFullNameTsv = userFullName
 
                         jobTitle = userJobPosition.title
-                        jobTitleTsv = userJobPosition.title
+                        jobTitleTsv = jobTitle
 
                         dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
                         else Range.open(userJobPosition.startDate, userJobPosition.endDate)
                         if (userJobPosition.isCurrent)
                             userJobPositionReadRepository.removeCurrent(userJobPosition.userId)
                         isCurrent = userJobPosition.isCurrent
-                    }
+                    },
                 )
 
-                if (addEmployee(userJobPosition.companyId, userJobPosition.userId))
-                    hideConnection(userJobPosition.companyId, userJobPosition.userId, false)
+                if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
+                    hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             } else {
                 userJobPositionReadEntityOptional.get().apply {
@@ -83,8 +83,9 @@ class UserJobPositionHandlerService(
                     dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
                     else Range.open(userJobPosition.startDate, userJobPosition.endDate)
                     isCurrent = userJobPosition.isCurrent
+                    userFullNameTsv = userFullName
                     jobTitle = userJobPosition.title
-                    jobTitleTsv = userJobPosition.title
+                    jobTitleTsv = jobTitle
                     userJobPositionReadRepository.save(this)
                 }
                 prevCompanyId?.let { refreshEmployeesByCompanyId(it) }
@@ -108,7 +109,7 @@ class UserJobPositionHandlerService(
                 userId = userId,
                 accessObjectType = AccessObjectTypeEnum.Company,
                 accessObjectId = companyId,
-                permissionRole = PermissionRoleEnum.Employee
+                permissionRole = PermissionRoleEnum.Employee,
             ) != null
         } catch (_: PermissionRoleExistException) {
             false
@@ -163,10 +164,15 @@ class UserJobPositionHandlerService(
             level = userPermission.data.level,
             rightsIds = userPermission.data.enabledPermissionRights.map { it.id }.toTypedArray(),
             permissionRoleId = userPermission.role.id,
-            enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights) // ktlint-disable max-line-length
+            enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights), // ktlint-disable max-line-length
         ).also {
             if (it > 0)
-                refreshEmployeesByCompanyId(userPermission.accessObjectUuid)
+                employeeReadRepository.updateUserPermission(
+                    userId = userPermission.userId,
+                    companyId = userPermission.accessObjectUuid,
+                    permissionRoleId = userPermission.role.id,
+                    enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights), // ktlint-disable max-line-length
+                )
         }
 //        userJobPositionReadRepository.findByCompanyIdAndUserId(
 //            userId = userPermission.userId,
