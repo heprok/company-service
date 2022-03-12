@@ -6,6 +6,8 @@ logging:
 spring:
   jpa:
     show-sql: true
+  datasource:
+    url: jdbc:postgresql://${env.DB_HOST:localhost}:${env.DB_PORT:5432}/dev_company
 app:
   app-endpoints:
     companyservice: http://192.168.0.23:8090/

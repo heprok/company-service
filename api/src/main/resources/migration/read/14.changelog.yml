@@ -1,3 +1,4 @@
+
 databaseChangeLog:
   - changeSet:
       id: 14
@@ -65,9 +66,9 @@ databaseChangeLog:
         - sql:
             sql: create index idx_user_job_position_user_id on read.user_job_position using btree ( user_id )
         - sql:
-            sql: create index idx_user_job_position_user_full_name_tsv on read.user_job_position using btree (user_full_name_tsv  pg_catalog.tsvector_ops)
+            sql: create index idx_user_job_position_user_full_name_tsv on read.user_job_position using GIN (user_full_name_tsv)
         - sql:
-            sql: create index idx_user_job_position_job_title_tsv on read.user_job_position using btree (job_title_tsv pg_catalog.tsvector_ops)
+            sql: create index idx_user_job_position_job_title_tsv on read.user_job_position using GIN (job_title_tsv)
         - sql:
             sql: create index idx_user_job_position_dates on read.user_job_position using GIST (dates)
         - sql:
