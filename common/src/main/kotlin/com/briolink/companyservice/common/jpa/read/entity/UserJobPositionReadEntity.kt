@@ -78,6 +78,16 @@ class UserJobPositionReadEntity(
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
+    fun setFormerEmployee() {
+        dates = Range.closed(dates.lower(), LocalDate.now())
+    }
+
+    fun removeRights() {
+        permissionLevel = 0
+        data.userPermission = null
+        _rights = arrayOf()
+    }
+
     data class Data(
         @JsonProperty
         var user: User,

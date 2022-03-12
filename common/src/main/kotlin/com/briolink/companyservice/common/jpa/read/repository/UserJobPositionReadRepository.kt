@@ -15,7 +15,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         """UPDATE UserJobPositionReadEntity u
            SET u.isCurrent = false
            WHERE u.userId = ?1
-        """
+        """,
     )
     fun removeCurrent(userId: UUID): Int
 
@@ -50,7 +50,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
             u.permissionLevel = 0, 
             u._rights = array()
             WHERE u.userId = ?1 AND u.companyId = ?2
-        """
+        """,
     )
     fun deleteUserPermission(
         userId: UUID,
@@ -67,7 +67,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
                 u.permissionLevel = :level,
                 u._rights = :rightIds
             WHERE u.userId = :userId AND u.companyId = :companyId
-        """
+        """,
     )
     fun updateUserPermission(
         @Param("userId") userId: UUID,
@@ -82,9 +82,13 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         """SELECT u
            FROM UserJobPositionReadEntity as u
            WHERE upper(u.dates) is null AND companyId = ?1 AND u.dates != 'empty'
-        """
+        """,
     )
     fun findByCompanyIdAndEndDateNull(companyId: UUID): List<UserJobPositionReadEntity>
+
+    @Modifying
+    @Query("""DELETE FROM UserJobPositionReadEntity u WHERE u.userId = ?2 AND u.companyId = ?1""")
+    fun deleteByCompanyIdAndUserId(companyId: UUID, userId: UUID): Int
 
     @Modifying
     @Query("DELETE from UserJobPositionReadEntity u where u.id = ?1")
@@ -96,4 +100,14 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         userId: UUID,
         status: Int
     ): Boolean
+
+    @Modifying
+    @Query(
+        """UPDATE read.user_job_position u 
+           SET u.dates = daterange(lower(u.dates), now())
+           WHERE u.userId = ?1 AND u.companyId = ?2
+       """,
+        nativeQuery = true,
+    )
+    fun setFormerEmployee(userId: UUID, companyId: UUID): Int
 }

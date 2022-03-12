@@ -26,7 +26,7 @@ type Mutation{
 
     #    ================ Employee editor ===============
     deleteEmployee(companyId: ID!, userId: ID!, isFull: Boolean!): DelOrHideResult!
-    editEmployeeRight(companyId: ID!, userId: ID!, rights: [PermissionRight]!): EditEmployeeRightResult!
+    editEmployeeRight(companyId: ID!, userId: ID!, role: PermissionRole,  rights: [PermissionRight]): EditEmployeeRightResult!
     confirmEmployee(companyId: ID!, userId: ID!, accept: Boolean!): ConfirmEmployeeResult!
 
 }
