@@ -18,8 +18,8 @@ import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.AccessDeniedException
-import com.briolink.lib.permission.model.UserPermissionRole
 import com.briolink.lib.permission.service.PermissionService
+import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -133,15 +133,43 @@ class EmployeeService(
         return true
     }
 
-    fun editPermissionRight(companyId: UUID, byUserId: UUID, userId: UUID, role: PermissionRoleEnum, rights: List<PermissionRightEnum>?) : UserPermissionRole {
-        if(!checkPermissionLevel(companyId, byUserId, userId)) throw AccessDeniedException()
-        when(role) {
-            PermissionRoleEnum.Employee -> permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, PermissionRoleEnum.Employee)
-            PermissionRoleEnum.Owner -> permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, PermissionRoleEnum.Owner)
-            PermissionRoleEnum.Admin -> permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, PermissionRoleEnum.Admin)
-            PermissionRoleEnum.Superuser -> permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, PermissionRoleEnum.Employee)
+    private fun updatePermission(
+        userId: UUID,
+        companyId: UUID,
+        permissionRole: PermissionRoleEnum,
+        rights: List<PermissionRightEnum>
+    ): Boolean {
+        val result = userJobPositionReadRepository.updateUserPermission(
+            userId = userId,
+            companyId = companyId,
+            level = permissionRole.level,
+            rightsIds = rights.map { it.id }.toTypedArray(),
+            permissionRoleId = permissionRole.id,
+            enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(rights),
+        ) > 0
+
+        employeeReadRepository.updateUserPermission(
+            userId,
+            companyId,
+            permissionRole.id,
+            ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(rights),
+        )
+        return result
+    }
+
+    fun editPermissionRight(
+        companyId: UUID,
+        byUserId: UUID,
+        userId: UUID,
+        role: PermissionRoleEnum,
+        rights: List<PermissionRightEnum>?
+    ): Boolean {
+        if (!checkPermissionLevel(companyId, byUserId, userId)) throw AccessDeniedException()
+        permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, role)
+        permissionService.setPermissionRights(userId, companyId, AccessObjectTypeEnum.Company, role, rights ?: listOf())?.also {
+            return updatePermission(userId, companyId, it.permissionRole, it.permissionRights)
         }
-        permissionService.
+        return false
     }
 
     fun deleteEmployee(companyId: UUID, byUserId: UUID, userId: UUID): Boolean {

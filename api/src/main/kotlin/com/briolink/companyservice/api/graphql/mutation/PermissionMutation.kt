@@ -6,12 +6,12 @@ import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.EditEmployeeRightResult
 import com.briolink.companyservice.api.types.PermissionRight
 import com.briolink.companyservice.api.types.PermissionRole
-import com.briolink.companyservice.api.util.SecurityUtil
+import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.lib.permission.AllowedRights
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.AccessDeniedException
-import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -19,7 +19,6 @@ import java.util.UUID
 
 @DgsComponent
 class PermissionMutation(
-    private val permissionService: PermissionService,
     private val employeeService: EmployeeService,
 ) {
     @DgsMutation
@@ -31,10 +30,10 @@ class PermissionMutation(
     ): DelOrHideResult {
         return try {
             val success = if (isFull)
-                employeeService.deleteEmployee(UUID.fromString(accessObjectId), SecurityUtil.currentUserAccountId, UUID.fromString(userId))
+                employeeService.deleteEmployee(UUID.fromString(accessObjectId), currentUserAccountId, UUID.fromString(userId))
             else employeeService.setFormerEmployee(
                 UUID.fromString(accessObjectId),
-                SecurityUtil.currentUserAccountId,
+                currentUserAccountId,
                 UUID.fromString(userId),
             )
 
@@ -47,15 +46,23 @@ class PermissionMutation(
         }
     }
 
+    // TODO edit grapql enum
     @DgsMutation
     @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
     fun editEmployeeRight(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument userId: String,
         @InputArgument role: PermissionRole,
-        @InputArgument rights: List<PermissionRight>?
+        @InputArgument(collectionType = PermissionRight::class) rights: List<PermissionRight?>?
     ): EditEmployeeRightResult {
-        return EditEmployeeRightResult(success = false, userErrors = listOf())
+        val success = employeeService.editPermissionRight(
+            UUID.fromString(accessObjectId),
+            currentUserAccountId,
+            UUID.fromString(userId),
+            PermissionRoleEnum.valueOf(role.name),
+            rights?.map { PermissionRightEnum.valueOf(it!!.name) },
+        )
+        return EditEmployeeRightResult(success = success, userErrors = listOf())
     }
 
     @DgsMutation

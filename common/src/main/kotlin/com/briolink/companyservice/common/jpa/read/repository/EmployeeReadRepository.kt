@@ -33,7 +33,24 @@ interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, EmployeePK>
 
     @Modifying
     @Query(
-        """DELETE EmployeeReadEntity e WHERE e.companyId = ?1"""
+        """UPDATE EmployeeReadEntity u
+           SET u.data = function('jsonb_sets', u.data,
+                '{userPermission,role}', :permissionRoleId, int,
+                '{userPermission,rights}', :enabledPermissionRightsJson, jsonb
+            )
+            WHERE u.userId = :userId AND u.companyId = :companyId
+        """,
+    )
+    fun updateUserPermission(
+        @Param("userId") userId: UUID,
+        @Param("companyId") companyId: UUID,
+        @Param("permissionRoleId") permissionRoleId: Int,
+        @Param("enabledPermissionRightsJson") enabledPermissionRightsJson: String,
+    ): Int
+
+    @Modifying
+    @Query(
+        """DELETE EmployeeReadEntity e WHERE e.companyId = ?1""",
     )
     fun deleteAllByCompanyId(companyId: UUID)
 
