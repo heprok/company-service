@@ -27,4 +27,7 @@ location-service:
   api:
     url: http://192.168.0.23:8070/
     version: 1
-
+permission-service:
+  api:
+    url: http://192.168.0.60:8200/
+    version: 1

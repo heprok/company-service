@@ -16,6 +16,6 @@ object Versions {
     const val LIQUIBASE_CORE = "4.4.3"
     const val MAPSTRUCT = "1.4.2.Final"
     const val BRIOLINK_EVENT = "0.3.2-SNAPSHOT"
-    const val BRIOLINK_PERMISSION = "0.2.1-SNAPSHOT"
+    const val BRIOLINK_PERMISSION = "0.2.4-SNAPSHOT"
     const val JACKSON_MODULE = "2.13.0-rc2"
 }

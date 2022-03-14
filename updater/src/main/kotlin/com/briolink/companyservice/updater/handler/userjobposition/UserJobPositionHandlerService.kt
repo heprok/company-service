@@ -1,9 +1,7 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
-import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
@@ -13,6 +11,7 @@ import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.exist.PermissionRoleExistException
+import com.briolink.lib.permission.exception.notfound.UserPermissionRoleNotFoundException
 import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.range.Range
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
@@ -36,7 +35,9 @@ class UserJobPositionHandlerService(
     fun createOrUpdate(userJobPosition: UserJobPosition) {
         val userReadEntity = userReadRepository.findById(userJobPosition.userId)
             .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
+
         var prevCompanyId: UUID? = null
+
         userJobPositionReadRepository.findById(userJobPosition.id).also { userJobPositionReadEntityOptional ->
             if (userJobPositionReadEntityOptional.isEmpty) {
                 userJobPositionReadRepository.save(
@@ -47,6 +48,18 @@ class UserJobPositionHandlerService(
                         // TODO replace verify status
                         _status = UserJobPositionVerifyStatusEnum.Verified.value,
                     ).apply {
+                        jobTitle = userJobPosition.title
+                        jobTitleTsv = jobTitle
+
+                        userFullName = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
+                        userFullNameTsv = userFullName
+
+                        dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
+                        else Range.open(userJobPosition.startDate, userJobPosition.endDate)
+                        if (userJobPosition.isCurrent)
+                            userJobPositionReadRepository.removeCurrent(userJobPosition.userId)
+                        isCurrent = userJobPosition.isCurrent
+
                         data = UserJobPositionReadEntity.Data(
                             user = UserJobPositionReadEntity.User(
                                 firstName = userReadEntity.data.firstName,
@@ -55,24 +68,19 @@ class UserJobPositionHandlerService(
                                 image = userReadEntity.data.image,
                             ),
                             verifiedBy = null,
+                            jobPosition = UserJobPositionReadEntity.UserJobPosition(
+                                id = id,
+                                title = jobTitle,
+                                startDate = dates.lower(),
+                                endDate = if (dates.hasUpperBound()) dates.upper() else null,
+                            ),
                         )
-
-                        userFullName = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
-                        userFullNameTsv = userFullName
-
-                        jobTitle = userJobPosition.title
-                        jobTitleTsv = jobTitle
-
-                        dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
-                        else Range.open(userJobPosition.startDate, userJobPosition.endDate)
-                        if (userJobPosition.isCurrent)
-                            userJobPositionReadRepository.removeCurrent(userJobPosition.userId)
-                        isCurrent = userJobPosition.isCurrent
                     },
                 )
 
                 if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
                     hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
+
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             } else {
                 userJobPositionReadEntityOptional.get().apply {
@@ -88,7 +96,13 @@ class UserJobPositionHandlerService(
                     jobTitleTsv = jobTitle
                     userJobPositionReadRepository.save(this)
                 }
-                prevCompanyId?.let { refreshEmployeesByCompanyId(it) }
+
+                prevCompanyId?.let {
+                    if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
+                        hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
+                    deleteUserPermission(userJobPosition.userId, it)
+                }
+
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             }
         }
@@ -96,11 +110,13 @@ class UserJobPositionHandlerService(
 
     fun refreshEmployeesByCompanyId(companyId: UUID) {
         employeeReadRepository.deleteAllByCompanyId(companyId)
-        val userInCompany = mutableSetOf<UUID>()
-        userJobPositionReadRepository.findByCompanyIdAndEndDateNull(companyId).sortedBy { it.isCurrent }.forEach {
-            if (userInCompany.add(it.userId))
-                employeeReadRepository.save(EmployeeReadEntity.fromUserJobPosition(it))
-        }
+        employeeReadRepository.refreshEmployeesByCompanyId(companyId)
+//        employeeReadRepository.deleteAllByCompanyId(companyId)
+//        val userInCompany = mutableSetOf<UUID>()
+//        userJobPositionReadRepository.findByCompanyIdAndEndDateNull(companyId).sortedBy { it.isCurrent }.forEach {
+//            if (userInCompany.add(it.userId))
+//                employeeReadRepository.save(EmployeeReadEntity.fromUserJobPosition(it))
+//        }
     }
 
     private fun addEmployee(userId: UUID, companyId: UUID): Boolean {
@@ -110,7 +126,9 @@ class UserJobPositionHandlerService(
                 accessObjectType = AccessObjectTypeEnum.Company,
                 accessObjectId = companyId,
                 permissionRole = PermissionRoleEnum.Employee,
-            ) != null
+            )?.also {
+                updateUserPermission(userId, companyId)
+            } != null
         } catch (_: PermissionRoleExistException) {
             false
         }
@@ -143,6 +161,25 @@ class UserJobPositionHandlerService(
         )
     }
 
+    fun deleteUserPermission(userId: UUID, companyId: UUID) {
+        if (!userJobPositionReadRepository.existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
+                companyId,
+                userId,
+                UserJobPositionVerifyStatusEnum.Verified.value,
+            )
+        ) {
+            try {
+                permissionService.deletePermissionRole(
+                    userId = userId,
+                    accessObjectType = AccessObjectTypeEnum.Company,
+                    accessObjectId = companyId,
+                )
+                if (userJobPositionReadRepository.deleteUserPermission(userId, companyId) > 0) refreshEmployeesByCompanyId(companyId)
+            } catch (_: UserPermissionRoleNotFoundException) {
+            }
+        }
+    }
+
     fun delete(userJobPositionId: UUID) {
         userJobPositionReadRepository.findByIdOrNull(userJobPositionId)?.also {
             userJobPositionReadRepository.delete(it)
@@ -150,40 +187,23 @@ class UserJobPositionHandlerService(
         }
     }
 
-    fun deleteUserPermission(userId: UUID, companyId: UUID) {
-        userJobPositionReadRepository.deleteUserPermission(userId, companyId).also {
-            if (it > 0)
-                refreshEmployeesByCompanyId(companyId)
-        }
-    }
-
-    fun addUserPermission(userPermission: UserPermissionRoleReadEntity) {
-        userJobPositionReadRepository.updateUserPermission(
-            userId = userPermission.userId,
-            companyId = userPermission.accessObjectUuid,
-            level = userPermission.data.level,
-            rightsIds = userPermission.data.enabledPermissionRights.map { it.id }.toTypedArray(),
-            permissionRoleId = userPermission.role.id,
-            enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights), // ktlint-disable max-line-length
-        ).also {
-            if (it > 0)
+    fun updateUserPermission(userId: UUID, companyId: UUID) {
+        permissionService.getUserPermissionRights(userId, companyId, AccessObjectTypeEnum.Company)?.also { userPermissionRights ->
+            if (userJobPositionReadRepository.updateUserPermission(
+                    userId = userId,
+                    companyId = companyId,
+                    level = userPermissionRights.permissionRole.level,
+                    permissionRoleId = userPermissionRights.permissionRole.id,
+                    enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
+                    rightsIds = userPermissionRights.permissionRights.map { it.id }.toTypedArray(),
+                ) > 0
+            )
                 employeeReadRepository.updateUserPermission(
-                    userId = userPermission.userId,
-                    companyId = userPermission.accessObjectUuid,
-                    permissionRoleId = userPermission.role.id,
-                    enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermission.data.enabledPermissionRights), // ktlint-disable max-line-length
+                    userId = userId,
+                    companyId = companyId,
+                    permissionRoleId = userPermissionRights.permissionRole.id,
+                    enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
                 )
         }
-//        userJobPositionReadRepository.findByCompanyIdAndUserId(
-//            userId = userPermission.userId,
-//            companyId = userPermission.accessObjectUuid
-//        ).forEach {
-//            it.data.userPermission = UserJobPositionReadEntity.UserPermission(
-//                role = userPermission.role,
-//                level = userPermission.data.level,
-//                rights = userPermission.data.enabledPermissionRights
-//            )
-//            userJobPositionReadRepository.save(it)
-//        }
     }
 }

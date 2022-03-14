@@ -50,7 +50,7 @@ databaseChangeLog:
                   name: permission_level
                   type: int
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: dates
                   type: daterange
@@ -60,7 +60,7 @@ databaseChangeLog:
                   name: rigths
                   type: int[]
                   constraints:
-                    nullable: false
+                    nullable: true
         - sql:
             sql: create index idx_user_job_position_company_id on read.user_job_position using btree (company_id )
         - sql:
@@ -73,4 +73,5 @@ databaseChangeLog:
             sql: create index idx_user_job_position_dates on read.user_job_position using GIST (dates)
         - sql:
             sql: create index idx_user_job_position_rigths on read.user_job_position using GIN (rigths)
-
+        - sql:
+            sql: CREATE INDEX idx_upper_dates_idx ON read.user_job_position (upper(dates));

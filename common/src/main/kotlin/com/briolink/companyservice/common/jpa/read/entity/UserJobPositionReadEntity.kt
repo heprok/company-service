@@ -54,16 +54,16 @@ class UserJobPositionReadEntity(
 
     @Type(type = "int-array")
     @Column(name = "rigths", columnDefinition = "int[]")
-    private var _rights: Array<Int> = arrayOf()
+    private var _rights: Array<Int>? = null
 
-    var rights: MutableSet<PermissionRightEnum>
-        get() = _rights.map { PermissionRightEnum.ofId(it) }.toMutableSet()
+    var rights: MutableSet<PermissionRightEnum>?
+        get() = _rights?.map { PermissionRightEnum.ofId(it) }?.toMutableSet()
         set(value) {
-            _rights = value.map { it.id }.toTypedArray()
+            _rights = value?.map { it.id }?.toTypedArray()
         }
 
-    @Column(name = "permission_level", nullable = false)
-    var permissionLevel: Int = 0
+    @Column(name = "permission_level")
+    var permissionLevel: Int? = null
 
     @Column(name = "is_current", nullable = false)
     var isCurrent: Boolean = false
@@ -83,9 +83,9 @@ class UserJobPositionReadEntity(
     }
 
     fun removeRights() {
-        permissionLevel = 0
+        permissionLevel = null
         data.userPermission = null
-        _rights = arrayOf()
+        _rights = null
     }
 
     data class Data(
@@ -94,8 +94,21 @@ class UserJobPositionReadEntity(
         @JsonProperty
         var userPermission: UserPermissionRights? = null,
         @JsonProperty
+        var jobPosition: UserJobPosition,
+        @JsonProperty
         var verifiedBy: UUID? = null,
 
+    )
+
+    data class UserJobPosition(
+        @JsonProperty
+        var id: UUID,
+        @JsonProperty
+        var title: String,
+        @JsonProperty
+        var startDate: LocalDate,
+        @JsonProperty
+        var endDate: LocalDate? = null,
     )
 
     data class User(

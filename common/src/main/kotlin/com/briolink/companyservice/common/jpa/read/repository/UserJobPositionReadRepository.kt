@@ -45,10 +45,10 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query(
         """UPDATE UserJobPositionReadEntity u
            SET u.data = function('jsonb_sets', u.data,
-                '{userPermission}', 'null', text
+                '{userPermission}', null, text
             ), 
-            u.permissionLevel = 0, 
-            u._rights = array()
+            u.permissionLevel = null, 
+            u._rights = null
             WHERE u.userId = ?1 AND u.companyId = ?2
         """,
     )
@@ -61,8 +61,9 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query(
         """UPDATE UserJobPositionReadEntity u
            SET u.data = function('jsonb_sets', u.data,
-                '{userPermission,role}', :permissionRoleId, int,
-                '{userPermission,rights}', :enabledPermissionRightsJson, jsonb
+                '{userPermission}', '{}', jsonb,
+                '{userPermission,permissionRole}', :permissionRoleId, int,
+                '{userPermission,permissionRights}', :enabledPermissionRightsJson, jsonb
             ),
                 u.permissionLevel = :level,
                 u._rights = :rightIds
@@ -94,6 +95,11 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query("DELETE from UserJobPositionReadEntity u where u.id = ?1")
     override fun deleteById(id: UUID)
 
+    @Modifying
+    @Query("DELETE from UserJobPositionReadEntity u where u.id in ?1")
+    fun deleteById(ids: Collection<UUID>)
+
+
     @Query("SELECT (count(u) > 0) FROM UserJobPositionReadEntity u WHERE u.companyId = ?1 AND u.userId = ?2 AND u._status = ?3 AND upper(u.dates) is null")
     fun existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
         companyId: UUID,
@@ -110,4 +116,16 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         nativeQuery = true,
     )
     fun setFormerEmployee(userId: UUID, companyId: UUID): Int
+
+    @Modifying
+    @Query(
+        """UPDATE read.user_job_position u 
+           SET u.dates = daterange(lower(u.dates), now())
+           WHERE u.id in ?1
+       """,
+        nativeQuery = true,
+    )
+    fun setFormerEmployee(id: Collection<UUID>): Int
+
+    fun existsByUserIdAndCompanyId(userId: UUID, companyId: UUID): Boolean
 }
