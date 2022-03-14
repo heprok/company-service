@@ -17,7 +17,6 @@ import com.briolink.companyservice.common.util.PageRequest
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
-import com.briolink.lib.permission.exception.AccessDeniedException
 import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.data.domain.Page
@@ -159,12 +158,10 @@ class EmployeeService(
 
     fun editPermissionRight(
         companyId: UUID,
-        byUserId: UUID,
         userId: UUID,
         role: PermissionRoleEnum,
         rights: List<PermissionRightEnum>?
     ): Boolean {
-        if (!checkPermissionLevel(companyId, byUserId, userId)) throw AccessDeniedException()
         permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, role)
         permissionService.setPermissionRights(userId, companyId, AccessObjectTypeEnum.Company, role, rights ?: listOf())?.also {
             return updatePermission(userId, companyId, it.permissionRole, it.permissionRights)
@@ -172,17 +169,21 @@ class EmployeeService(
         return false
     }
 
-    fun deleteEmployee(companyId: UUID, byUserId: UUID, userId: UUID): Boolean {
-        if (!checkPermissionLevel(companyId, byUserId, userId)) throw AccessDeniedException()
+    fun deleteEmployee(companyId: UUID, userId: UUID): Boolean {
         permissionService.deletePermissionRole(userId = userId, accessObjectType = AccessObjectTypeEnum.Company, accessObjectId = companyId)
+        refreshEmployees(companyId)
         return userJobPositionReadRepository.deleteByCompanyIdAndUserId(companyId, userId) > 0
     }
 
-    fun setFormerEmployee(companyId: UUID, byUserId: UUID, userId: UUID): Boolean {
-        if (!checkPermissionLevel(companyId, byUserId, userId)) throw AccessDeniedException()
+    fun setFormerEmployee(companyId: UUID, userId: UUID): Boolean {
         permissionService.deletePermissionRole(userId = userId, accessObjectType = AccessObjectTypeEnum.Company, accessObjectId = companyId)
         userJobPositionReadRepository.deleteUserPermission(userId, companyId)
+        refreshEmployees(companyId)
         return userJobPositionReadRepository.setFormerEmployee(userId, companyId) > 0
+    }
+
+    fun refreshEmployees(companyId: UUID) {
+        employeeReadRepository.refreshEmployeesByCompanyId(companyId)
     }
 //
 //    fun getEmployees(companyId: UUID, limit: Int, offset: Int) : Page<UserJobPositionReadEntity> {

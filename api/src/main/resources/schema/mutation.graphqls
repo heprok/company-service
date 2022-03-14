@@ -25,7 +25,7 @@ type Mutation{
     deleteCompanyService(companyId: ID!, serviceId: ID!) : DelOrHideResult!
 
     #    ================ Employee editor ===============
-    deleteEmployee(companyId: ID!, userId: ID!, userJobPositionIds: [ID!], isFull: Boolean!): DelOrHideResult!
+    deleteEmployee(companyId: ID!, userId: ID!, userJobPositionIds: [ID!]!, toFormer: Boolean!): DelOrHideResult!
     editEmployeeRight(companyId: ID!, userId: ID!, role: PermissionRole,  rights: [PermissionRight]): EditEmployeeRightResult!
     confirmEmployee(companyId: ID!, userId: ID!, accept: Boolean!): ConfirmEmployeeResult!
 
