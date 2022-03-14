@@ -22,12 +22,15 @@ class PermissionMutation(
     private val employeeService: EmployeeService,
 ) {
     @DgsMutation
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+//    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
     fun deleteEmployee(
         @InputArgument("companyId") accessObjectId: String,
+        @InputArgument userJobPositionIds: List<String>,
         @InputArgument userId: String,
         @InputArgument isFull: Boolean
     ): DelOrHideResult {
+        println(userJobPositionIds)
+        throw Exception("asd")
         return try {
             val success = if (isFull)
                 employeeService.deleteEmployee(UUID.fromString(accessObjectId), currentUserAccountId, UUID.fromString(userId))
