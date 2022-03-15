@@ -35,10 +35,10 @@ class CompanyMutation(
     val keywordService: KeywordService,
     val locationService: LocationService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
     @DgsMutation
-    fun uploadCompanyImage(@InputArgument("id") id: String, @InputArgument("image") image: MultipartFile?): URL? {
-        return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
+    fun uploadCompanyImage(@InputArgument("id") accessObjectId: String, @InputArgument("image") image: MultipartFile?): URL? {
+        return companyService.uploadCompanyProfileImage(UUID.fromString(accessObjectId), image)
     }
 
     @DgsMutation

@@ -41,7 +41,6 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
 
     @DgsQuery
     @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
-//    @PreAuthorize("isAuthenticated()")
     fun getEmployeesTabs(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument filter: EmployeesEditorFilterParameters?
@@ -63,7 +62,6 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
 
     @DgsQuery
     @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
-//    @PreAuthorize("isAuthenticated()")
     fun getCompanyEmployeesEditor(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument options: EmployeesEditorListOptions,

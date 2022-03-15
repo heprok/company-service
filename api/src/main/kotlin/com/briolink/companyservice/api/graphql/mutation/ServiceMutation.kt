@@ -2,77 +2,48 @@ package com.briolink.companyservice.api.graphql.mutation
 
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
-import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
+import com.briolink.lib.permission.AllowedRights
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
-import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
-import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
 class ServiceMutation(
     private val serviceCompanyService: ServiceCompanyService,
-    private val permissionService: PermissionService,
 ) {
     @DgsMutation(field = "hideCompanyService")
-    @PreAuthorize("isAuthenticated()")
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
     fun hide(
-        @InputArgument("companyId") companyId: String,
+        @InputArgument("companyId") accessObjectId: String,
         @InputArgument("serviceId") serviceId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                accessObjectId = UUID.fromString(companyId),
-                permissionRight = PermissionRightEnum.IsCanEditCompanyService,
-                userId = currentUserAccountId,
-                accessObjectType = AccessObjectTypeEnum.Company
-            )
-        ) {
-            serviceCompanyService.toggleVisibilityByIdAndCompanyId(
-                companyId = UUID.fromString(companyId),
-                serviceId = UUID.fromString(serviceId),
-            )
-            DelOrHideResult(
-                success = true,
-                userErrors = listOf(),
-            )
-        } else {
-            DelOrHideResult(
-                success = false,
-                userErrors = listOf(Error("403 Permission denied")),
-            )
-        }
+        serviceCompanyService.toggleVisibilityByIdAndCompanyId(
+            companyId = UUID.fromString(accessObjectId),
+            serviceId = UUID.fromString(serviceId),
+        )
+        return DelOrHideResult(
+            success = true,
+            userErrors = listOf(),
+        )
     }
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated()")
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
     fun deleteCompanyService(
         @InputArgument("serviceId") serviceId: String,
-        @InputArgument("companyId") companyId: String
+        @InputArgument("companyId") accessObjectId: String
     ): DelOrHideResult {
-        return if (permissionService.isHavePermission(
-                accessObjectId = UUID.fromString(companyId),
-                permissionRight = PermissionRightEnum.IsCanEditCompanyService,
-                userId = currentUserAccountId,
-                accessObjectType = AccessObjectTypeEnum.Company
-            )
-        ) {
-            serviceCompanyService.deleteServiceInCompany(
-                serviceId = UUID.fromString(serviceId),
-                userId = currentUserAccountId
-            )
-            DelOrHideResult(
-                success = true,
-                userErrors = listOf(),
-            )
-        } else {
-            DelOrHideResult(
-                success = false,
-                userErrors = listOf(Error("403 Permission denied")),
-            )
-        }
+        serviceCompanyService.deleteServiceInCompany(
+            serviceId = UUID.fromString(serviceId),
+            userId = currentUserAccountId,
+        )
+        return DelOrHideResult(
+            success = true,
+            userErrors = listOf(),
+        )
     }
 }
