@@ -15,7 +15,7 @@ class UserJobPositionCreatedEventHandler(
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
 ) : IEventHandler<UserJobPositionUpdatedEvent> {
     override fun handle(event: UserJobPositionUpdatedEvent) {
-        userJobPositionHandlerService.createOrUpdate(event.data)
+        if (event.data.startDate != null) userJobPositionHandlerService.createOrUpdate(event.data)
     }
 }
 
@@ -36,9 +36,10 @@ class UserJobPositionSyncEventHandler(
     override fun handle(event: UserJobPositionSyncEvent) {
         val syncData = event.data
         if (!objectSyncStarted(syncData)) return
+
         try {
             val objectSync = syncData.objectSync!!
-            userJobPositionHandlerService.createOrUpdate(objectSync)
+            if (syncData.objectSync?.startDate != null) userJobPositionHandlerService.createOrUpdate(objectSync)
         } catch (ex: Exception) {
             sendError(syncData, ex)
         }
