@@ -32,10 +32,9 @@ class UserJobPositionHandlerService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val employeeReadRepository: EmployeeReadRepository,
 ) {
-    fun createOrUpdate(userJobPosition: UserJobPosition) {
+    fun createOrUpdate(userJobPosition: UserJobPositionEventData) {
         val userReadEntity = userReadRepository.findById(userJobPosition.userId)
             .orElseThrow { throw EntityNotFoundException(userJobPosition.userId.toString() + " user not found") }
-
         var prevCompanyId: UUID? = null
 
         userJobPositionReadRepository.findById(userJobPosition.id).also { userJobPositionReadEntityOptional ->

@@ -3,17 +3,27 @@ package com.briolink.companyservice.updater.handler.occupation
 import com.briolink.companyservice.common.domain.v1_0.Occupation
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.OccupationReadRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 @Service
 class OccupationHandlerService(
     private val occupationReadRepository: OccupationReadRepository
 ) {
-    fun create(occupation: Occupation) {
-        occupationReadRepository.save(
-            OccupationReadEntity(id = occupation.id, name = occupation.name),
-        )
+    fun createOrUpdate(
+        entityPrevOccupation: OccupationReadEntity? = null,
+        occupationEventData: Occupation
+    ): OccupationReadEntity {
+        val occupation =
+            entityPrevOccupation ?: occupationReadRepository.findByNameOrNull(occupationEventData.name) ?: OccupationReadEntity(
+                occupationEventData.id,
+                occupationEventData.name,
+            )
+        return occupationReadRepository.save(occupation)
     }
+
+    fun findById(id: UUID) = occupationReadRepository.findByIdOrNull(id)
 }

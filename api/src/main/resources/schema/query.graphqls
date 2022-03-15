@@ -19,10 +19,16 @@ type Query {
     getCompanyConnectionTabs(companyId: ID!): [ConnectionTab]!
     getCompanyConnectionCollaborators(companyId: ID!, query: String): [IdNameItem]!
     getCompanyConnectionServices(companyId: ID!, query: String): [IdNameItem]!
+    #    -------------------------- filters ----------------------
+    #    getConnectionTabsRole(companyId: ID!) : [ConnectionRole]!
+    #    getCollaborators(companyId: ID!, query: String!): [Collaborator]!
+    #    getCollaboratorRoles(companyId: ID!, query: String!): [ConnectionRole]!
+    #    getServicesProvided(companyId: ID!, query: String!): [ServiceProvided]!
 
+    #    =============== statistic ===================
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
-    getLocations(query: String!): [Location]
+    getLocations(query: String): [Location]
 
     #    ================ Employees editor ===============
     getEmployeesTabs(companyId: ID!, filter: EmployeesEditorFilterParameters): [EmployeesListCountByItem!]!

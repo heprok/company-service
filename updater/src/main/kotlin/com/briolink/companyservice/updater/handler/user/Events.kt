@@ -1,11 +1,13 @@
 package com.briolink.companyservice.updater.handler.user
 
 import com.briolink.event.Event
+import com.briolink.lib.sync.SyncData
+import com.briolink.lib.sync.SyncEvent
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID
 
-data class User(
+data class UserEventData(
     @JsonProperty
     val id: UUID,
     @JsonProperty
@@ -26,5 +28,6 @@ data class User(
     val facebook: String? = null,
 )
 
-data class UserCreatedEvent(override val data: User) : Event<User>("1.0")
-data class UserUpdatedEvent(override val data: User) : Event<User>("1.0")
+data class UserCreatedEvent(override val data: UserEventData) : Event<UserEventData>("1.0")
+data class UserUpdatedEvent(override val data: UserEventData) : Event<UserEventData>("1.0")
+data class UserSyncEvent(override val data: SyncData<UserEventData>) : SyncEvent<UserEventData>("1.0")

@@ -42,6 +42,7 @@ fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
         location = entity.data.location?.toString(),
         facebook = entity.data.facebook,
         twitter = entity.data.twitter,
+        shortDescription = entity.data.shortDescription,
         description = entity.data.description,
         isTypePublic = entity.data.isTypePublic,
         industry = entity.data.industry?.let {
@@ -75,6 +76,7 @@ fun Company.Companion.fromEntity(entity: CompanyWriteEntity) =
         website = entity.websiteUrl,
         logo = Image(entity.logo),
         slug = entity.slug,
+        shortDescription = entity.shortDescription,
         location = entity.getLocationId()?.toString(),
         facebook = entity.facebook,
         twitter = entity.twitter,
@@ -126,10 +128,10 @@ fun Employee.Companion.fromEntity(entity: EmployeeReadEntity) = Employee(
             id = entity.data.jobPosition.id.toString(),
             title = entity.data.jobPosition.title,
             startDate = entity.data.jobPosition.startDate,
-            endDate = entity.data.jobPosition.endDate
-        )
+            endDate = entity.data.jobPosition.endDate,
+        ),
     ),
-    permission = entity.data.userPermission?.let { UserPermission.fromModel(it, false) }
+    permission = entity.data.userPermission?.let { UserPermission.fromModel(it, false) },
 
 )
 
@@ -137,7 +139,7 @@ fun UserJobPosition.Companion.fromEntity(entity: UserJobPositionReadEntity) = Us
     id = entity.id.toString(),
     title = entity.jobTitle,
     startDate = entity.dates.lower(),
-    endDate = if (entity.dates.hasUpperBound()) entity.dates.upper() else null
+    endDate = if (entity.dates.hasUpperBound()) entity.dates.upper() else null,
 
 )
 
@@ -148,12 +150,12 @@ fun Employee.Companion.fromEntity(userJobPosition: UserJobPositionReadEntity) = 
         lastName = userJobPosition.data.user.lastName,
         slug = userJobPosition.data.user.slug,
         image = userJobPosition.data.user.image?.let { Image(url = it) },
-        jobPosition = userJobPosition.jobTitle
+        jobPosition = userJobPosition.jobTitle,
     ),
     jobPositions = listOf(
-        UserJobPosition.fromEntity(userJobPosition)
+        UserJobPosition.fromEntity(userJobPosition),
     ),
-    permission = userJobPosition.data.userPermission?.let { UserPermission.fromModel(it, true) }
+    permission = userJobPosition.data.userPermission?.let { UserPermission.fromModel(it, true) },
 
 )
 
@@ -174,7 +176,7 @@ fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
 
 fun UserPermission.Companion.fromModel(model: UserPermissionRights, withRights: Boolean = true) = UserPermission(
     role = PermissionRole.valueOf(model.permissionRole.name),
-    rights = if (withRights) model.permissionRights.map { PermissionRight.valueOf(it.name) } else listOf()
+    rights = if (withRights) model.permissionRights.map { PermissionRight.valueOf(it.name) } else listOf(),
 )
 
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(

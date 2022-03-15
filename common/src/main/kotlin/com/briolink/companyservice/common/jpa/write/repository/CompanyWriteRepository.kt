@@ -1,11 +1,15 @@
 package com.briolink.companyservice.common.jpa.write.repository
 
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
+import com.briolink.lib.sync.BaseTimeMarkRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import java.time.Instant
 import java.util.UUID
 
-interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
+interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID>, BaseTimeMarkRepository<CompanyWriteEntity> {
     @Query("SELECT count(c.id) > 0 FROM CompanyWriteEntity c WHERE lower(c.website) = lower(?1)")
     fun existsByWebsite(website: String): Boolean
 
@@ -16,4 +20,7 @@ interface CompanyWriteRepository : JpaRepository<CompanyWriteEntity, UUID> {
     fun existsByName(name: String): Boolean
 
     fun getByNameIgnoreCaseAndWebsiteIgnoreCase(name: String, website: String?): CompanyWriteEntity?
+
+    @Query("SELECT c from CompanyWriteEntity c WHERE c.created BETWEEN ?1 AND ?2 OR c.changed BETWEEN ?1 AND ?2")
+    override fun findByPeriod(start: Instant, end: Instant, pageable: Pageable): Page<CompanyWriteEntity>
 }

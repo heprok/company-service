@@ -29,7 +29,6 @@ cloud:
 app:
   app-endpoints:
     companyservice: http://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
-    locationservice: http://location-service.${env.spring_profiles_active}.svc.cluster.local/
 event:
   listener:
     sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo
@@ -38,4 +37,12 @@ event:
 permission-service:
   api:
     url: http://permission-service.${env.spring_profiles_active}.svc.cluster.local/
+    version: 1
+location-service:
+  api:
+    url: http://location-service.${env.spring_profiles_active}.svc.cluster.local/
+    version: 1
+sync-service:
+  api:
+    url: http://sync-service.${env.spring_profiles_active}.svc.cluster.local/
     version: 1

@@ -3,11 +3,14 @@ package com.briolink.companyservice.common.jpa.write.entity
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import com.briolink.companyservice.common.domain.v1_0.Occupation
-import com.briolink.companyservice.common.dto.location.LocationId
-import com.briolink.companyservice.common.jpa.enumeration.LocationTypeEnum
 import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.location.enumeration.TypeLocationEnum
+import com.briolink.lib.location.model.LocationId
+import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
+import org.hibernate.annotations.UpdateTimestamp
 import java.net.URL
+import java.time.Instant
 import java.util.UUID
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -33,6 +36,9 @@ class CompanyWriteEntity(
 
     @Column(name = "description")
     var description: String? = null,
+
+    @Column(name = "short_description", length = 255)
+    var shortDescription: String? = null,
 
     @Column(name = "isTypePublic")
     var isTypePublic: Boolean = true,
@@ -87,20 +93,28 @@ class CompanyWriteEntity(
         return if (cityId != null)
             LocationId(
                 id = cityId!!,
-                type = LocationTypeEnum.City,
+                type = TypeLocationEnum.City,
             )
         else if (stateId != null)
             LocationId(
                 id = stateId!!,
-                type = LocationTypeEnum.State,
+                type = TypeLocationEnum.State,
             )
         else if (countryId != null)
             LocationId(
                 id = countryId!!,
-                type = LocationTypeEnum.Country,
+                type = TypeLocationEnum.Country,
             )
         else null
     }
+
+    @CreationTimestamp
+    @Column(name = "created", nullable = false)
+    lateinit var created: Instant
+
+    @UpdateTimestamp
+    @Column(name = "changed")
+    var changed: Instant? = null
 
     @PrePersist
     fun prePersist() {
@@ -112,6 +126,7 @@ class CompanyWriteEntity(
         name = name,
         website = websiteUrl,
         description = description,
+        shortDescription = shortDescription,
         slug = slug,
         logo = logo,
         isTypePublic = isTypePublic,

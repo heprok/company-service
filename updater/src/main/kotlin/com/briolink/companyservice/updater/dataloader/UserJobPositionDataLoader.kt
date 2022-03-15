@@ -6,7 +6,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.util.StringUtil
-import com.briolink.companyservice.updater.handler.userjobposition.UserJobPosition
+import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionEventData
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
@@ -156,7 +156,7 @@ class UserJobPositionDataLoader(
         listCompany.forEach {
             val startDate = randomDate(2010, 2021)
             val endDate = null
-            val userJobPosition = UserJobPosition(
+            val userJobPosition = UserJobPositionEventData(
                 id = listUserJobPosition.random(),
                 title = listJobPosition.random(),
                 isCurrent = Random.nextBoolean(),
@@ -221,7 +221,7 @@ class UserJobPositionDataLoader(
                 val startDate = randomDate(2010, 2021)
                 val isCurrent = Random.nextBoolean()
                 val endDate = if (isCurrent) null else if (Random.nextBoolean()) randomDate(2010, 2021, startDate) else null
-                val userJobPosition = UserJobPosition(
+                val userJobPosition = UserJobPositionEventData(
                     id = listUserJobPosition.random(),
                     title = listJobPosition.random(),
                     isCurrent = isCurrent,

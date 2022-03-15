@@ -10,10 +10,10 @@ import com.briolink.companyservice.api.types.ConnectionListOptions
 import com.briolink.companyservice.api.types.ConnectionTab
 import com.briolink.companyservice.api.types.ConnectionTabItemsCount
 import com.briolink.companyservice.api.types.IdNameItem
-import com.briolink.companyservice.common.dto.location.LocationId
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
+import com.briolink.lib.location.model.LocationId
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument

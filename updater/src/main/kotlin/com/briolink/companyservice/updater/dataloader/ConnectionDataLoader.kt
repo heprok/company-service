@@ -7,9 +7,9 @@ import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionRea
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.companyservice.updater.handler.connection.Connection
 import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRole
 import com.briolink.companyservice.updater.handler.connection.ConnectionCompanyRoleType
+import com.briolink.companyservice.updater.handler.connection.ConnectionEventData
 import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
 import com.briolink.companyservice.updater.handler.connection.ConnectionParticipant
 import com.briolink.companyservice.updater.handler.connection.ConnectionService
@@ -77,7 +77,7 @@ class ConnectionDataLoader(
                     )
                 }
                 connectionServiceHandler.createOrUpdate(
-                    Connection(
+                    ConnectionEventData(
                         id = UUID.randomUUID(),
                         participantFrom = ConnectionParticipant(
                             userId = listUser.random().id,

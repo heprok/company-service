@@ -1,8 +1,8 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.dto.location.LocationInfoDto
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.lib.location.model.LocationMinInfo
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.vladmihalcea.hibernate.type.range.Range
 import org.hibernate.annotations.Type
@@ -119,7 +119,7 @@ class ConnectionReadEntity(
         @JsonProperty
         val industry: String?,
         @JsonProperty
-        val location: LocationInfoDto? = null
+        val location: LocationMinInfo? = null
     )
 
     data class Participant(

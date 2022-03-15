@@ -8,7 +8,12 @@ import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.service.*
+import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.service.betweenLastUsed
+import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
+import com.briolink.companyservice.common.jpa.read.repository.service.companyIdEqual
+import com.briolink.companyservice.common.jpa.read.repository.service.equalHide
+import com.briolink.companyservice.common.jpa.read.repository.service.isNotDeleted
 import com.briolink.companyservice.common.util.PageRequest
 import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import org.springframework.data.domain.Page
@@ -111,6 +116,6 @@ class ServiceCompanyService(
             serviceId,
             hidden = false,
             status = ConnectionStatusEnum.Verified.value,
-            pageable = PageRequest(offset = offset, limit = limit)
+            pageable = PageRequest(offset = offset, limit = limit),
         )
 }
