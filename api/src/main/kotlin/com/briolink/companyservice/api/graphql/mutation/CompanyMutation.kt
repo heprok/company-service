@@ -88,7 +88,8 @@ class CompanyMutation(
                                 else this.websiteUrl = inputCompany.website
                             }
                             "description" -> this.description = inputCompany.description
-                            "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
+                            "isTypePublic" -> if (inputCompany.isTypePublic == null) userErrors.add(Error("Type required"))
+                            else this.isTypePublic = inputCompany.isTypePublic
                             "locationId" -> {
                                 if (inputCompany.locationId != null) {
                                     locationService.getLocation(LocationId.fromString(inputCompany.locationId)).also {

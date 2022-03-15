@@ -168,7 +168,7 @@ class UserJobPositionDataLoader(
             userJobPositionHandlerService.createOrUpdate(userJobPosition)
 
             try {
-                val permissionRole = permissionService.createPermissionRole(
+                val permissionRole = permissionService.editPermissionRole(
                     userId = user.id,
                     accessObjectType = AccessObjectTypeEnum.Company,
                     accessObjectId = it.id,
@@ -204,6 +204,7 @@ class UserJobPositionDataLoader(
     }
 
     override fun loadData() {
+
         if (
             userJobPositionReadRepository.count().toInt() == 0 &&
             userReadRepository.count().toInt() != 0 &&

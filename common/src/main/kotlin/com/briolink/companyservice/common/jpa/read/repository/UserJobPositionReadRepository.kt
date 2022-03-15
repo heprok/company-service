@@ -99,7 +99,6 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query("DELETE from UserJobPositionReadEntity u where u.id in ?1")
     fun deleteById(ids: Collection<UUID>)
 
-
     @Query("SELECT (count(u) > 0) FROM UserJobPositionReadEntity u WHERE u.companyId = ?1 AND u.userId = ?2 AND u._status = ?3 AND upper(u.dates) is null")
     fun existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
         companyId: UUID,
@@ -109,9 +108,9 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
 
     @Modifying
     @Query(
-        """UPDATE read.user_job_position u 
-           SET u.dates = daterange(lower(u.dates), now())
-           WHERE u.userId = ?1 AND u.companyId = ?2
+        """UPDATE read.user_job_position
+           SET dates = daterange(lower(dates), cast(now() as date))
+           WHERE user_id = ?1 AND company_id = ?2
        """,
         nativeQuery = true,
     )
@@ -119,9 +118,9 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
 
     @Modifying
     @Query(
-        """UPDATE read.user_job_position u 
-           SET u.dates = daterange(lower(u.dates), now())
-           WHERE u.id in ?1
+        """UPDATE read.user_job_position
+           SET dates = daterange(lower(dates), cast(now() as date))
+           WHERE id in ?1
        """,
         nativeQuery = true,
     )

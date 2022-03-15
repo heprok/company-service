@@ -24,7 +24,7 @@ class PermissionMutation(
     private val userJobPositionService: UserJobPositionService,
 ) {
     @DgsMutation
-//    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
     fun deleteEmployee(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument userJobPositionIds: List<String>,
@@ -39,10 +39,10 @@ class PermissionMutation(
                 )
             ) throw AccessDeniedException()
 
-            val success = if (toFormer) {
+            if (toFormer) {
                 userJobPositionService.setFormerJobPosition(userJobPositionIds.map { UUID.fromString(it) })
             } else {
-                userJobPositionService.deleteById(userJobPositionIds.map { UUID.fromString(it)})
+                userJobPositionService.deleteById(userJobPositionIds.map { UUID.fromString(it) })
             }
 
             DelOrHideResult(success = true, userErrors = listOf())
@@ -54,7 +54,6 @@ class PermissionMutation(
         }
     }
 
-    // TODO edit grapql enum
     @DgsMutation
     @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
     fun editEmployeeRight(

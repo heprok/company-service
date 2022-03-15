@@ -17,6 +17,7 @@ import com.briolink.companyservice.common.util.PageRequest
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.exception.notfound.UserPermissionRoleNotFoundException
 import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.data.domain.Page
@@ -127,7 +128,7 @@ class EmployeeService(
         val byUserRole = permissionService.getUserPermissionRights(byUserId, companyId, AccessObjectTypeEnum.Company) ?: return false
         val userRole = permissionService.getUserPermissionRights(userId, companyId, AccessObjectTypeEnum.Company)
 
-        if (byUserRole.permissionRole.level >= (userRole?.permissionRole?.level ?: 5)) return false
+        if (byUserRole.permissionRole.level < (userRole?.permissionRole?.level ?: 5)) return false
 
         return true
     }
@@ -170,19 +171,33 @@ class EmployeeService(
     }
 
     fun deleteEmployee(companyId: UUID, userId: UUID): Boolean {
-        permissionService.deletePermissionRole(userId = userId, accessObjectType = AccessObjectTypeEnum.Company, accessObjectId = companyId)
+        deletePermissionRole(userId, companyId)
         refreshEmployees(companyId)
         return userJobPositionReadRepository.deleteByCompanyIdAndUserId(companyId, userId) > 0
     }
 
     fun setFormerEmployee(companyId: UUID, userId: UUID): Boolean {
-        permissionService.deletePermissionRole(userId = userId, accessObjectType = AccessObjectTypeEnum.Company, accessObjectId = companyId)
+        deletePermissionRole(userId, companyId)
         userJobPositionReadRepository.deleteUserPermission(userId, companyId)
         refreshEmployees(companyId)
         return userJobPositionReadRepository.setFormerEmployee(userId, companyId) > 0
     }
 
+    private fun deletePermissionRole(userId: UUID, companyId: UUID): Boolean {
+        return try {
+            permissionService.deletePermissionRole(
+                userId = userId,
+                accessObjectType = AccessObjectTypeEnum.Company,
+                accessObjectId = companyId,
+            )
+            true
+        } catch (ex: UserPermissionRoleNotFoundException) {
+            false
+        }
+    }
+
     fun refreshEmployees(companyId: UUID) {
+        employeeReadRepository.deleteAllByCompanyId(companyId)
         employeeReadRepository.refreshEmployeesByCompanyId(companyId)
     }
 //
