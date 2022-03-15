@@ -25,7 +25,7 @@ app:
     companyservice: http://192.168.0.23:8090/
 location-service:
   api:
-    url: http://192.168.0.23:8070/
+    url: http://192.168.0.60:8070/
     version: 1
 permission-service:
   api:
