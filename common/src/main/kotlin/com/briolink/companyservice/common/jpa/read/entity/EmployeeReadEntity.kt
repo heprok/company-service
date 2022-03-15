@@ -1,10 +1,7 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import java.io.Serializable
-import java.net.URL
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -38,43 +35,14 @@ class EmployeeReadEntity(
 
     @Type(type = "jsonb")
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
-    var data: Data
+    var data: UserJobPositionReadEntity.Data
 ) : BaseReadEntity() {
-
     companion object {
         fun fromUserJobPosition(userJobPosition: UserJobPositionReadEntity) = EmployeeReadEntity(
             userId = userJobPosition.userId,
             companyId = userJobPosition.companyId,
             userJobPositionId = userJobPosition.id,
-            data = Data(
-                user = User(
-                    firstName = userJobPosition.data.user.firstName,
-                    slug = userJobPosition.data.user.slug,
-                    lastName = userJobPosition.data.user.lastName,
-                    image = userJobPosition.data.user.image
-                ),
-                jobPosition = userJobPosition.data.title
-            )
+            data = userJobPosition.data,
         )
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Data(
-        @JsonProperty
-        var user: User,
-        @JsonProperty
-        var jobPosition: String,
-    )
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class User(
-        @JsonProperty
-        var firstName: String,
-        @JsonProperty
-        var slug: String,
-        @JsonProperty
-        var lastName: String,
-        @JsonProperty
-        var image: URL? = null,
-    )
 }

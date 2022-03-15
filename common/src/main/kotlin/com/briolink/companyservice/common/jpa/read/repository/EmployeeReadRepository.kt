@@ -33,9 +33,42 @@ interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, EmployeePK>
 
     @Modifying
     @Query(
-        """DELETE EmployeeReadEntity e WHERE e.companyId = ?1"""
+        """UPDATE EmployeeReadEntity u
+           SET u.data = function('jsonb_sets', u.data,
+                '{userPermission,permissionRole}', :permissionRoleId, int,
+                '{userPermission,permissionRights}', :enabledPermissionRightsJson, jsonb
+            )
+            WHERE u.userId = :userId AND u.companyId = :companyId
+        """,
+    )
+    fun updateUserPermission(
+        @Param("userId") userId: UUID,
+        @Param("companyId") companyId: UUID,
+        @Param("permissionRoleId") permissionRoleId: Int,
+        @Param("enabledPermissionRightsJson") enabledPermissionRightsJson: String,
+    ): Int
+
+    @Modifying
+    @Query(
+        """DELETE FROM EmployeeReadEntity e WHERE e.companyId = ?1""",
     )
     fun deleteAllByCompanyId(companyId: UUID)
 
     fun findByCompanyId(companyId: UUID, pageable: Pageable): Page<EmployeeReadEntity>
+
+    @Modifying
+    @Query(
+        """
+                INSERT INTO read.employee(user_id, company_id, user_job_position_id, data)
+                SELECT
+                    distinct on (user_id) user_id,  company_id, id, data
+                FROM
+                    read.user_job_position
+                WHERE
+                    (is_current = true OR upper(dates) is null) AND company_id = ?1
+                ORDER BY user_id, is_current DESC, upper(dates) DESC
+            """,
+        nativeQuery = true,
+    )
+    fun refreshEmployeesByCompanyId(companyId: UUID)
 }

@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            schemaName: read
+            tableName: user_job_position
+            columns:
+              - column:
+                  name: status
+                  type: tinyint
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_user_job_position_status
+            tableName: user_job_position
+            schemaName: read
+            columns:
+              - column:
+                  name: status
+        - sql:
+            sql: UPDATE read.user_job_position SET status = 2
+        - addColumn:
+            schemaName: read
+            tableName: user_permission_role
+            columns:
+              - column:
+                  name: data
+                  defaultValue: "[]"
+                  type: jsonb
+                  constraints:
+                    nullable: false

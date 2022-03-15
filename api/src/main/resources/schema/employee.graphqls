@@ -1,0 +1,45 @@
+type Employee {
+    user: User!
+    jobPositions: [UserJobPosition]
+    permission: UserPermission
+}
+
+input EmployeesEditorListOptions {
+    limit: Int! = 10
+    offset: Int! = 0
+    isOnlyUserWithPermission: Boolean = false
+    tab: EmployeeTab
+    filter: EmployeesEditorFilterParameters
+}
+
+input EmployeesEditorFilterParameters {
+    workDateRange: DateRange
+    jobPositionTitles: [String!]
+    rights: [PermissionRight!]
+    search: String
+}
+
+type EmployeeList implements PaginatedList {
+    items: [Employee!]!
+    totalItems: Int!
+}
+
+type EditEmployeeRightResult implements BaseResult & ResultWithUserErrors {
+    success: Boolean!
+    userErrors: [Error]!
+}
+
+type ConfirmEmployeeResult implements BaseResult & ResultWithUserErrors {
+    success: Boolean!
+    userErrors: [Error]!
+}
+
+type EmployeesListCountByItem {
+    tab: EmployeeTab!
+    value: Int!
+}
+
+enum EmployeeTab {
+    Current,
+    Former
+}

@@ -44,6 +44,7 @@ subprojects {
             29889174, // Briolink Event lib
             33422039, // Briolink Location lib
             33688770, // Briolink Sync lib
+            32844103, // Briolink Permission Lib
         ).forEach {
             maven {
                 url = uri("https://gitlab.com/api/v4/projects/$it/packages/maven")
@@ -66,9 +67,9 @@ subprojects {
     val implementation by configurations
 
     dependencies {
-        // Briolnik Event
-        implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
         implementation("me.paulschwarz:spring-dotenv:${Versions.SPRING_DOTENV}")
+        implementation("com.briolink:event:${Versions.BRIOLINK_EVENT}")
+        implementation("com.briolink.lib:permission:${Versions.BRIOLINK_PERMISSION}")
         implementation("com.briolink.lib:location:${Versions.BRIOLINK_LOCATION}")
         implementation("com.briolink.lib:sync:${Versions.BRIOLINK_SYNC}")
     }

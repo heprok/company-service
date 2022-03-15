@@ -34,6 +34,10 @@ event:
     sqs-name: bl-network-${env.spring_profiles_active}-company-service.fifo
   publisher:
     sns-name: bl-network-${env.spring_profiles_active}.fifo
+permission-service:
+  api:
+    url: http://permission-service.${env.spring_profiles_active}.svc.cluster.local/
+    version: 1
 location-service:
   api:
     url: http://location-service.${env.spring_profiles_active}.svc.cluster.local/

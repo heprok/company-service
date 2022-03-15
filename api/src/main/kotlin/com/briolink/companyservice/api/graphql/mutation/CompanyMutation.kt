@@ -10,14 +10,13 @@ import com.briolink.companyservice.api.types.CreateCompanyInput
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
-import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
-import com.briolink.companyservice.common.service.PermissionService
 import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.lib.location.model.LocationId
 import com.briolink.lib.location.model.LocationMinInfo
 import com.briolink.lib.location.service.LocationService
+import com.briolink.lib.permission.AllowedRights
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -34,13 +33,12 @@ class CompanyMutation(
     val occupationService: OccupationService,
     val industryService: IndustryService,
     val keywordService: KeywordService,
-    val permissionService: PermissionService,
     val locationService: LocationService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
     @DgsMutation
-    fun uploadCompanyImage(@InputArgument("id") id: String, @InputArgument("image") image: MultipartFile?): URL? {
-        return companyService.uploadCompanyProfileImage(UUID.fromString(id), image)
+    fun uploadCompanyImage(@InputArgument("id") accessObjectId: String, @InputArgument("image") image: MultipartFile?): URL? {
+        return companyService.uploadCompanyProfileImage(UUID.fromString(accessObjectId), image)
     }
 
     @DgsMutation
@@ -55,102 +53,92 @@ class CompanyMutation(
             website = StringUtil.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
-    @PreAuthorize("isAuthenticated()")
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
     @DgsMutation(field = "updateCompany")
     fun update(
-        @InputArgument("id") id: String,
+        @InputArgument("id") accessObjectId: String,
         @InputArgument("input") inputCompany: UpdateCompanyInput,
         dfe: DataFetchingEnvironment
     ): UpdateCompanyResult {
         val userErrors = mutableListOf<Error>()
-
-        if (!permissionService.isHavePermission(
-                accessObjectType = AccessObjectTypeEnum.Company,
-                userId = currentUserAccountId,
-                companyId = UUID.fromString(id),
-                permissionRight = PermissionRightEnum.EditCompanyProfile,
-            )
-        )
-            userErrors.add(Error("403 Permission denied"))
-        else {
-            companyService.findById(UUID.fromString(id))
-                .orElseThrow { throw EntityNotFoundException("$id company not found") }
-                .apply {
-                    val definitionFiled: Map<String, Any> = dfe.getArgument("input")
-                    definitionFiled.forEach { (name, _) ->
-                        when (name) {
-                            "slug" -> this.slug = inputCompany.slug!!
-                            "name" -> {
-                                if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
-                                else this.name = StringUtil.trimAllSpaces(inputCompany.name)
-                            }
-                            "website" -> {
-                                if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))
-                                    userErrors.add(Error("Website exist"))
-                                else this.websiteUrl = inputCompany.website
-                            }
-                            "description" -> this.description = inputCompany.description
-                            "shortDescription" -> this.shortDescription = inputCompany.shortDescription
-                            "isTypePublic" -> this.isTypePublic = inputCompany.isTypePublic!!
-                            "locationId" -> {
-                                if (inputCompany.locationId != null) {
-                                    locationService.getLocationInfo(
-                                        LocationId.fromString(inputCompany.locationId),
-                                        LocationMinInfo::class.java
-                                    )
-                                        .also {
-                                            if (it != null) {
-                                                countryId = it.country.id
-                                                stateId = it.state?.id
-                                                cityId = it.city?.id
-                                            } else userErrors.add(Error("Not find location for ${inputCompany.locationId}"))
-                                        }
-                                    return@forEach
-                                } else {
-                                    countryId = null
-                                    stateId = null
-                                    cityId = null
-                                }
-                            }
-                            "facebook" -> this.facebook = inputCompany.facebook
-                            "twitter" -> this.twitter = inputCompany.twitter
-                            "occupationId" -> {
-                                this.occupation = inputCompany.occupationId?.let {
-                                    if (it.isBlank()) null
-                                    else occupationService.findById(UUID.fromString(it))
-                                        .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
-                                }
-                            }
-                            "occupationName" -> {
-                                if (inputCompany.occupationName.isNullOrBlank()) userErrors.add(Error("Occupation must be not null or empty")) // ktlint-disable max-line-length
-                                else this.occupation = occupationService.create(name = inputCompany.occupationName)
-                            }
-                            "industryId" -> {
-                                this.industry = inputCompany.industryId?.let {
-                                    industryService.findById(UUID.fromString(it))
-                                        .orElseThrow { throw EntityNotFoundException("$it industry not found") }
-                                }
-                            }
-                            "industryName" -> {
-                                if (inputCompany.industryName.isNullOrBlank()) userErrors.add(Error("Industry must be not null or empty"))
-                                else this.industry = industryService.create(name = inputCompany.industryName)
-                            }
-                            "keyWordIds" -> {
-                                this.keywords = if (inputCompany.keyWordIds.isNullOrEmpty())
-                                    mutableListOf()
-                                else
-                                    inputCompany.keyWordIds.let { list ->
-                                        list.map {
-                                            keywordService.findById(UUID.fromString(it))
-                                                .orElseThrow { throw EntityNotFoundException("$id keyword not found") }
-                                        }
-                                    }.toMutableList()
+        companyService.findById(UUID.fromString(accessObjectId))
+            .orElseThrow { throw EntityNotFoundException("$accessObjectId company not found") }
+            .apply {
+                val definitionFiled: Map<String, Any> = dfe.getArgument("input")
+                definitionFiled.forEach { (name, _) ->
+                    when (name) {
+                        "slug" -> this.slug = inputCompany.slug!!
+                        "name" -> {
+                            if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
+                            else this.name = StringUtil.trimAllSpaces(inputCompany.name)
+                        }
+                        "website" -> {
+                            if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))
+                                userErrors.add(Error("Website exist"))
+                            else this.websiteUrl = inputCompany.website
+                        }
+                        "description" -> this.description = inputCompany.description
+                        "isTypePublic" -> if (inputCompany.isTypePublic == null) userErrors.add(Error("Type required"))
+                        else this.isTypePublic = inputCompany.isTypePublic
+                        "shortDescription" -> this.shortDescription = inputCompany.shortDescription
+                        "locationId" -> {
+                            if (inputCompany.locationId != null) {
+                                locationService.getLocationInfo(
+                                    LocationId.fromString(inputCompany.locationId),
+                                    LocationMinInfo::class.java
+                                )
+                                    .also {
+                                        if (it != null) {
+                                            countryId = it.country.id
+                                            stateId = it.state?.id
+                                            cityId = it.city?.id
+                                        } else userErrors.add(Error("Not find location for ${inputCompany.locationId}"))
+                                    }
+                                return@forEach
+                            } else {
+                                countryId = null
+                                stateId = null
+                                cityId = null
                             }
                         }
+                        "facebook" -> this.facebook = inputCompany.facebook
+                        "twitter" -> this.twitter = inputCompany.twitter
+                        "occupationId" -> {
+                            this.occupation = inputCompany.occupationId?.let {
+                                if (it.isBlank()) null
+                                else occupationService.findById(UUID.fromString(it))
+                                    .orElseThrow { throw EntityNotFoundException("$it occupation not found") }
+                            }
+                        }
+                        "occupationName" -> {
+                            if (inputCompany.occupationName.isNullOrBlank()) userErrors.add(Error("Occupation must be not null or empty")) // ktlint-disable max-line-length
+                            else this.occupation = occupationService.create(name = inputCompany.occupationName)
+                        }
+                        "industryId" -> {
+                            this.industry = inputCompany.industryId?.let {
+                                industryService.findById(UUID.fromString(it))
+                                    .orElseThrow { throw EntityNotFoundException("$it industry not found") }
+                            }
+                        }
+                        "industryName" -> {
+                            if (inputCompany.industryName.isNullOrBlank()) userErrors.add(Error("Industry must be not null or empty"))
+                            else this.industry = industryService.create(name = inputCompany.industryName)
+                        }
+                        "keyWordIds" -> {
+                            this.keywords = if (inputCompany.keyWordIds.isNullOrEmpty())
+                                mutableListOf()
+                            else
+                                inputCompany.keyWordIds.let { list ->
+                                    list.map {
+                                        keywordService.findById(UUID.fromString(it))
+                                            .orElseThrow { throw EntityNotFoundException("$accessObjectId keyword not found") }
+                                    }
+                                }.toMutableList()
+                        }
                     }
-                    if (userErrors.isEmpty()) companyService.updateCompany(this)
                 }
-        }
+                if (userErrors.isEmpty()) companyService.updateCompany(this)
+            }
 
         return if (userErrors.isEmpty())
             UpdateCompanyResult(

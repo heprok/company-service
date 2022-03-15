@@ -1,12 +1,14 @@
 package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromEntity
+import com.briolink.companyservice.api.graphql.fromModel
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.types.Company
-import com.briolink.companyservice.api.types.CompanyAndUserRole
-import com.briolink.companyservice.api.types.PermissionRole
+import com.briolink.companyservice.api.types.CompanyAndUserPermission
+import com.briolink.companyservice.api.types.UserPermission
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
@@ -15,19 +17,24 @@ import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
-class CompanyQuery(private val companyService: CompanyService) {
+class CompanyQuery(
+    private val companyService: CompanyService,
+    private val permissionService: PermissionService
+) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getCompany(@InputArgument("slug") slug: String): CompanyAndUserRole {
+    fun getCompany(@InputArgument("slug") slug: String): CompanyAndUserPermission {
         val company = companyService.getCompanyBySlug(slug)
-        val role = company?.let { companyService.getPermission(it.id, SecurityUtil.currentUserAccountId) }
-        return CompanyAndUserRole(
+        val role = company?.let {
+            permissionService.getUserPermissionRights(
+                userId = SecurityUtil.currentUserAccountId,
+                accessObjectId = company.id,
+                accessObjectType = AccessObjectTypeEnum.Company,
+            )
+        }
+        return CompanyAndUserPermission(
             company = company?.let { Company.fromEntity(it) },
-            role = when (role) {
-                UserPermissionRoleTypeEnum.Employee -> PermissionRole.Employee
-                UserPermissionRoleTypeEnum.Owner -> PermissionRole.Owner
-                else -> null
-            },
+            userPermission = role?.let { UserPermission.fromModel(role) },
         )
     }
 

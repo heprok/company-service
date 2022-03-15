@@ -3,8 +3,15 @@ type User {
     firstName: String!
     lastName: String!
     slug: String!
-    jobPosition: String
     image: Image
+    jobPosition: String
+}
+
+type UserJobPosition {
+    id: ID!
+    title: String!
+    startDate: Date!
+    endDate: Date
 }
 
 type UserList implements PaginatedList {

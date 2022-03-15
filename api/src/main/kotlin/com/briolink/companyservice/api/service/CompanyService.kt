@@ -4,16 +4,15 @@ import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.common.event.v1_0.CompanyUpdatedEvent
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.UserPermissionRoleReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.UserPermissionRoleReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
 import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.service.PermissionService
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncUtil
 import com.briolink.lib.sync.enumeration.ServiceEnum
@@ -40,7 +39,7 @@ class CompanyService(
     private val companyWriteRepository: CompanyWriteRepository,
     private val industryService: IndustryService,
     val eventPublisher: EventPublisher,
-    private val userPermissionRoleReadRepository: UserPermissionRoleReadRepository,
+    private val permissionService: PermissionService,
     private val awsS3Service: AwsS3Service,
 ) {
     companion object : KLogging()
@@ -49,6 +48,12 @@ class CompanyService(
     fun createCompany(createCompany: CompanyWriteEntity): Company {
         return companyWriteRepository.save(createCompany).let {
             eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
+            permissionService.createPermissionRole(
+                userId = it.createdBy,
+                accessObjectType = AccessObjectTypeEnum.Company,
+                accessObjectId = it.id!!,
+                permissionRole = PermissionRoleEnum.Owner,
+            )
             it.toDomain()
         }
     }
@@ -133,9 +138,7 @@ class CompanyService(
             logo = s3ImageUrl
             this.description = description
             industry = industryWrite
-            companyWriteRepository.save(this).also {
-                eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
-            }
+            createCompany(this)
         }
     }
 
@@ -162,34 +165,9 @@ class CompanyService(
         return imageUrl
     }
 
-    fun getPermission(companyId: UUID, userId: UUID): UserPermissionRoleTypeEnum? {
-        return userPermissionRoleReadRepository.getUserPermissionRole(
-            accessObjectUuid = companyId,
-            accessObjectType = AccessObjectTypeEnum.Company.value,
-            userId = userId,
-        )?.role
-    }
-
     fun getByNameAndWebsite(name: String, website: URL?): CompanyWriteEntity? =
         companyWriteRepository.getByNameIgnoreCaseAndWebsiteIgnoreCase(name, website?.host)
             ?: if (website != null) companyWriteRepository.getByWebsite(website.host) else null
-
-    fun setPermission(
-        companyId: UUID,
-        userId: UUID,
-        roleType: UserPermissionRoleTypeEnum
-    ): UserPermissionRoleReadEntity {
-        (
-            userPermissionRoleReadRepository.getUserPermissionRole(
-                accessObjectUuid = companyId,
-                userId = userId,
-                accessObjectType = AccessObjectTypeEnum.CompanyService.value,
-            ) ?: UserPermissionRoleReadEntity(accessObjectUuid = companyId, userId = userId)
-            ).apply {
-            role = roleType
-            return userPermissionRoleReadRepository.save(this)
-        }
-    }
 
     private fun publishCompanySyncEvent(
         syncId: Int,

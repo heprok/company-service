@@ -6,6 +6,8 @@ logging:
 spring:
   jpa:
     show-sql: true
+  datasource:
+    url: jdbc:postgresql://${env.DB_HOST:localhost}:${env.DB_PORT:5432}/local_company
 app:
   app-endpoints:
     companyservice: http://192.168.0.60:8090/
@@ -16,4 +18,8 @@ location-service:
 sync-service:
   api:
     url: http://192.168.0.60:8400/
+    version: 1
+permission-service:
+  api:
+    url: http://192.168.0.60:8200
     version: 1

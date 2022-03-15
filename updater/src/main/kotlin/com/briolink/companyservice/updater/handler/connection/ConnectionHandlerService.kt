@@ -1,9 +1,7 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.jpa.enumeration.AccessObjectTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
-import com.briolink.companyservice.common.jpa.enumeration.PermissionRightEnum
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
@@ -13,7 +11,9 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
-import com.briolink.companyservice.common.service.PermissionService
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.range.Range
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,7 +28,7 @@ class ConnectionHandlerService(
     private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val userReadRepository: UserReadRepository,
-    private val permissionService: PermissionService,
+    private val permissionService: PermissionService
 ) {
     fun createOrUpdate(connection: ConnectionEventData): ConnectionReadEntity {
         val participantUsers = userReadRepository.findByIdIsIn(
@@ -84,29 +84,22 @@ class ConnectionHandlerService(
             hiddenCompanyIds = mutableListOf<UUID>().apply {
                 if (!permissionService.isHavePermission(
                         userId = connection.participantFrom.userId,
-                        companyId = connection.participantFrom.companyId,
+                        accessObjectId = connection.participantFrom.companyId,
                         accessObjectType = AccessObjectTypeEnum.Company,
-                        PermissionRightEnum.ConnectionCrud,
+                        permissionRight = PermissionRightEnum.IsCanCreateProject,
                     )
                 )
                     add(connection.participantFrom.companyId)
 
                 if (!permissionService.isHavePermission(
                         userId = connection.participantTo.userId,
-                        companyId = connection.participantTo.companyId,
+                        accessObjectId = connection.participantTo.companyId,
                         accessObjectType = AccessObjectTypeEnum.Company,
-                        PermissionRightEnum.ConnectionCrud,
+                        permissionRight = PermissionRightEnum.IsCanCreateProject,
                     )
                 )
                     add(connection.participantTo.companyId)
             }
-
-            permissionService.isHavePermission(
-                userId = connection.participantTo.userId,
-                companyId = connection.participantTo.companyId,
-                accessObjectType = AccessObjectTypeEnum.Company,
-                PermissionRightEnum.ConnectionCrud,
-            )
             created = connection.created
             companyIndustryId = industry?.id
             this.data = ConnectionReadEntity.Data(

@@ -1,0 +1,77 @@
+
+databaseChangeLog:
+  - changeSet:
+      id: 14
+      author: oleg@briolink.com
+      changes:
+        - delete:
+            tableName: user_job_position
+            schemaName: read
+        - delete:
+            tableName: employee
+            schemaName: read
+        - dropIndex:
+            tableName: user_job_position
+            schemaName: read
+            indexName: idx_company_id_and_end_date
+        - dropColumn:
+            tableName: user_job_position
+            schemaName: read
+            columnName: end_date
+        - addColumn:
+            schemaName: read
+            tableName: user_job_position
+            columns:
+              - column:
+                  name: is_current
+                  type: Boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: user_full_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_full_name_tsv
+                  type: tsvector
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_title_tsv
+                  type: tsvector
+                  constraints:
+                    nullable: false
+              - column:
+                  name: permission_level
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: dates
+                  type: daterange
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rigths
+                  type: int[]
+                  constraints:
+                    nullable: true
+        - sql:
+            sql: create index idx_user_job_position_company_id on read.user_job_position using btree (company_id )
+        - sql:
+            sql: create index idx_user_job_position_user_id on read.user_job_position using btree ( user_id )
+        - sql:
+            sql: create index idx_user_job_position_user_full_name_tsv on read.user_job_position using GIN (user_full_name_tsv)
+        - sql:
+            sql: create index idx_user_job_position_job_title_tsv on read.user_job_position using GIN (job_title_tsv)
+        - sql:
+            sql: create index idx_user_job_position_dates on read.user_job_position using GIST (dates)
+        - sql:
+            sql: create index idx_user_job_position_rigths on read.user_job_position using GIN (rigths)
+        - sql:
+            sql: CREATE INDEX idx_upper_dates_idx ON read.user_job_position (upper(dates));

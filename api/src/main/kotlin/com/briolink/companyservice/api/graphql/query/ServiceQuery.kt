@@ -1,11 +1,17 @@
 package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromEntity
-import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.ServiceCompanyService
-import com.briolink.companyservice.api.types.* // ktlint-disable no-wildcard-imports
+import com.briolink.companyservice.api.types.CompanyInfoByServiceItem
+import com.briolink.companyservice.api.types.CompanyInfoByServiceList
+import com.briolink.companyservice.api.types.Service
+import com.briolink.companyservice.api.types.ServiceFilter
+import com.briolink.companyservice.api.types.ServiceList
+import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.companyservice.common.jpa.enumeration.UserPermissionRoleTypeEnum
+import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
+import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
@@ -15,7 +21,7 @@ import java.util.UUID
 @DgsComponent
 class ServiceQuery(
     private val serviceCompanyService: ServiceCompanyService,
-    private val companyService: CompanyService,
+    private val permissionService: PermissionService,
 ) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
@@ -29,8 +35,12 @@ class ServiceQuery(
     ): ServiceList {
         return if (serviceCompanyService.countServiceByCompany(companyId = UUID.fromString(companyId))) {
             val filterSecurity =
-                if (companyService.getPermission(UUID.fromString(companyId), SecurityUtil.currentUserAccountId)
-                    != UserPermissionRoleTypeEnum.Owner
+                if (permissionService.isHavePermission(
+                        accessObjectType = AccessObjectTypeEnum.Company,
+                        userId = SecurityUtil.currentUserAccountId,
+                        accessObjectId = UUID.fromString(companyId),
+                        permissionRight = PermissionRightEnum.IsCanEditCompanyService
+                    )
                 ) {
                     filter?.copy(isHide = false) ?: ServiceFilter(isHide = false)
                 } else filter

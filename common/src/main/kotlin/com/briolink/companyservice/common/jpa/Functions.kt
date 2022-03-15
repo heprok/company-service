@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.jpa
 
+import com.briolink.companyservice.common.jpa.func.DateRangeFunc
 import com.briolink.companyservice.common.jpa.func.JsonbGetFunc
 import com.briolink.companyservice.common.jpa.func.JsonbSetsFunc
 import org.hibernate.QueryException
@@ -58,5 +59,12 @@ class Functions : MetadataBuilderContributor {
             "array_contains_element",
             SQLFunctionTemplate(BooleanType.INSTANCE, "?1 @> array[?2]"),
         )
+
+        metadataBuilder.applySqlFunction(
+            "array_contains_common_element",
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 && ?2"),
+        )
+
+        metadataBuilder.applySqlFunction("daterange_cross", DateRangeFunc())
     }
 }

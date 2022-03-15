@@ -1,7 +1,8 @@
 type Query {
-    getCompany(slug: String!): CompanyAndUserRole!
+    #    ================= common ================
+    getCompany(slug: String!): CompanyAndUserPermission!
     getCompanyById(id: ID!) : Company!
-    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0): UserList!
+    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0 ): UserList!
     getIndustries(query: String!, companyId: ID): [Industry]!
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
@@ -10,8 +11,10 @@ type Query {
     getServices(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
     getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
     getVerifyUsesByService(serviceId: ID!, limit: Int = 10, offset: Int = 0) : CompanyInfoByServiceList!
+
     #    ================= Connections ================
     getCompanyConnections(companyId: ID!, options: ConnectionListOptions!): ConnectionList
+
     #    ================ sorting filter for connection ===============
     getCompanyConnectionTabs(companyId: ID!): [ConnectionTab]!
     getCompanyConnectionCollaborators(companyId: ID!, query: String): [IdNameItem]!
@@ -26,4 +29,9 @@ type Query {
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
     getLocations(query: String): [Location]
+
+    #    ================ Employees editor ===============
+    getEmployeesTabs(companyId: ID!, filter: EmployeesEditorFilterParameters): [EmployeesListCountByItem!]!
+    getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : EmployeeList!
+    getConfirmationEmployees(companyId: ID!, options: EmployeesEditorListOptions!): EmployeeList!
 }
