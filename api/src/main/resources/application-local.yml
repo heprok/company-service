@@ -17,7 +17,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://auth.dev.briolink.com//realms/briolink/protocol/openid-connect/certs
+          jwk-set-uri: https://auth.dev.briolink.com/realms/briolink/protocol/openid-connect/certs
   datasource:
     url: jdbc:postgresql://${env.DB_HOST:localhost}:${env.DB_PORT:5432}/local_company
 app:
