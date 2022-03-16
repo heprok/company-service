@@ -20,7 +20,7 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
                            '{company,industryName}', :industryName, text,
                            '{company,logo}', :logo, text,
                            '{company,name}', :name, text
-               )    
+               )
            WHERE c.collaboratingCompanyId = :companyId""",
     )
     fun updateCompany(
@@ -69,7 +69,7 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
     @Modifying
     @Query(
         """
-            DELETE ConnectionServiceReadEntity c
+            DELETE FROM ConnectionServiceReadEntity c
             WHERE
                c.connectionId = :connectionId
            """,

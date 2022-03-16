@@ -4,7 +4,7 @@ import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.OccupationWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRepository
-import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.event.publisher.EventPublisher
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncUtil
 import com.briolink.lib.sync.enumeration.ServiceEnum

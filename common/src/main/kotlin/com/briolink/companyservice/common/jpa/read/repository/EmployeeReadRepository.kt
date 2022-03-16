@@ -14,7 +14,7 @@ interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, EmployeePK>
     @Modifying
     @Query(
         """update EmployeeReadEntity u
-           set u.data = 
+           set u.data =
                    function('jsonb_sets', u.data,
                            '{user,slug}', :slug, text,
                            '{user,image}', :image, text,

@@ -1,6 +1,6 @@
 package com.briolink.companyservice.updater.handler.userpermission
 
-import com.briolink.event.Event
+import com.briolink.lib.event.Event
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum

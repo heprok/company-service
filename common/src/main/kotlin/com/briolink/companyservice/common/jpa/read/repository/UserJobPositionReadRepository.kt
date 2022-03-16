@@ -22,7 +22,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Modifying
     @Query(
         """UPDATE UserJobPositionReadEntity u
-            
+
            SET u.data = function('jsonb_sets', u.data,
                 '{user,slug}', :slug, text,
                 '{user,firstName}', :firstName, text,
@@ -46,8 +46,8 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         """UPDATE UserJobPositionReadEntity u
            SET u.data = function('jsonb_sets', u.data,
                 '{userPermission}', null, text
-            ), 
-            u.permissionLevel = null, 
+            ),
+            u.permissionLevel = null,
             u._rights = null
             WHERE u.userId = ?1 AND u.companyId = ?2
         """,
@@ -99,7 +99,16 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     @Query("DELETE from UserJobPositionReadEntity u where u.id in ?1")
     fun deleteById(ids: Collection<UUID>)
 
-    @Query("SELECT (count(u) > 0) FROM UserJobPositionReadEntity u WHERE u.companyId = ?1 AND u.userId = ?2 AND u._status = ?3 AND upper(u.dates) is null")
+    @Query(
+        """
+            SELECT (count(u) > 0)
+            FROM UserJobPositionReadEntity u
+            WHERE   u.companyId = ?1 AND
+                    u.userId = ?2 AND
+                    u._status = ?3 AND
+                    upper(u.dates) is null
+        """
+    )
     fun existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
         companyId: UUID,
         userId: UUID,

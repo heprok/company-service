@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater // ktlint-disable filename
+package com.briolink.companyservice.updater
 
 import java.util.UUID
 

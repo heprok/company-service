@@ -11,9 +11,9 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
 
     @Query(
         """
-        SELECT c 
+        SELECT c
         FROM UserPermissionRoleReadEntity c
-        WHERE 
+        WHERE
             c.accessObjectUuid = :accessObjectUuid AND
             c.userId = :userId AND
             c._accessObjectType = :accessObjectType
@@ -27,9 +27,9 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
 
     @Query(
         """
-        SELECT c 
+        SELECT c
         FROM UserPermissionRoleReadEntity c
-        WHERE 
+        WHERE
             c.accessObjectUuid = :accessObjectUuid AND
             c.userId = :userId AND
             c._accessObjectType = :accessObjectType AND
@@ -47,10 +47,10 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
     @Query(
         """SELECT count(c.id) > 0
                 FROM UserPermissionRoleReadEntity c
-                WHERE 
+                WHERE
                     c.accessObjectUuid = :accessObjectUuid AND
                     c.userId = :userId AND
-                    c._accessObjectType = :accessObjectType AND 
+                    c._accessObjectType = :accessObjectType AND
                     c._role = :userPermissionRoleType
             """,
     )
@@ -70,7 +70,7 @@ interface UserPermissionRoleReadRepository : JpaRepository<UserPermissionRoleRea
     fun findByAccessObjectUuidAndUserId(accessObjectUuid: UUID, userId: UUID): List<UserPermissionRoleReadEntity>
 
     @Modifying
-    @Query("DELETE UserPermissionRoleReadEntity c WHERE c.id = ?1")
+    @Query("DELETE FROM UserPermissionRoleReadEntity c WHERE c.id = ?1")
     override fun deleteById(id: UUID)
 
     fun existsByAccessObjectUuidAndUserId(accessObjectUuid: UUID, userId: UUID): Boolean

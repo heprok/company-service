@@ -55,7 +55,7 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
 
     @Modifying
     @Query(
-        """UPDATE ServiceReadEntity s 
+        """UPDATE ServiceReadEntity s
             SET s.verifiedUses = (SELECT count(cs.serviceId) FROM ConnectionServiceReadEntity cs WHERE serviceId = ?1 AND cs.hidden = false)
             WHERE s.id = ?1
         """

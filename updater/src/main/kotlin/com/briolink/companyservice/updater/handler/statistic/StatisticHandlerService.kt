@@ -23,7 +23,7 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceR
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.range.Range
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
