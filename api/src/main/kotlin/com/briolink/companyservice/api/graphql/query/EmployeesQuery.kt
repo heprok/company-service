@@ -45,14 +45,14 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument filter: EmployeesEditorFilterParameters?
     ): List<EmployeesListCountByItem> {
-        val filter = EmployeeListFilter(
+        val listFilter = EmployeeListFilter(
             workDateRange = filter?.workDateRange?.let { DateRange(it.start, it.end) },
             jobPositionTitles = filter?.jobPositionTitles,
             rights = filter?.rights?.map { PermissionRightEnum.valueOf(it.name) },
             search = filter?.search,
         )
 
-        return employeeService.getTabs(UUID.fromString(accessObjectId), filter, true).map {
+        return employeeService.getTabs(UUID.fromString(accessObjectId), listFilter, true).map {
             EmployeesListCountByItem(
                 com.briolink.companyservice.api.types.EmployeeTab.valueOf(it.tab.name),
                 value = it.value

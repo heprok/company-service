@@ -1,6 +1,6 @@
 package com.briolink.companyservice.updater.handler.user
 
-import com.briolink.event.Event
+import com.briolink.lib.event.Event
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncEvent
 import com.fasterxml.jackson.annotation.JsonProperty

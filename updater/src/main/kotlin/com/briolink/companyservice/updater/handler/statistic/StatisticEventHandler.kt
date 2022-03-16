@@ -3,8 +3,8 @@ package com.briolink.companyservice.updater.handler.statistic
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.event.IEventHandler
-import com.briolink.event.annotation.EventHandler
+import com.briolink.lib.event.IEventHandler
+import com.briolink.lib.event.annotation.EventHandler
 import org.springframework.context.ApplicationEventPublisher
 
 @EventHandler("StatisticRefreshEvent", "1.0")

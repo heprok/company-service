@@ -5,7 +5,7 @@ import com.briolink.companyservice.common.event.v1_0.KeywordSyncEvent
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.KeywordWriteRepository
 import com.briolink.companyservice.common.mapper.KeywordMapper
-import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.event.publisher.EventPublisher
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncUtil
 import com.briolink.lib.sync.enumeration.ServiceEnum

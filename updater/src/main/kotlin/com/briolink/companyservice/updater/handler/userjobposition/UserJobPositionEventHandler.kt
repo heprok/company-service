@@ -1,9 +1,9 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
 import com.briolink.companyservice.updater.service.SyncService
-import com.briolink.event.IEventHandler
-import com.briolink.event.annotation.EventHandler
-import com.briolink.event.annotation.EventHandlers
+import com.briolink.lib.event.IEventHandler
+import com.briolink.lib.event.annotation.EventHandler
+import com.briolink.lib.event.annotation.EventHandlers
 import com.briolink.lib.sync.SyncEventHandler
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 

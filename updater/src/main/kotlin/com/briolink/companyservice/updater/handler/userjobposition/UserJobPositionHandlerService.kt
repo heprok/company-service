@@ -193,7 +193,8 @@ class UserJobPositionHandlerService(
                     companyId = companyId,
                     level = userPermissionRights.permissionRole.level,
                     permissionRoleId = userPermissionRights.permissionRole.id,
-                    enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
+                    enabledPermissionRightsJson =
+                    ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
                     rightsIds = userPermissionRights.permissionRights.map { it.id }.toTypedArray(),
                 ) > 0
             )
@@ -201,7 +202,8 @@ class UserJobPositionHandlerService(
                     userId = userId,
                     companyId = companyId,
                     permissionRoleId = userPermissionRights.permissionRole.id,
-                    enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
+                    enabledPermissionRightsJson =
+                    ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
                 )
         }
     }

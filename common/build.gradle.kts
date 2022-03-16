@@ -1,6 +1,8 @@
 plugins {
+    `java-library`
+
     id("org.springframework.boot")
-//    id("com.ewerk.gradle.plugins.querydsl") version "1.0.10"
+
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.spring")
@@ -20,13 +22,10 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}")
     api("org.springframework.boot:spring-boot-starter-webflux")
 
-    // blaze-persistence-bom
+    // Blazebit Persistence
     api("com.blazebit:blaze-persistence-integration-spring-data-2.4:${Versions.BLAZE_PERSISTENCE}")
-    api("com.blazebit:blaze-persistence-integration-hibernate-5.4:${Versions.BLAZE_PERSISTENCE}")
+    api("com.blazebit:blaze-persistence-integration-hibernate-5.6:${Versions.BLAZE_PERSISTENCE}")
     api("com.blazebit:blaze-persistence-core-impl:${Versions.BLAZE_PERSISTENCE}")
-
-    // FasterXML
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Kotlin
     implementation(kotlin("reflect"))
@@ -36,20 +35,25 @@ dependencies {
     implementation("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
     kapt("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
 
-    // FasterXML
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE}")
-
-    kapt("org.hibernate:hibernate-jpamodelgen:5.4.30.Final")
-
     // Hibernate Types 55
     api("com.vladmihalcea:hibernate-types-55:${Versions.HIBERNATE_TYPES_55}")
 
+    // FasterXML
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     // IBM ICU4J
     implementation("com.ibm.icu:icu4j:${Versions.IBM_ICU4J}")
+
+    // TODO remove and convert to blazebit companyservice
+    kapt("org.hibernate:hibernate-jpamodelgen:${Versions.JPAMODELGEN}")
 }
 
 kapt {
     arguments {
         arg("mapstruct.verbose", "true")
     }
+}
+
+tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    enabled = false
 }

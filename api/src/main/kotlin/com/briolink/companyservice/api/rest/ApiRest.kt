@@ -6,7 +6,7 @@ import com.briolink.companyservice.api.dataloader.OccupationDataLoader
 import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.common.domain.v1_0.Statistic
 import com.briolink.companyservice.common.event.v1_0.StatisticRefreshEvent
-import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.event.publisher.EventPublisher
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.service.PermissionService

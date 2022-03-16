@@ -15,7 +15,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     @Query(
         """
         SELECT c from ConnectionReadEntity c
-        where 
+        where
             (c.participantToCompanyId = ?1 or c.participantFromCompanyId = ?1) AND
             c._status = ?2 AND (
                 function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE AND
@@ -36,13 +36,13 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         """
         SELECT cast(company.id as varchar), company.name FROM read.company as company
             WHERE
-                (:query is null or company.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true) 
+                (:query is null or company.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true)
                 AND EXISTS (
                 SELECT 1 FROM
                     read.connection as connection
                 WHERE
-                    ( connection.participant_to_company_id = cast(:companyId as uuid) AND connection.participant_from_company_id != company.id ) 
-                    OR ( connection.participant_from_company_id = cast(:companyId as uuid) AND connection.participant_to_company_id = company.id ) 
+                    ( connection.participant_to_company_id = cast(:companyId as uuid) AND connection.participant_from_company_id != company.id )
+                    OR ( connection.participant_from_company_id = cast(:companyId as uuid) AND connection.participant_to_company_id = company.id )
                     LIMIT 1
                 ) LIMIT 10
     """,
@@ -64,7 +64,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
                 WHERE
                     (
                     (connection.participant_to_company_id = cast(:companyId as uuid) OR connection.participant_from_company_id = cast(:companyId as uuid))
-                    AND connection.service_ids @> ARRAY[connection_service.id] ) 
+                    AND connection.service_ids @> ARRAY[connection_service.id] )
                     LIMIT 1
                 ) LIMIT 10
     """,
@@ -79,7 +79,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         """
         SELECT cast(company_industry.id as varchar), company_industry.name FROM read.industry as company_industry
             WHERE
-                (:query is null or company_industry.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true) 
+                (:query is null or company_industry.name @@to_tsquery( quote_literal( quote_literal( :query ) ) || ':*' ) = true)
                 AND EXISTS (
                 SELECT 1 FROM
                     read.connection as connection
@@ -259,19 +259,19 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         """
         UPDATE read.connection
         set
-           data = jsonb_set(data, '{services}', 
+           data = jsonb_set(data, '{services}',
            (
               SELECT
-                 jsonb_agg( 
+                 jsonb_agg(
                      CASE
                         WHEN e ->> 'serviceId' = :serviceId
-                        THEN jsonb_set(e, '{slug}', to_jsonb(cast(:slug as varchar))) 
-                        ELSE e 
+                        THEN jsonb_set(e, '{slug}', to_jsonb(cast(:slug as varchar)))
+                        ELSE e
                      END
                  )
              from jsonb_array_elements(data -> 'services') e
             )
-        ) 
+        )
         where data -> 'services' @> cast(concat('[{"serviceId": "', :serviceId, '"}]') as jsonb)""",
         nativeQuery = true
     )

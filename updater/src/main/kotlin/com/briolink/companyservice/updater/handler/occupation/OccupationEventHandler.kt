@@ -3,8 +3,8 @@ package com.briolink.companyservice.updater.handler.occupation
 import com.briolink.companyservice.common.event.v1_0.OccupationCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.OccupationSyncEvent
 import com.briolink.companyservice.updater.service.SyncService
-import com.briolink.event.IEventHandler
-import com.briolink.event.annotation.EventHandler
+import com.briolink.lib.event.IEventHandler
+import com.briolink.lib.event.annotation.EventHandler
 import com.briolink.lib.sync.SyncEventHandler
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 

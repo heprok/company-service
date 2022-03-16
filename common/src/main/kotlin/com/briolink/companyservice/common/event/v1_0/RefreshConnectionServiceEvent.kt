@@ -4,7 +4,7 @@ import com.briolink.companyservice.common.domain.v1_0.CompanyConnectionDeletedEv
 import com.briolink.companyservice.common.domain.v1_0.CompanyConnectionHideEventData
 import com.briolink.companyservice.common.domain.v1_0.CompanyServiceRefreshVerifyUses
 import com.briolink.companyservice.common.domain.v1_0.Domain
-import com.briolink.event.Event
+import com.briolink.lib.event.Event
 
 data class RefreshConnectionServiceEvent(override val data: CompanyServiceRefreshVerifyUses) : Event<Domain>("1.0")
 data class CompanyConnectionChangeVisibilityEvent(override val data: CompanyConnectionHideEventData) : Event<Domain>("1.0")

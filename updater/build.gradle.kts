@@ -1,4 +1,6 @@
 plugins {
+    application
+
     id("org.springframework.boot")
 
     kotlin("jvm")
@@ -29,5 +31,4 @@ dependencies {
 
     // kotlin-logging
     implementation("io.github.microutils:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_JVM}")
-
 }

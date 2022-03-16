@@ -23,7 +23,7 @@ import com.briolink.companyservice.common.jpa.read.entity.cte.RoleProjectionCte
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.runAfterTxCommit
-import com.briolink.event.publisher.EventPublisher
+import com.briolink.lib.event.publisher.EventPublisher
 import com.vladmihalcea.hibernate.type.array.UUIDArrayType
 import org.hibernate.jpa.TypedParameterValue
 import org.springframework.stereotype.Service
