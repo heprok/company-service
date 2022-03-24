@@ -35,7 +35,7 @@ class CompanyMutation(
     val keywordService: KeywordService,
     val locationService: LocationService,
 ) {
-    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyProfile])
     @DgsMutation
     fun uploadCompanyImage(@InputArgument("id") accessObjectId: String, @InputArgument("image") image: MultipartFile?): URL? {
         return companyService.uploadCompanyProfileImage(UUID.fromString(accessObjectId), image)
@@ -53,7 +53,7 @@ class CompanyMutation(
             website = StringUtil.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
-    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
+    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyProfile])
     @DgsMutation(field = "updateCompany")
     fun update(
         @InputArgument("id") accessObjectId: String,
@@ -124,11 +124,11 @@ class CompanyMutation(
                             if (inputCompany.industryName.isNullOrBlank()) userErrors.add(Error("Industry must be not null or empty"))
                             else this.industry = industryService.create(name = inputCompany.industryName)
                         }
-                        "keyWordIds" -> {
-                            this.keywords = if (inputCompany.keyWordIds.isNullOrEmpty())
+                        "keywordIds" -> {
+                            this.keywords = if (inputCompany.keywordIds.isNullOrEmpty())
                                 mutableListOf()
                             else
-                                inputCompany.keyWordIds.let { list ->
+                                inputCompany.keywordIds.let { list ->
                                     list.map {
                                         keywordService.findById(UUID.fromString(it))
                                             .orElseThrow { throw EntityNotFoundException("$accessObjectId keyword not found") }

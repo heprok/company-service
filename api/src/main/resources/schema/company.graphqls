@@ -56,5 +56,5 @@ input UpdateCompanyInput {
     industryName: String
     occupationName: String
     occupationId: ID
-    keyWordIds: [ID]
+    keywordIds: [ID]
 }
