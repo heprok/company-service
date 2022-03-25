@@ -26,3 +26,8 @@ input ConnectionRequestInput {
     action: ConnectionRequestAction!
     message: String
 }
+
+enum ConnectionCompanyRoleType {
+    Buyer
+    Seller
+}
