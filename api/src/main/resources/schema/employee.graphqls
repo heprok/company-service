@@ -24,12 +24,12 @@ type EmployeeList implements PaginatedList {
     totalItems: Int!
 }
 
-type EditEmployeeRightResult implements BaseResult & ResultWithUserErrors {
+type EditEmployeeRightResult {
     success: Boolean!
     userErrors: [Error]!
 }
 
-type ConfirmEmployeeResult implements BaseResult & ResultWithUserErrors {
+type ConfirmEmployeeResult {
     success: Boolean!
     userErrors: [Error]!
 }

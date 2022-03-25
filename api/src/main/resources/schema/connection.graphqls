@@ -1,108 +1,28 @@
-# --- enums
-
+# --- enum
 enum ConnectionStatus {
+    NotConnected
     Pending
-    InProgress
-    Verified
+    AwaitingResponse
+    Connected
 }
 
-enum ConnectionCompanyRoleType {
-    Buyer
-    Seller
+enum ConnectionRequestAction {
+    Send
+    Accept
+    Reject
+    Cancel
 }
 
-# --- types
+# --- type
 
-type ConnectionService {
-    id: ID!
-    serviceId: ID
-    name: String!
-    slug: String!
-    startDate: Year!
-    endDate: Year
-}
-
-type ConnectionCompanyRole {
-    id: ID!
-    name: String!
-    type: ConnectionCompanyRoleType!
-}
-
-type ConnectionParticipant {
-    user: User!
-    userJobPositionTitle: String
-    company: CompanyInfoItem!
-    companyRole: ConnectionCompanyRole!
-}
-
-type ConnectionTabItemsCount {
-    id: ID!
-    value: Int!
-}
-
-type Connection {
-    id: ID!
-    participantFrom: ConnectionParticipant!
-    participantTo: ConnectionParticipant!
-    services: [ConnectionService!]!
+type ConnectionState {
     status: ConnectionStatus!
-    industry: String
 }
 
-type ConnectionTab {
-    id: ID
-    name: String
-}
+# --- input
 
-type ConnectionList {
-    items: [Connection!]!
-    itemsCountByTab: [ConnectionTabItemsCount!]!
-    totalItems: Int!
-}
-
-type IdNameItem {
-    id: ID
-    name: String
-}
-
-type ToggleConnectionVisibilityResult {
-    hidden: Boolean!
-}
-
-# --- inputs
-
-input ConnectionListOptions {
-    limit: Int! = 10
-    offset: Int! = 0
-    tabId: ID
-    sort: ConnectionSortParameter
-    filter: ConnectionFilterParameters
-}
-
-input ConnectionFilterParameters {
-    collaboratorIds: [ID!]
-    collaborationDates: YearRange
-    industryIds: [ID!]
-    serviceIds: [ID!]
-    locationId: ID
-    status: [ConnectionStatus!]
-}
-
-enum ConnectionSortKeys {
-    created, id
-}
-
-input ConnectionSortParameter {
-    key: ConnectionSortKeys!
-    direction: SortDirection!
-}
-
-input YearRange {
-    start: Year
-    end: Year
-}
-
-type ManipulationCompanyConnectionResult implements BaseResult {
-    success: Boolean!,
-    error: Error,
+input ConnectionRequestInput {
+    companyId: ID!
+    action: ConnectionRequestAction!
+    message: String
 }
