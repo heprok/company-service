@@ -4,3 +4,7 @@ server:
 spring:
   jpa:
     show-sql: true
+dgs:
+  graphql:
+    introspection:
+      enabled: true
