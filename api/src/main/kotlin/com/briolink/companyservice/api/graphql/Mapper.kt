@@ -3,12 +3,6 @@ package com.briolink.companyservice.api.graphql
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyInfoByServiceItem
 import com.briolink.companyservice.api.types.CompanyInfoItem
-import com.briolink.companyservice.api.types.Connection
-import com.briolink.companyservice.api.types.ConnectionCompanyRole
-import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
-import com.briolink.companyservice.api.types.ConnectionParticipant
-import com.briolink.companyservice.api.types.ConnectionService
-import com.briolink.companyservice.api.types.ConnectionStatus
 import com.briolink.companyservice.api.types.Employee
 import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
@@ -21,7 +15,6 @@ import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserJobPosition
 import com.briolink.companyservice.api.types.UserPermission
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
@@ -213,64 +206,4 @@ fun CompanyInfoByServiceItem.Companion.fromEntity(entity: ConnectionServiceReadE
     companyRole = entity.data.roleName,
     periodUsedStart = entity.data.periodUsedStart,
     periodUsedEnd = entity.data.periodUsedEnd,
-)
-
-fun Connection.Companion.fromEntity(entity: ConnectionReadEntity) = Connection(
-    id = entity.id.toString(),
-    participantFrom = ConnectionParticipant(
-        user = User(
-            id = entity.data.participantFrom.user.id.toString(),
-            slug = entity.data.participantFrom.user.slug,
-            image = entity.data.participantFrom.user.image?.let { image -> Image(image) },
-            firstName = entity.data.participantFrom.user.firstName,
-            lastName = entity.data.participantFrom.user.lastName,
-        ),
-        userJobPositionTitle = null,
-        company = CompanyInfoItem(
-            id = entity.data.participantFrom.company.id.toString(),
-            slug = entity.data.participantFrom.company.slug,
-            logo = entity.data.participantFrom.company.logo?.let { logo -> Image(logo) },
-            name = entity.data.participantFrom.company.name,
-            occupation = entity.data.participantFrom.company.occupation,
-        ),
-        companyRole = ConnectionCompanyRole(
-            id = entity.participantFromRoleId.toString(),
-            name = entity.participantFromRoleName,
-            type = ConnectionCompanyRoleType.valueOf(entity.participantFromRoleType.name),
-        ),
-    ),
-    participantTo = ConnectionParticipant(
-        user = User(
-            id = entity.data.participantTo.user.id.toString(),
-            slug = entity.data.participantTo.user.slug,
-            image = entity.data.participantTo.user.image?.let { image -> Image(image) },
-            firstName = entity.data.participantTo.user.firstName,
-            lastName = entity.data.participantTo.user.lastName,
-        ),
-        userJobPositionTitle = null,
-        company = CompanyInfoItem(
-            id = entity.data.participantTo.company.id.toString(),
-            slug = entity.data.participantTo.company.slug,
-            logo = entity.data.participantTo.company.logo?.let { logo -> Image(logo) },
-            name = entity.data.participantTo.company.name,
-            occupation = entity.data.participantTo.company.occupation,
-        ),
-        companyRole = ConnectionCompanyRole(
-            id = entity.participantToRoleId.toString(),
-            name = entity.participantToRoleName,
-            type = ConnectionCompanyRoleType.valueOf(entity.participantToRoleType.name),
-        ),
-    ),
-    services = entity.data.services.map { service ->
-        ConnectionService(
-            id = service.id.toString(),
-            serviceId = service.serviceId?.toString(),
-            name = service.serviceName,
-            startDate = service.startDate,
-            endDate = service.endDate,
-            slug = service.slug,
-        )
-    },
-    status = ConnectionStatus.valueOf(entity.status.name),
-    industry = entity.data.industry,
 )

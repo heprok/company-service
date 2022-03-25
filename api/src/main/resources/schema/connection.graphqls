@@ -1,108 +1,33 @@
-# --- enums
-
+# --- enum
 enum ConnectionStatus {
+    NotConnected
     Pending
-    InProgress
-    Verified
+    AwaitingResponse
+    Connected
+}
+
+enum ConnectionRequestAction {
+    Send
+    Accept
+    Reject
+    Cancel
+}
+
+# --- type
+
+type ConnectionState {
+    status: ConnectionStatus!
+}
+
+# --- input
+
+input ConnectionRequestInput {
+    companyId: ID!
+    action: ConnectionRequestAction!
+    message: String
 }
 
 enum ConnectionCompanyRoleType {
     Buyer
     Seller
-}
-
-# --- types
-
-type ConnectionService {
-    id: ID!
-    serviceId: ID
-    name: String!
-    slug: String!
-    startDate: Year!
-    endDate: Year
-}
-
-type ConnectionCompanyRole {
-    id: ID!
-    name: String!
-    type: ConnectionCompanyRoleType!
-}
-
-type ConnectionParticipant {
-    user: User!
-    userJobPositionTitle: String
-    company: CompanyInfoItem!
-    companyRole: ConnectionCompanyRole!
-}
-
-type ConnectionTabItemsCount {
-    id: ID!
-    value: Int!
-}
-
-type Connection {
-    id: ID!
-    participantFrom: ConnectionParticipant!
-    participantTo: ConnectionParticipant!
-    services: [ConnectionService!]!
-    status: ConnectionStatus!
-    industry: String
-}
-
-type ConnectionTab {
-    id: ID
-    name: String
-}
-
-type ConnectionList {
-    items: [Connection!]!
-    itemsCountByTab: [ConnectionTabItemsCount!]!
-    totalItems: Int!
-}
-
-type IdNameItem {
-    id: ID
-    name: String
-}
-
-type ToggleConnectionVisibilityResult {
-    hidden: Boolean!
-}
-
-# --- inputs
-
-input ConnectionListOptions {
-    limit: Int! = 10
-    offset: Int! = 0
-    tabId: ID
-    sort: ConnectionSortParameter
-    filter: ConnectionFilterParameters
-}
-
-input ConnectionFilterParameters {
-    collaboratorIds: [ID!]
-    collaborationDates: YearRange
-    industryIds: [ID!]
-    serviceIds: [ID!]
-    locationId: ID
-    status: [ConnectionStatus!]
-}
-
-enum ConnectionSortKeys {
-    created, id
-}
-
-input ConnectionSortParameter {
-    key: ConnectionSortKeys!
-    direction: SortDirection!
-}
-
-input YearRange {
-    start: Year
-    end: Year
-}
-
-type ManipulationCompanyConnectionResult implements BaseResult {
-    success: Boolean!,
-    error: Error,
 }

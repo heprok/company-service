@@ -23,7 +23,7 @@ type ServiceList implements PaginatedList {
 enum ServiceSortBy {
     Name, Created, Price, VerifiedUses, LastUsed
 }
-type HideCompanyServiceResult implements BaseResult {
+type HideCompanyServiceResult {
     success: Boolean!,
     error: Error,
 }

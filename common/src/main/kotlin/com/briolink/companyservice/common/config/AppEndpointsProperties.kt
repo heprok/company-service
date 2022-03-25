@@ -11,5 +11,5 @@ class AppEndpointsProperties {
     lateinit var companyservice: String
 
     @NotNull
-    lateinit var locationservice: String
+    lateinit var connection: String
 }
