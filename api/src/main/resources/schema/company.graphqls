@@ -16,8 +16,8 @@ type Company {
 }
 
 type CompanyAndUserPermission {
-    company: Company
-    userPermission: UserPermission
+    company: Company!
+    userPermission: UserPermission!
 }
 
 type CompanyResultData {

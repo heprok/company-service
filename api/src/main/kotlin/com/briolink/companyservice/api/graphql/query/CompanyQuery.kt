@@ -32,9 +32,10 @@ class CompanyQuery(
                 accessObjectType = AccessObjectTypeEnum.Company,
             )
         }
+        if (company == null) throw DgsEntityNotFoundException()
         return CompanyAndUserPermission(
-            company = company?.let { Company.fromEntity(it) },
-            userPermission = role?.let { UserPermission.fromModel(role) },
+            company = Company.fromEntity(company),
+            userPermission = role?.let { UserPermission.fromModel(role) } ?: UserPermission(null, listOf()),
         )
     }
 

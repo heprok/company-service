@@ -1,6 +1,6 @@
 type UserPermission {
-    role: PermissionRole!
-    rights: [PermissionRight!]!
+    role: PermissionRole
+    rights: [PermissionRight]!
 }
 
 enum PermissionRole {
