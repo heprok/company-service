@@ -14,7 +14,7 @@ object Versions {
     const val LIQUIBASE_CORE = "4.8.0"
     const val MAPSTRUCT = "1.4.2.Final"
     const val BRIOLINK_EVENT = "0.4.0-SNAPSHOT"
-    const val BRIOLINK_LOCATION = "0.2.1-SNAPSHOT"
+    const val BRIOLINK_LOCATION = "0.2.2-SNAPSHOT"
     const val BRIOLINK_SYNC = "0.2.0-SNAPSHOT"
     const val BRIOLINK_PERMISSION = "0.2.2-SNAPSHOT"
     const val SPRING_DOTENV = "2.4.1"

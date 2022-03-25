@@ -3,7 +3,7 @@ type Query {
     getCompany(slug: String!): CompanyAndUserPermission!
     getCompanyById(id: ID!) : Company!
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0 ): UserList!
-    getIndustries(query: String!, companyId: ID): [Industry]!
+    getIndustries(query: String!, companyId: ID): [Industry]! @deprecated(reason: "Remove companyId, filter for connection")
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
 
@@ -13,12 +13,12 @@ type Query {
     getVerifyUsesByService(serviceId: ID!, limit: Int = 10, offset: Int = 0) : CompanyInfoByServiceList!
 
     #    ================= Connections ================
-    getCompanyConnections(companyId: ID!, options: ConnectionListOptions!): ConnectionList
-
+    #    getCompanyConnections(companyId: ID!, options: ConnectionListOptions!): ConnectionList
+    getConnectionState(companyId: ID!): ConnectionState!
     #    ================ sorting filter for connection ===============
-    getCompanyConnectionTabs(companyId: ID!): [ConnectionTab]!
-    getCompanyConnectionCollaborators(companyId: ID!, query: String): [IdNameItem]!
-    getCompanyConnectionServices(companyId: ID!, query: String): [IdNameItem]!
+    #    getCompanyConnectionTabs(companyId: ID!): [ConnectionTab]!
+    #    getCompanyConnectionCollaborators(companyId: ID!, query: String): [IdNameItem]!
+    #    getCompanyConnectionServices(companyId: ID!, query: String): [IdNameItem]!
     #    -------------------------- filters ----------------------
     #    getConnectionTabsRole(companyId: ID!) : [ConnectionRole]!
     #    getCollaborators(companyId: ID!, query: String!): [Collaborator]!
