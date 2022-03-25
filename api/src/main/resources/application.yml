@@ -44,8 +44,8 @@ dgs:
       enabled: false
 app:
   app-endpoints:
-    companyservice: https://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
-    connection: https://connection-service.${env.spring_profiles_active}.svc.cluster.local:8080/
+    companyservice: http://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
+    connection: http://connection-service.${env.spring_profiles_active}.svc.cluster.local:8080/
   aws:
     s3:
       name: ${env.S3_BUCKET_NAME:briolink}
