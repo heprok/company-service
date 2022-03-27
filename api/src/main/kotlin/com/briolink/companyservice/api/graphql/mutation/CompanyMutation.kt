@@ -37,7 +37,7 @@ class CompanyMutation(
 ) {
     @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyProfile])
     @DgsMutation
-    fun uploadCompanyImage(@InputArgument("id") accessObjectId: String, @InputArgument("image") image: MultipartFile?): URL? {
+    fun uploadCompanyImage(@InputArgument("id") accessObjectId: String, @InputArgument image: MultipartFile?): URL? {
         return companyService.uploadCompanyProfileImage(UUID.fromString(accessObjectId), image)
     }
 

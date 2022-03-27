@@ -5,15 +5,13 @@ import com.briolink.lib.location.service.LocationService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import org.springframework.security.access.prepost.PreAuthorize
 
 @DgsComponent
 class LocationQuery(
     private val locationService: LocationService
 ) {
     @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getLocations(@InputArgument query: String? = null): List<Location> {
+    fun getLocations(@InputArgument query: String?): List<Location> {
         return locationService.getSuggestionLocation(query)?.map {
             Location(id = it.locationId.toString(), name = it.name)
         } ?: listOf()

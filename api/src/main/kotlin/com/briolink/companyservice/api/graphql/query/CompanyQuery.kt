@@ -22,8 +22,7 @@ class CompanyQuery(
     private val permissionService: PermissionService
 ) {
     @DgsQuery
-    @PreAuthorize("isAuthenticated()")
-    fun getCompany(@InputArgument("slug") slug: String): CompanyAndUserPermission {
+    fun getCompany(@InputArgument slug: String): CompanyAndUserPermission {
         val company = companyService.getCompanyBySlug(slug)
         val role = company?.let {
             permissionService.getUserPermissionRights(
@@ -41,7 +40,7 @@ class CompanyQuery(
 
     @DgsQuery
     @PreAuthorize("@servletUtil.isIntranet()")
-    fun getCompanyById(@InputArgument("id") id: String): Company =
+    fun getCompanyById(@InputArgument id: String): Company =
         companyService.findById(UUID.fromString(id))
             .orElseThrow { throw DgsEntityNotFoundException("$id company not found") }.let { Company.fromEntity(it) }
 }

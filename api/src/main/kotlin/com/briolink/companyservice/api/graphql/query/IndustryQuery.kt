@@ -15,14 +15,9 @@ class IndustryQuery(
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
     fun getIndustries(
-        @InputArgument("query") query: String,
-        @InputArgument("companyId") companyId: String?
+        @InputArgument query: String
     ): List<Industry> {
-        val industries = if (companyId == null && query.isNotEmpty()) {
-            industryReadRepository.findByName(query.ifBlank { null })
-        } else {
-            listOf()
-        }
+        val industries = industryReadRepository.findByName(query.ifBlank { null })
 
         return industries.map {
             Industry.fromEntity(it)
