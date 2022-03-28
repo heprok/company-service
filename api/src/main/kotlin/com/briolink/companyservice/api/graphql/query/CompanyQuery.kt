@@ -24,7 +24,7 @@ class CompanyQuery(
     @DgsQuery
     fun getCompany(@InputArgument slug: String): CompanyAndUserPermission {
         val company = companyService.getCompanyBySlug(slug)
-        val role = company?.let {
+        val role = if (SecurityUtil.isGuest) null else company?.let {
             permissionService.getUserPermissionRights(
                 userId = SecurityUtil.currentUserAccountId,
                 accessObjectId = company.id,
