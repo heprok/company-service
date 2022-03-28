@@ -12,8 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize
 class KeywordQuery(private val keywordReadRepository: KeywordReadRepository) {
     @DgsQuery
     @PreAuthorize("isAuthenticated()")
-    fun getKeywords(@InputArgument("query") query: String?): List<Keyword> {
-        val keywords = keywordReadRepository.findByName(query?.ifBlank { null })
+    fun getKeywords(@InputArgument query: String): List<Keyword> {
+        val keywords = keywordReadRepository.findByName(query.ifBlank { null })
 
         return keywords.map {
             Keyword.fromEntity(it)

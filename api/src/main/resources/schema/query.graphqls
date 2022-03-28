@@ -1,9 +1,14 @@
 type Query {
     #    ================= common ================
+    getLocations(query: String): [Location]
+
+    #    =============== Company ===================
     getCompany(slug: String!): CompanyAndUserPermission!
     getCompanyById(id: ID!) : Company!
     getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0 ): UserList!
-    getIndustries(query: String!, companyId: ID): [Industry]! @deprecated(reason: "Remove companyId, filter for connection")
+
+    #    ================= Company setting ================
+    getIndustries(query: String!): [Industry]!
     getOccupations(query: String!): [Occupation]!
     getKeywords(query: String!): [Keyword]!
 
@@ -12,23 +17,11 @@ type Query {
     getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
     getVerifyUsesByService(serviceId: ID!, limit: Int = 10, offset: Int = 0) : CompanyInfoByServiceList!
 
-    #    ================= Connections ================
-    #    getCompanyConnections(companyId: ID!, options: ConnectionListOptions!): ConnectionList
     getConnectionState(companyId: ID!): ConnectionState!
-    #    ================ sorting filter for connection ===============
-    #    getCompanyConnectionTabs(companyId: ID!): [ConnectionTab]!
-    #    getCompanyConnectionCollaborators(companyId: ID!, query: String): [IdNameItem]!
-    #    getCompanyConnectionServices(companyId: ID!, query: String): [IdNameItem]!
-    #    -------------------------- filters ----------------------
-    #    getConnectionTabsRole(companyId: ID!) : [ConnectionRole]!
-    #    getCollaborators(companyId: ID!, query: String!): [Collaborator]!
-    #    getCollaboratorRoles(companyId: ID!, query: String!): [ConnectionRole]!
-    #    getServicesProvided(companyId: ID!, query: String!): [ServiceProvided]!
 
     #    =============== statistic ===================
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
-    getLocations(query: String): [Location]
 
     #    ================ Employees editor ===============
     getEmployeesTabs(companyId: ID!, filter: EmployeesEditorFilterParameters): [EmployeesListCountByItem!]!

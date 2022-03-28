@@ -18,19 +18,17 @@ import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @DgsComponent
 class EmployeesQuery(private val employeeService: EmployeeService) {
     @DgsQuery
-    @PreAuthorize("isAuthenticated()")
     fun getEmployees(
-        @InputArgument("limit") limit: Int,
-        @InputArgument("offset") offset: Int,
-        @InputArgument("companyId") companyId: String
+        @InputArgument limit: Int?,
+        @InputArgument offset: Int?,
+        @InputArgument companyId: String
     ): UserList {
-        val page = employeeService.getByCompanyId(UUID.fromString(companyId), limit, offset)
+        val page = employeeService.getByCompanyId(UUID.fromString(companyId), limit ?: 6, offset ?: 0)
         return UserList(
             items = page.content.map {
                 User.fromEntity(it)
