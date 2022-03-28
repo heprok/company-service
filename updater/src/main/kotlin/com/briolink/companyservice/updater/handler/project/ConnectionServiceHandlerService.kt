@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.handler.connection
+package com.briolink.companyservice.updater.handler.project
 
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository

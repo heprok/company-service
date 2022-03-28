@@ -3,8 +3,8 @@ package com.briolink.companyservice.updater.handler.company
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
-import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
-import com.briolink.companyservice.updater.handler.connection.ConnectionServiceHandlerService
+import com.briolink.companyservice.updater.handler.project.ConnectionServiceHandlerService
+import com.briolink.companyservice.updater.handler.project.ProjectHandlerService
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.lib.event.IEventHandler
 import com.briolink.lib.event.annotation.EventHandler
@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationEventPublisher
 )
 class CompanyEventHandler(
     private val companyHandlerService: CompanyHandlerService,
-    private val connectionHandlerService: ConnectionHandlerService,
+    private val projectHandlerService: ProjectHandlerService,
     private val connectionServiceHandlerService: ConnectionServiceHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : IEventHandler<CompanyCreatedEvent> {
@@ -29,7 +29,7 @@ class CompanyEventHandler(
         val prevIndustryId = updatedCompany?.data?.industry?.id
         companyHandlerService.createOrUpdate(updatedCompany, event.data).let {
             if (event.name == "CompanyUpdatedEvent") {
-                connectionHandlerService.updateCompany(it)
+                projectHandlerService.updateCompany(it)
                 connectionServiceHandlerService.updateCompany(it)
                 if (it.data.industry?.id != prevIndustryId || it.data.location?.country?.id != prevCountryId) {
                     applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(event.data.id, true))
@@ -42,7 +42,7 @@ class CompanyEventHandler(
 @EventHandler("CompanySyncEvent", "1.0")
 class CompanySyncEventHandler(
     private val companyHandlerService: CompanyHandlerService,
-    private val connectionHandlerService: ConnectionHandlerService,
+    private val projectHandlerService: ProjectHandlerService,
     private val connectionServiceHandlerService: ConnectionServiceHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     syncService: SyncService,
@@ -54,7 +54,7 @@ class CompanySyncEventHandler(
             val objectSync = syncData.objectSync!!
             val company = companyHandlerService.findById(objectSync.id)
             companyHandlerService.createOrUpdate(company, objectSync).also {
-                connectionHandlerService.updateCompany(it)
+                projectHandlerService.updateCompany(it)
                 connectionServiceHandlerService.updateCompany(it)
                 applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(objectSync.id, false))
             }

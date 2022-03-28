@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.handler.connection
+package com.briolink.companyservice.updater.handler.project
 
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.service.SyncService
@@ -10,18 +10,18 @@ import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import org.springframework.context.ApplicationEventPublisher
 
 @EventHandlers(
-    EventHandler("ConnectionCreatedEvent", "1.0"),
-    EventHandler("ConnectionUpdatedEvent", "1.0"),
+    EventHandler("ProjectCreatedEvent", "1.0"),
+    EventHandler("ProjectUpdatedEvent", "1.0"),
 )
-class ConnectionEventHandler(
-    private val connectionHandlerService: ConnectionHandlerService,
+class ProjectEventHandler(
+    private val projectHandlerService: ProjectHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher
-) : IEventHandler<ConnectionCreatedEvent> {
-    override fun handle(event: ConnectionCreatedEvent) {
+) : IEventHandler<ProjectCreatedEvent> {
+    override fun handle(event: ProjectCreatedEvent) {
         val connection = event.data
-        if (connection.status != ConnectionStatus.Rejected) {
-            connectionHandlerService.createOrUpdate(connection).also {
-                if (connection.status == ConnectionStatus.Verified) {
+        if (connection.status != ProjectStatus.Rejected) {
+            projectHandlerService.createOrUpdate(connection).also {
+                if (connection.status == ProjectStatus.Verified) {
                     applicationEventPublisher.publishEvent(
                         RefreshStatisticByCompanyId(
                             it.participantToCompanyId,
@@ -36,26 +36,26 @@ class ConnectionEventHandler(
                     )
                 }
             }
-        } else if (connection.status == ConnectionStatus.Rejected) {
-            connectionHandlerService.delete(connection.id)
+        } else if (connection.status == ProjectStatus.Rejected) {
+            projectHandlerService.delete(connection.id)
         }
     }
 }
 
-@EventHandler("ConnectionSyncEvent", "1.0")
-class ConnectionSyncEventHandler(
-    private val connectionHandlerService: ConnectionHandlerService,
+@EventHandler("ProjectSyncEvent", "1.0")
+class ProjectSyncEventHandler(
+    private val projectHandlerService: ProjectHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     syncService: SyncService,
-) : SyncEventHandler<ConnectionSyncEvent>(ObjectSyncEnum.Connection, syncService) {
-    override fun handle(event: ConnectionSyncEvent) {
+) : SyncEventHandler<ProjectSyncEvent>(ObjectSyncEnum.Connection, syncService) {
+    override fun handle(event: ProjectSyncEvent) {
         val syncData = event.data
         if (!objectSyncStarted(syncData)) return
         try {
-            val connection = syncData.objectSync!!
-            if (connection.status != ConnectionStatus.Rejected) {
-                connectionHandlerService.createOrUpdate(connection).also {
-                    if (connection.status == ConnectionStatus.Verified) {
+            val project = syncData.objectSync!!
+            if (project.status != ProjectStatus.Rejected) {
+                projectHandlerService.createOrUpdate(project).also {
+                    if (project.status == ProjectStatus.Verified) {
                         applicationEventPublisher.publishEvent(
                             RefreshStatisticByCompanyId(
                                 it.participantToCompanyId,
@@ -70,8 +70,8 @@ class ConnectionSyncEventHandler(
                         )
                     }
                 }
-            } else if (connection.status == ConnectionStatus.Rejected) {
-                connectionHandlerService.delete(connection.id)
+            } else if (project.status == ProjectStatus.Rejected) {
+                projectHandlerService.delete(project.id)
             }
         } catch (ex: Exception) {
             sendError(syncData, ex)
