@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 16
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            tableName: company
+            schemaName: read
+            columns:
+              - column:
+                  name: created_by
+                  type: uuid
+        - sql:
+            sql: UPDATE read.company rc SET created_by = (SELECT created_by FROM write.company wc WHERE wc.id = rc.id LIMIT 1)
+        - addNotNullConstraint:
+            tableName: company
+            schemaName: read
+            columnName: created_by
+            columnDataType: uuid
+            constraintName: const_not_null_company_created_by
+        - sql:
+            sql: create index idx_company_created_by_and_company_id on read.company using btree (id, created_by )

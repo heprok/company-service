@@ -22,7 +22,11 @@ class CompanyReadEntity(
     var slug: String,
 
     @Column(name = "name", nullable = false, length = 255)
-    var name: String
+    var name: String,
+
+    @Type(type = "pg-uuid")
+    @Column(name = "created_by", nullable = false)
+    var createdBy: UUID
 
 ) : BaseReadEntity() {
     @Type(type = "jsonb")

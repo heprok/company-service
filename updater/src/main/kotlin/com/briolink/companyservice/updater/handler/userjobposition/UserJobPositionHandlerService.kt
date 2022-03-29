@@ -3,6 +3,7 @@ package com.briolink.companyservice.updater.handler.userjobposition
 import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
+import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
@@ -31,6 +32,7 @@ class UserJobPositionHandlerService(
     private val permissionService: PermissionService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val employeeReadRepository: EmployeeReadRepository,
+    private val companyReadRepository: CompanyReadRepository,
 ) {
     fun createOrUpdate(userJobPosition: UserJobPositionEventData) {
         val userReadEntity = userReadRepository.findById(userJobPosition.userId)
@@ -77,7 +79,7 @@ class UserJobPositionHandlerService(
                     },
                 )
 
-                if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
+                if (userJobPosition.endDate != null && addEmployee(userJobPosition.userId, userJobPosition.companyId))
                     hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
 
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
@@ -101,7 +103,9 @@ class UserJobPositionHandlerService(
                         hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
                     deleteUserPermission(userJobPosition.userId, it)
                 }
-
+                if (userJobPosition.endDate != null) {
+                    deleteUserPermission(userJobPosition.userId, userJobPosition.companyId)
+                }
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             }
         }
@@ -110,12 +114,6 @@ class UserJobPositionHandlerService(
     fun refreshEmployeesByCompanyId(companyId: UUID) {
         employeeReadRepository.deleteAllByCompanyId(companyId)
         employeeReadRepository.refreshEmployeesByCompanyId(companyId)
-//        employeeReadRepository.deleteAllByCompanyId(companyId)
-//        val userInCompany = mutableSetOf<UUID>()
-//        userJobPositionReadRepository.findByCompanyIdAndEndDateNull(companyId).sortedBy { it.isCurrent }.forEach {
-//            if (userInCompany.add(it.userId))
-//                employeeReadRepository.save(EmployeeReadEntity.fromUserJobPosition(it))
-//        }
     }
 
     private fun addEmployee(userId: UUID, companyId: UUID): Boolean {
@@ -161,6 +159,7 @@ class UserJobPositionHandlerService(
     }
 
     fun deleteUserPermission(userId: UUID, companyId: UUID) {
+        if (companyReadRepository.existsByIdAndCreatedBy(companyId, userId)) return
         if (!userJobPositionReadRepository.existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
                 companyId,
                 userId,

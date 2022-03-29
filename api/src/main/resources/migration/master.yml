@@ -1,5 +1,23 @@
 databaseChangeLog:
   - include:
+      file: migration/write/1.changelog.yml
+  - include:
+      file: migration/write/2.changelog.yml
+  - include:
+      file: migration/write/3.changelog.yml
+  - include:
+      file: migration/write/4.changelog.yml
+  - include:
+      file: migration/write/5.changelog.yml
+  - include:
+      file: migration/write/6.changelog.yml
+  - include:
+      file: migration/write/7.changelog.yml
+  - include:
+      file: migration/write/8.changelog.yml
+  - include:
+      file: migration/write/9.changelog.yml
+  - include:
       file: migration/read/1.changelog.yml
   - include:
       file: migration/read/2.changelog.yml
@@ -38,20 +56,4 @@ databaseChangeLog:
   - include:
       file: migration/read/15.changelog.yml
   - include:
-      file: migration/write/1.changelog.yml
-  - include:
-      file: migration/write/2.changelog.yml
-  - include:
-      file: migration/write/3.changelog.yml
-  - include:
-      file: migration/write/4.changelog.yml
-  - include:
-      file: migration/write/5.changelog.yml
-  - include:
-      file: migration/write/6.changelog.yml
-  - include:
-      file: migration/write/7.changelog.yml
-  - include:
-      file: migration/write/8.changelog.yml
-  - include:
-      file: migration/write/9.changelog.yml
+      file: migration/read/16.changelog.yml
