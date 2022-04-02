@@ -1,6 +1,6 @@
 type UserPermission {
     role: PermissionRole
-    rights: [PermissionRight]!
+    rights: [String]!
 }
 
 enum PermissionRole {
@@ -8,16 +8,4 @@ enum PermissionRole {
     Admin
     Superuser
     Employee
-}
-
-enum PermissionRight {
-    IsCanEditOwner
-    IsCanEditAdmin
-    IsCanEditSuperuser
-    IsCanEditCompanyProfile
-    IsCanEditEmployees
-    IsCanEditProject
-    IsCanEditCompanyService
-    IsCanEditNeedsExchange
-    IsCanCreateProject
 }

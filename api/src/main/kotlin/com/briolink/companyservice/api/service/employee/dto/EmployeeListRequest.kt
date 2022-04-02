@@ -1,7 +1,7 @@
 package com.briolink.companyservice.api.service.employee.dto
 
 import com.briolink.companyservice.api.types.EmployeesEditorListOptions
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.model.PermissionRight
 import java.util.UUID
 
 data class EmployeeListRequest(
@@ -19,7 +19,7 @@ data class EmployeeListRequest(
             filters = EmployeeListFilter(
                 workDateRange = options.filter?.workDateRange?.let { DateRange(it.start, it.end) },
                 jobPositionTitles = options.filter?.jobPositionTitles,
-                rights = options.filter?.rights?.map { PermissionRightEnum.valueOf(it.name) },
+                rights = options.filter?.rights?.map { PermissionRight.fromString(it) },
                 search = options.filter?.search,
             ),
             limit = options.limit,

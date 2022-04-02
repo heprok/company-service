@@ -48,7 +48,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
                 '{userPermission}', null, text
             ),
             u.permissionLevel = null,
-            u._rights = null
+            u.rights = null
             WHERE u.userId = ?1 AND u.companyId = ?2
         """,
     )
@@ -66,7 +66,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
                 '{userPermission,permissionRights}', :enabledPermissionRightsJson, jsonb
             ),
                 u.permissionLevel = :level,
-                u._rights = :rightIds
+                u.rights = :rights
             WHERE u.userId = :userId AND u.companyId = :companyId
         """,
     )
@@ -76,7 +76,7 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
         @Param("level") level: Int,
         @Param("permissionRoleId") permissionRoleId: Int,
         @Param("enabledPermissionRightsJson") enabledPermissionRightsJson: String,
-        @Param("rightIds") rightsIds: Array<Int>
+        @Param("rights") rights: Array<String>
     ): Int
 
     @Query(

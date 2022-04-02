@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 16
+      author: oleg@briolink.com
+      changes:
+        - modifyDataType:
+            columnName: rigths
+            newDataType: text[]
+            schemaName: read
+            tableName: user_job_position
+        - dropTable:
+            schemaName: read
+            tableName: user_permission_role

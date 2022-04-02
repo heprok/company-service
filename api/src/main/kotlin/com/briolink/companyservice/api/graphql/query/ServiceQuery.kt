@@ -11,8 +11,6 @@ import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.api.types.ServiceSortBy
 import com.briolink.companyservice.api.types.SortDirection
 import com.briolink.companyservice.api.util.SecurityUtil
-import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -35,11 +33,10 @@ class ServiceQuery(
     ): ServiceList {
         return if (serviceCompanyService.countServiceByCompany(companyId = UUID.fromString(companyId))) {
             val filterSecurity =
-                if (!SecurityUtil.isGuest && permissionService.isHavePermission(
-                        accessObjectType = AccessObjectTypeEnum.Company,
+                if (!SecurityUtil.isGuest && permissionService.checkPermission(
                         userId = SecurityUtil.currentUserAccountId,
                         accessObjectId = UUID.fromString(companyId),
-                        permissionRight = PermissionRightEnum.IsCanEditCompanyService
+                        right = "EditCompanyService@Company"
                     )
                 ) {
                     filter?.copy(isHide = false) ?: ServiceFilter(isHide = false)

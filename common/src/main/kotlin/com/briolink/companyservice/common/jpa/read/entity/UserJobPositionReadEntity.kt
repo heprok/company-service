@@ -1,7 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
 import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.model.UserPermissionRights
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.vladmihalcea.hibernate.type.range.Range
@@ -52,15 +51,15 @@ class UserJobPositionReadEntity(
     @Column(name = "dates", columnDefinition = "daterange", nullable = false)
     lateinit var dates: Range<LocalDate>
 
-    @Type(type = "int-array")
-    @Column(name = "rigths", columnDefinition = "int[]")
-    private var _rights: Array<Int>? = null
+    @Type(type = "text-array")
+    @Column(name = "rigths", columnDefinition = "text[]")
+    var rights: Array<String>? = null
 
-    var rights: MutableSet<PermissionRightEnum>?
-        get() = _rights?.map { PermissionRightEnum.ofId(it) }?.toMutableSet()
-        set(value) {
-            _rights = value?.map { it.id }?.toTypedArray()
-        }
+    // var rights: MutableSet<PermissionRightEnum>?
+    //     get() = _rights?.map { PermissionRightEnum.ofId(it) }?.toMutableSet()
+    //     set(value) {
+    //         _rights = value?.map { it.id }?.toTypedArray()
+    //     }
 
     @Column(name = "permission_level")
     var permissionLevel: Int? = null
@@ -85,7 +84,7 @@ class UserJobPositionReadEntity(
     fun removeRights() {
         permissionLevel = null
         data.userPermission = null
-        _rights = null
+        rights = null
     }
 
     data class Data(

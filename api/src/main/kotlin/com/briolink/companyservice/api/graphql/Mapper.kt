@@ -8,7 +8,6 @@ import com.briolink.companyservice.api.types.Image
 import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Keyword
 import com.briolink.companyservice.api.types.Occupation
-import com.briolink.companyservice.api.types.PermissionRight
 import com.briolink.companyservice.api.types.PermissionRole
 import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.User
@@ -169,7 +168,7 @@ fun Occupation.Companion.fromEntity(entity: OccupationReadEntity) = Occupation(
 
 fun UserPermission.Companion.fromModel(model: UserPermissionRights, withRights: Boolean = true) = UserPermission(
     role = PermissionRole.valueOf(model.permissionRole.name),
-    rights = if (withRights) model.permissionRights.map { PermissionRight.valueOf(it.name) } else listOf(),
+    rights = if (withRights) model.permissionRights.map { it.toString() } else listOf(),
 )
 
 fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(

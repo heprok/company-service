@@ -4,8 +4,6 @@ import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.lib.permission.AllowedRights
-import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -16,7 +14,7 @@ class ServiceMutation(
     private val serviceCompanyService: ServiceCompanyService,
 ) {
     @DgsMutation(field = "hideCompanyService")
-    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
+    @AllowedRights(value = ["EditCompanyServiceCompany"])
     fun hide(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument("serviceId") serviceId: String
@@ -32,7 +30,7 @@ class ServiceMutation(
     }
 
     @DgsMutation
-    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyService])
+    @AllowedRights(value = ["EditCompanyServiceCompany"])
     fun deleteCompanyService(
         @InputArgument("serviceId") serviceId: String,
         @InputArgument("companyId") accessObjectId: String

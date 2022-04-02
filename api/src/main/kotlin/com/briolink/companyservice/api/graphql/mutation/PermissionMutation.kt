@@ -5,14 +5,14 @@ import com.briolink.companyservice.api.service.employee.EmployeeService
 import com.briolink.companyservice.api.types.ConfirmEmployeeResult
 import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.EditEmployeeRightResult
-import com.briolink.companyservice.api.types.PermissionRight
+import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.PermissionRole
 import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
 import com.briolink.lib.permission.AllowedRights
-import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.AccessDeniedException
+import com.briolink.lib.permission.exception.notfound.UserPermissionRoleNotFoundException
+import com.briolink.lib.permission.model.PermissionRight
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -24,7 +24,7 @@ class PermissionMutation(
     private val userJobPositionService: UserJobPositionService,
 ) {
     @DgsMutation
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(["EditEmployees@Company"])
     fun deleteEmployee(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument userJobPositionIds: List<String>,
@@ -49,31 +49,38 @@ class PermissionMutation(
         } catch (e: AccessDeniedException) {
             DelOrHideResult(
                 success = false,
-                userErrors = listOf(com.briolink.companyservice.api.types.Error("403 Permission denied")),
+                userErrors = listOf(Error("403 Permission denied")),
             )
         }
     }
 
     @DgsMutation
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(["EditEmployees@Company"])
     fun editEmployeeRight(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument userId: String,
         @InputArgument role: PermissionRole,
-        @InputArgument(collectionType = PermissionRight::class) rights: List<PermissionRight?>?
+        @InputArgument rights: List<String?>?
     ): EditEmployeeRightResult {
 
-        val success = employeeService.editPermissionRight(
-            UUID.fromString(accessObjectId),
-            UUID.fromString(userId),
-            PermissionRoleEnum.valueOf(role.name),
-            rights?.map { PermissionRightEnum.valueOf(it!!.name) },
-        )
-        return EditEmployeeRightResult(success = success, userErrors = listOf())
+        return try {
+            val success = employeeService.editPermissionRight(
+                UUID.fromString(accessObjectId),
+                UUID.fromString(userId),
+                PermissionRoleEnum.valueOf(role.name),
+                rights?.map { PermissionRight.fromString(it.toString()) },
+            )
+            EditEmployeeRightResult(success = success, userErrors = listOf())
+        } catch (ex: UserPermissionRoleNotFoundException) {
+            EditEmployeeRightResult(
+                success = false,
+                userErrors = listOf(Error("User permission with userId $userId and company $accessObjectId not found"))
+            )
+        }
     }
 
     @DgsMutation
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(["EditEmployees@Company"])
     fun confirmEmployee(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument userId: String,

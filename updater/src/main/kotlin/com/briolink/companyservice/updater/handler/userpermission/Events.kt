@@ -2,8 +2,8 @@ package com.briolink.companyservice.updater.handler.userpermission
 
 import com.briolink.lib.event.Event
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.model.PermissionRight
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 
@@ -26,7 +26,7 @@ data class UserPermissionEventData(
     @JsonProperty
     val accessObjectType: AccessObjectTypeEnum,
     @JsonProperty
-    val enablePermissionRights: ArrayList<PermissionRightEnum>
+    val enablePermissionRights: ArrayList<PermissionRight>
 )
 
 data class UserPermissionDeletedEventData(

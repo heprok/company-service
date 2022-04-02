@@ -15,8 +15,6 @@ import com.briolink.lib.location.model.LocationId
 import com.briolink.lib.location.model.LocationMinInfo
 import com.briolink.lib.location.service.LocationService
 import com.briolink.lib.permission.AllowedRights
-import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
@@ -35,7 +33,7 @@ class CompanyMutation(
     val keywordService: KeywordService,
     val locationService: LocationService,
 ) {
-    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyProfile])
+    @AllowedRights(value = ["EditCompanyProfile@Company"])
     @DgsMutation
     fun uploadCompanyImage(@InputArgument("id") accessObjectId: String, @InputArgument image: MultipartFile?): URL? {
         return companyService.uploadCompanyProfileImage(UUID.fromString(accessObjectId), image)
@@ -53,7 +51,7 @@ class CompanyMutation(
             website = StringUtil.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
-    @AllowedRights(accessObjectType = AccessObjectTypeEnum.Company, value = [PermissionRightEnum.IsCanEditCompanyProfile])
+    @AllowedRights(value = ["EditCompanyProfile@Company"])
     @DgsMutation(field = "updateCompany")
     fun update(
         @InputArgument("id") accessObjectId: String,
