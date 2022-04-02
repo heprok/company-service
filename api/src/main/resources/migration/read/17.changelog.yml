@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 17
+      author: oleg@briolink.com
+      changes:
+        - modifyDataType:
+            columnName: rigths
+            newDataType: varchar[]
+            schemaName: read
+            tableName: user_job_position

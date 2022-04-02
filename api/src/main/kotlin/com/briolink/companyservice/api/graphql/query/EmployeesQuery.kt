@@ -64,6 +64,7 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
         @InputArgument options: EmployeesEditorListOptions,
     ): EmployeeList {
         val request = EmployeeListRequest.fromType(accessObjectId, options)
+        // throw Exception(SecurityUtil.currentUserAccountId.toString())
 
         val items = employeeService.getListByCompanyId(request)
 

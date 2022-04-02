@@ -62,7 +62,7 @@ class Functions : MetadataBuilderContributor {
 
         metadataBuilder.applySqlFunction(
             "array_contains_common_element",
-            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 && ?2"),
+            SQLFunctionTemplate(BooleanType.INSTANCE, "?1 && array[?2]"),
         )
 
         metadataBuilder.applySqlFunction("daterange_cross", DateRangeFunc())
