@@ -29,5 +29,5 @@ location-service:
     version: 1
 permission-service:
   api:
-    url: http://192.168.0.83:8200/
+    url: http://192.168.0.60:8200/
     version: 1
