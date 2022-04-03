@@ -1,6 +1,6 @@
 package com.briolink.companyservice.updater.handler.user
 
-import com.briolink.companyservice.updater.handler.connection.ConnectionHandlerService
+import com.briolink.companyservice.updater.handler.project.ProjectHandlerService
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.lib.event.IEventHandler
@@ -16,13 +16,13 @@ import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 class UserEventHandler(
     private val userHandlerService: UserHandlerService,
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
-    private val connectionHandlerService: ConnectionHandlerService
+    private val projectHandlerService: ProjectHandlerService
 ) : IEventHandler<UserCreatedEvent> {
     override fun handle(event: UserCreatedEvent) {
         userHandlerService.createOrUpdate(event.data).also {
             if (event.name == "UserUpdatedEvent") {
                 userJobPositionHandlerService.updateUser(it)
-                connectionHandlerService.updateUser(it)
+                projectHandlerService.updateUser(it)
             }
         }
     }
@@ -32,7 +32,7 @@ class UserEventHandler(
 class UserSyncEventHandler(
     private val userHandlerService: UserHandlerService,
     private val userJobPositionHandlerService: UserJobPositionHandlerService,
-    private val connectionHandlerService: ConnectionHandlerService,
+    private val projectHandlerService: ProjectHandlerService,
     syncService: SyncService,
 ) : SyncEventHandler<UserSyncEvent>(ObjectSyncEnum.User, syncService) {
     override fun handle(event: UserSyncEvent) {
@@ -42,7 +42,7 @@ class UserSyncEventHandler(
             val objectSync = syncData.objectSync!!
             userHandlerService.createOrUpdate(objectSync).also {
                 userJobPositionHandlerService.updateUser(it)
-                connectionHandlerService.updateUser(it)
+                projectHandlerService.updateUser(it)
             }
         } catch (ex: Exception) {
             sendError(syncData, ex)

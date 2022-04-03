@@ -11,4 +11,6 @@ interface CompanyReadRepository : JpaRepository<CompanyReadEntity, UUID> {
 
     @Query("SELECT id FROM CompanyReadEntity")
     fun getAllCompanyUUID(): List<UUID>
+
+    fun existsByIdAndCreatedBy(id: UUID, createdBy: UUID): Boolean
 }
