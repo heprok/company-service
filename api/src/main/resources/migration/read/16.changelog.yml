@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - modifyDataType:
             columnName: rigths
-            newDataType: text[]
+            newDataType: varchar[]
             schemaName: read
             tableName: user_job_position
         - dropTable:
