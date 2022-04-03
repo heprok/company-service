@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 16
+      id: 17
       author: oleg@briolink.com
       changes:
         - modifyDataType:
