@@ -15,9 +15,9 @@ import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadReposi
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.util.PageRequest
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.notfound.UserPermissionRoleNotFoundException
+import com.briolink.lib.permission.model.PermissionRight
 import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import org.springframework.data.domain.Page
@@ -65,8 +65,8 @@ class EmployeeService(
             if (!jobPositionTitles.isNullOrEmpty())
                 cb.where("jobTitle").`in`(jobPositionTitles)
             if (!rights.isNullOrEmpty())
-                cb.where("array_contains_common_element(rights, :rights").eq(true)
-                    .setParameter("rights", rights.map { it.id })
+                cb.where("array_contains_common_element(rights, :rights)").eq(true)
+                    .setParameter("rights", rights.map { it.action })
             if (workDateRange != null)
                 cb.where("daterange_cross(dates, :startDate, :endDate)").eq(true)
                     .setParameter("startDate", workDateRange.start ?: "null")
@@ -137,13 +137,13 @@ class EmployeeService(
         userId: UUID,
         companyId: UUID,
         permissionRole: PermissionRoleEnum,
-        rights: List<PermissionRightEnum>
+        rights: List<PermissionRight>
     ): Boolean {
         val result = userJobPositionReadRepository.updateUserPermission(
             userId = userId,
             companyId = companyId,
             level = permissionRole.level,
-            rightsIds = rights.map { it.id }.toTypedArray(),
+            rights = rights.map { it.toString() }.toTypedArray(),
             permissionRoleId = permissionRole.id,
             enabledPermissionRightsJson = ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(rights),
         ) > 0
@@ -161,10 +161,10 @@ class EmployeeService(
         companyId: UUID,
         userId: UUID,
         role: PermissionRoleEnum,
-        rights: List<PermissionRightEnum>?
+        rights: List<PermissionRight>?
     ): Boolean {
         permissionService.editPermissionRole(userId, AccessObjectTypeEnum.Company, companyId, role)
-        permissionService.setPermissionRights(userId, companyId, AccessObjectTypeEnum.Company, role, rights ?: listOf())?.also {
+        permissionService.setPermissionRights(userId, companyId, "Company", role.name, rights?.map { it.toString() } ?: listOf())?.also {
             return updatePermission(userId, companyId, it.permissionRole, it.permissionRights)
         }
         return false

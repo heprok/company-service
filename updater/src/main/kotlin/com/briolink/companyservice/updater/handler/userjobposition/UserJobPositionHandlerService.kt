@@ -126,7 +126,7 @@ class UserJobPositionHandlerService(
             )?.also {
                 updateUserPermission(userId, companyId)
             } != null
-        } catch (_: PermissionRoleExistException) {
+        } catch (role: PermissionRoleExistException) {
             false
         }
     }
@@ -194,7 +194,7 @@ class UserJobPositionHandlerService(
                     permissionRoleId = userPermissionRights.permissionRole.id,
                     enabledPermissionRightsJson =
                     ObjectMapperWrapper.INSTANCE.objectMapper.writeValueAsString(userPermissionRights.permissionRights),
-                    rightsIds = userPermissionRights.permissionRights.map { it.id }.toTypedArray(),
+                    rights = userPermissionRights.permissionRights.map { it.action }.toTypedArray(),
                 ) > 0
             )
                 employeeReadRepository.updateUserPermission(

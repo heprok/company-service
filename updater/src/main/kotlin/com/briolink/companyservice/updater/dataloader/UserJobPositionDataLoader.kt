@@ -139,7 +139,7 @@ class UserJobPositionDataLoader(
     private fun addPermissionToUser() {
         val user =
             UserReadEntity(
-                id = UUID.fromString("c07da3f1-8b33-488b-961b-aff4e6d774d8"),
+                id = UUID.fromString("a7bfe294-2586-452b-b5fc-77700df058d3"),
             ).apply {
                 data = UserReadEntity.Data(
                     firstName = "Admin",

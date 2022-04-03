@@ -13,8 +13,7 @@ import com.briolink.companyservice.api.types.EmployeesListCountByItem
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserList
 import com.briolink.lib.permission.AllowedRights
-import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
+import com.briolink.lib.permission.model.PermissionRight
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
@@ -38,7 +37,7 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(value = ["EditEmployees@Company"])
     fun getEmployeesTabs(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument filter: EmployeesEditorFilterParameters?
@@ -46,7 +45,7 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
         val listFilter = EmployeeListFilter(
             workDateRange = filter?.workDateRange?.let { DateRange(it.start, it.end) },
             jobPositionTitles = filter?.jobPositionTitles,
-            rights = filter?.rights?.map { PermissionRightEnum.valueOf(it.name) },
+            rights = filter?.rights?.map { PermissionRight.fromString(it) },
             search = filter?.search,
         )
 
@@ -59,12 +58,13 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(value = ["EditEmployees@Company"])
     fun getCompanyEmployeesEditor(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument options: EmployeesEditorListOptions,
     ): EmployeeList {
         val request = EmployeeListRequest.fromType(accessObjectId, options)
+        // throw Exception(SecurityUtil.currentUserAccountId.toString())
 
         val items = employeeService.getListByCompanyId(request)
 
@@ -75,7 +75,7 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @AllowedRights(AccessObjectTypeEnum.Company, [PermissionRightEnum.IsCanEditEmployees])
+    @AllowedRights(value = ["EditEmployees@Company"])
     fun getConfirmationEmployees(
         @InputArgument("companyId") accessObjectId: String,
         @InputArgument options: EmployeesEditorListOptions,

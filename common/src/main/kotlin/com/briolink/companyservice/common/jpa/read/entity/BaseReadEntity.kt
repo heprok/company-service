@@ -2,6 +2,7 @@ package com.briolink.companyservice.common.jpa.read.entity
 
 import com.vladmihalcea.hibernate.type.array.IntArrayType
 import com.vladmihalcea.hibernate.type.array.ListArrayType
+import com.vladmihalcea.hibernate.type.array.StringArrayType
 import com.vladmihalcea.hibernate.type.basic.YearType
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import com.vladmihalcea.hibernate.type.range.PostgreSQLRangeType
@@ -15,6 +16,7 @@ import javax.persistence.MappedSuperclass
     TypeDef(name = "year", typeClass = YearType::class),
     TypeDef(name = "uuid-array", typeClass = ListArrayType::class),
     TypeDef(name = "int-array", typeClass = IntArrayType::class),
+    TypeDef(name = "text-array", typeClass = StringArrayType::class),
     TypeDef(typeClass = PostgreSQLRangeType::class, defaultForType = Range::class),
 )
 @MappedSuperclass

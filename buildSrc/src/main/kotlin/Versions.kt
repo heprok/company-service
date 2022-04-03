@@ -16,7 +16,7 @@ object Versions {
     const val BRIOLINK_EVENT = "0.4.0-SNAPSHOT"
     const val BRIOLINK_LOCATION = "0.2.2-SNAPSHOT"
     const val BRIOLINK_SYNC = "0.2.0-SNAPSHOT"
-    const val BRIOLINK_PERMISSION = "0.2.2-SNAPSHOT"
+    const val BRIOLINK_PERMISSION = "0.3.0-SNAPSHOT"
     const val SPRING_DOTENV = "2.4.1"
     const val BLAZE_PERSISTENCE = "1.6.6"
     const val JPAMODELGEN = "5.4.30.Final"

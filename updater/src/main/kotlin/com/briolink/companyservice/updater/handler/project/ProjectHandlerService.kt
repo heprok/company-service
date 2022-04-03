@@ -11,8 +11,6 @@ import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepo
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
-import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
-import com.briolink.lib.permission.enumeration.PermissionRightEnum
 import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.range.Range
 import org.springframework.stereotype.Service
@@ -82,20 +80,18 @@ class ProjectHandlerService(
             cityId = buyerCompany.data.location?.city?.id
             deletedCompanyIds = listOf()
             hiddenCompanyIds = mutableListOf<UUID>().apply {
-                if (!permissionService.isHavePermission(
+                if (!permissionService.checkPermission(
                         userId = project.participantFrom.userId,
                         accessObjectId = project.participantFrom.companyId,
-                        accessObjectType = AccessObjectTypeEnum.Company,
-                        permissionRight = PermissionRightEnum.IsCanCreateProject,
+                        right = "CreateProject@Company",
                     )
                 )
                     add(project.participantFrom.companyId)
 
-                if (!permissionService.isHavePermission(
+                if (!permissionService.checkPermission(
                         userId = project.participantTo.userId,
                         accessObjectId = project.participantTo.companyId,
-                        accessObjectType = AccessObjectTypeEnum.Company,
-                        permissionRight = PermissionRightEnum.IsCanCreateProject,
+                        right = "CreateProject@Company",
                     )
                 )
                     add(project.participantTo.companyId)
