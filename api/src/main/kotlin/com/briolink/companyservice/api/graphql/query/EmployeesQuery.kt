@@ -10,8 +10,6 @@ import com.briolink.companyservice.api.types.EmployeeList
 import com.briolink.companyservice.api.types.EmployeesEditorFilterParameters
 import com.briolink.companyservice.api.types.EmployeesEditorListOptions
 import com.briolink.companyservice.api.types.EmployeesListCountByItem
-import com.briolink.companyservice.api.types.User
-import com.briolink.companyservice.api.types.UserList
 import com.briolink.lib.permission.AllowedRights
 import com.briolink.lib.permission.model.PermissionRight
 import com.netflix.graphql.dgs.DgsComponent
@@ -26,11 +24,11 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
         @InputArgument limit: Int?,
         @InputArgument offset: Int?,
         @InputArgument companyId: String
-    ): UserList {
+    ): EmployeeList {
         val page = employeeService.getByCompanyId(UUID.fromString(companyId), limit ?: 6, offset ?: 0)
-        return UserList(
+        return EmployeeList(
             items = page.content.map {
-                User.fromEntity(it)
+                Employee.fromEntity(it)
             },
             totalItems = page.totalElements.toInt(),
         )

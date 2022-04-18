@@ -5,7 +5,7 @@ type Query {
     #    =============== Company ===================
     getCompany(slug: String!): CompanyAndUserPermission!
     getCompanyById(id: ID!) : Company!
-    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0 ): UserList!
+    getEmployees(companyId: ID!, limit: Int = 6, offset: Int = 0 ): EmployeeList!
 
     #    ================= Company setting ================
     getIndustries(query: String!): [Industry]!
