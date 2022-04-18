@@ -109,6 +109,7 @@ class UserJobPositionHandlerService(
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             }
         }
+        updateUserPermission(userJobPosition.userId, userJobPosition.companyId)
     }
 
     fun refreshEmployeesByCompanyId(companyId: UUID) {
@@ -123,7 +124,7 @@ class UserJobPositionHandlerService(
                 accessObjectType = AccessObjectTypeEnum.Company,
                 accessObjectId = companyId,
                 permissionRole = PermissionRoleEnum.Employee,
-            )?.also {
+            ).also {
                 updateUserPermission(userId, companyId)
             } != null
         } catch (role: PermissionRoleExistException) {

@@ -12,6 +12,7 @@ import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.lib.event.publisher.EventPublisher
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
+import com.briolink.lib.permission.exception.exist.PermissionRoleExistException
 import com.briolink.lib.permission.service.PermissionService
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncUtil
@@ -48,12 +49,17 @@ class CompanyService(
     fun createCompany(createCompany: CompanyWriteEntity): Company {
         return companyWriteRepository.save(createCompany).let {
             eventPublisher.publish(CompanyCreatedEvent(it.toDomain()))
-            permissionService.createPermissionRole(
-                userId = it.createdBy,
-                accessObjectType = AccessObjectTypeEnum.Company,
-                accessObjectId = it.id!!,
-                permissionRole = PermissionRoleEnum.Owner,
-            )
+            try {
+                permissionService.createPermissionRole(
+                    userId = it.createdBy,
+                    accessObjectType = AccessObjectTypeEnum.Company,
+                    accessObjectId = it.id!!,
+                    permissionRole = PermissionRoleEnum.Owner,
+                )
+            } catch (e: PermissionRoleExistException) {
+                logger.warn { "Permission role already exist" }
+            }
+
             it.toDomain()
         }
     }
