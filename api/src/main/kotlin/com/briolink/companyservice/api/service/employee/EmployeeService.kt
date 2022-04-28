@@ -8,7 +8,7 @@ import com.briolink.companyservice.api.service.employee.dto.EmployeeListFilter
 import com.briolink.companyservice.api.service.employee.dto.EmployeeListRequest
 import com.briolink.companyservice.api.service.employee.dto.EmployeeTab
 import com.briolink.companyservice.api.service.employee.dto.EmployeeTabFilter
-import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ExpVerificationStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
@@ -46,10 +46,11 @@ class EmployeeService(
         when (request.tab) {
             EmployeeTab.Current -> cb.whereExpression("upper(dates) is null")
             EmployeeTab.Former -> cb.whereExpression("upper(dates) is not null")
+            else -> null
         }
 
-        if (request.forConfirmation) cb.where("_status").eq(UserJobPositionVerifyStatusEnum.Pending.value)
-        else cb.where("_status").eq(UserJobPositionVerifyStatusEnum.Verified.value)
+        if (request.forConfirmation) cb.where("_status").eq(ExpVerificationStatusEnum.Pending.value).where("isVerifyByCompany").eq(true)
+        else cb.where("_status").eq(ExpVerificationStatusEnum.Confirmed.value)
 
         if (request.isOnlyUserWithPermission) cb.whereExpression("permissionLevel BETWEEN 0 AND 3")
 

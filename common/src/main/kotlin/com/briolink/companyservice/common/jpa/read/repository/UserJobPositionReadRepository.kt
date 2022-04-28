@@ -136,4 +136,12 @@ interface UserJobPositionReadRepository : JpaRepository<UserJobPositionReadEntit
     fun setFormerEmployee(id: Collection<UUID>): Int
 
     fun existsByUserIdAndCompanyId(userId: UUID, companyId: UUID): Boolean
+
+    @Modifying
+    @Query("UPDATE UserJobPositionReadEntity u SET u._status = ?2 WHERE u.id = ?1")
+    fun updateStatus(id: UUID, status: Int): Int
+
+    @Modifying
+    @Query("UPDATE UserJobPositionReadEntity u SET u.isVerifyByCompany = ?3, u.verificationId = ?2 WHERE u.id = ?1")
+    fun updateVerification(id: UUID, verificationId: UUID?, isVerifyByCompany: Boolean): Int
 }

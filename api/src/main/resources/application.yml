@@ -46,6 +46,8 @@ app:
   app-endpoints:
     companyservice: http://companyservice-service.${env.spring_profiles_active}.svc.cluster.local:8080/
     connection: http://connection-service.${env.spring_profiles_active}.svc.cluster.local:8080/
+    expverification: http://exp-verification-service.${env.spring_profiles_active}.svc.cluster.local:8080/
+    user: http://user-service.${env.spring_profiles_active}.svc.cluster.local:8080/
   aws:
     s3:
       name: ${env.S3_BUCKET_NAME:briolink}

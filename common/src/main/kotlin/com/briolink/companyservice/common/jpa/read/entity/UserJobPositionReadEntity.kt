@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ExpVerificationStatusEnum
 import com.briolink.lib.permission.model.UserPermissionRights
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.vladmihalcea.hibernate.type.range.Range
@@ -31,7 +31,7 @@ class UserJobPositionReadEntity(
     var userId: UUID,
 
     @Column(name = "status", nullable = false)
-    private var _status: Int = UserJobPositionVerifyStatusEnum.Pending.value,
+    private var _status: Int = ExpVerificationStatusEnum.NotConfirmed.value,
 
 ) : BaseReadEntity() {
     @ColumnTransformer(write = "to_tsvector('simple', ?)")
@@ -55,23 +55,24 @@ class UserJobPositionReadEntity(
     @Column(name = "rigths", columnDefinition = "text[]")
     var rights: Array<String>? = null
 
-    // var rights: MutableSet<PermissionRightEnum>?
-    //     get() = _rights?.map { PermissionRightEnum.ofId(it) }?.toMutableSet()
-    //     set(value) {
-    //         _rights = value?.map { it.id }?.toTypedArray()
-    //     }
-
     @Column(name = "permission_level")
     var permissionLevel: Int? = null
 
     @Column(name = "is_current", nullable = false)
     var isCurrent: Boolean = false
 
-    var status: UserJobPositionVerifyStatusEnum
-        get() = UserJobPositionVerifyStatusEnum.fromInt(_status)
+    var status: ExpVerificationStatusEnum
+        get() = ExpVerificationStatusEnum.ofValue(_status)
         set(value) {
             _status = value.value
         }
+
+    @Column(name = "is_verify_by_company", nullable = false)
+    var isVerifyByCompany: Boolean = false
+
+    @Type(type = "pg-uuid")
+    @Column(name = "verification_id")
+    var verificationId: UUID? = null
 
     @Type(type = "jsonb")
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")

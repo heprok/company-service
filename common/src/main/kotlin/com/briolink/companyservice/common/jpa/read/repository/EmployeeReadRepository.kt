@@ -65,7 +65,7 @@ interface EmployeeReadRepository : JpaRepository<EmployeeReadEntity, EmployeePK>
                 FROM
                     read.user_job_position
                 WHERE
-                    (is_current = true OR upper(dates) is null) AND company_id = ?1
+                    (is_current = true OR upper(dates) is null) AND status = 3 AND company_id = ?1
                 ORDER BY user_id, is_current DESC, upper(dates) DESC
             """,
         nativeQuery = true,

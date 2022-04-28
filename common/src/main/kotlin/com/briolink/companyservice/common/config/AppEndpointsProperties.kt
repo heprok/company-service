@@ -12,4 +12,10 @@ class AppEndpointsProperties {
 
     @NotNull
     lateinit var connection: String
+
+    @NotNull
+    lateinit var expverification: String
+
+    @NotNull
+    lateinit var user: String
 }
