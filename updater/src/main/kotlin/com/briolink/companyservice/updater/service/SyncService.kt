@@ -72,4 +72,13 @@ class SyncService(
                 this._objectSync = ObjectSyncEnum.CompanyService.value
             },
         )
+
+    override fun getListSyncLogIdAtExpVerification(syncId: Int): List<SyncLogId> =
+        listOf(
+            SyncLogId().apply {
+                this.syncId = syncId
+                this._service = ServiceEnum.ExpVerification.id
+                this._objectSync = ObjectSyncEnum.ExpVerification.value
+            },
+        )
 }

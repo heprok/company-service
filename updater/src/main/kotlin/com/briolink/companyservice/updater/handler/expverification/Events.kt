@@ -9,8 +9,6 @@ import java.util.UUID
 
 data class ExpVerificationCreatedEvent(override val data: ExpVerificationEventData) : Event<ExpVerificationEventData>("1.0")
 data class ExpVerificationUpdatedEvent(override val data: ExpVerificationEventData) : Event<ExpVerificationEventData>("1.0")
-data class ExpVerificationChangedStatusEvent(override val data: ExpVerificationChangeStatusEventData) :
-    Event<ExpVerificationChangeStatusEventData>("1.0")
 
 data class ExpVerificationSyncEvent(override val data: SyncData<ExpVerificationEventData>) : SyncEvent<ExpVerificationEventData>("1.0")
 
@@ -45,15 +43,6 @@ data class ExpVerificationEventData(
     val userToConfirmIds: ArrayList<UUID>,
     @JsonProperty
     val actionBy: UUID?,
-    @JsonProperty
-    val objectConfirmType: ObjectConfirmType,
-    @JsonProperty
-    val status: ExpVerificationStatus,
-)
-
-data class ExpVerificationChangeStatusEventData(
-    @JsonProperty
-    val objectConfirmId: UUID,
     @JsonProperty
     val objectConfirmType: ObjectConfirmType,
     @JsonProperty
