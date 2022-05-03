@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
@@ -12,6 +12,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
+@Deprecated("Remove after update statistic")
 @Table(name = "connection_service", schema = "read")
 @Entity
 class ConnectionServiceReadEntity : BaseReadEntity() {
@@ -43,10 +44,10 @@ class ConnectionServiceReadEntity : BaseReadEntity() {
     var hidden: Boolean = false
 
     @Column(name = "status", nullable = false)
-    private var _status: Int = ConnectionStatusEnum.Pending.value
+    private var _status: Int = ProjectStageEnum.Pending.value
 
-    var status: ConnectionStatusEnum
-        get() = ConnectionStatusEnum.fromInt(_status)
+    var status: ProjectStageEnum
+        get() = ProjectStageEnum.fromInt(_status)
         set(value) {
             _status = value.value
         }

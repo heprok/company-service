@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.briolink.companyservice.common.jpa.projection.CompanyIdProjection
 import com.briolink.companyservice.common.jpa.projection.IdNameProjection
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
@@ -25,7 +25,7 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
     )
     fun getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
         companyId: UUID,
-        type: Int = ConnectionStatusEnum.Verified.value
+        type: Int = ProjectStageEnum.Verified.value
     ): List<ConnectionReadEntity>
 
     @Modifying

@@ -4,7 +4,6 @@ import com.briolink.lib.event.Event
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncEvent
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.Instant
 import java.time.Year
 import java.util.UUID
 
@@ -23,6 +22,11 @@ enum class ProjectStatus(val value: Int) {
 
     @JsonProperty("5")
     Rejected(5);
+
+    companion object {
+        private val map = values().associateBy(ProjectStatus::value)
+        fun fromInt(type: Int): ProjectStatus = map[type]!!
+    }
 }
 
 enum class ProjectCompanyRoleType(val value: Int) {
@@ -33,7 +37,18 @@ enum class ProjectCompanyRoleType(val value: Int) {
     Seller(1)
 }
 
-data class ProjectCompanyRole(
+enum class ProjectObjectType(val value: Int) {
+    @JsonProperty("1")
+    User(1),
+
+    @JsonProperty("2")
+    Company(2),
+
+    @JsonProperty("3")
+    CompanyService(3)
+}
+
+data class ProjectCompanyRoleData(
     @JsonProperty
     val id: UUID,
     @JsonProperty
@@ -42,7 +57,7 @@ data class ProjectCompanyRole(
     val type: ProjectCompanyRoleType
 )
 
-data class ProjectService(
+data class ProjectServiceData(
     @JsonProperty
     val id: UUID,
     @JsonProperty
@@ -50,37 +65,76 @@ data class ProjectService(
     @JsonProperty
     val serviceName: String,
     @JsonProperty
-    val startDate: Year,
+    val startDate: Year? = null,
     @JsonProperty
     val endDate: Year? = null,
 )
 
-data class ProjectParticipant(
+data class ProjectParticipantData(
     @JsonProperty
-    val userId: UUID,
+    val userId: UUID? = null,
     @JsonProperty
-    val userJobPositionTitle: String,
+    val companyId: UUID? = null,
     @JsonProperty
-    val companyId: UUID,
+    val companyRole: ProjectCompanyRoleData? = null,
     @JsonProperty
-    val companyRole: ProjectCompanyRole,
+    val companyAccepted: Boolean? = null,
+    @JsonProperty
+    val companyHidden: Boolean? = null,
+    @JsonProperty
+    val companyDeleted: Boolean? = null,
 )
 
 data class ProjectEventData(
     @JsonProperty
     val id: UUID,
     @JsonProperty
-    var participantFrom: ProjectParticipant,
+    val participantFrom: ProjectParticipantData,
     @JsonProperty
-    var participantTo: ProjectParticipant,
+    val participantTo: ProjectParticipantData,
     @JsonProperty
-    val services: ArrayList<ProjectService> = arrayListOf(),
+    val services: ArrayList<ProjectServiceData> = arrayListOf(),
     @JsonProperty
     val status: ProjectStatus,
+)
+
+data class ProjectDeletedDataEventData(
     @JsonProperty
-    var created: Instant,
+    val id: UUID,
+    @JsonProperty
+    val objectType: ProjectObjectType,
+    @JsonProperty
+    val participantObjectId: UUID,
+    @JsonProperty
+    val anotherParticipantUserId: UUID,
+    @JsonProperty
+    val anotherParticipantCompanyId: UUID,
+    @JsonProperty
+    val serviceId: UUID?,
+    @JsonProperty
+    val completely: Boolean
+)
+
+data class ProjectVisibilityEventData(
+    @JsonProperty
+    val id: UUID,
+    @JsonProperty
+    val serviceId: UUID?,
+    @JsonProperty
+    val objectType: ProjectObjectType,
+    @JsonProperty
+    val participantObjectId: UUID,
+    @JsonProperty
+    val anotherParticipantUserId: UUID,
+    @JsonProperty
+    val anotherParticipantCompanyId: UUID,
+    @JsonProperty
+    val hidden: Boolean
 )
 
 data class ProjectCreatedEvent(override val data: ProjectEventData) : Event<ProjectEventData>("1.0")
 data class ProjectUpdatedEvent(override val data: ProjectEventData) : Event<ProjectEventData>("1.0")
 data class ProjectSyncEvent(override val data: SyncData<ProjectEventData>) : SyncEvent<ProjectEventData>("1.0")
+
+data class ProjectDeletedEvent(override val data: ProjectDeletedDataEventData) : Event<ProjectDeletedDataEventData>("1.0")
+data class ProjectVisibilityUpdatedEvent(override val data: ProjectVisibilityEventData) : Event<ProjectVisibilityEventData>("1.0")

@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -85,7 +85,7 @@ interface ConnectionServiceReadRepository : JpaRepository<ConnectionServiceReadE
     fun findByServiceId(
         @Param("serviceId") serviceId: UUID,
         @Param("hidden") hidden: Boolean = false,
-        @Param("status") status: Int = ConnectionStatusEnum.Verified.value,
+        @Param("status") status: Int = ProjectStageEnum.Verified.value,
         @Param("pageable") pageable: Pageable? = null
     ): Page<ConnectionServiceReadEntity>
 }

@@ -3,7 +3,7 @@ package com.briolink.companyservice.api.service
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.config.AppEndpointsProperties
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.briolink.companyservice.common.jpa.initSpec
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
@@ -115,7 +115,7 @@ class ServiceCompanyService(
         connectionServiceReadRepository.findByServiceId(
             serviceId,
             hidden = false,
-            status = ConnectionStatusEnum.Verified.value,
+            status = ProjectStageEnum.Verified.value,
             pageable = PageRequest(offset = offset, limit = limit),
         )
 }

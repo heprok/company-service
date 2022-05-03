@@ -5,7 +5,7 @@ import com.briolink.companyservice.common.domain.v1_0.ConnectionCompanyRoleData
 import com.briolink.companyservice.common.domain.v1_0.ConnectionCompanyRoleType
 import com.briolink.companyservice.common.event.v1_0.CompanyStatisticEvent
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataList
@@ -54,7 +54,7 @@ class StatisticHandlerService(
 
         val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
             companyId,
-            ConnectionStatusEnum.Verified.value
+            ProjectStageEnum.Verified.value
         )
         val collaborationCompanyIds = mutableSetOf<UUID>()
         val servicesProvidedIds = mutableSetOf<UUID>()

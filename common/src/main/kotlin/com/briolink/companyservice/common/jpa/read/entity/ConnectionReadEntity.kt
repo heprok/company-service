@@ -1,7 +1,7 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
 import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.briolink.lib.location.model.LocationMinInfo
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.vladmihalcea.hibernate.type.range.Range
@@ -74,7 +74,7 @@ class ConnectionReadEntity(
     var companyIndustryId: UUID? = null
 
     @Column(name = "status", nullable = false)
-    private var _status: Int = ConnectionStatusEnum.Pending.value
+    private var _status: Int = ProjectStageEnum.Pending.value
 
     @Type(type = "uuid-array")
     @Column(name = "hidden_company_ids", columnDefinition = "uuid[]")
@@ -91,20 +91,20 @@ class ConnectionReadEntity(
     @Column(name = "data", nullable = false)
     lateinit var data: Data
 
-    var status: ConnectionStatusEnum
-        get() = ConnectionStatusEnum.fromInt(_status)
+    var status: ProjectStageEnum
+        get() = ProjectStageEnum.fromInt(_status)
         set(value) {
             _status = value.value
         }
 
     var participantFromRoleType: CompanyRoleTypeEnum
-        get() = CompanyRoleTypeEnum.fromInt(_participantFromRoleType)
+        get() = CompanyRoleTypeEnum.ofValue(_participantFromRoleType)
         set(value) {
             _participantFromRoleType = value.value
         }
 
     var participantToRoleType: CompanyRoleTypeEnum
-        get() = CompanyRoleTypeEnum.fromInt(_participantToRoleType)
+        get() = CompanyRoleTypeEnum.ofValue(_participantToRoleType)
         set(value) {
             _participantToRoleType = value.value
         }

@@ -2,7 +2,7 @@ package com.briolink.companyservice.common.jpa.enumeration
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class ConnectionStatusEnum(@JsonValue val value: Int) {
+enum class ProjectStageEnum(@JsonValue val value: Int) {
     Draft(1),
     Pending(2),
     InProgress(3),
@@ -10,7 +10,7 @@ enum class ConnectionStatusEnum(@JsonValue val value: Int) {
     Rejected(5);
 
     companion object {
-        private val map = values().associateBy(ConnectionStatusEnum::value)
-        fun fromInt(type: Int): ConnectionStatusEnum = map[type]!!
+        private val map = values().associateBy(ProjectStageEnum::value)
+        fun fromInt(type: Int): ProjectStageEnum = map[type]!!
     }
 }
