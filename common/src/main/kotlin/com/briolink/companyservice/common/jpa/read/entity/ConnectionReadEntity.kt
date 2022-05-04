@@ -1,17 +1,11 @@
 package com.briolink.companyservice.common.jpa.read.entity
 
-import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
-import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
-import com.briolink.lib.location.model.LocationMinInfo
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.vladmihalcea.hibernate.type.range.Range
+import com.briolink.companyservice.common.jpa.enumeration.ConnectionObjectTypeEnum
 import org.hibernate.annotations.Type
-import java.net.URL
-import java.time.Instant
-import java.time.Year
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -19,167 +13,38 @@ import javax.persistence.Table
 @Entity
 class ConnectionReadEntity(
     @Id
+    @GeneratedValue
     @Type(type = "pg-uuid")
-    @Column(name = "id", nullable = false)
-    val id: UUID
+    @Column(name = "id")
+    val id: UUID? = null,
 ) : BaseReadEntity() {
 
-    @Column(name = "participant_from_company_id", nullable = false)
-    lateinit var participantFromCompanyId: UUID
+    @Type(type = "pg-uuid")
+    @Column(name = "from_object_id", nullable = false)
+    lateinit var fromObjectId: UUID
 
-    @Column(name = "participant_from_user_id", nullable = false)
-    lateinit var participantFromUserId: UUID
+    @Column(name = "from_object_type", nullable = false)
+    private var _fromObjectType: Int = ConnectionObjectTypeEnum.Company.value
 
-    @Column(name = "participant_from_role_id", nullable = false)
-    lateinit var participantFromRoleId: UUID
+    @Type(type = "pg-uuid")
+    @Column(name = "to_object_id", nullable = false)
+    lateinit var toObjectId: UUID
 
-    @Column(name = "participant_from_role_name", nullable = false)
-    lateinit var participantFromRoleName: String
+    @Column(name = "to_object_type", nullable = false)
+    private var _toObjectType: Int = ConnectionObjectTypeEnum.Company.value
 
-    @Column(name = "participant_from_role_type", nullable = false)
-    private var _participantFromRoleType = 0
-
-    @Column(name = "participant_to_company_id", nullable = false)
-    lateinit var participantToCompanyId: UUID
-
-    @Column(name = "participant_to_user_id", nullable = false)
-    lateinit var participantToUserId: UUID
-
-    @Column(name = "participant_to_role_id", nullable = false)
-    lateinit var participantToRoleId: UUID
-
-    @Column(name = "participant_to_role_name", nullable = false)
-    lateinit var participantToRoleName: String
-
-    @Column(name = "participant_to_role_type", nullable = false)
-    private var _participantToRoleType = 0
-
-    @Type(type = "uuid-array")
-    @Column(name = "service_ids", columnDefinition = "uuid[]")
-    lateinit var serviceIds: List<UUID>
-
-    @Column(name = "dates", columnDefinition = "int4range", nullable = false)
-    lateinit var dates: Range<Int>
-
-    @Column(name = "country_id")
-    var countryId: Int? = null
-
-    @Column(name = "state_id")
-    var stateId: Int? = null
-
-    @Column(name = "city_id")
-    var cityId: Int? = null
-
-    @Column(name = "company_industry_id")
-    var companyIndustryId: UUID? = null
-
-    @Column(name = "status", nullable = false)
-    private var _status: Int = ProjectStageEnum.Pending.value
-
-    @Type(type = "uuid-array")
-    @Column(name = "hidden_company_ids", columnDefinition = "uuid[]")
-    lateinit var hiddenCompanyIds: List<UUID>
-
-    @Type(type = "uuid-array")
-    @Column(name = "deleted_company_ids", columnDefinition = "uuid[]")
-    lateinit var deletedCompanyIds: List<UUID>
-
-    @Column(name = "created", nullable = false)
-    lateinit var created: Instant
-
-    @Type(type = "jsonb")
-    @Column(name = "data", nullable = false)
-    lateinit var data: Data
-
-    var status: ProjectStageEnum
-        get() = ProjectStageEnum.fromInt(_status)
+    var toObjectType: ConnectionObjectTypeEnum
+        get() = ConnectionObjectTypeEnum.ofValue(_toObjectType)
         set(value) {
-            _status = value.value
+            _toObjectType = value.value
         }
 
-    var participantFromRoleType: CompanyRoleTypeEnum
-        get() = CompanyRoleTypeEnum.ofValue(_participantFromRoleType)
+    var fromObjectType: ConnectionObjectTypeEnum
+        get() = ConnectionObjectTypeEnum.ofValue(_fromObjectType)
         set(value) {
-            _participantFromRoleType = value.value
+            _fromObjectType = value.value
         }
 
-    var participantToRoleType: CompanyRoleTypeEnum
-        get() = CompanyRoleTypeEnum.ofValue(_participantToRoleType)
-        set(value) {
-            _participantToRoleType = value.value
-        }
-
-    data class Data(
-        @JsonProperty
-        val participantFrom: Participant,
-        @JsonProperty
-        val participantTo: Participant,
-        @JsonProperty
-        val services: ArrayList<Service>,
-        @JsonProperty
-        val industry: String?,
-        @JsonProperty
-        val location: LocationMinInfo? = null
-    )
-
-    data class Participant(
-        @JsonProperty
-        val user: User,
-        @JsonProperty
-        val userJobPositionTitle: String?,
-        @JsonProperty
-        val company: Company,
-        @JsonProperty
-        val companyRole: CompanyRole,
-    )
-
-    data class CompanyRole(
-        @JsonProperty
-        val id: UUID,
-        @JsonProperty
-        val name: String,
-        @JsonProperty
-        val type: CompanyRoleTypeEnum
-    )
-
-    data class Service(
-        @JsonProperty
-        val id: UUID,
-        @JsonProperty
-        val serviceId: UUID?,
-        @JsonProperty
-        var slug: String = "-1",
-        @JsonProperty
-        val serviceName: String,
-        @JsonProperty
-        val startDate: Year,
-        @JsonProperty
-        val endDate: Year?,
-    )
-
-    data class User(
-        @JsonProperty
-        val id: UUID,
-        @JsonProperty
-        val slug: String,
-        @JsonProperty
-        val image: URL?,
-        @JsonProperty
-        val lastName: String,
-        @JsonProperty
-        val firstName: String,
-    )
-
-    data class Company(
-        @JsonProperty
-        val id: UUID,
-        @JsonProperty
-        val slug: String,
-        @JsonProperty
-        val logo: URL?,
-        @JsonProperty
-        val name: String,
-        @JsonProperty
-        val occupation: String? = null,
-    )
+    @Column(name = "hidden", nullable = false)
+    var hidden: Boolean = false
 }

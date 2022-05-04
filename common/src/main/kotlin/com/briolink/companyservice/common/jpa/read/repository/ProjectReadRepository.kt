@@ -1,6 +1,8 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
 import com.briolink.companyservice.common.jpa.read.entity.ProjectReadEntity
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -48,4 +50,21 @@ interface ProjectReadRepository : JpaRepository<ProjectReadEntity, UUID> {
         @Param("companyId") companyId: UUID,
         @Param("hidden") hidden: Boolean
     ): Int
+
+    @Query(
+        """
+        SELECT c from ConnectionReadEntity c
+        where
+            (c.participantToCompanyId = ?1 or c.participantFromCompanyId = ?1)
+             AND (
+                function('array_contains_element', c.hiddenCompanyIds, ?1) = FALSE
+            )
+    """,
+    )
+    fun findNotHiddenByCompanyId(
+        companyId: UUID,
+        pageable: Pageable = Pageable.ofSize(1000)
+    ): Page<ProjectReadEntity>
+
+    fun findNotHiddenByCompanyId
 }

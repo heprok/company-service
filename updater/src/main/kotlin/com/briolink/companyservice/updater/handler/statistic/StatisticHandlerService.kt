@@ -18,8 +18,7 @@ import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListIte
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartTabItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ProjectReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.StatisticReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
@@ -39,10 +38,9 @@ import java.util.UUID
 @EnableAsync
 class StatisticHandlerService(
     private val statisticReadRepository: StatisticReadRepository,
-    private val connectionReadRepository: ConnectionReadRepository,
+    private val projectReadRepository: ProjectReadRepository,
     private val serviceReadRepository: ServiceReadRepository,
     private val companyReadRepository: CompanyReadRepository,
-    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     private val eventPublisher: EventPublisher,
 ) {
     @Async
@@ -52,7 +50,7 @@ class StatisticHandlerService(
         val companyStatistic = StatisticReadEntity(companyId)
 //        val companyStatistic = statisticReadRepository.findByCompanyId(event.companyId) ?: StatisticReadEntity(event.companyId)
 
-        val list = connectionReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
+        val list = projectReadRepository.getByCompanyIdAndStatusAndNotHiddenOrNotDeleted(
             companyId,
             ProjectStageEnum.Verified.value
         )
