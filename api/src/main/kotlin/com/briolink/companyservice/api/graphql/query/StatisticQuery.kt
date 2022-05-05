@@ -8,23 +8,21 @@ import com.briolink.companyservice.api.types.ChartByIndustry
 import com.briolink.companyservice.api.types.ChartByIndustryItem
 import com.briolink.companyservice.api.types.ChartByServicesProvided
 import com.briolink.companyservice.api.types.ChartByServicesProvidedItem
-import com.briolink.companyservice.api.types.ChartConnectionCountByYear
-import com.briolink.companyservice.api.types.ChartConnectionCountByYearItem
-import com.briolink.companyservice.api.types.ChartItemHint
-import com.briolink.companyservice.api.types.ChartItemWithHint
+import com.briolink.companyservice.api.types.ChartItem
+import com.briolink.companyservice.api.types.ChartProjectByYear
+import com.briolink.companyservice.api.types.ChartProjectByYearItem
 import com.briolink.companyservice.api.types.ChartTabItem
 import com.briolink.companyservice.api.types.CompanyInfoItem
 import com.briolink.companyservice.api.types.CompanyStatistic
 import com.briolink.companyservice.api.types.CompanyStatisticCharts
 import com.briolink.companyservice.api.types.CompanyStatisticTotal
-import com.briolink.companyservice.api.types.ConnectionCompanyRoleType
-import com.briolink.companyservice.api.types.Image
+import com.briolink.companyservice.api.types.ProjectInfoItem
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
-import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoles
-import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithServicesCount
-import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithUsesCount
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithMarketSegmentAndLocation
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoleAndProject
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithVerifyUsed
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.fasterxml.jackson.core.type.TypeReference
@@ -33,7 +31,6 @@ import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
 import graphql.schema.DataFetchingEnvironment
-import java.util.Objects
 import java.util.UUID
 import java.util.function.Function
 import java.util.stream.Collectors
@@ -84,16 +81,25 @@ class CompanyStatisticQuery(
 
         cb.where("companyId").eq(UUID.fromString(companyId))
 
-        if (dfe.selectionSet.contains("total/connectionsNumber")) cb.select("totalConnections", "totalConnections")
+        if (dfe.selectionSet.contains("total/connectionsNumber")) cb.select(
+            "totalConnectedCompanies + totalConnectedPeoples",
+            "connectionsNumber"
+        )
         if (dfe.selectionSet.contains("total/servicesProvidedNumber")) cb.select(
             "totalServicesProvided",
             "totalServicesProvided"
         )
-        if (dfe.selectionSet.contains("total/numberOfCollaborationCompanies"))
-            cb.select("totalCollaborationCompanies", "totalCollaborationCompanies")
+        if (dfe.selectionSet.contains("total/projectsNumber"))
+            cb.select("totalProjects", "totalProjects")
+        if (dfe.selectionSet.contains("total/connectedCompanies"))
+            cb.select("totalConnectedCompanies", "totalConnectedCompanies")
+        if (dfe.selectionSet.contains("total/connectedPeoples"))
+            cb.select("totalConnectedPeoples", "totalConnectedPeoples")
 
-        if (dfe.selectionSet.containsAnyOf("charts/connectionCountByYear/data", "charts/connectionCountByYear/tabs"))
-            cb.select("chartConnectionCountByYear", "chartConnectionCountByYear")
+        if (dfe.selectionSet.containsAnyOf("charts/activeProjectsByYear/data", "charts/activeProjectsByYear/tabs"))
+            cb.select("chartActiveProjectByYear", "chartActiveProjectByYear")
+        if (dfe.selectionSet.containsAnyOf("charts/newProjectsByYear/data", "charts/newProjectsByYear/tabs"))
+            cb.select("chartNewProjectByYear", "chartNewProjectByYear")
         if (dfe.selectionSet.containsAnyOf("charts/byCountry/data", "charts/byCountry/tabs"))
             cb.select("chartByCountry", "chartByCountry")
         if (dfe.selectionSet.containsAnyOf("charts/byIndustry/data", "charts/byIndustry/tabs"))
@@ -101,15 +107,26 @@ class CompanyStatisticQuery(
         if (dfe.selectionSet.containsAnyOf("charts/byServicesProvided/data", "charts/byServicesProvided/tabs"))
             cb.select("chartByServicesProvided", "chartByServicesProvided")
 
-        if (dfe.selectionSet.contains("charts/connectionCountByYear/listByTab"))
+        if (dfe.selectionSet.contains("charts/activeProjectsByYear/listByTab"))
             cb
                 .select(
-                    "jsonb_get(chartConnectionCountByYearData, 'data', :dk1, 'items')",
-                    "chartConnectionCountByYearData"
+                    "jsonb_get(chartActiveProjectByYear, 'data', :dk1, 'items')",
+                    "chartActiveProjectByYearData"
                 )
                 .setParameter(
                     "dk1",
-                    dfe.selectionSet.getFields("charts/connectionCountByYear/listByTab")[0].arguments["id"]
+                    dfe.selectionSet.getFields("charts/activeProjectsByYear/listByTab")[0].arguments["id"]
+                )
+
+        if (dfe.selectionSet.contains("charts/newProjectsByYear/listByTab"))
+            cb
+                .select(
+                    "jsonb_get(chartNewProjectByYear, 'data', :dk1, 'items')",
+                    "chartNewProjectByYearData"
+                )
+                .setParameter(
+                    "dk1",
+                    dfe.selectionSet.getFields("charts/newProjectsByYear/listByTab")[0].arguments["id"]
                 )
 
         if (dfe.selectionSet.contains("charts/byCountry/listByTab"))
@@ -132,37 +149,44 @@ class CompanyStatisticQuery(
 
         val result = cb.resultList.firstOrNull()
 
-        val chartConnectionCountByYear = result?.getOrNull<Chart>("chartConnectionCountByYear")
+        val chartActiveProjectByYear = result?.getOrNull<Chart>("chartActiveProjectByYear")
+        val chartNewProjectByYear = result?.getOrNull<Chart>("chartNewProjectByYear")
         val chartByCountry = result?.getOrNull<Chart>("chartByCountry")
         val chartByIndustry = result?.getOrNull<Chart>("chartByIndustry")
         val chartByServicesProvided = result?.getOrNull<Chart>("chartByServicesProvided")
-        val chartConnectionCountByYearData =
+        val chartActiveProjectByYearData =
             mapRawData(
-                result?.getOrNull("chartConnectionCountByYearData"),
-                object : TypeReference<List<ChartListItemWithServicesCount>>() {},
+                result?.getOrNull("chartActiveProjectByYearData"),
+                object : TypeReference<List<ChartListItemWithRoleAndProject>>() {},
+            )
+        val chartNewProjectByYearData =
+            mapRawData(
+                result?.getOrNull("chartNewProjectByYearData"),
+                object : TypeReference<List<ChartListItemWithRoleAndProject>>() {},
             )
         val chartByCountryData =
             mapRawData(
                 result?.getOrNull("chartByCountryData"),
-                object : TypeReference<List<ChartListItemWithRoles>>() {}
+                object : TypeReference<List<ChartListItemWithMarketSegmentAndLocation>>() {}
             )
         val chartByIndustryData =
             mapRawData(
                 result?.getOrNull("chartByIndustryData"),
-                object : TypeReference<List<ChartListItemWithRoles>>() {}
+                object : TypeReference<List<ChartListItemWithMarketSegmentAndLocation>>() {}
             )
         val chartByServicesProvidedData =
             mapRawData(
                 result?.getOrNull("chartByServicesProvidedData"),
-                object : TypeReference<List<ChartListItemWithUsesCount>>() {}
+                object : TypeReference<List<ChartListItemWithVerifyUsed>>() {}
             )
 
         val companyIds = collectCompanyIds(
-            chartConnectionCountByYear,
+            chartNewProjectByYear,
+            chartActiveProjectByYear,
             chartByCountry,
             chartByIndustry,
             chartByServicesProvided,
-            chartConnectionCountByYearData,
+            chartActiveProjectByYearData,
             chartByCountryData,
             chartByIndustryData,
             chartByServicesProvidedData,
@@ -186,39 +210,44 @@ class CompanyStatisticQuery(
 
         val mapData = { chart: Chart? ->
             chart?.items?.map {
-                ChartItemWithHint(
+                ChartItem(
                     it.key,
                     it.name,
                     it.value,
-                    hints = it.companyIds
-                        .stream().map(companies::get)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList()).map { hint ->
-                            ChartItemHint(
-                                name = hint!!.name,
-                                image = hint.data.logo?.let { logo -> Image(logo) },
-                            )
-                        },
                 )
             }.orEmpty()
         }
 
         return CompanyStatistic(
             total = CompanyStatisticTotal(
-                result?.getOrNull<Int>("totalConnections") ?: 0,
+                result?.getOrNull<Int>("totalConnectedCompanies") ?: 0,
                 result?.getOrNull<Int>("totalServicesProvided") ?: 0,
-                result?.getOrNull<Int>("totalCollaborationCompanies") ?: 0,
+                result?.getOrNull<Int>("totalProjects") ?: 0,
+                result?.getOrNull<Int>("totalConnectedCompanies") ?: 0,
+                result?.getOrNull<Int>("totalConnectedPeoples") ?: 0,
             ),
             charts = CompanyStatisticCharts(
-                ChartConnectionCountByYear(
-                    data = mapData(chartConnectionCountByYear),
-                    tabs = mapTabs(chartConnectionCountByYear),
-                    listByTab = chartConnectionCountByYearData?.map {
-                        ChartConnectionCountByYearItem(
+                ChartProjectByYear(
+                    data = mapData(chartActiveProjectByYear),
+                    tabs = mapTabs(chartActiveProjectByYear),
+                    listByTab = chartActiveProjectByYearData?.map {
+                        ChartProjectByYearItem(
                             company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                            companyRole = it.companyRole,
-                            companyRoleType = ConnectionCompanyRoleType.valueOf(it.companyRoleType.name),
-                            servicesCount = it.servicesCount,
+                            companyRole = it.role,
+                            project = ProjectInfoItem(name = it.serviceName, startDate = it.startDate, endDate = it.endDate),
+
+                        )
+                    }.orEmpty(),
+                ),
+                ChartProjectByYear(
+                    data = mapData(chartNewProjectByYear),
+                    tabs = mapTabs(chartNewProjectByYear),
+                    listByTab = chartNewProjectByYearData?.map {
+                        ChartProjectByYearItem(
+                            company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
+                            companyRole = it.role,
+                            project = ProjectInfoItem(name = it.serviceName, startDate = it.startDate, endDate = it.endDate),
+
                         )
                     }.orEmpty(),
                 ),
@@ -229,7 +258,7 @@ class CompanyStatisticQuery(
                         println(it.companyId)
                         ChartByCountryItem(
                             company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                            companyRoles = it.roles.toList(),
+                            verifiedProjects = it.verifiedProjects,
                         )
                     }.orEmpty(),
                 ),
@@ -239,7 +268,7 @@ class CompanyStatisticQuery(
                     listByTab = chartByIndustryData?.map {
                         ChartByIndustryItem(
                             company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                            companyRoles = it.roles.toList(),
+                            verifiedProjects = it.verifiedProjects,
                         )
                     }.orEmpty(),
                 ),
@@ -248,7 +277,7 @@ class CompanyStatisticQuery(
                     listByService = chartByServicesProvidedData?.map {
                         ChartByServicesProvidedItem(
                             company = CompanyInfoItem.fromEntity(companies[it.companyId]!!),
-                            usesCount = it.usesCount,
+                            verifyUsed = it.verifyUsed
                         )
                     }.orEmpty(),
                 ),

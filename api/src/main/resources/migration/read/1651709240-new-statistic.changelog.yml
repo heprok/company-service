@@ -1,0 +1,184 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1651709240-new-statistic
+      author: oleg@briolink.com
+      changes:
+        - dropTable:
+            tableName: connection
+            schemaName: read
+        - dropTable:
+            tableName: connection_service
+            schemaName: read
+        - delete:
+            tableName: statistic
+            schemaName: read
+        - renameColumn:
+            schemaName: read
+            tableName: statistic
+            oldColumnName: total_connections
+            newColumnName: total_projects
+            columnDataType: int
+        - renameColumn:
+            schemaName: read
+            tableName: statistic
+            oldColumnName: total_collaboration_companies
+            newColumnName: total_connected_companies
+            columnDataType: int
+        - renameColumn:
+            schemaName: read
+            tableName: statistic
+            oldColumnName: chart_connection_count_by_year
+            newColumnName: chart_active_project_by_year
+            columnDataType: jsonb
+        - renameColumn:
+            schemaName: read
+            tableName: statistic
+            oldColumnName: chart_connection_count_by_year_data
+            newColumnName: chart_active_project_by_year_data
+            columnDataType: jsonb
+        - addColumn:
+            schemaName: read
+            tableName: statistic
+            columns:
+              - columns:
+                  name: total_connected_peoples
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: chart_new_project_by_year_data
+                  type: jsonb
+                  defaultValue: { }
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: connection
+            schemaName: read
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: from_object_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_object_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_object_type
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_object_type
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hidden
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                    defaultValue: false
+        - createTable:
+            tableName: project
+            schemaName: read
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: participant_from_company_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_from_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_from_role_type
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_from_role_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_to_company_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_to_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_to_role_type
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_to_role_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hidden_company_ids
+                  type: uuid[]
+                  constraints:
+                    nullable: false
+              - column:
+                  name: accepted_company_ids
+                  type: uuid[]
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_company_ids
+                  type: uuid[]
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data
+                  type: jsonb
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: create index idx_connection_from_object_id_and_to_object_type on read.connection using btree (from_object_id, to_object_type)
+        - sql:
+            sql: create index idx_connection_to_object_id_and_from_object_type on read.connection using btree (to_object_id, from_object_type)
+
+        - sql:
+            sql: create index idx_project_hidden_company_ids on read.project using gin (hidden_company_ids)
+        - sql:
+            sql: create index idx_project_deleted_company_ids on read.project using gin (deleted_company_ids)
+        - sql:
+            sql: create index idx_project_accepted_company_ids on read.project using gin (accepted_company_ids)
+
+        - sql:
+            sql: create index idx_project_permission on read.project using gin (accepted_company_ids, hidden_company_ids, deleted_company_ids )
+
+        - sql:
+            sql: create index idx_project_participant_to_company_id on read.project using btree (participant_to_company_id)
+        - sql:
+            sql: create index idx_project_participant_from_company_id on read.project using btree (participant_from_company_id)

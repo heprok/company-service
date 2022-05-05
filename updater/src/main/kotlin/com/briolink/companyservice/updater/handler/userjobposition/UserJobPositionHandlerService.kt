@@ -4,11 +4,9 @@ import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyS
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.exist.PermissionRoleExistException
@@ -16,7 +14,6 @@ import com.briolink.lib.permission.exception.notfound.UserPermissionRoleNotFound
 import com.briolink.lib.permission.service.PermissionService
 import com.vladmihalcea.hibernate.type.range.Range
 import com.vladmihalcea.hibernate.type.util.ObjectMapperWrapper
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,10 +24,8 @@ import javax.persistence.EntityNotFoundException
 @Service
 class UserJobPositionHandlerService(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
-    private val connectionReadRepository: ConnectionReadRepository,
     private val userReadRepository: UserReadRepository,
     private val permissionService: PermissionService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
     private val employeeReadRepository: EmployeeReadRepository,
     private val companyReadRepository: CompanyReadRepository,
 ) {
@@ -79,9 +74,6 @@ class UserJobPositionHandlerService(
                     },
                 )
 
-                if (userJobPosition.endDate != null && addEmployee(userJobPosition.userId, userJobPosition.companyId))
-                    hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
-
                 refreshEmployeesByCompanyId(userJobPosition.companyId)
             } else {
                 userJobPositionReadEntityOptional.get().apply {
@@ -99,8 +91,6 @@ class UserJobPositionHandlerService(
                 }
 
                 prevCompanyId?.let {
-                    if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
-                        hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
                     deleteUserPermission(userJobPosition.userId, it)
                 }
                 if (userJobPosition.endDate != null) {
@@ -129,16 +119,6 @@ class UserJobPositionHandlerService(
             } != null
         } catch (role: PermissionRoleExistException) {
             false
-        }
-    }
-
-    fun hideConnection(userId: UUID, companyId: UUID, hidden: Boolean = false) {
-        connectionReadRepository.changeVisibilityByCompanyIdAndUserId(
-            companyId = companyId, userId = userId, hidden = hidden,
-        ).also {
-            if (it > 0) {
-                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
-            }
         }
     }
 

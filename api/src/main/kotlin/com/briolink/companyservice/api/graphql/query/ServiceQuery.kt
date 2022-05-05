@@ -2,8 +2,6 @@ package com.briolink.companyservice.api.graphql.query
 
 import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.service.ServiceCompanyService
-import com.briolink.companyservice.api.types.CompanyInfoByServiceItem
-import com.briolink.companyservice.api.types.CompanyInfoByServiceList
 import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceList
@@ -65,23 +63,4 @@ class ServiceQuery(
         @InputArgument companyId: String,
         @InputArgument filter: ServiceFilter?
     ): Int = serviceCompanyService.count(companyId = UUID.fromString(companyId), filter = filter).toInt()
-
-    @DgsQuery
-    fun getVerifyUsesByService(
-        @InputArgument serviceId: String,
-        @InputArgument limit: Int?,
-        @InputArgument offset: Int?,
-    ): CompanyInfoByServiceList {
-        val page = serviceCompanyService.getVerifyUsesByServiceId(
-            serviceId = UUID.fromString(serviceId),
-            limit = limit ?: 10,
-            offset = offset ?: 0
-        )
-        return CompanyInfoByServiceList(
-            items = page.content.map {
-                CompanyInfoByServiceItem.fromEntity(it)
-            },
-            totalItems = page.totalElements.toInt()
-        )
-    }
 }

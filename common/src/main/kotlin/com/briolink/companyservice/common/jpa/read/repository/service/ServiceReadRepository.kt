@@ -51,16 +51,8 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
     @Query(
         """SELECT s FROM ServiceReadEntity s WHERE s.hidden = false AND s.deleted = false"""
     )
+    @Deprecated("Remove after merge request")
     fun findAllAndNotHiddenAndNotDeleted(): List<ServiceReadEntity>
-
-    @Modifying
-    @Query(
-        """UPDATE ServiceReadEntity s
-            SET s.verifiedUses = (SELECT count(cs.serviceId) FROM ConnectionServiceReadEntity cs WHERE serviceId = ?1 AND cs.hidden = false)
-            WHERE s.id = ?1
-        """
-    )
-    fun refreshVerifyUses(serviceId: UUID)
 
     @Modifying
     @Query("DELETE from ServiceReadEntity c WHERE c.id = ?1")
@@ -70,7 +62,9 @@ interface ServiceReadRepository : JpaRepository<ServiceReadEntity, UUID>, JpaSpe
         "SELECT data ->>'slug' FROM read.service WHERE id = ?1 AND is_hidden = false AND is_deleted = false",
         nativeQuery = true
     )
+    @Deprecated("Remove after merge request")
     fun getSlugOrNullByServiceIdAndNotHiddenAndNotDeleted(serviceId: UUID): String?
 
+    @Deprecated("Remove after merge request")
     fun countByCompanyIdAndHiddenAndDeleted(companyId: UUID, hidden: Boolean = false, deleted: Boolean = false): Long
 }

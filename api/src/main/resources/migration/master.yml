@@ -59,3 +59,5 @@ databaseChangeLog:
       file: migration/read/16.changelog.yml
   - include:
       file: migration/read/17.changelog.yml
+  - include:
+      file: migration/read/1651709240-new-statistic.changelog.yml

@@ -1,8 +1,8 @@
 package com.briolink.companyservice.common.jpa.read.entity.statistic
 
-import com.briolink.companyservice.common.jpa.enumeration.CompanyRoleTypeEnum
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.time.LocalDate
 import java.util.UUID
 
 interface ChartListItem {
@@ -23,21 +23,22 @@ class ChartList<T> {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class ChartListItemWithRoles(
+data class ChartListItemWithMarketSegmentAndLocation(
     @JsonProperty override val companyId: UUID,
-    @JsonProperty val roles: MutableSet<String> = mutableSetOf()
+    @JsonProperty var verifiedProjects: Int,
 ) : ChartListItem
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class ChartListItemWithServicesCount(
+data class ChartListItemWithRoleAndProject(
     @JsonProperty override val companyId: UUID,
-    @JsonProperty val companyRole: String,
-    @JsonProperty val companyRoleType: CompanyRoleTypeEnum,
-    @JsonProperty var servicesCount: Int
+    @JsonProperty val role: String,
+    @JsonProperty val serviceName: String,
+    @JsonProperty val startDate: LocalDate,
+    @JsonProperty val endDate: LocalDate?,
 ) : ChartListItem
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class ChartListItemWithUsesCount(
+data class ChartListItemWithVerifyUsed(
     @JsonProperty override val companyId: UUID,
-    @JsonProperty var usesCount: Int
+    @JsonProperty var verifyUsed: Int
 ) : ChartListItem

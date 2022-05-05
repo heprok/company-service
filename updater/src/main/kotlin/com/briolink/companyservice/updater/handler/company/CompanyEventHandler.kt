@@ -2,7 +2,6 @@ package com.briolink.companyservice.updater.handler.company
 
 import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
 import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
-import com.briolink.companyservice.updater.handler.project.ConnectionServiceHandlerService
 import com.briolink.companyservice.updater.handler.project.ProjectHandlerService
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.lib.event.IEventHandler
@@ -18,7 +17,6 @@ import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 class CompanyEventHandler(
     private val companyHandlerService: CompanyHandlerService,
     private val projectHandlerService: ProjectHandlerService,
-    private val connectionServiceHandlerService: ConnectionServiceHandlerService,
 ) : IEventHandler<CompanyCreatedEvent> {
     override fun handle(event: CompanyCreatedEvent) {
         val updatedCompany = companyHandlerService.findById(event.data.id)
@@ -26,7 +24,6 @@ class CompanyEventHandler(
         val prevIndustryId = updatedCompany?.data?.industry?.id
         companyHandlerService.createOrUpdate(updatedCompany, event.data).let {
             if (event.name == "CompanyUpdatedEvent") {
-                connectionServiceHandlerService.updateCompany(it)
                 if (it.data.industry?.id != prevIndustryId || it.data.location?.country?.id != prevCountryId) {
                     projectHandlerService.refreshStatistic(event.data.id, true)
                 }
@@ -38,7 +35,6 @@ class CompanyEventHandler(
 @EventHandler("CompanySyncEvent", "1.0")
 class CompanySyncEventHandler(
     private val companyHandlerService: CompanyHandlerService,
-    private val connectionServiceHandlerService: ConnectionServiceHandlerService,
     syncService: SyncService,
 ) : SyncEventHandler<CompanySyncEvent>(ObjectSyncEnum.Company, syncService) {
     override fun handle(event: CompanySyncEvent) {
@@ -47,9 +43,7 @@ class CompanySyncEventHandler(
         try {
             val objectSync = syncData.objectSync!!
             val company = companyHandlerService.findById(objectSync.id)
-            companyHandlerService.createOrUpdate(company, objectSync).also {
-                connectionServiceHandlerService.updateCompany(it)
-            }
+            companyHandlerService.createOrUpdate(company, objectSync)
         } catch (ex: Exception) {
             sendError(syncData, ex)
         }

@@ -3,11 +3,8 @@ package com.briolink.companyservice.api.service
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.config.AppEndpointsProperties
-import com.briolink.companyservice.common.jpa.enumeration.ProjectStageEnum
 import com.briolink.companyservice.common.jpa.initSpec
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.ServiceReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.service.betweenLastUsed
 import com.briolink.companyservice.common.jpa.read.repository.service.betweenPrice
@@ -29,7 +26,6 @@ import javax.servlet.UnavailableException
 @Transactional
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
-    private val connectionServiceReadRepository: ConnectionServiceReadRepository,
     val appEndpointsProperties: AppEndpointsProperties,
 ) {
     fun getSpecification(filter: ServiceFilter?): Specification<ServiceReadEntity> =
@@ -110,12 +106,4 @@ class ServiceCompanyService(
             throw UnavailableException("CompanyService service unavailable")
         }
     }
-
-    fun getVerifyUsesByServiceId(serviceId: UUID, limit: Int = 10, offset: Int = 0): Page<ConnectionServiceReadEntity> =
-        connectionServiceReadRepository.findByServiceId(
-            serviceId,
-            hidden = false,
-            status = ProjectStageEnum.Verified.value,
-            pageable = PageRequest(offset = offset, limit = limit),
-        )
 }

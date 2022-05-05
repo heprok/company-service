@@ -78,9 +78,27 @@ class ProjectReadEntity(
     @Column(name = "data", columnDefinition = "jsonb", nullable = false)
     lateinit var data: Data
 
+    fun getCollaboratorParticipant(companyId: UUID): Participant =
+        when (companyId) {
+            participantFromCompanyId -> data.participantTo
+            participantToCompanyId -> data.participantFrom
+            else -> throw RuntimeException("The project does not have the company id $companyId")
+        }
+
+    fun getParticipant(companyId: UUID): Participant =
+        when (companyId) {
+            participantFromCompanyId -> data.participantFrom
+            participantToCompanyId -> data.participantTo
+            else -> throw RuntimeException("The project does not have the company id $companyId")
+        }
+
     data class Data(
         @JsonProperty
-        val service: ProjectService
+        val participantFrom: Participant,
+        @JsonProperty
+        val participantTo: Participant,
+        @JsonProperty
+        val projectService: ProjectService
     )
 
     data class ProjectService(
@@ -90,6 +108,24 @@ class ProjectReadEntity(
         val startDate: LocalDate,
         @JsonProperty
         val endDate: LocalDate? = null
+    )
+
+    data class Participant(
+        @JsonProperty
+        val companyId: UUID,
+        @JsonProperty
+        val userId: UUID,
+        @JsonProperty
+        val role: ProjectRole,
+    )
+
+    data class ProjectRole(
+        @JsonProperty
+        val id: UUID,
+        @JsonProperty
+        val name: String,
+        @JsonProperty
+        val type: CompanyRoleTypeEnum
     )
 
     data class Service(

@@ -55,7 +55,25 @@ class ProjectHandlerService(
             serviceId = serviceRead.id
 
             data = ProjectReadEntity.Data(
-                service = ProjectReadEntity.ProjectService(
+                participantTo = ProjectReadEntity.Participant(
+                    companyId = domain.participantTo.companyId,
+                    userId = domain.participantTo.userId,
+                    role = ProjectReadEntity.ProjectRole(
+                        id = domain.participantTo.companyRole.id,
+                        name = domain.participantTo.companyRole.name,
+                        type = CompanyRoleTypeEnum.ofValue(domain.participantTo.companyRole.type.value)
+                    )
+                ),
+                participantFrom = ProjectReadEntity.Participant(
+                    companyId = domain.participantFrom.companyId,
+                    userId = domain.participantFrom.userId,
+                    role = ProjectReadEntity.ProjectRole(
+                        id = domain.participantFrom.companyRole.id,
+                        name = domain.participantFrom.companyRole.name,
+                        type = CompanyRoleTypeEnum.ofValue(domain.participantFrom.companyRole.type.value)
+                    )
+                ),
+                projectService = ProjectReadEntity.ProjectService(
                     service = ProjectReadEntity.Service(
                         id = serviceRead.id,
                         name = projectService.serviceName,
