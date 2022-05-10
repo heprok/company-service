@@ -15,8 +15,8 @@ type CompanyStatisticTotal {
 }
 
 type CompanyStatisticCharts {
-    activeProjectsByYear: ChartProjectByYear!
-    newProjectsByYear: ChartProjectByYear!
+    activeProjectByYear: ChartProjectByYear!
+    newProjectByYear: ChartProjectByYear!
     byCountry: ChartByCountry!
     byIndustry: ChartByIndustry!
     byServicesProvided: ChartByServicesProvided!
@@ -36,10 +36,6 @@ type ChartTabItem {
     total: Int!
 }
 
-### charts (specific)
-
-## chart connection count by year
-
 type CompanyInfoItem {
     id: ID!
     slug: String!
@@ -48,6 +44,10 @@ type CompanyInfoItem {
     location: String
     occupation: String
 }
+
+### charts (specific)
+
+## chart project count by year
 
 type ProjectInfoItem {
     name: String!

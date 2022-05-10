@@ -20,8 +20,8 @@ import com.briolink.companyservice.api.types.ProjectInfoItem
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
-import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithMarketSegmentAndLocation
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoleAndProject
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithVerifiedProjects
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithVerifyUsed
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -96,7 +96,7 @@ class CompanyStatisticQuery(
         if (dfe.selectionSet.contains("total/connectedPeoples"))
             cb.select("totalConnectedPeoples", "totalConnectedPeoples")
 
-        if (dfe.selectionSet.containsAnyOf("charts/activeProjectsByYear/data", "charts/activeProjectsByYear/tabs"))
+        if (dfe.selectionSet.containsAnyOf("charts/activeProjectByYear/data", "charts/activeProjectByYear/tabs"))
             cb.select("chartActiveProjectByYear", "chartActiveProjectByYear")
         if (dfe.selectionSet.containsAnyOf("charts/newProjectsByYear/data", "charts/newProjectsByYear/tabs"))
             cb.select("chartNewProjectByYear", "chartNewProjectByYear")
@@ -107,7 +107,7 @@ class CompanyStatisticQuery(
         if (dfe.selectionSet.containsAnyOf("charts/byServicesProvided/data", "charts/byServicesProvided/tabs"))
             cb.select("chartByServicesProvided", "chartByServicesProvided")
 
-        if (dfe.selectionSet.contains("charts/activeProjectsByYear/listByTab"))
+        if (dfe.selectionSet.contains("charts/activeProjectByYear/listByTab"))
             cb
                 .select(
                     "jsonb_get(chartActiveProjectByYear, 'data', :dk1, 'items')",
@@ -115,7 +115,7 @@ class CompanyStatisticQuery(
                 )
                 .setParameter(
                     "dk1",
-                    dfe.selectionSet.getFields("charts/activeProjectsByYear/listByTab")[0].arguments["id"]
+                    dfe.selectionSet.getFields("charts/activeProjectByYear/listByTab")[0].arguments["id"]
                 )
 
         if (dfe.selectionSet.contains("charts/newProjectsByYear/listByTab"))
@@ -167,12 +167,12 @@ class CompanyStatisticQuery(
         val chartByCountryData =
             mapRawData(
                 result?.getOrNull("chartByCountryData"),
-                object : TypeReference<List<ChartListItemWithMarketSegmentAndLocation>>() {}
+                object : TypeReference<List<ChartListItemWithVerifiedProjects>>() {}
             )
         val chartByIndustryData =
             mapRawData(
                 result?.getOrNull("chartByIndustryData"),
-                object : TypeReference<List<ChartListItemWithMarketSegmentAndLocation>>() {}
+                object : TypeReference<List<ChartListItemWithVerifiedProjects>>() {}
             )
         val chartByServicesProvidedData =
             mapRawData(

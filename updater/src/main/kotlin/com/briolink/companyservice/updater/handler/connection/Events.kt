@@ -1,6 +1,8 @@
 package com.briolink.companyservice.updater.handler.connection
 
 import com.briolink.lib.event.Event
+import com.briolink.lib.sync.SyncData
+import com.briolink.lib.sync.SyncEvent
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import java.util.UUID
@@ -50,3 +52,4 @@ data class ConnectionUpdatedEvent(override val data: ConnectionEventData) : Even
 data class ConnectionAcceptedEvent(override val data: ConnectionEventData) : Event<ConnectionEventData>("1.0")
 data class ConnectionVisibilityUpdatedEvent(override val data: ConnectionEventData) : Event<ConnectionEventData>("1.0")
 data class ConnectionDeletedEvent(override val data: ConnectionEventData) : Event<ConnectionEventData>("1.0")
+data class ConnectionSyncEvent(override val data: SyncData<ConnectionEventData>) : SyncEvent<ConnectionEventData>("1.0")

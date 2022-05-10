@@ -15,7 +15,6 @@ import com.briolink.companyservice.updater.handler.project.ProjectServiceData
 import com.briolink.companyservice.updater.handler.project.ProjectStatus
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import java.time.Year
 import java.util.UUID
 import kotlin.random.Random
 
@@ -58,16 +57,12 @@ class ProjectDataLoader(
                     } else it
                 }
 
-                val startYear = Year.of(Random.nextInt(2010, 2021))
-                val endYear = Year.of(Random.nextInt(startYear.value, 2021))
-
                 val service = listService.shuffled().find { service -> service.companyId == from.id }!!.let {
                     ProjectServiceData(
-                        id = UUID.randomUUID(),
                         serviceId = if (Random.nextBoolean()) it.id else null,
                         serviceName = it.name,
-                        startDate = startYear,
-                        endDate = if (Random.nextBoolean()) null else endYear,
+                        startDate = randomDate(2012, 2018),
+                        endDate = if (Random.nextBoolean()) null else randomDate(2019, 2022),
                     )
                 }
 
@@ -86,7 +81,7 @@ class ProjectDataLoader(
                             companyRole = listProjectRole.shuffled()
                                 .find { connectionCompanyRole -> connectionCompanyRole.type == ProjectCompanyRoleType.Buyer }!!,
                         ),
-                        services = arrayListOf(service),
+                        service = service,
                         status = projectStageList.random(),
                     ),
                 )

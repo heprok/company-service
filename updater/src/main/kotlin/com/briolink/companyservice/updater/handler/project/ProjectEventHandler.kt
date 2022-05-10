@@ -57,7 +57,7 @@ class ProjectSyncEventHandler(
     private val projectHandlerService: ProjectHandlerService,
     private val companyReadRepository: CompanyReadRepository,
     syncService: SyncService,
-) : SyncEventHandler<ProjectSyncEvent>(ObjectSyncEnum.Connection, syncService) {
+) : SyncEventHandler<ProjectSyncEvent>(ObjectSyncEnum.Project, syncService) {
     override fun handle(event: ProjectSyncEvent) {
         val syncData = event.data
         if (!objectSyncStarted(syncData)) return

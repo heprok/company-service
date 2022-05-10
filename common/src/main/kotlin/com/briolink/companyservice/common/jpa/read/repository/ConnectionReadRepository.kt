@@ -1,5 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
+import com.briolink.companyservice.common.jpa.projection.CompanyIdProjection
 import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -34,4 +35,35 @@ interface ConnectionReadRepository : JpaRepository<ConnectionReadEntity, UUID> {
         @Param("companyId") companyId: UUID,
         @Param("objectType") objectType: Int
     ): Int
+
+    @Query(
+        """
+        SELECT
+            distinct cast(result.company_id as varchar) as companyId
+        FROM
+        (
+            (
+                SELECT
+                    from_object_id AS company_id
+                FROM
+                    read.connection
+                WHERE from_object_type = 2
+                limit :limit offset :offset
+            ) union (
+                SELECT
+                    to_object_id AS company_id
+                FROM
+                    read.connection
+                WHERE from_object_type = 2
+                
+                limit :limit offset :offset
+            )
+        ) as result
+    """,
+        nativeQuery = true
+    )
+    fun getAllCompanyIds(
+        @Param("limit") limit: Int = 10,
+        @Param("offset") offset: Int = 0
+    ): List<CompanyIdProjection>
 }

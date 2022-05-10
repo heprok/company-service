@@ -23,7 +23,7 @@ class ChartList<T> {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class ChartListItemWithMarketSegmentAndLocation(
+data class ChartListItemWithVerifiedProjects(
     @JsonProperty override val companyId: UUID,
     @JsonProperty var verifiedProjects: Int,
 ) : ChartListItem

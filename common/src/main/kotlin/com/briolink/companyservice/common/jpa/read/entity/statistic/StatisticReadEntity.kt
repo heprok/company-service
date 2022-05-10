@@ -53,19 +53,19 @@ class StatisticReadEntity(
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_country_data", nullable = false)
-    var chartByCountryData: ChartList<ChartListItemWithMarketSegmentAndLocation> = ChartList()
+    var chartByCountryData: ChartList<ChartListItemWithVerifiedProjects> = ChartList()
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_industry_data", nullable = false)
-    var chartByIndustryData: ChartList<ChartListItemWithMarketSegmentAndLocation> = ChartList()
+    var chartByIndustryData: ChartList<ChartListItemWithVerifiedProjects> = ChartList()
 
     @Type(type = "jsonb")
-    @Column(name = "chart_active_projects_by_year_data", nullable = false)
-    var chartActiveProjectsByYearData: ChartList<ChartListItemWithRoleAndProject> = ChartList()
+    @Column(name = "chart_active_project_by_year_data", nullable = false)
+    var chartActiveProjectByYearData: ChartList<ChartListItemWithRoleAndProject> = ChartList()
 
     @Type(type = "jsonb")
-    @Column(name = "chart_new_projects_by_year_data", nullable = false)
-    var chartNewProjectsByYearData: ChartList<ChartListItemWithRoleAndProject> = ChartList()
+    @Column(name = "chart_new_project_by_year_data", nullable = false)
+    var chartNewProjectByYearData: ChartList<ChartListItemWithRoleAndProject> = ChartList()
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_services_provided_data", nullable = false)
