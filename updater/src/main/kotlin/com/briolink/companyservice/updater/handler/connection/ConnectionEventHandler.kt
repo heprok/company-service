@@ -1,13 +1,11 @@
 package com.briolink.companyservice.updater.handler.connection
 
-import com.briolink.companyservice.common.jpa.enumeration.ConnectionObjectTypeEnum
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionReadEntity
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
-import com.briolink.companyservice.updater.RefreshStatisticConnectionByCompanyId
+import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.lib.event.IEventHandler
 import com.briolink.lib.event.annotation.EventHandler
 import com.briolink.lib.event.annotation.EventHandlers
-import org.springframework.context.ApplicationEventPublisher
+import com.briolink.lib.sync.SyncEventHandler
+import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 import javax.transaction.Transactional
 
 @EventHandlers(
@@ -19,41 +17,29 @@ import javax.transaction.Transactional
 )
 @Transactional
 class ConnectionEventHandler(
-    private val connectionReadRepository: ConnectionReadRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
-
+    private val connectionHandlerService: ConnectionHandlerService
 ) : IEventHandler<ConnectionCreatedEvent> {
     override fun handle(event: ConnectionCreatedEvent) {
-        val connection = event.data
-        var updateStatistic = false
+        connectionHandlerService.createOrUpdate(event.data)
+    }
+}
 
-        if (connection.status == ConnectionStatus.Connected &&
-            connection.fromObjectType == ConnectionObjectType.Company || connection.toObjectType == ConnectionObjectType.Company
-        ) {
-            connectionReadRepository.findByFromObjectIdAndToObjectId(connection.fromObjectId, connection.toObjectId!!)
-                .orElse(ConnectionReadEntity())
-                .apply {
-                    updateStatistic = if (this.id == null) true
-                    else this.hidden != connection.hidden
-
-                    this.toObjectId = connection.toObjectId
-                    this.fromObjectId = connection.fromObjectId
-                    this.fromObjectType = ConnectionObjectTypeEnum.ofValue(connection.fromObjectType.value)
-                    this.toObjectType = ConnectionObjectTypeEnum.ofValue(connection.toObjectType.value)
-                    this.hidden = connection.hidden
-
-                    connectionReadRepository.save(this)
-                }
-        } else connection.toObjectId?.let {
-            updateStatistic = connectionReadRepository.deleteBy(connection.fromObjectId, it) > 0
+@EventHandler("ConnectionSyncEvent", "1.0")
+class ConnectionSyncEventHandler(
+    private val connectionHandlerService: ConnectionHandlerService,
+    syncService: SyncService,
+) : SyncEventHandler<ConnectionSyncEvent>(ObjectSyncEnum.Connection, syncService) {
+    override fun handle(event: ConnectionSyncEvent) {
+        val syncData = event.data
+        if (!objectSyncStarted(syncData)) return
+        try {
+            val objectSync = syncData.objectSync!!
+            connectionHandlerService.createOrUpdate(objectSync)
+        } catch (ex: Exception) {
+            sendError(syncData, ex)
         }
 
-        if (updateStatistic) {
-            if (connection.fromObjectType == ConnectionObjectType.Company)
-                applicationEventPublisher.publishEvent(RefreshStatisticConnectionByCompanyId(connection.fromObjectId))
-
-            if (connection.toObjectType == ConnectionObjectType.Company)
-                connection.toObjectId?.also { applicationEventPublisher.publishEvent(RefreshStatisticConnectionByCompanyId(it)) }
-        }
+        if (objectSyncCompleted(syncData))
+            connectionHandlerService.refreshAllConnectionStatistic()
     }
 }

@@ -62,7 +62,16 @@ class SyncService(
                 this._service = ServiceEnum.Connection.id
                 this._objectSync = ObjectSyncEnum.Connection.value
             },
+            SyncLogId().apply {
+                this.syncId = syncId
+                this._service = ServiceEnum.Connection.id
+                this._objectSync = ObjectSyncEnum.Project.value
+            },
         )
+
+    override fun getListSyncLogIdAtExpVerification(syncId: Int): List<SyncLogId> {
+        TODO("Not yet implemented")
+    }
 
     override fun getListSyncLogIdAtCompanyService(syncId: Int): List<SyncLogId> =
         listOf(

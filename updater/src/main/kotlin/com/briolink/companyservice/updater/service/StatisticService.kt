@@ -14,8 +14,8 @@ import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartDataLis
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartList
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
-import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithMarketSegmentAndLocation
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoleAndProject
+import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithVerifiedProjects
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithVerifyUsed
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartTabItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.StatisticReadEntity
@@ -84,7 +84,7 @@ class StatisticService(
                         .also { list ->
                             when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.companyId }) {
                                 -1 -> list.items.add(
-                                    ChartListItemWithMarketSegmentAndLocation(
+                                    ChartListItemWithVerifiedProjects(
                                         companyId = collaboratorParticipant.companyId,
                                         verifiedProjects = 1
                                     ),
@@ -104,7 +104,7 @@ class StatisticService(
                         .also { list ->
                             when (val i = list.items.indexOfFirst { it.companyId == collaboratorParticipant.companyId }) {
                                 -1 -> list.items.add(
-                                    ChartListItemWithMarketSegmentAndLocation(
+                                    ChartListItemWithVerifiedProjects(
                                         companyId = collaboratorParticipant.companyId,
                                         verifiedProjects = 1
                                     ),
@@ -162,7 +162,7 @@ class StatisticService(
                 val rangeYearDateService = Range.closed(projectService.startDate.year, projectService.endDate?.year ?: Year.now().value)
 
                 for (year in rangeYearDateService.lower()..rangeYearDateService.upper()) {
-                    companyStatistic.chartActiveProjectsByYearData.data.getOrPut(year.toString()) {
+                    companyStatistic.chartActiveProjectByYearData.data.getOrPut(year.toString()) {
                         ChartDataList(year.toString(), mutableListOf())
                     }.also { list ->
                         list.items.add(
@@ -178,7 +178,7 @@ class StatisticService(
                 }
 
                 companyStatistic.chartActiveProjectByYear = getChart(
-                    companyStatistic.chartActiveProjectsByYearData,
+                    companyStatistic.chartActiveProjectByYearData,
                     {
                         it.second.items.count()
                     },
@@ -186,7 +186,7 @@ class StatisticService(
                 ) { it.sortedBy { el -> el.first.toInt() } }
 
                 // chart data by new project
-                companyStatistic.chartNewProjectsByYearData.data.getOrPut(projectService.startDate.year.toString()) {
+                companyStatistic.chartNewProjectByYearData.data.getOrPut(projectService.startDate.year.toString()) {
                     ChartDataList(projectService.startDate.year.toString(), mutableListOf())
                 }.also { list ->
                     list.items.add(
@@ -201,7 +201,7 @@ class StatisticService(
                 }
 
                 companyStatistic.chartNewProjectByYear = getChart(
-                    companyStatistic.chartNewProjectsByYearData,
+                    companyStatistic.chartNewProjectByYearData,
                     {
                         it.second.items.count()
                     },

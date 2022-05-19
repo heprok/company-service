@@ -4,7 +4,7 @@ import com.briolink.lib.event.Event
 import com.briolink.lib.sync.SyncData
 import com.briolink.lib.sync.SyncEvent
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.Year
+import java.time.LocalDate
 import java.util.UUID
 
 enum class ProjectStatus(val value: Int) {
@@ -22,11 +22,6 @@ enum class ProjectStatus(val value: Int) {
 
     @JsonProperty("5")
     Rejected(5);
-
-    companion object {
-        private val map = values().associateBy(ProjectStatus::value)
-        fun fromInt(type: Int): ProjectStatus = map[type]!!
-    }
 }
 
 enum class ProjectCompanyRoleType(val value: Int) {
@@ -59,15 +54,13 @@ data class ProjectCompanyRoleData(
 
 data class ProjectServiceData(
     @JsonProperty
-    val id: UUID,
-    @JsonProperty
     val serviceId: UUID? = null,
     @JsonProperty
     val serviceName: String,
     @JsonProperty
-    val startDate: Year? = null,
+    val startDate: LocalDate? = null,
     @JsonProperty
-    val endDate: Year? = null,
+    val endDate: LocalDate? = null,
 )
 
 data class ProjectParticipantData(
@@ -93,7 +86,7 @@ data class ProjectEventData(
     @JsonProperty
     val participantTo: ProjectParticipantData,
     @JsonProperty
-    val services: ArrayList<ProjectServiceData> = arrayListOf(),
+    val service: ProjectServiceData,
     @JsonProperty
     val status: ProjectStatus,
 )

@@ -8,7 +8,6 @@ import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -21,7 +20,7 @@ class ProjectHandlerService(
 ) {
 
     fun createOrUpdate(domain: ProjectEventData): ProjectReadEntity {
-        val projectService = domain.services[0]
+        val projectService = domain.service
 
         val serviceRead = serviceReadRepository.findById(projectService.serviceId!!)
             .orElseThrow { throw EntityNotFoundException("Service not found") }
@@ -79,8 +78,8 @@ class ProjectHandlerService(
                         name = projectService.serviceName,
                         slug = if (serviceRead.deleted || serviceRead.hidden) "-1" else serviceRead.data.slug,
                     ),
-                    startDate = LocalDate.of(projectService.startDate!!.value, 1, 1),
-                    endDate = projectService.endDate?.let { LocalDate.of(it.value, 1, 1) }
+                    startDate = projectService.startDate!!,
+                    endDate = projectService.endDate
                 )
 
             )
