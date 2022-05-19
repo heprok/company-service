@@ -1,4 +1,4 @@
-package com.briolink.companyservice.updater.handler.statistic
+package com.briolink.companyservice.updater.service
 
 import com.briolink.companyservice.common.domain.v1_0.CompanyStatistic
 import com.briolink.companyservice.common.domain.v1_0.CompanyStatisticConnection
@@ -40,7 +40,7 @@ import javax.persistence.EntityNotFoundException
 
 @Service
 @EnableAsync
-class StatisticHandlerService(
+class StatisticService(
     private val statisticReadRepository: StatisticReadRepository,
     private val projectReadRepository: ProjectReadRepository,
     private val connectionReadRepository: ConnectionReadRepository,
