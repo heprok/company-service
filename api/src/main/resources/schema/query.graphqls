@@ -22,7 +22,7 @@ type Query {
     #    =============== statistic ===================
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
-
+    test: BaseResult
     #    ================ Employees editor ===============
     getEmployeesTabs(companyId: ID!, filter: EmployeesEditorFilterParameters): [EmployeesListCountByItem!]!
     getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : EmployeeList!

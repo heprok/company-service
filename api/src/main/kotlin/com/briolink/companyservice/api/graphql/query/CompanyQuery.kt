@@ -6,7 +6,7 @@ import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyAndUserPermission
 import com.briolink.companyservice.api.types.UserPermission
-import com.briolink.companyservice.api.util.SecurityUtil
+import com.briolink.lib.common.util.BlSecurityUtil
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
@@ -24,9 +24,9 @@ class CompanyQuery(
     @DgsQuery
     fun getCompany(@InputArgument slug: String): CompanyAndUserPermission {
         val company = companyService.getCompanyBySlug(slug)
-        val role = if (SecurityUtil.isGuest) null else company?.let {
+        val role = if (BlSecurityUtil.isGuest) null else company?.let {
             permissionService.getUserPermissionRights(
-                userId = SecurityUtil.currentUserAccountId,
+                userId = BlSecurityUtil.currentUserId,
                 accessObjectId = company.id,
                 accessObjectType = AccessObjectTypeEnum.Company,
             )

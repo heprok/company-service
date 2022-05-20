@@ -2,7 +2,7 @@ package com.briolink.companyservice.api.graphql.mutation
 
 import com.briolink.companyservice.api.service.ServiceCompanyService
 import com.briolink.companyservice.api.types.DelOrHideResult
-import com.briolink.companyservice.api.util.SecurityUtil.currentUserAccountId
+import com.briolink.lib.common.util.BlSecurityUtil
 import com.briolink.lib.permission.AllowedRights
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
@@ -37,7 +37,7 @@ class ServiceMutation(
     ): DelOrHideResult {
         serviceCompanyService.deleteServiceInCompany(
             serviceId = UUID.fromString(serviceId),
-            userId = currentUserAccountId,
+            userId = BlSecurityUtil.currentUserId,
         )
         return DelOrHideResult(
             success = true,

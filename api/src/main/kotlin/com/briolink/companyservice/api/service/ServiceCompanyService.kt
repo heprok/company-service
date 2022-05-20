@@ -1,5 +1,6 @@
 package com.briolink.companyservice.api.service
 
+import com.briolink.companyservice.api.graphql.query.TestDto
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.config.AppEndpointsProperties
@@ -21,12 +22,15 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.UUID
 import javax.servlet.UnavailableException
+import javax.validation.Valid
 
 @Service
 @Transactional
+@Validated
 class ServiceCompanyService(
     private val serviceReadRepository: ServiceReadRepository,
     private val connectionServiceReadRepository: ConnectionServiceReadRepository,
@@ -118,4 +122,6 @@ class ServiceCompanyService(
             status = ConnectionStatusEnum.Verified.value,
             pageable = PageRequest(offset = offset, limit = limit),
         )
+
+    fun test(@Valid dto: TestDto) = true
 }

@@ -8,8 +8,8 @@ import graphql.schema.CoercingParseValueException
 import graphql.schema.CoercingSerializeException
 import java.time.Year
 
-@DgsScalar(name = "Year")
-class YearScalar : Coercing<Year, String> {
+@DgsScalar(name = "BYear")
+class BYearScalar : Coercing<Year, String> {
     @Throws(CoercingSerializeException::class)
     override fun serialize(dataFetcherResult: Any): String =
         if (dataFetcherResult is Year) dataFetcherResult.toString() else throw CoercingSerializeException("Not a valid Year")
