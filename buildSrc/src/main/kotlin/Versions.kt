@@ -16,7 +16,7 @@ object Versions {
 
     object Briolink {
         const val EVENT = "0.4.0-SNAPSHOT"
-        const val COMMON = "0.0.7"
+        const val COMMON = "0.0.1"
         const val LOCATION = "0.2.2-SNAPSHOT"
         const val SYNC = "0.3.0"
         const val PERMISSION = "0.4.0"
