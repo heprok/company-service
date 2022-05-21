@@ -1,9 +1,9 @@
 package com.briolink.companyservice.api.dataloader
 
 import com.briolink.companyservice.api.service.IndustryService
-import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.IndustryReadRepository
 import com.briolink.companyservice.common.jpa.write.repository.IndustryWriteRepository
+import com.briolink.lib.common.utils.BlDataLoader
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
@@ -13,7 +13,7 @@ class IndustryDataLoader(
     var readRepository: IndustryReadRepository,
     var writeRepository: IndustryWriteRepository,
     var service: IndustryService
-) : DataLoader() {
+) : BlDataLoader() {
     override fun loadData() {
         if (writeRepository.count().toInt() == 0) {
             val industryList: MutableList<String> = mutableListOf()

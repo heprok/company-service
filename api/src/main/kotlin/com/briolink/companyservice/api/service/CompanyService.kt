@@ -8,7 +8,8 @@ import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository
-import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.common.utils.BlS3Utils
+import com.briolink.lib.common.utils.StringUtils
 import com.briolink.lib.event.publisher.EventPublisher
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
@@ -41,7 +42,7 @@ class CompanyService(
     private val industryService: IndustryService,
     val eventPublisher: EventPublisher,
     private val permissionService: PermissionService,
-    private val awsS3Service: AwsS3Service,
+    private val s3Utils: BlS3Utils,
 ) {
     companion object : KLogging()
 
@@ -77,7 +78,7 @@ class CompanyService(
             val logotype: String? = null
         }
         logger.info("Import starting...")
-        val csvStream = awsS3Service.getUrl(keyCsvOnS3).openStream()
+        val csvStream = s3Utils.getUrl(keyCsvOnS3).openStream()
         val streamBufferCompanies = BufferedInputStream(csvStream)
         val companyListNotUploadImage = mutableListOf<String>()
         val strategy: HeaderColumnNameMappingStrategy<CompanyImport> = HeaderColumnNameMappingStrategy()
@@ -91,14 +92,14 @@ class CompanyService(
 
         csvToBean.parse().forEach { company ->
             var isUpdateCompany = false
-            company.name = StringUtil.trimAllSpaces(company.name)
-            val companyWriteEntity = getByNameAndWebsite(company.name, StringUtil.prepareUrl(company.website))
+            company.name = StringUtils.trimAllSpaces(company.name)
+            val companyWriteEntity = getByNameAndWebsite(company.name, StringUtils.prepareUrl(company.website))
             if (companyWriteEntity == null) {
                 logger.error(company.name + " company not exist")
                 return@forEach
             }
             if (company.logotype != null && companyWriteEntity.logo != null) {
-                val logoUrl = awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, URL(company.logotype))
+                val logoUrl = s3Utils.uploadImage(PATH_LOGO_PROFILE_COMPANY, URL(company.logotype))
                 if (logoUrl == null) {
                     companyListNotUploadImage.add(company.name)
                     logger.error(company.name + " not download image " + company.logotype)
@@ -108,8 +109,8 @@ class CompanyService(
                 }
             }
 
-            if (company.website != null && companyWriteEntity.websiteUrl != StringUtil.prepareUrl(company.website)) {
-                companyWriteEntity.websiteUrl = StringUtil.prepareUrl(company.website)
+            if (company.website != null && companyWriteEntity.websiteUrl != StringUtils.prepareUrl(company.website)) {
+                companyWriteEntity.websiteUrl = StringUtils.prepareUrl(company.website)
                 isUpdateCompany = true
             }
 
@@ -134,7 +135,7 @@ class CompanyService(
         val companyWrite = getByNameAndWebsite(name, website)
         val industryWrite = industryName?.let { industryService.create(industryName) }
         val s3ImageUrl = if (imageUrl != null)
-            awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, imageUrl) else null
+            s3Utils.uploadImage(PATH_LOGO_PROFILE_COMPANY, imageUrl) else null
         if (companyWrite != null && s3ImageUrl != null && companyWrite.logo == null) {
             companyWrite.logo = s3ImageUrl
             updateCompany(companyWrite)
@@ -149,7 +150,7 @@ class CompanyService(
     }
 
     fun isExistWebsite(website: URL): Boolean {
-        return companyWriteRepository.existsByWebsite(StringUtil.prepareUrl(website)!!.host)
+        return companyWriteRepository.existsByWebsite(StringUtils.prepareUrl(website)!!.host)
     }
 
     fun updateCompany(company: CompanyWriteEntity): Company {
@@ -165,7 +166,7 @@ class CompanyService(
     fun uploadCompanyProfileImage(id: UUID, image: MultipartFile?): URL? {
         val company = findById(id).orElseThrow { throw EntityNotFoundException("company with $id not found") }
         val imageUrl: URL? =
-            if (image != null) awsS3Service.uploadImage(PATH_LOGO_PROFILE_COMPANY, image) else null
+            if (image != null) s3Utils.uploadImage(PATH_LOGO_PROFILE_COMPANY, image) else null
         company.logo = imageUrl
         updateCompany(company)
         return imageUrl

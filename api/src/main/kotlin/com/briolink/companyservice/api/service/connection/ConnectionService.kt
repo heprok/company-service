@@ -1,8 +1,8 @@
 package com.briolink.companyservice.api.service.connection
 
-import com.briolink.companyservice.api.exception.UnavailableException
 import com.briolink.companyservice.api.service.connection.dto.ConnectionRequestActionEnum
 import com.briolink.companyservice.common.config.AppEndpointsProperties
+import com.briolink.lib.common.exception.UnavailableException
 import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

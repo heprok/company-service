@@ -28,7 +28,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        metadata_builder_contributor: com.briolink.companyservice.common.jpa.Functions
+        metadata_builder_contributor: com.briolink.lib.common.jpa.Functions
     generate-ddl: false
     show-sql: false
   liquibase:

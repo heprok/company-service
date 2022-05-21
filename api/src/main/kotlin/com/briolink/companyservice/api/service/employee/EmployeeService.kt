@@ -13,7 +13,7 @@ import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
-import com.briolink.companyservice.common.util.PageRequest
+import com.briolink.lib.common.type.jpa.PageRequest
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.notfound.UserPermissionRoleNotFoundException

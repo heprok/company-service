@@ -1,6 +1,5 @@
 package com.briolink.companyservice.api.service
 
-import com.briolink.companyservice.api.graphql.query.TestDto
 import com.briolink.companyservice.api.types.ServiceFilter
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.common.config.AppEndpointsProperties
@@ -15,7 +14,8 @@ import com.briolink.companyservice.common.jpa.read.repository.service.betweenPri
 import com.briolink.companyservice.common.jpa.read.repository.service.companyIdEqual
 import com.briolink.companyservice.common.jpa.read.repository.service.equalHide
 import com.briolink.companyservice.common.jpa.read.repository.service.isNotDeleted
-import com.briolink.companyservice.common.util.PageRequest
+import com.briolink.lib.common.exception.UnavailableException
+import com.briolink.lib.common.type.jpa.PageRequest
 import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
@@ -25,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.UUID
-import javax.servlet.UnavailableException
-import javax.validation.Valid
 
 @Service
 @Transactional
@@ -77,14 +75,14 @@ class ServiceCompanyService(
                 "serviceId" to serviceId,
                 "userId" to userId,
             ),
-        ).block() ?: throw UnavailableException("CompanyService service unavailable")
+        ).block() ?: throw UnavailableException("CompanyService")
 
         return try {
             val success = result.extractValue<Boolean>("deleteServiceLocal.success")
             serviceReadRepository.deleteById(serviceId)
             success
         } catch (e: Exception) {
-            throw UnavailableException("CompanyService service unavailable")
+            throw UnavailableException("CompanyService")
         }
     }
 
@@ -104,14 +102,14 @@ class ServiceCompanyService(
             mapOf(
                 "serviceId" to serviceId,
             ),
-        ).block() ?: throw UnavailableException("CompanyService service unavailable")
+        ).block() ?: throw UnavailableException("CompanyService")
 
         return try {
             val success = result.extractValue<Boolean>("hideServiceLocal.success")
             serviceReadRepository.toggleVisibilityByIdAndCompanyId(serviceId = serviceId, companyId = companyId)
             success
         } catch (e: Exception) {
-            throw UnavailableException("CompanyService service unavailable")
+            throw UnavailableException("CompanyService")
         }
     }
 
@@ -122,6 +120,4 @@ class ServiceCompanyService(
             status = ConnectionStatusEnum.Verified.value,
             pageable = PageRequest(offset = offset, limit = limit),
         )
-
-    fun test(@Valid dto: TestDto) = true
 }

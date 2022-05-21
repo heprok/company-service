@@ -1,6 +1,5 @@
 package com.briolink.companyservice.updater.dataloader
 
-import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
@@ -14,6 +13,7 @@ import com.briolink.companyservice.updater.handler.project.ProjectHandlerService
 import com.briolink.companyservice.updater.handler.project.ProjectParticipant
 import com.briolink.companyservice.updater.handler.project.ProjectService
 import com.briolink.companyservice.updater.handler.project.ProjectStatus
+import com.briolink.lib.common.utils.BlDataLoader
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -31,7 +31,7 @@ class ConnectionDataLoader(
     private var serviceReadRepository: ServiceReadRepository,
     private var connectionServiceHandler: ProjectHandlerService,
     private val applicationEventPublisher: ApplicationEventPublisher
-) : DataLoader() {
+) : BlDataLoader() {
     override fun loadData() {
         if (
             connectionReadRepository.count().toInt() == 0 &&

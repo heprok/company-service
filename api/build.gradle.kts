@@ -23,8 +23,8 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-autoconfigure-processor")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    kapt("org.springframework.boot:spring-boot-autoconfigure-processor:${Versions.SPRING_BOOT}")
-    kapt("org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}")
+    kapt("org.springframework.boot:spring-boot-autoconfigure-processor")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // FasterXML

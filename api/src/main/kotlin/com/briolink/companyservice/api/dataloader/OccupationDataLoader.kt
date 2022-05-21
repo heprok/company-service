@@ -1,8 +1,8 @@
 package com.briolink.companyservice.api.dataloader
 
 import com.briolink.companyservice.api.service.OccupationService
-import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRepository
+import com.briolink.lib.common.utils.BlDataLoader
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class OccupationDataLoader(
     var occupationWriteRepository: OccupationWriteRepository,
     var service: OccupationService
-) : DataLoader() {
+) : BlDataLoader() {
     override fun loadData() {
         if (occupationWriteRepository.count().toInt() == 0) {
             val occupationList: MutableMap<String, String> = mutableMapOf()

@@ -72,4 +72,8 @@ class SyncService(
                 this._objectSync = ObjectSyncEnum.CompanyService.value
             },
         )
+
+    override fun getListSyncLogIdAtExpVerification(syncId: Int): List<SyncLogId> {
+        TODO("Not yet implemented")
+    }
 }

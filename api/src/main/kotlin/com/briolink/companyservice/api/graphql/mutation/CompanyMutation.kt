@@ -10,7 +10,7 @@ import com.briolink.companyservice.api.types.CreateCompanyInput
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.UpdateCompanyInput
 import com.briolink.companyservice.api.types.UpdateCompanyResult
-import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.common.utils.StringUtils
 import com.briolink.lib.location.model.LocationId
 import com.briolink.lib.location.model.LocationMinInfo
 import com.briolink.lib.location.service.LocationService
@@ -40,15 +40,15 @@ class CompanyMutation(
     }
 
     @DgsMutation
-    @PreAuthorize("@servletUtil.isIntranet()")
+    @PreAuthorize("@blServletUtils.isIntranet()")
     fun createCompany(@InputArgument("input") createInputCompany: CreateCompanyInput): Company =
         companyService.createCompany(
-            name = StringUtil.trimAllSpaces(createInputCompany.name),
+            name = StringUtils.trimAllSpaces(createInputCompany.name),
             imageUrl = createInputCompany.logo,
             industryName = createInputCompany.industryName,
             description = createInputCompany.description,
             createdBy = UUID.fromString(createInputCompany.createBy),
-            website = StringUtil.prepareUrl(createInputCompany.website),
+            website = StringUtils.prepareUrl(createInputCompany.website),
         ).let { Company.fromEntity(it) }
 
     @AllowedRights(value = ["EditCompanyProfile@Company"])
@@ -68,7 +68,7 @@ class CompanyMutation(
                         "slug" -> this.slug = inputCompany.slug!!
                         "name" -> {
                             if (inputCompany.name.isNullOrBlank()) userErrors.add(Error("Name must be not empty or null"))
-                            else this.name = StringUtil.trimAllSpaces(inputCompany.name)
+                            else this.name = StringUtils.trimAllSpaces(inputCompany.name)
                         }
                         "website" -> {
                             if (inputCompany.website != null && companyService.isExistWebsite(inputCompany.website))

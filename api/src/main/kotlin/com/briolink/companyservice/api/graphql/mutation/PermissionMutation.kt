@@ -7,7 +7,7 @@ import com.briolink.companyservice.api.types.DelOrHideResult
 import com.briolink.companyservice.api.types.EditEmployeeRightResult
 import com.briolink.companyservice.api.types.Error
 import com.briolink.companyservice.api.types.PermissionRole
-import com.briolink.lib.common.util.BlSecurityUtil
+import com.briolink.lib.common.utils.BlSecurityUtils
 import com.briolink.lib.permission.AllowedRights
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.AccessDeniedException
@@ -34,7 +34,7 @@ class PermissionMutation(
         return try {
             if (employeeService.checkPermissionLevel(
                     UUID.fromString(accessObjectId),
-                    byUserId = BlSecurityUtil.currentUserId,
+                    byUserId = BlSecurityUtils.currentUserId,
                     userId = UUID.fromString(userId),
                 )
             ) throw AccessDeniedException()
