@@ -8,11 +8,15 @@ type CompanyStatistic {
 type CompanyStatisticTotal {
     connectionsNumber: Int!
     servicesProvidedNumber: Int!
-    numberOfCollaborationCompanies: Int!
+    projectsNumber: Int!
+    connectedCompanies: Int!
+    connectedPeoples: Int!
+
 }
 
 type CompanyStatisticCharts {
-    connectionCountByYear: ChartConnectionCountByYear!
+    activeProjectByYear: ChartProjectByYear!
+    newProjectByYear: ChartProjectByYear!
     byCountry: ChartByCountry!
     byIndustry: ChartByIndustry!
     byServicesProvided: ChartByServicesProvided!
@@ -20,16 +24,10 @@ type CompanyStatisticCharts {
 
 ### charts (base)
 
-type ChartItemWithHint {
+type ChartItem {
     key: String!
     name: String!
     value: Int!
-    hints: [ChartItemHint!]!
-}
-
-type ChartItemHint {
-    name: String!
-    image: Image
 }
 
 type ChartTabItem {
@@ -37,10 +35,6 @@ type ChartTabItem {
     name: String!
     total: Int!
 }
-
-### charts (specific)
-
-## chart connection count by year
 
 type CompanyInfoItem {
     id: ID!
@@ -51,53 +45,62 @@ type CompanyInfoItem {
     occupation: String
 }
 
-type ChartConnectionCountByYear {
-    data: [ChartItemWithHint!]!
-    tabs: [ChartTabItem!]!
-    listByTab(id: ID!): [ChartConnectionCountByYearItem!]!
+### charts (specific)
+
+## chart project count by year
+
+type ProjectInfoItem {
+    name: String!
+    startDate: Date!
+    endDate: Date
 }
 
-type ChartConnectionCountByYearItem {
+type ChartProjectByYear {
+    data: [ChartItem!]!
+    tabs: [ChartTabItem!]!
+    listByTab(id: ID!): [ChartProjectByYearItem!]!
+}
+
+type ChartProjectByYearItem {
     company: CompanyInfoItem!
     companyRole: String!
-    companyRoleType: ConnectionCompanyRoleType!
-    servicesCount: Int!
+    project: ProjectInfoItem!
 }
 
 ## chart by country
 
 type ChartByCountry {
-    data: [ChartItemWithHint!]!
+    data: [ChartItem!]!
     tabs: [ChartTabItem!]!
     listByTab(id: ID!): [ChartByCountryItem!]!
 }
 
 type ChartByCountryItem {
     company: CompanyInfoItem!
-    companyRoles: [String!]!
+    verifiedProjects: Int!
 }
 
 ## chart by industry
 
 type ChartByIndustry {
-    data: [ChartItemWithHint!]!
+    data: [ChartItem!]!
     tabs: [ChartTabItem!]!
     listByTab(id: ID!): [ChartByIndustryItem!]!
 }
 
 type ChartByIndustryItem {
     company: CompanyInfoItem!
-    companyRoles: [String!]!
+    verifiedProjects: Int!
 }
 
 ## chart by services provided
 
 type ChartByServicesProvided {
-    data: [ChartItemWithHint!]!
+    data: [ChartItem!]!
     listByService(id: ID!): [ChartByServicesProvidedItem!]!
 }
 
 type ChartByServicesProvidedItem {
     company: CompanyInfoItem!
-    usesCount: Int!
+    verifyUsed: Int!
 }

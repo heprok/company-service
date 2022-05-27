@@ -1,7 +1,6 @@
 package com.briolink.companyservice.api.graphql
 
 import com.briolink.companyservice.api.types.Company
-import com.briolink.companyservice.api.types.CompanyInfoByServiceItem
 import com.briolink.companyservice.api.types.CompanyInfoItem
 import com.briolink.companyservice.api.types.Employee
 import com.briolink.companyservice.api.types.Image
@@ -14,7 +13,6 @@ import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserJobPosition
 import com.briolink.companyservice.api.types.UserPermission
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.ConnectionServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
@@ -189,20 +187,5 @@ fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInf
     slug = entity.slug,
     logo = entity.data.logo?.let { Image(it) },
     location = entity.data.location?.toString(),
-)
-
-fun CompanyInfoItem.Companion.fromEntity(entity: ConnectionServiceReadEntity.Company) = CompanyInfoItem(
-    id = entity.id.toString(),
-    name = entity.name,
-    slug = entity.slug,
-    logo = entity.logo?.let { Image(it) },
-    location = entity.location,
-)
-
-fun CompanyInfoByServiceItem.Companion.fromEntity(entity: ConnectionServiceReadEntity) = CompanyInfoByServiceItem(
-    company = CompanyInfoItem.fromEntity(entity.data.company),
-    industry = entity.data.company.industryName,
-    companyRole = entity.data.roleName,
-    periodUsedStart = entity.data.periodUsedStart,
-    periodUsedEnd = entity.data.periodUsedEnd,
+    occupation = entity.data.occupation?.name
 )

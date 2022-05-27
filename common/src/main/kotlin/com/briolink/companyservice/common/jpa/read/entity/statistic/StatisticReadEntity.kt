@@ -16,14 +16,20 @@ class StatisticReadEntity(
     @Column(name = "company_id", nullable = false)
     val companyId: UUID,
 ) : BaseReadEntity() {
-    @Column(name = "total_connections", nullable = false)
-    var totalConnections: Int = 0
+    @Column(name = "total_projects", nullable = false)
+    var totalProjects: Int = 0
 
     @Column(name = "total_services_provided", nullable = false)
     var totalServicesProvided: Int = 0
 
-    @Column(name = "total_collaboration_companies", nullable = false)
-    var totalCollaborationCompanies: Int = 0
+    @Column(name = "total_connected_companies", nullable = false)
+    var totalConnectedCompanies: Int = 0
+
+    @Column(name = "total_connected_peoples", nullable = false)
+    var totalConnectedPeoples: Int = 0
+
+    val totalConnections: Int
+        get() = totalConnectedCompanies + totalConnectedPeoples
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_country", nullable = false)
@@ -34,8 +40,12 @@ class StatisticReadEntity(
     var chartByIndustry: Chart = Chart()
 
     @Type(type = "jsonb")
-    @Column(name = "chart_connection_count_by_year", nullable = false)
-    var chartConnectionCountByYear: Chart = Chart()
+    @Column(name = "chart_active_project_by_year", nullable = false)
+    var chartActiveProjectByYear: Chart = Chart()
+
+    @Type(type = "jsonb")
+    @Column(name = "chart_new_project_by_year", nullable = false)
+    var chartNewProjectByYear: Chart = Chart()
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_services_provided", nullable = false)
@@ -43,17 +53,21 @@ class StatisticReadEntity(
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_country_data", nullable = false)
-    var chartByCountryData: ChartList<ChartListItemWithRoles> = ChartList()
+    var chartByCountryData: ChartList<ChartListItemWithVerifiedProjects> = ChartList()
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_industry_data", nullable = false)
-    var chartByIndustryData: ChartList<ChartListItemWithRoles> = ChartList()
+    var chartByIndustryData: ChartList<ChartListItemWithVerifiedProjects> = ChartList()
 
     @Type(type = "jsonb")
-    @Column(name = "chart_connection_count_by_year_data", nullable = false)
-    var chartConnectionCountByYearData: ChartList<ChartListItemWithServicesCount> = ChartList()
+    @Column(name = "chart_active_project_by_year_data", nullable = false)
+    var chartActiveProjectByYearData: ChartList<ChartListItemWithRoleAndProject> = ChartList()
+
+    @Type(type = "jsonb")
+    @Column(name = "chart_new_project_by_year_data", nullable = false)
+    var chartNewProjectByYearData: ChartList<ChartListItemWithRoleAndProject> = ChartList()
 
     @Type(type = "jsonb")
     @Column(name = "chart_by_services_provided_data", nullable = false)
-    var chartByServicesProvidedData: ChartList<ChartListItemWithUsesCount> = ChartList()
+    var chartByServicesProvidedData: ChartList<ChartListItemWithVerifyUsed> = ChartList()
 }

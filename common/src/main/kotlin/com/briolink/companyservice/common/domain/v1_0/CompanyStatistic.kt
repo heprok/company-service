@@ -7,21 +7,43 @@ data class CompanyStatistic(
     @JsonProperty
     val companyId: UUID,
     @JsonProperty
+    @Deprecated("use totalProjects")
     val numberOfVerifications: Int,
     @JsonProperty
-    val companyRoles: ArrayList<ConnectionCompanyRoleData>
+    val connectedPeoples: Int,
+    @JsonProperty
+    val connectedCompanies: Int,
+    @JsonProperty
+    val totalConnections: Int,
+    @JsonProperty
+    val servicesProvided: Int,
+    @JsonProperty
+    val totalProjects: Int,
+    @JsonProperty
+    val companyRoles: ArrayList<ProjectRoleData>
 ) : Domain
 
-data class ConnectionCompanyRoleData(
+data class CompanyStatisticConnection(
+    @JsonProperty
+    val companyId: UUID,
+    @JsonProperty
+    val connectedPeoples: Int,
+    @JsonProperty
+    val connectedCompanies: Int,
+    @JsonProperty
+    val totalConnections: Int,
+) : Domain
+
+data class ProjectRoleData(
     @JsonProperty
     val id: UUID,
     @JsonProperty
     val name: String,
     @JsonProperty
-    val type: ConnectionCompanyRoleType
+    val type: ProjectRoleType
 )
 
-enum class ConnectionCompanyRoleType(val value: Int) {
+enum class ProjectRoleType(val value: Int) {
     @JsonProperty("0")
     Buyer(0),
 

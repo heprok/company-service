@@ -1,6 +1,5 @@
 package com.briolink.companyservice.updater.handler.companyservice
 
-import com.briolink.companyservice.common.event.v1_0.RefreshConnectionServiceEvent
 import com.briolink.companyservice.common.jpa.runAfterTxCommit
 import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.companyservice.updater.service.SyncService
@@ -23,14 +22,7 @@ class CompanyServiceCreatedEventHandler(
     }
 }
 
-@EventHandler("RefreshConnectionServiceEvent", "1.0")
-class RefreshConnectionServiceEventHandler(
-    private val companyServiceHandlerService: CompanyServiceHandlerService
-) : IEventHandler<RefreshConnectionServiceEvent> {
-    override fun handle(event: RefreshConnectionServiceEvent) {
-        runAfterTxCommit { companyServiceHandlerService.refreshVerifyUses(event.data.serviceId) }
-    }
-}
+// TODO Added handler event statistic service
 
 @EventHandler("CompanyServiceDeletedEvent", "1.0")
 class ServiceDeletedEventHandler(

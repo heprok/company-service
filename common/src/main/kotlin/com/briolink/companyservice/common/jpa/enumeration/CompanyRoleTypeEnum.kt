@@ -8,6 +8,6 @@ enum class CompanyRoleTypeEnum(@JsonValue val value: Int) {
 
     companion object {
         private val map = values().associateBy(CompanyRoleTypeEnum::value)
-        fun fromInt(type: Int): CompanyRoleTypeEnum = map[type]!!
+        fun ofValue(type: Int): CompanyRoleTypeEnum = map[type]!!
     }
 }

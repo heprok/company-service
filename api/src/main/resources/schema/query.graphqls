@@ -15,7 +15,6 @@ type Query {
     #    ================= services ================
     getServices(companyId: ID!, filter: ServiceFilter, sort: ServiceSort, limit: Int = 10, offset: Int = 0): ServiceList!
     getServicesCount(companyId: ID!, filter: ServiceFilter): Int!
-    getVerifyUsesByService(serviceId: ID!, limit: Int = 10, offset: Int = 0) : CompanyInfoByServiceList!
 
     getConnectionState(companyId: ID!): ConnectionState!
 
