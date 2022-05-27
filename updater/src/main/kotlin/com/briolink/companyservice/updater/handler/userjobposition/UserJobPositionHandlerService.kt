@@ -1,6 +1,6 @@
 package com.briolink.companyservice.updater.handler.userjobposition
 
-import com.briolink.companyservice.common.jpa.enumeration.UserJobPositionVerifyStatusEnum
+import com.briolink.companyservice.common.jpa.enumeration.ExpVerificationStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
@@ -46,13 +46,12 @@ class UserJobPositionHandlerService(
                         id = userJobPosition.id,
                         companyId = userJobPosition.companyId,
                         userId = userJobPosition.userId,
-                        // TODO replace verify status
-                        _status = UserJobPositionVerifyStatusEnum.Verified.value,
+                        _status = ExpVerificationStatusEnum.NotConfirmed.value,
                     ).apply {
                         jobTitle = userJobPosition.title
                         jobTitleTsv = jobTitle
 
-                        userFullName = userReadEntity.data.firstName + " " + userReadEntity.data.lastName
+                        userFullName = userReadEntity.fullName
                         userFullNameTsv = userFullName
 
                         dates = if (userJobPosition.endDate == null) Range.closedInfinite(userJobPosition.startDate)
@@ -79,10 +78,10 @@ class UserJobPositionHandlerService(
                     },
                 )
 
-                if (userJobPosition.endDate != null && addEmployee(userJobPosition.userId, userJobPosition.companyId))
-                    hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
-
-                refreshEmployeesByCompanyId(userJobPosition.companyId)
+                // if (userJobPosition.endDate != null &&  addEmployee(userJobPosition.userId, userJobPosition.companyId))
+                //     hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
+                //
+                // refreshEmployeesByCompanyId(userJobPosition.companyId)
             } else {
                 userJobPositionReadEntityOptional.get().apply {
                     if (companyId != userJobPosition.companyId) {
@@ -99,14 +98,14 @@ class UserJobPositionHandlerService(
                 }
 
                 prevCompanyId?.let {
-                    if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
-                        hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
+                    // if (addEmployee(userJobPosition.userId, userJobPosition.companyId))
+                    //     hideConnection(userJobPosition.userId, userJobPosition.companyId, false)
                     deleteUserPermission(userJobPosition.userId, it)
                 }
                 if (userJobPosition.endDate != null) {
                     deleteUserPermission(userJobPosition.userId, userJobPosition.companyId)
                 }
-                refreshEmployeesByCompanyId(userJobPosition.companyId)
+                // refreshEmployeesByCompanyId(userJobPosition.companyId)
             }
         }
         updateUserPermission(userJobPosition.userId, userJobPosition.companyId)
@@ -142,6 +141,24 @@ class UserJobPositionHandlerService(
         }
     }
 
+    fun updateStatus(id: UUID, status: ExpVerificationStatusEnum, verifiedBy: UUID? = null) {
+        userJobPositionReadRepository.findById(id).ifPresent { entity ->
+            entity.status = status
+            entity.data.verifiedBy = if (status == ExpVerificationStatusEnum.Confirmed)
+                verifiedBy else null
+
+            userJobPositionReadRepository.save(entity).also {
+                if (status != ExpVerificationStatusEnum.Confirmed) {
+                    deleteUserPermission(entity.userId, entity.companyId)
+                } else {
+                    if (addEmployee(entity.userId, entity.companyId))
+                        hideConnection(entity.userId, entity.companyId, false)
+                    updateUserPermission(entity.userId, entity.companyId)
+                }
+            }
+        }
+    }
+
     fun updateUser(user: UserReadEntity) {
         employeeReadRepository.updateUser(
             userId = user.id,
@@ -159,12 +176,15 @@ class UserJobPositionHandlerService(
         )
     }
 
+    fun updateVerification(id: UUID, verificationId: UUID?, verifyByCompany: Boolean) =
+        userJobPositionReadRepository.updateVerification(id, verificationId, verifyByCompany)
+
     fun deleteUserPermission(userId: UUID, companyId: UUID) {
         if (companyReadRepository.existsByIdAndCreatedBy(companyId, userId)) return
         if (!userJobPositionReadRepository.existsByCompanyIdAndUserIdAndStatusAndEndDateIsNull(
-                companyId,
-                userId,
-                UserJobPositionVerifyStatusEnum.Verified.value,
+                companyId = companyId,
+                userId = userId,
+                status = ExpVerificationStatusEnum.Confirmed.value,
             )
         ) {
             try {
@@ -180,14 +200,21 @@ class UserJobPositionHandlerService(
     }
 
     fun delete(userJobPositionId: UUID) {
-        userJobPositionReadRepository.findByIdOrNull(userJobPositionId)?.also {
-            userJobPositionReadRepository.delete(it)
-            refreshEmployeesByCompanyId(it.companyId)
+        userJobPositionReadRepository.findByIdOrNull(userJobPositionId)?.also { readEntity ->
+            userJobPositionReadRepository.delete(readEntity).also {
+                deleteUserPermission(readEntity.userId, readEntity.companyId)
+                refreshEmployeesByCompanyId(readEntity.companyId)
+            }
         }
     }
 
     fun updateUserPermission(userId: UUID, companyId: UUID) {
-        permissionService.getUserPermissionRights(userId, companyId, AccessObjectTypeEnum.Company)?.also { userPermissionRights ->
+        permissionService.getUserPermissionRights(userId, companyId, AccessObjectTypeEnum.Company).also { userPermissionRights ->
+            if (userPermissionRights == null) {
+                if (userJobPositionReadRepository.deleteUserPermission(userId, companyId) > 0) refreshEmployeesByCompanyId(companyId)
+                return
+            }
+
             if (userJobPositionReadRepository.updateUserPermission(
                     userId = userId,
                     companyId = companyId,

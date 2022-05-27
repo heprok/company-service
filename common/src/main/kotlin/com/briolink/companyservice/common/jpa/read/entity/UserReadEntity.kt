@@ -22,6 +22,9 @@ class UserReadEntity(
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     lateinit var data: Data
 
+    val fullName: String
+        get() = "${data.firstName} ${data.lastName}"
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Data(
         @JsonProperty

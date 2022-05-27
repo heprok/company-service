@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1651180650-verification
+      author: oleg@briolink.com
+      changes:
+        - addColumn:
+            tableName: user_job_position
+            schemaName: read
+            columns:
+              - column:
+                  name: verification_id
+                  type: uuid
+              - column:
+                  name: is_verify_by_company
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

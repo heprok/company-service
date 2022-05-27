@@ -7,6 +7,7 @@ import com.briolink.companyservice.api.service.employee.dto.EmployeeListFilter
 import com.briolink.companyservice.api.service.employee.dto.EmployeeListRequest
 import com.briolink.companyservice.api.types.Employee
 import com.briolink.companyservice.api.types.EmployeeList
+import com.briolink.companyservice.api.types.EmployeeTab
 import com.briolink.companyservice.api.types.EmployeesEditorFilterParameters
 import com.briolink.companyservice.api.types.EmployeesEditorListOptions
 import com.briolink.companyservice.api.types.EmployeesListCountByItem
@@ -35,9 +36,9 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @AllowedRights(value = ["EditEmployees@Company"])
+    @AllowedRights(value = ["EditEmployees@Company"], argumentNameId = "companyId")
     fun getEmployeesTabs(
-        @InputArgument("companyId") accessObjectId: String,
+        @InputArgument companyId: String,
         @InputArgument filter: EmployeesEditorFilterParameters?
     ): List<EmployeesListCountByItem> {
         val listFilter = EmployeeListFilter(
@@ -47,21 +48,21 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
             search = filter?.search,
         )
 
-        return employeeService.getTabs(UUID.fromString(accessObjectId), listFilter, true).map {
+        return employeeService.getTabs(UUID.fromString(companyId), listFilter, true).map {
             EmployeesListCountByItem(
-                com.briolink.companyservice.api.types.EmployeeTab.valueOf(it.tab.name),
+                EmployeeTab.valueOf(it.tab.name),
                 value = it.value
             )
         }
     }
 
     @DgsQuery
-    @AllowedRights(value = ["EditEmployees@Company"])
+    @AllowedRights(value = ["EditEmployees@Company"], argumentNameId = "companyId")
     fun getCompanyEmployeesEditor(
-        @InputArgument("companyId") accessObjectId: String,
+        @InputArgument companyId: String,
         @InputArgument options: EmployeesEditorListOptions,
     ): EmployeeList {
-        val request = EmployeeListRequest.fromType(accessObjectId, options)
+        val request = EmployeeListRequest.fromType(companyId, options)
         // throw Exception(SecurityUtil.currentUserAccountId.toString())
 
         val items = employeeService.getListByCompanyId(request)
@@ -73,12 +74,12 @@ class EmployeesQuery(private val employeeService: EmployeeService) {
     }
 
     @DgsQuery
-    @AllowedRights(value = ["EditEmployees@Company"])
+    @AllowedRights(value = ["EditEmployees@Company"], argumentNameId = "companyId")
     fun getConfirmationEmployees(
-        @InputArgument("companyId") accessObjectId: String,
+        @InputArgument companyId: String,
         @InputArgument options: EmployeesEditorListOptions,
     ): EmployeeList {
-        val request = EmployeeListRequest.fromType(accessObjectId, options)
+        val request = EmployeeListRequest.fromType(companyId, options)
         request.forConfirmation = true
         val items = employeeService.getListByCompanyId(request)
         return EmployeeList(

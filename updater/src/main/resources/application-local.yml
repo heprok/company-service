@@ -11,6 +11,7 @@ spring:
 app:
   app-endpoints:
     companyservice: http://192.168.0.60:8090/
+    expverification: http://localhost:8010/
 location-service:
   api:
     url: http://192.168.0.60:8070/
