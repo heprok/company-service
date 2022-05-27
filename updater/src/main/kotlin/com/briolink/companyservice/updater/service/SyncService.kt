@@ -69,10 +69,6 @@ class SyncService(
             },
         )
 
-    override fun getListSyncLogIdAtExpVerification(syncId: Int): List<SyncLogId> {
-        TODO("Not yet implemented")
-    }
-
     override fun getListSyncLogIdAtCompanyService(syncId: Int): List<SyncLogId> =
         listOf(
             SyncLogId().apply {

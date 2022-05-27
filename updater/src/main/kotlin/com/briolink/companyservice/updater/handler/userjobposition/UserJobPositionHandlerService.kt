@@ -4,11 +4,10 @@ import com.briolink.companyservice.common.jpa.enumeration.ExpVerificationStatusE
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
-import com.briolink.companyservice.common.jpa.read.repository.ConnectionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
+import com.briolink.companyservice.common.jpa.read.repository.ProjectReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.updater.RefreshStatisticByCompanyId
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.exception.exist.PermissionRoleExistException
@@ -27,7 +26,7 @@ import javax.persistence.EntityNotFoundException
 @Service
 class UserJobPositionHandlerService(
     private val userJobPositionReadRepository: UserJobPositionReadRepository,
-    private val connectionReadRepository: ConnectionReadRepository,
+    private val projectReadRepository: ProjectReadRepository,
     private val userReadRepository: UserReadRepository,
     private val permissionService: PermissionService,
     private val applicationEventPublisher: ApplicationEventPublisher,
@@ -131,16 +130,6 @@ class UserJobPositionHandlerService(
         }
     }
 
-    fun hideConnection(userId: UUID, companyId: UUID, hidden: Boolean = false) {
-        connectionReadRepository.changeVisibilityByCompanyIdAndUserId(
-            companyId = companyId, userId = userId, hidden = hidden,
-        ).also {
-            if (it > 0) {
-                applicationEventPublisher.publishEvent(RefreshStatisticByCompanyId(companyId, false))
-            }
-        }
-    }
-
     fun updateStatus(id: UUID, status: ExpVerificationStatusEnum, verifiedBy: UUID? = null) {
         userJobPositionReadRepository.findById(id).ifPresent { entity ->
             entity.status = status
@@ -151,9 +140,7 @@ class UserJobPositionHandlerService(
                 if (status != ExpVerificationStatusEnum.Confirmed) {
                     deleteUserPermission(entity.userId, entity.companyId)
                 } else {
-                    if (addEmployee(entity.userId, entity.companyId))
-                        hideConnection(entity.userId, entity.companyId, false)
-                    updateUserPermission(entity.userId, entity.companyId)
+                    addEmployee(entity.userId, entity.companyId)
                 }
             }
         }
