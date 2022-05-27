@@ -1,9 +1,9 @@
 package com.briolink.companyservice.updater.dataloader
 
-import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.common.utils.BlDataLoader
+import com.briolink.lib.common.utils.StringUtils
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.net.URL
@@ -15,7 +15,7 @@ import kotlin.random.Random
 class UserDataLoader(
     var userReadRepository: UserReadRepository,
 
-) : DataLoader() {
+) : BlDataLoader() {
     val listFirstName: List<String> = listOf(
         "Lynch", "Kennedy", "Williams", "Evans", "Jones", "Burton", "Miller", "Smith", "Nelson", "Lucas",
     )
@@ -36,7 +36,7 @@ class UserDataLoader(
                             lastName = listLastName.random(),
                             image = if (Random.nextBoolean()) URL("https://placeimg.com/148/148/people") else null,
                         ).apply {
-                            slug = StringUtil.slugify(
+                            slug = StringUtils.slugify(
                                 firstName + " " + lastName + " " + UUID.randomUUID().toString(),
                             )
                         }

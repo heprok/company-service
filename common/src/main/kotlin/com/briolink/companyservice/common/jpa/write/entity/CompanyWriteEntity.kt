@@ -3,7 +3,7 @@ package com.briolink.companyservice.common.jpa.write.entity
 import com.briolink.companyservice.common.domain.v1_0.Company
 import com.briolink.companyservice.common.domain.v1_0.Industry
 import com.briolink.companyservice.common.domain.v1_0.Occupation
-import com.briolink.companyservice.common.util.StringUtil
+import com.briolink.lib.common.utils.StringUtils
 import com.briolink.lib.location.enumeration.TypeLocationEnum
 import com.briolink.lib.location.model.LocationId
 import org.hibernate.annotations.CreationTimestamp
@@ -84,7 +84,7 @@ class CompanyWriteEntity(
     private var website: String? = null
 
     var websiteUrl: URL?
-        get() = website?.let { StringUtil.prepareUrl(it) }
+        get() = website?.let { StringUtils.prepareUrl(it) }
         set(value) {
             website = value?.host
         }
@@ -118,7 +118,7 @@ class CompanyWriteEntity(
 
     @PrePersist
     fun prePersist() {
-        slug = StringUtil.slugify("$name ", true)
+        slug = StringUtils.slugify("$name ", true)
     }
 
     fun toDomain() = Company(

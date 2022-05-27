@@ -21,7 +21,6 @@ type Query {
     #    =============== statistic ===================
     getCompanyStatistic(companyId: ID!): CompanyStatistic
 
-
     #    ================ Employees editor ===============
     getEmployeesTabs(companyId: ID!, filter: EmployeesEditorFilterParameters): [EmployeesListCountByItem!]!
     getCompanyEmployeesEditor(companyId: ID!, options: EmployeesEditorListOptions!) : EmployeeList!

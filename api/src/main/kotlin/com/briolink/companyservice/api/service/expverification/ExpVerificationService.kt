@@ -1,11 +1,11 @@
 package com.briolink.companyservice.api.service.expverification
 
-import com.briolink.companyservice.api.exception.UnavailableException
 import com.briolink.companyservice.api.service.expverification.dto.ObjectConfirmType
 import com.briolink.companyservice.api.service.expverification.dto.VerificationConfirmAction
-import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.config.AppEndpointsProperties
 import com.briolink.companyservice.common.jpa.enumeration.ExpVerificationStatusEnum
+import com.briolink.lib.common.exception.UnavailableException
+import com.briolink.lib.common.utils.BlSecurityUtils
 import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -67,7 +67,7 @@ class ExpVerificationService(
         val client = createGQLClient()
 
         val variables = mapOf(
-            "byUserId" to SecurityUtil.currentUserAccountId.toString(),
+            "byUserId" to BlSecurityUtils.currentUserId.toString(),
             "id" to verificationId.toString(),
             "action" to action.name
         )
@@ -79,7 +79,7 @@ class ExpVerificationService(
 
         if (userErrors.isNotEmpty()) {
 
-            val ex = UnavailableException(userErrors.first()["message"] ?: "Unknown error", serviceName = SERVICE_NAME)
+            val ex = UnavailableException(serviceName = SERVICE_NAME)
             logger.error("Error while confirm verification: $userErrors", ex)
 
             throw ex

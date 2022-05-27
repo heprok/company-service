@@ -1,15 +1,15 @@
 package com.briolink.companyservice.api.service
 
-import com.briolink.companyservice.api.exception.UnavailableException
 import com.briolink.companyservice.api.service.employee.EmployeeService
 import com.briolink.companyservice.api.service.expverification.ExpVerificationService
 import com.briolink.companyservice.api.service.expverification.dto.VerificationConfirmAction
-import com.briolink.companyservice.api.util.SecurityUtil
 import com.briolink.companyservice.common.config.AppEndpointsProperties
 import com.briolink.companyservice.common.jpa.enumeration.ExpVerificationStatusEnum
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.EmployeeReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
+import com.briolink.lib.common.exception.UnavailableException
+import com.briolink.lib.common.utils.BlSecurityUtils
 import com.netflix.graphql.dgs.client.MonoGraphQLClient
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -51,7 +51,7 @@ class UserJobPositionService(
 
             userJobPosition.status = when (action) {
                 VerificationConfirmAction.Confirm -> {
-                    userJobPosition.data.verifiedBy = SecurityUtil.currentUserAccountId
+                    userJobPosition.data.verifiedBy = BlSecurityUtils.currentUserId
                     ExpVerificationStatusEnum.Confirmed
                 }
                 VerificationConfirmAction.Reject -> ExpVerificationStatusEnum.Rejected
@@ -104,7 +104,7 @@ class UserJobPositionService(
         if (userErrors.isNotEmpty()) {
 
             val ex =
-                UnavailableException(userErrors.first()["message"] ?: "Unknown error", serviceName = ExpVerificationService.SERVICE_NAME)
+                UnavailableException(serviceName = ExpVerificationService.SERVICE_NAME)
             logger.error("Error while set end date userJobPosition: $userErrors", ex)
 
             throw ex

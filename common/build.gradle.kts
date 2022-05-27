@@ -18,8 +18,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-autoconfigure-processor")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    kapt("org.springframework.boot:spring-boot-autoconfigure-processor:${Versions.SPRING_BOOT}")
-    kapt("org.springframework.boot:spring-boot-configuration-processor:${Versions.SPRING_BOOT}")
+    kapt("org.springframework.boot:spring-boot-autoconfigure-processor")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     api("org.springframework.boot:spring-boot-starter-webflux")
 
     // Blazebit Persistence

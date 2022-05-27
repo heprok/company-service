@@ -1,13 +1,13 @@
 package com.briolink.companyservice.updater.dataloader
 
-import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.entity.UserReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserJobPositionReadRepository
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
-import com.briolink.companyservice.common.util.StringUtil
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionEventData
 import com.briolink.companyservice.updater.handler.userjobposition.UserJobPositionHandlerService
+import com.briolink.lib.common.utils.BlDataLoader
+import com.briolink.lib.common.utils.StringUtils
 import com.briolink.lib.permission.enumeration.AccessObjectTypeEnum
 import com.briolink.lib.permission.enumeration.PermissionRoleEnum
 import com.briolink.lib.permission.service.PermissionService
@@ -26,7 +26,7 @@ class UserJobPositionDataLoader(
     var permissionService: PermissionService,
     var userJobPositionHandlerService: UserJobPositionHandlerService
 
-) : DataLoader() {
+) : BlDataLoader() {
     private val listJobPosition: List<String> = listOf(
         "Product Manager",
         "IOS developer",
@@ -146,7 +146,7 @@ class UserJobPositionDataLoader(
                     lastName = "Admin",
                     image = if (Random.nextBoolean()) URL("https://placeimg.com/148/148/people") else null,
                 ).apply {
-                    slug = StringUtil.slugify(
+                    slug = StringUtils.slugify(
                         firstName + " " + lastName + " " + UUID.randomUUID().toString(),
                     )
                 }

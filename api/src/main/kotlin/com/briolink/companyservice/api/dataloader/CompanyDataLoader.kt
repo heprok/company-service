@@ -1,13 +1,13 @@
 package com.briolink.companyservice.api.dataloader
 
 import com.briolink.companyservice.api.service.CompanyService
-import com.briolink.companyservice.common.dataloader.DataLoader
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.entity.KeywordWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.IndustryWriteRepository
 import com.briolink.companyservice.common.jpa.write.repository.KeywordWriteRepository
 import com.briolink.companyservice.common.jpa.write.repository.OccupationWriteRepository
+import com.briolink.lib.common.utils.BlDataLoader
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.net.URL
@@ -22,7 +22,7 @@ class CompanyDataLoader(
     private var occupationWriteRepository: OccupationWriteRepository,
     private var keywordWriteRepository: KeywordWriteRepository,
     var service: CompanyService
-) : DataLoader() {
+) : BlDataLoader() {
     override fun loadData() {
         if (companyReadRepository.count().toInt() == 0 &&
             industryWriteRepository.count().toInt() != 0 &&

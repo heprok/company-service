@@ -8,7 +8,7 @@ import com.briolink.companyservice.api.types.ServiceList
 import com.briolink.companyservice.api.types.ServiceSort
 import com.briolink.companyservice.api.types.ServiceSortBy
 import com.briolink.companyservice.api.types.SortDirection
-import com.briolink.companyservice.api.util.SecurityUtil
+import com.briolink.lib.common.utils.BlSecurityUtils
 import com.briolink.lib.permission.service.PermissionService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsQuery
@@ -31,8 +31,8 @@ class ServiceQuery(
     ): ServiceList {
         return if (serviceCompanyService.countServiceByCompany(companyId = UUID.fromString(companyId))) {
             val filterSecurity =
-                if (!SecurityUtil.isGuest && permissionService.checkPermission(
-                        userId = SecurityUtil.currentUserAccountId,
+                if (!BlSecurityUtils.isGuest && permissionService.checkPermission(
+                        userId = BlSecurityUtils.currentUserId,
                         accessObjectId = UUID.fromString(companyId),
                         right = "EditCompanyService@Company"
                     )
