@@ -1,8 +1,8 @@
 package com.briolink.companyservice.api.graphql.query
 
-import com.briolink.companyservice.api.graphql.fromEntity
 import com.briolink.companyservice.api.graphql.fromModel
-import com.briolink.companyservice.api.service.CompanyService
+import com.briolink.companyservice.api.graphql.mapper.fromEntity
+import com.briolink.companyservice.api.service.company.CompanyService
 import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyAndUserPermission
 import com.briolink.companyservice.api.types.UserPermission

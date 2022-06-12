@@ -34,8 +34,8 @@ input ServiceSort{
 }
 
 input ServiceFilter {
-    cost: RangeFloat,
-    lastUsed: RangeYear,
+    cost: FloatRangeInput,
+    lastUsed: YearRangeInput,
     isHide: Boolean
 }
 

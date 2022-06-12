@@ -5,8 +5,6 @@ type Mutation{
     updateCompany(id: ID!, input: UpdateCompanyInput!) : UpdateCompanyResult
     # deleteCompany(id: ID!) : Boolean!
 
-    # Industry
-    createIndustry(input: CreateIndustryInput!) : CreateIndustryResult!
     # deleteIndustry(id: ID!) : Boolean!
 
     # Occupation
@@ -17,9 +15,7 @@ type Mutation{
 
     # Connection
     connectionRequest(input: ConnectionRequestInput!): BaseResult!
-    # User ( company Stuff)
-    # createEmployee(input: CreateUserInput!) : User!
-    getAllPermission(userId: ID) : Boolean
+
     # Service
     hideCompanyService(companyId: ID!, serviceId: ID!): DelOrHideResult!
     deleteCompanyService(companyId: ID!, serviceId: ID!) : DelOrHideResult!

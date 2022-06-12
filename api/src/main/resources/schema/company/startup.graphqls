@@ -1,0 +1,31 @@
+type StartupInfo {
+    totalPatentDocs: Int
+    revenue: Money
+    totalRaised: Money
+    lastFinancing: Money
+    lastFinancingStatus: Tag
+    universe: [Tag!]
+    cpcCodes: [Tag!]
+    investors: [Company!]
+    servicesProviders: [Company!]
+    comparables: [Company!]
+}
+
+input CreateStartupInfoInput {
+    totalPatentDocs: Int
+    revenue: MoneyInput
+    totalRaised: MoneyInput
+    lastFinancing: MoneyInput
+    lastFinancingStatus: CreateTagInput
+    universe: [CreateTagInput!]
+    cpcCodes: [CreateTagInput!]
+    investors: [String!]
+    potentialInvestors: [IdOrNameWithCountInput!]
+    servicesProviders: [String!]
+    comparables: [IdOrNameWithCountInput!]
+}
+
+input IdOrNameWithCountInput{
+    id: String!,
+    count: Float!
+}

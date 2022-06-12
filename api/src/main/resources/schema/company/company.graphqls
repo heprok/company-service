@@ -1,0 +1,99 @@
+# enum
+enum CompanyType {
+    Startup
+    Investor
+    ServicesProvider
+}
+
+# type
+
+type CompanyIndustry {
+    sector: Tag
+    group: Tag
+    code: Tag
+}
+
+type Company {
+    id: UUID!
+    name: String!
+    slug: String!
+    primaryCompanyType: CompanyType!
+    companyTypes: [CompanyType!]
+    website: Url
+    familiarName: String
+    logo: Url
+    description: String
+    shortDescription: String
+    location: Location
+    keywords: [Tag!]
+    verticals: [Tag!]
+    primaryIndustry: CompanyIndustry
+    industries: [CompanyIndustry!]
+    yearFounded: Year
+    facebook: String
+    twitter: String
+    employees: Int
+    createBy: UUID
+    investorInfo: InvestorInfo
+    startupInfo: StartupInfo
+    servicesProviderInfo: ServiceProviderInfo
+}
+
+type CompanyAndUserPermission {
+    company: Company!
+    userPermission: UserPermission!
+}
+
+type UpdateCompanyResult implements ResultWithUserErrors {
+    success: Boolean
+    userErrors: [Error]!
+}
+
+# input
+
+input CreateCompanyInput {
+    id: UUID
+    pbId: String
+    parentCompanyId: UUID
+    parentCompanyPbId: String
+    name: String!
+    slug: String
+    primaryCompanyType: CompanyType!
+    companyTypes: [CompanyType!]
+    website: Url
+    familiarName: String
+    logo: Url
+    description: String
+    shortDescription: String
+    locationId: ID
+    keywords: [CreateTagInput!]
+    verticals: [CreateTagInput!]
+    primaryIndustry: CreateTagInput
+    industries: [CreateTagInput!]
+    yearFounded: Year
+    facebook: String
+    twitter: String
+    employees: Int
+    createBy: UUID
+    investorInfo: CreateInvestorInfoInput
+    startupInfo: CreateStartupInfoInput
+    serviceProviderInfo: CreateServiceProviderInfoInput
+}
+
+
+input UpdateCompanyInput {
+    name: String
+    website: Url
+    slug: String
+    description: String
+    shortDescription: String
+    isTypePublic: Boolean
+    locationId: ID
+    facebook: String
+    twitter: String
+    industryId: ID
+    industryName: String
+    occupationName: String
+    occupationId: ID
+    keywordIds: [ID]
+}

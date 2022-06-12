@@ -1,9 +1,9 @@
 package com.briolink.companyservice.api.rest
 
-import com.briolink.companyservice.api.service.CompanyService
 import com.briolink.companyservice.api.service.IndustryService
 import com.briolink.companyservice.api.service.KeywordService
 import com.briolink.companyservice.api.service.OccupationService
+import com.briolink.companyservice.api.service.company.CompanyService
 import com.briolink.lib.sync.AbstractSyncController
 import com.briolink.lib.sync.model.PeriodDateTime
 import org.springframework.http.ResponseEntity

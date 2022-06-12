@@ -84,6 +84,7 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
         "Url" to "java.net.URL",
         "Upload" to "org.springframework.web.multipart.MultipartFile",
         "Year" to "java.time.Year",
+        "UUID" to "java.util.UUID",
     )
     generatedSourcesDir = "${project.buildDir.absolutePath}/dgs-codegen"
 }

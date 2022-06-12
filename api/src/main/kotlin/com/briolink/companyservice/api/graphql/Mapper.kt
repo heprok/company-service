@@ -1,10 +1,8 @@
 package com.briolink.companyservice.api.graphql
 
-import com.briolink.companyservice.api.types.Company
 import com.briolink.companyservice.api.types.CompanyInfoItem
 import com.briolink.companyservice.api.types.Employee
 import com.briolink.companyservice.api.types.Image
-import com.briolink.companyservice.api.types.Industry
 import com.briolink.companyservice.api.types.Keyword
 import com.briolink.companyservice.api.types.Occupation
 import com.briolink.companyservice.api.types.PermissionRole
@@ -14,87 +12,11 @@ import com.briolink.companyservice.api.types.UserJobPosition
 import com.briolink.companyservice.api.types.UserPermission
 import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
-import com.briolink.companyservice.common.jpa.read.entity.IndustryReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
-import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.lib.permission.model.UserPermissionRights
-
-fun Company.Companion.fromEntity(entity: CompanyReadEntity) =
-    Company(
-        id = entity.id.toString(),
-        name = entity.data.name,
-        website = entity.data.website,
-        logo = Image(entity.data.logo),
-        slug = entity.slug,
-        location = entity.data.location?.toString(),
-        facebook = entity.data.facebook,
-        twitter = entity.data.twitter,
-        shortDescription = entity.data.shortDescription,
-        description = entity.data.description,
-        isTypePublic = entity.data.isTypePublic,
-        industry = entity.data.industry?.let {
-            Industry(
-                id = it.id.toString(),
-                name = it.name,
-            )
-        },
-        occupation = entity.data.occupation?.let {
-            Occupation(
-                id = it.id.toString(),
-                name = it.name,
-            )
-        },
-        keywords = entity.data.keywords.let { list ->
-            list.map { keyword ->
-                keyword?.let {
-                    Keyword(
-                        id = it.id.toString(),
-                        name = it.name,
-                    )
-                }
-            }
-        },
-    )
-
-fun Company.Companion.fromEntity(entity: CompanyWriteEntity) =
-    Company(
-        id = entity.id.toString(),
-        name = entity.name,
-        website = entity.websiteUrl,
-        logo = Image(entity.logo),
-        slug = entity.slug,
-        shortDescription = entity.shortDescription,
-        location = entity.getLocationId()?.toString(),
-        facebook = entity.facebook,
-        twitter = entity.twitter,
-        description = entity.description,
-        isTypePublic = entity.isTypePublic,
-        industry = entity.industry?.let {
-            Industry(
-                id = it.id.toString(),
-                name = it.name,
-            )
-        },
-        occupation = entity.occupation?.let {
-            Occupation(
-                id = it.id.toString(),
-                name = it.name,
-            )
-        },
-        keywords = entity.keywords.let { list ->
-            list.map { keyword ->
-                keyword.let {
-                    Keyword(
-                        id = it.id.toString(),
-                        name = it.name,
-                    )
-                }
-            }
-        },
-    )
 
 fun User.Companion.fromEntity(entity: EmployeeReadEntity) = User(
     id = entity.userId.toString(),
@@ -147,11 +69,6 @@ fun Employee.Companion.fromEntity(userJobPosition: UserJobPositionReadEntity) = 
     ),
     permission = userJobPosition.data.userPermission?.let { UserPermission.fromModel(it, true) },
 
-)
-
-fun Industry.Companion.fromEntity(entity: IndustryReadEntity) = Industry(
-    id = entity.id.toString(),
-    name = entity.name,
 )
 
 fun Keyword.Companion.fromEntity(entity: KeywordReadEntity) = Keyword(

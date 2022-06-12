@@ -95,6 +95,7 @@ subprojects {
             33688770, // BL Sync
             32844103, // BL Permission
             36319712, // BL Common
+            36548529, // BL Dictionary
         ).forEach {
             maven {
                 url = uri("https://gitlab.com/api/v4/projects/$it/packages/maven")
@@ -120,6 +121,7 @@ subprojects {
         implementation("me.paulschwarz:spring-dotenv:${Versions.Spring.DOTENV}")
         implementation("com.briolink.lib:event:${Versions.Briolink.EVENT}")
         implementation("com.briolink.lib:common:${Versions.Briolink.COMMON}")
+        implementation("com.briolink.lib:dictionary:${Versions.Briolink.DICTIONARY}")
         implementation("com.briolink.lib:permission:${Versions.Briolink.PERMISSION}")
         implementation("com.briolink.lib:location:${Versions.Briolink.LOCATION}")
         implementation("com.briolink.lib:sync:${Versions.Briolink.SYNC}")

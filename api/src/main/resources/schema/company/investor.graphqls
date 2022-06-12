@@ -1,0 +1,128 @@
+# type
+
+type InvestorInfo {
+    financingStatus: Tag
+    primaryInvestorType: Tag
+    otherInvestorTypes: [Tag!]
+    investorStatus: String
+    sic: SIC
+    aum: Float
+    dryPowder: Float
+    investmentProfessionals: Int
+    exits: Int
+    activeInvestedCompanies: [Company!] # TODO: edit this Maxim
+    activeInvestedCompaniesCount: Int
+    preferences: InvestorPreferences
+    investments: InvestorInvestment
+    metrics: InvestorMetrics
+}
+
+type InvestorPreferences {
+    verticals: [Tag!]
+    industries: [Tag!]
+    regions: [String!]
+    realAssets: [RealAssetItem!]
+    investmentHorizon: IntRange
+    other: [String!]
+    investmentAmount: MoneyRange
+    dealSize: MoneyRange
+    companyValuation: MoneyRange
+    ebitda: MoneyRange
+    ebit: MoneyRange
+    revenue: MoneyRange
+}
+
+type InvestorMetrics {
+    medianQuartile: String
+    totalNumberOfFunds: Int
+    topQuartileNumberOfFunds: Int
+    upperMidQuartileNumberOfFunds: Int
+    midQuartileNumberOfFunds: Int
+    bottomQuartileNumberOfFunds: Int
+}
+
+type RealAssetItem {
+    class: Tag!
+    items: [Tag!]
+}
+
+type SIC {
+    sectorDescriptions: [Tag!]!
+    groupDescriptions: [Tag!]!
+    codeDescriptions: [Tag!]!
+    codes: [String!]!
+}
+
+type  InvestorInvestment {
+    total: Int!
+    last6Months: Int
+    last12Months: Int
+    last2Years: Int
+    last5Years: Int
+}
+
+# input
+input CreateInvestorInfoInput {
+    financingStatus: CreateTagInput
+    primaryInvestorType: CreateTagInput
+    otherInvestorTypes: [CreateTagInput!]
+    investorStatus: CreateTagInput
+    sic: CreateSICInput
+    aum: MoneyInput
+    dryPowder: MoneyInput
+    investmentProfessionals: Int
+    exits: Int
+    activeInvestedCompanies: [String!] # TODO: edit this Maxim
+    activeInvestedCompaniesCount: Int
+    preferences: CreatePreferencesInput
+    investments: CreateInvestmentInput
+    metrics: CreateMetricsInput
+}
+
+input CreateMetricsInput {
+    medianQuartile: String
+    totalNumberOfFunds: Int
+    topQuartileNumberOfFunds: Int
+    upperMidQuartileNumberOfFunds: Int
+    midQuartileNumberOfFunds: Int
+    bottomQuartileNumberOfFunds: Int
+}
+
+input CreateInvestmentInput {
+    total: Int!
+    last6Months: Int
+    last12Months: Int
+    last2Years: Int
+    last5Years: Int
+}
+
+
+input CreatePreferencesInput {
+    verticals: [CreateTagInput!]
+    industries: [CreateTagInput!]
+    regions: [String!]
+    realAssets: [CreateRealAssetItemInput!]
+    investmentTypes: [CreateTagInput!]
+    investmentHorizon: IntRangeInput
+    other: [CreateTagInput!]
+    investmentAmount: MoneyRangeInput
+    dealSize: MoneyRangeInput
+    companyValuation: MoneyRangeInput
+    ebitda: MoneyRangeInput
+    ebit: MoneyRangeInput
+    revenue: MoneyRangeInput
+}
+
+input CreateRealAssetItemInput {
+    class: CreateTagInput!
+    items: [CreateTagInput!]!
+}
+
+input CreateSICInput {
+    sectorDescriptions: [CreateTagInput!]!
+    groupDescriptions: [CreateTagInput!]!
+    codeDescriptions: [CreateTagInput!]!
+    codes: [String!]!
+}
+
+

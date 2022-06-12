@@ -1,0 +1,89 @@
+type ServiceProviderInfo {
+    primaryType: Tag
+    otherTypes: [Tag!]
+    servicedCompanies: Int
+    serviced: ServiceProviderServiced!
+    lastDeal: ServiceProviderDeal
+    primaryContact: ServiceProviderPrimaryContact
+    lastClosedFund: ServiceProviderFund
+}
+
+type ServiceProviderServiced {
+    companies: Int
+    deals: Int
+    investors: Int
+    funds: Int
+    total: Int
+}
+
+type ServiceProviderDeal {
+    date: Date
+    size: Money
+    valuation: Money
+    valuationStatus: Tag
+    type1: Tag
+    type2: Tag
+    type3: Tag
+    class: Tag
+    leadPartnerName: String
+}
+
+type ServiceProviderPrimaryContact {
+    name: String!
+    title: String
+}
+
+type ServiceProviderFund {
+    name: String!
+    leadPartnerName: String
+}
+
+input CreateServiceProviderInfoInput {
+    primaryType: CreateTagInput
+    otherTypes: [CreateTagInput!]
+    servicedCompanies: Int
+    serviced: CreateServiceProviderServicedInput
+    lastDeal: CreateServiceProviderDealInput
+    primaryContact: CreateServiceProviderPrimaryContactInput
+    lastClosedFund: CreateServiceProviderFundInput
+}
+
+input CreateServiceProviderServicedInput {
+    companies: Int
+    deals: Int
+    investors: Int
+    funds: Int
+    total: Int
+}
+
+input CreateServiceProviderDealInput {
+    date: Date
+    size: MoneyInput
+    valuation: MoneyInput
+    valuationStatus: CreateTagInput
+    type1: CreateTagInput
+    type2: CreateTagInput
+    type3: CreateTagInput
+    class: CreateTagInput
+    leadPartners: [CreateLeadPartnerInput!]
+}
+
+input CreateServiceProviderPrimaryContactInput {
+    name: String!
+    title: String
+    email: String,
+    phone: String,
+    pbId: String,
+    personId: UUID,
+    personSlug: String,
+}
+
+input CreateLeadPartnerInput {
+    pbId: ID,
+    name: String!
+}
+
+input CreateServiceProviderFundInput {
+    name: String!
+    leadPartners: [CreateLeadPartnerInput!]
+}

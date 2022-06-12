@@ -1,0 +1,55 @@
+# enum
+enum TagType {
+    Industry,
+    Keyword,
+    Vertical,
+    CPCCode,
+    InvestorType,
+    OwnerShipStatus,
+    Universe,
+    DealClass,
+    ServiceProviderType,
+    DealType,
+    SIC,
+    FinancingStatus,
+    InvestorStatus,
+    ValuationStatus,
+    RealAssetType,
+    OtherStated,
+    InvestmentType,
+}
+
+# interface
+interface BaseTag {
+    id: ID!
+    name: String!
+}
+
+# type
+type Tag implements BaseTag {
+    id: ID!
+    name: String!
+}
+
+type TagWithCount implements BaseTag {
+    id: ID!
+    name: String!
+    count: Int!
+}
+
+# input
+
+input CreateTagInput {
+    id: ID
+    type: TagType!
+    name: String
+    path: String
+}
+
+input CreateTagWithCountInput {
+    id: ID
+    type: TagType!
+    name: String
+    path: String
+    count: Int
+}
