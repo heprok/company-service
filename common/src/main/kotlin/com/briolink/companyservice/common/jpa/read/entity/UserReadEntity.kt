@@ -37,4 +37,22 @@ class UserReadEntity(
         @JsonProperty
         lateinit var slug: String
     }
+
+    data class BaseUser(
+        @JsonProperty
+        val id: UUID,
+        @JsonProperty
+        val pbId: String? = null,
+        @JsonProperty
+        val firstName: String,
+        @JsonProperty
+        val lastName: String,
+        @JsonProperty
+        val image: URL? = null,
+        @JsonProperty
+        val slug: String,
+    ) {
+        val fullName: String
+            get() = "$firstName $lastName"
+    }
 }

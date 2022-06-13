@@ -1,7 +1,7 @@
 package com.briolink.companyservice.updater.handler.company
 
 import com.briolink.companyservice.common.domain.v1_0.Company
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.company.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.lib.location.model.LocationMinInfo
 import com.briolink.lib.location.service.LocationService

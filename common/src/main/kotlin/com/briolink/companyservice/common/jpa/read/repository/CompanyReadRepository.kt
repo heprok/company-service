@@ -1,6 +1,6 @@
 package com.briolink.companyservice.common.jpa.read.repository
 
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.company.CompanyReadEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.UUID

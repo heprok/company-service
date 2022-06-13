@@ -1,7 +1,7 @@
 package com.briolink.companyservice.api.service.company
 
 import com.briolink.companyservice.api.service.company.dto.CreatedCompanyDto
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.company.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.repository.CompanyReadRepository
 import com.briolink.companyservice.common.jpa.write.entity.CompanyWriteEntity
 import com.briolink.companyservice.common.jpa.write.repository.CompanyWriteRepository

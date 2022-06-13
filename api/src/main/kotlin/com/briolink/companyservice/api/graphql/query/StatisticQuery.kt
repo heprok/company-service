@@ -17,7 +17,7 @@ import com.briolink.companyservice.api.types.CompanyStatistic
 import com.briolink.companyservice.api.types.CompanyStatisticCharts
 import com.briolink.companyservice.api.types.CompanyStatisticTotal
 import com.briolink.companyservice.api.types.ProjectInfoItem
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.company.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.statistic.Chart
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItem
 import com.briolink.companyservice.common.jpa.read.entity.statistic.ChartListItemWithRoleAndProject

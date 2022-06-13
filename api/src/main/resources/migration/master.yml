@@ -63,3 +63,7 @@ databaseChangeLog:
       file: migration/read/1651709240-new-statistic.changelog.yml
   - include:
       file: migration/read/1651180650-verification.changelog.yml
+  - include:
+      file: migration/read/1655144332-integrate-aggregator.changelog.yml
+  - include:
+      file: migration/write/1655144298-integrate-aggregator.changelog.yml

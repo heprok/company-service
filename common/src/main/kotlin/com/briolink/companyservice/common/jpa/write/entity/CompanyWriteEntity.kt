@@ -85,18 +85,18 @@ class CompanyWriteEntity(
     var hqCityId: Int? = null
 
     @Type(type = "set-array")
-    @Column(name = "keyword_ids", columnDefinition = "varchar[]")
+    @Column(name = "keyword_ids", columnDefinition = "varchar[]", nullable = false)
     var keywordIds: MutableSet<String> = mutableSetOf()
 
     @Type(type = "set-array")
-    @Column(name = "vertical_ids", columnDefinition = "varchar[]")
+    @Column(name = "vertical_ids", columnDefinition = "varchar[]", nullable = false)
     var verticalIds: MutableSet<String> = mutableSetOf()
 
     @Column(name = "primary_industry_id")
     var primaryIndustryId: String? = null
 
     @Type(type = "set-array")
-    @Column(name = "industry_ids", columnDefinition = "varchar[]")
+    @Column(name = "industry_ids", columnDefinition = "varchar[]", nullable = false)
     var industryIds: MutableSet<String> = mutableSetOf()
 
     @Column(name = "year_founded")

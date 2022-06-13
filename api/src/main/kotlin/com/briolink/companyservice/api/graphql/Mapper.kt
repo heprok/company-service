@@ -10,12 +10,12 @@ import com.briolink.companyservice.api.types.Service
 import com.briolink.companyservice.api.types.User
 import com.briolink.companyservice.api.types.UserJobPosition
 import com.briolink.companyservice.api.types.UserPermission
-import com.briolink.companyservice.common.jpa.read.entity.CompanyReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.EmployeeReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.KeywordReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.OccupationReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.ServiceReadEntity
 import com.briolink.companyservice.common.jpa.read.entity.UserJobPositionReadEntity
+import com.briolink.companyservice.common.jpa.read.entity.company.CompanyReadEntity
 import com.briolink.lib.permission.model.UserPermissionRights
 
 fun User.Companion.fromEntity(entity: EmployeeReadEntity) = User(
