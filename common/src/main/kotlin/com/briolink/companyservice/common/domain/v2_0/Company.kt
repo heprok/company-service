@@ -59,7 +59,7 @@ data class Company(
     @JsonProperty
     val primaryIndustryTagId: String?,
     @JsonProperty
-    val industryTagIds: ArrayList<String>,
+    val otherIndustryTagIds: ArrayList<String>,
     @JsonProperty
     val yearFounded: Int?,
     @JsonProperty
@@ -80,7 +80,48 @@ data class Company(
     val changed: Instant?,
     @JsonProperty
     val created: Instant,
-) : Domain
+) : Domain {
+    val companyIds = mutableSetOf<UUID>().apply {
+        parentCompanyId?.also { add(it) }
+        startupInfo?.potentialInvestors?.also { addAll(it.map { it.value }) }
+        startupInfo?.servicesProviders?.also { addAll(it) }
+        startupInfo?.comparables?.also { addAll(it.map { it.value }) }
+        startupInfo?.investors?.also { addAll(it) }
+
+        investorInfo?.activeInvestedCompanies?.also { addAll(it) }
+    }
+
+    val tagIds = mutableSetOf<String>().apply {
+        addAll(keywordTagIds)
+        addAll(verticalTagIds)
+        addAll(otherIndustryTagIds)
+        primaryIndustryTagId?.also { add(it) }
+
+        servicesProviderData?.primaryTypeTagId?.also { add(it) }
+        servicesProviderData?.otherTypeTagIds?.also { addAll(it) }
+        servicesProviderData?.lastDeal?.typeTagId?.also { add(it) }
+        servicesProviderData?.lastDeal?.valuationStatusTagId?.also { add(it) }
+        servicesProviderData?.lastDeal?.classTagId?.also { add(it) }
+
+        startupInfo?.universeTagIds?.also { addAll(it) }
+        startupInfo?.cpcCodesTagIds?.also { addAll(it) }
+
+        investorInfo?.financingStatusTagId?.also { add(it) }
+        investorInfo?.primaryInvestorTypeTagId?.also { add(it) }
+        investorInfo?.otherInvestorTypeTagIds?.also { addAll(it) }
+        investorInfo?.investorStatusTagId?.also { add(it) }
+        investorInfo?.sic?.tagsIds?.also { addAll(it) }
+
+        investorInfo?.preferences?.verticalTagIds?.also { addAll(it) }
+        investorInfo?.preferences?.industryTagIds?.also { addAll(it) }
+        investorInfo?.preferences?.realAssets?.forEach {
+            addAll(it.itemTagIds)
+            add(it.classTagId)
+        }
+        investorInfo?.preferences?.investmentTypeTagIds?.also { addAll(it) }
+        investorInfo?.preferences?.otherTagIds?.also { addAll(it) }
+    }
+}
 
 data class ServicesProviderInfo(
     @JsonProperty
@@ -193,7 +234,7 @@ data class InvestorInfo(
     @JsonProperty
     var primaryInvestorTypeTagId: String?,
     @JsonProperty
-    var otherInvestorTypesTagId: ArrayList<String>,
+    var otherInvestorTypeTagIds: ArrayList<String>,
     @JsonProperty
     var investorStatusTagId: String?,
     @JsonProperty

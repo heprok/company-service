@@ -58,7 +58,7 @@ fun CompanyWriteEntity.toDomainV2() = com.briolink.companyservice.common.domain.
     keywordTagIds = ArrayList(keywordIds),
     verticalTagIds = ArrayList(verticalIds),
     primaryIndustryTagId = primaryIndustryId,
-    industryTagIds = ArrayList(industryIds),
+    otherIndustryTagIds = ArrayList(industryIds),
 
 )
 
@@ -66,7 +66,7 @@ fun CompanyWriteEntity.InvestorData.toDomainV2() =
     com.briolink.companyservice.common.domain.v2_0.InvestorInfo(
         financingStatusTagId = financingStatusTagId,
         primaryInvestorTypeTagId = primaryInvestorTypeTagId,
-        otherInvestorTypesTagId = ArrayList(otherInvestorTypeTagIds),
+        otherInvestorTypeTagIds = ArrayList(otherInvestorTypeTagIds),
         investorStatusTagId = investorStatusTagId,
         sic = sic?.let {
             SICData(

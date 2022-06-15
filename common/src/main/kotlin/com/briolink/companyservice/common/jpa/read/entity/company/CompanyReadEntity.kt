@@ -59,8 +59,6 @@ class CompanyReadEntity(
         @JsonProperty
         var info: BaseCompany,
         @JsonProperty
-        var pbId: String?,
-        @JsonProperty
         var parentCompany: BaseCompany?,
         @JsonProperty
         var website: URL?,

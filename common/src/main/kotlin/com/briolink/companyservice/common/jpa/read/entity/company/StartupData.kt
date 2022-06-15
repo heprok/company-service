@@ -37,5 +37,5 @@ data class StartupData(
     @JsonProperty
     var comparables: MutableSet<ValueWithCount<CompanyReadEntity.BaseCompany, Double>> = mutableSetOf(),
     @JsonProperty
-    var otherComparables: MutableSet<ValueWithCount<CompanyReadEntity.BaseCompany, Double>> = mutableSetOf(),
+    var otherComparables: MutableSet<ValueWithCount<String, Double>> = mutableSetOf(),
 )

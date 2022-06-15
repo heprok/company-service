@@ -1,7 +1,7 @@
 package com.briolink.companyservice.updater.handler.company
 
-import com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent
-import com.briolink.companyservice.common.event.v1_0.CompanySyncEvent
+import com.briolink.companyservice.common.event.v2_0.CompanyCreatedEvent
+import com.briolink.companyservice.common.event.v2_0.CompanySyncEvent
 import com.briolink.companyservice.updater.handler.project.ProjectHandlerService
 import com.briolink.companyservice.updater.service.SyncService
 import com.briolink.lib.event.IEventHandler
@@ -11,8 +11,8 @@ import com.briolink.lib.sync.SyncEventHandler
 import com.briolink.lib.sync.enumeration.ObjectSyncEnum
 
 @EventHandlers(
-    EventHandler("CompanyCreatedEvent", "1.0"),
-    EventHandler("CompanyUpdatedEvent", "1.0"),
+    EventHandler("CompanyCreatedEvent", "2.0"),
+    EventHandler("CompanyUpdatedEvent", "2.0"),
 )
 class CompanyEventHandler(
     private val companyHandlerService: CompanyHandlerService,
@@ -20,19 +20,18 @@ class CompanyEventHandler(
 ) : IEventHandler<CompanyCreatedEvent> {
     override fun handle(event: CompanyCreatedEvent) {
         val updatedCompany = companyHandlerService.findById(event.data.id)
-        val prevCountryId = updatedCompany?.data?.location?.country?.id
-        val prevIndustryId = updatedCompany?.data?.industry?.id
+        // val prevCountryId = updatedCompany?.data?.location?.country?.id
+        // val prevIndustryId = updatedCompany?.data?.industry?.id
         companyHandlerService.createOrUpdate(updatedCompany, event.data).let {
-            if (event.name == "CompanyUpdatedEvent") {
-                if (it.data.industry?.id != prevIndustryId || it.data.location?.country?.id != prevCountryId) {
-                    projectHandlerService.refreshStatistic(event.data.id, true)
-                }
-            }
+            // if (event.name == "CompanyUpdatedEvent") {
+            // if (it.data.industry?.id != prevIndustryId || it.data.location?.country?.id != prevCountryId) {
+            //     projectHandlerService.refreshStatistic(event.data.id, true)
+            // }
         }
     }
 }
 
-@EventHandler("CompanySyncEvent", "1.0")
+@EventHandler("CompanySyncEvent", "2.0")
 class CompanySyncEventHandler(
     private val companyHandlerService: CompanyHandlerService,
     syncService: SyncService,
