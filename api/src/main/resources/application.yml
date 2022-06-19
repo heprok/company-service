@@ -62,3 +62,7 @@ permission-service:
   api:
     url: http://permission-service.${env.spring_profiles_active}.svc.cluster.local/
     version: 1
+dictionary-service:
+  api:
+    url: http://dictionary-service.${env.spring_profiles_active}.svc.cluster.local/
+    version: 1

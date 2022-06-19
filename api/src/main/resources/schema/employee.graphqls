@@ -13,7 +13,7 @@ input EmployeesEditorListOptions {
 }
 
 input EmployeesEditorFilterParameters {
-    workDateRange: DateRange
+    workDateRange: DateRangeInput
     jobPositionTitles: [String!]
     rights: [String!]
     search: String

@@ -50,7 +50,7 @@ class CompanyHandlerService(
             slug = domain.slug
             name = domain.name
             primaryCompanyType = domain.primaryCompanyType.toEnum()
-            companyTypes = domain.companyTypes.map { it.toEnum() }
+            companyTypes = domain.companyTypes.map { it.toEnum() }.toMutableSet()
             createdBy = domain.createdBy
             data = CompanyReadEntity.Data(
                 info = CompanyReadEntity.BaseCompany(

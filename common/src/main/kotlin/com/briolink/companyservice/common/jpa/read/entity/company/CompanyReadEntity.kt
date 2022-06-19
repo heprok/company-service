@@ -28,13 +28,13 @@ class CompanyReadEntity(
     var name: String,
 
     @Type(type = "persist-enum")
-    @Column(name = "primary_company_type", nullable = false)
+    @Column(name = "primary_company_type", nullable = false, columnDefinition = "int2")
     var primaryCompanyType: CompanyTypeEnum,
 ) : BaseReadEntity() {
 
     @Type(type = "persist-enum-set")
     @Column(name = "company_types", nullable = false, columnDefinition = "int2[]")
-    var companyTypes: List<CompanyTypeEnum> = listOf()
+    var companyTypes: MutableSet<CompanyTypeEnum> = mutableSetOf()
 
     @Column(name = "created_by")
     var createdBy: UUID? = null

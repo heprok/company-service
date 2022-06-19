@@ -70,7 +70,7 @@ class CompanyService(
             pbId = dto.pbId
             parentCompanyId = dto.parentCompanyId
             parentCompanyPbId = dto.parentCompanyPbId
-            companyTypes = dto.otherCompanyTypes?.toList() ?: listOf()
+            companyTypes = dto.otherCompanyTypes ?: mutableSetOf()
             websiteUrl = dto.website
             familiarName = dto.familiarName
             logo = dto.logo

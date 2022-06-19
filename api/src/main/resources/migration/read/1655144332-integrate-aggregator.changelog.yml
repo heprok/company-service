@@ -4,13 +4,13 @@ databaseChangeLog:
       author: oleg@briolink.com
       changes:
         - dropTable:
-            schemaName: write
+            schemaName: read
             tableName: keyword
         - dropTable:
-            schemaName: write
+            schemaName: read
             tableName: industry
         - dropTable:
-            schemaName: write
+            schemaName: read
             tableName: occupation
         - dropTable:
             schemaName: read
@@ -22,14 +22,14 @@ databaseChangeLog:
               - column:
                   name: id
                   type: uuid
-                    constraints:
-                      primaryKey: true
-                      nullable: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
               - column:
                   name: name
-                    type: varchar(255)
-                    constraints:
-                      nullable: false
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: slug
                   type: varchar
@@ -49,7 +49,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: created_by
-                    type: uuid
+                  type: uuid
               - column:
                   name: data
                   type: jsonb

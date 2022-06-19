@@ -46,16 +46,13 @@ class CompanyWriteEntity(
 
     @Type(type = "persist-enum-set")
     @Column(name = "company_types", nullable = false, columnDefinition = "int2[]")
-    var companyTypes: List<CompanyTypeEnum> = listOf()
-        set(value) {
-            field = if (value.contains(primaryCompanyType))
-                mutableListOf<CompanyTypeEnum>().apply {
-                    addAll(value)
-                    remove(primaryCompanyType)
-                }
-            else
-                value
-        }
+    var companyTypes: MutableSet<CompanyTypeEnum> = mutableSetOf()
+
+    // var companyTypes: MutableSet<CompanyTypeEnum>
+    //     get() = _companyTypes.map { CompanyTypeEnum.fromValue(it) }.toMutableSet()
+    //     set(value) {
+    //         _companyTypes = value.map { it.value }.toMutableSet()
+    //     }
 
     @Column(name = "website", length = 255)
     private var website: String? = null

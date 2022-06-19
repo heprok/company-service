@@ -100,9 +100,9 @@ fun Service.Companion.fromEntity(entity: ServiceReadEntity) = Service(
 
 fun CompanyInfoItem.Companion.fromEntity(entity: CompanyReadEntity) = CompanyInfoItem(
     id = entity.id.toString(),
-    name = entity.data.name,
+    name = entity.name,
     slug = entity.slug,
-    logo = entity.data.logo?.let { Image(it) },
+    logo = entity.data.info.logo?.let { Image(it) },
     location = entity.data.location?.toString(),
-    occupation = entity.data.occupation?.name
+    occupation = null
 )

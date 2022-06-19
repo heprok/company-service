@@ -24,8 +24,7 @@ permission-service:
   api:
     url: http://192.168.0.60:8200
     version: 1
-#event:
-#  listener:
-#    sqs-name: bl-network-test-company-service.fifo
-#  publisher:
-#    sns-name: bl-network-test.fifo
+dictionary-service:
+  api:f
+  url: http://192.168.0.60:8060/
+  version: 1

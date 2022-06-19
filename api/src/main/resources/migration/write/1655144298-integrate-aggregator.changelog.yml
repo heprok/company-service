@@ -5,19 +5,20 @@ databaseChangeLog:
       changes:
         - dropTable:
             schemaName: write
+            tableName: companies_keywords
+        - dropTable:
+            schemaName: write
             tableName: keyword
+        - dropTable:
+            schemaName: write
+            tableName: company
         - dropTable:
             schemaName: write
             tableName: industry
         - dropTable:
             schemaName: write
             tableName: occupation
-        - dropTable:
-            schemaName: write
-            tableName: companies_keywords
-        - dropTable:
-            schemaName: write
-            tableName: company
+
         - createTable:
             schemaName: write
             tableName: company
@@ -63,9 +64,6 @@ databaseChangeLog:
               - column:
                   name: perent_company_pb_id
                   type: varchar(100)
-              - column:
-                  name: company_types
-                  type: int2[]
               - column:
                   name: website
                   type: varchar(255)
