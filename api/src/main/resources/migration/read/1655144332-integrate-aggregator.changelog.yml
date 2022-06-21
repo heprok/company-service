@@ -64,3 +64,5 @@ databaseChangeLog:
               - column:
                   name: service_provider_data
                   type: jsonb
+
+

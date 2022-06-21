@@ -25,4 +25,8 @@ type Mutation{
     editEmployeeRight(companyId: ID!, userId: ID!, role: PermissionRole,  rights: [String]): EditEmployeeRightResult!
     confirmEmployee(companyId: ID!, userId: ID!, accept: Boolean!): ConfirmEmployeeResult!
 
+
+    # Tag
+    createTag(input: CreateTagInput!): Tag!
+    createTagBatch(listInput: [CreateTagInput!]!) : [Tag!]!
 }

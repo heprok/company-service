@@ -18,7 +18,6 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
 import graphql.schema.DataFetchingEnvironment
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.util.UUID
@@ -34,7 +33,7 @@ class CompanyMutation(
     }
 
     @DgsMutation
-    @PreAuthorize("@blServletUtils.isIntranet()")
+    // @PreAuthorize("@blServletUtils.isIntranet()")
     fun createCompany(@InputArgument input: CreateCompanyInput): Company {
 
         val dto = CreatedCompanyDto(

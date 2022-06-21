@@ -7,7 +7,7 @@ import com.briolink.lib.dictionary.model.Tag
 import com.briolink.lib.dictionary.model.TagWithCount
 
 fun CreateTagInput.toTag(): Tag {
-    if (id != null && name != null) throw IllegalArgumentException("Tag must be contains name ")
+    if (id == null && name == null) throw IllegalArgumentException("Tag must be contains name and id")
 
     return Tag(
         id = id ?: "",
@@ -19,13 +19,13 @@ fun CreateTagInput.toTag(): Tag {
 }
 
 fun CreateTagWithCountInput.toTagWithCount(): TagWithCount {
-    if (id != null && name != null) throw IllegalArgumentException("Tag must be id or name")
+    if (id == null && name == null) throw IllegalArgumentException("Tag must be contains name and id")
 
     return TagWithCount(
         id = id ?: "",
         type = type.toEnum(),
         name = name ?: "",
-        count = count
+        count = count ?: 0
     ).also {
         it.path = path
     }

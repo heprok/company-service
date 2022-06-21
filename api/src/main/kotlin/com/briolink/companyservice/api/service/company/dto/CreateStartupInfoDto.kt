@@ -17,7 +17,7 @@ data class CreateStartupInfoDto(
     val lastFinancingStatus: Tag?,
     @TagTypeMatchInCollection([TagType.Universe])
     val universe: MutableSet<Tag> = mutableSetOf(),
-    @TagTypeMatchInCollection([TagType.CPCCode])
+    @TagTypeMatchInCollection([TagType.CPC])
     val cpcCodes: MutableSet<Tag> = mutableSetOf(),
     val investors: MutableSet<UUID> = mutableSetOf(),
     val otherInvestors: MutableSet<String> = mutableSetOf(),

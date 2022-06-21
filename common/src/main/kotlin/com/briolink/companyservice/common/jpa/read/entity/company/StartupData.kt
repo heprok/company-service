@@ -24,7 +24,7 @@ data class StartupData(
     @TagTypeMatchInCollection([TagType.Universe])
     var universes: MutableSet<Tag> = mutableSetOf(),
     @JsonProperty
-    @TagTypeMatchInCollection([TagType.CPCCode])
+    @TagTypeMatchInCollection([TagType.CPC])
     var cpcCodes: MutableSet<Tag> = mutableSetOf(),
     @JsonProperty
     var investors: MutableSet<CompanyReadEntity.BaseCompany> = mutableSetOf(),
