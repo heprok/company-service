@@ -1,6 +1,7 @@
 type Mutation{
     # Company
     createCompany(input: CreateCompanyInput!) : Company
+    createCompanies(listInput: [CreateCompanyInput!]!) : [Company!]!
     uploadCompanyImage(id: ID!, image: Upload) : Url
     updateCompany(id: ID!, input: UpdateCompanyInput!) : UpdateCompanyResult
     # deleteCompany(id: ID!) : Boolean!

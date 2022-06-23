@@ -33,6 +33,11 @@ class CompanyMutation(
     }
 
     @DgsMutation
+    fun createCompanies(@InputArgument listInput: List<CreateCompanyInput>, env: DataFetchingEnvironment): List<Company> {
+        TODO("not implemented")
+    }
+
+    @DgsMutation
     // @PreAuthorize("@blServletUtils.isIntranet()")
     fun createCompany(@InputArgument input: CreateCompanyInput): Company {
 
