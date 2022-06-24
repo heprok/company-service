@@ -23,6 +23,7 @@ import com.opencsv.bean.CsvBindByName
 import com.opencsv.bean.CsvToBean
 import com.opencsv.bean.CsvToBeanBuilder
 import com.opencsv.bean.HeaderColumnNameMappingStrategy
+import liquibase.pro.packaged.it
 import mu.KLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -50,9 +51,16 @@ class CompanyService(
     companion object : KLogging()
 
     private val PATH_LOGO_PROFILE_COMPANY = "uploads/company/profile-image"
+
+    fun createCompanies(@Valid listDto: List<@Valid CreatedCompanyDto>): List<CompanyWriteEntity> {
+        return listDto.map {
+            createCompany(it)
+        }
+    }
+
     fun createCompany(@Valid dto: CreatedCompanyDto): CompanyWriteEntity {
-        val emptyCompany =
-            getByNameAndWebsite(dto.name, dto.website) ?: CompanyWriteEntity(dto.name, dto.slug ?: "", dto.primaryCompanyType)
+        val emptyCompany = dto.website?.let { getByWebsite(StringUtils.prepareUrl(it)) }
+            ?: CompanyWriteEntity(dto.name, dto.slug ?: "", dto.primaryCompanyType)
 
         val company = if (dto.id == null) emptyCompany else companyWriteRepository.findById(dto.id).orElse(emptyCompany)
         val location = dto.locationId?.let { locationService.getLocationInfo(it, LocationFullInfo::class.java) }
@@ -270,7 +278,7 @@ class CompanyService(
         csvToBean.parse().forEach { company ->
             var isUpdateCompany = false
             company.name = StringUtils.trimAllSpaces(company.name)
-            val companyWriteEntity = getByNameAndWebsite(company.name, StringUtils.prepareUrl(company.website))
+            val companyWriteEntity = getByWebsite(StringUtils.prepareUrl(company.website))
             if (companyWriteEntity == null) {
                 logger.error(company.name + " company not exist")
                 return@forEach
@@ -327,9 +335,8 @@ class CompanyService(
         return imageUrl
     }
 
-    fun getByNameAndWebsite(name: String, website: URL?): CompanyWriteEntity? =
-        companyWriteRepository.getByNameIgnoreCaseAndWebsiteHostIgnoreCase(name, website?.host)
-            ?: if (website != null) companyWriteRepository.getByWebsiteHost(website.host) else null
+    fun getByWebsite(website: URL?): CompanyWriteEntity? =
+        if (website != null) companyWriteRepository.getByWebsiteHost(website.host) else null
 
     private fun publishCompanySyncEvent(
         syncId: Int,
