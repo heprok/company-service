@@ -23,7 +23,6 @@ import com.opencsv.bean.CsvBindByName
 import com.opencsv.bean.CsvToBean
 import com.opencsv.bean.CsvToBeanBuilder
 import com.opencsv.bean.HeaderColumnNameMappingStrategy
-import liquibase.pro.packaged.it
 import mu.KLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -243,7 +242,7 @@ class CompanyService(
         val mapTags = mutableMapOf<String, Tag>()
 
         tags.forEach { tag ->
-            dictionaryService.getTagIfNotExistsCreate(TagCreateRequest(tag.id, tag.name, tag.type, tag.path)).also {
+            dictionaryService.getTagIfNotExistsCreate(TagCreateRequest(tag.id.ifBlank { null }, tag.name, tag.type, tag.path)).also {
                 mapTags[it.id] = it
             }
         }

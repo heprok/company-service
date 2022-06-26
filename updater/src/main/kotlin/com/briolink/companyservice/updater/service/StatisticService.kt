@@ -97,7 +97,7 @@ class StatisticService(
                 companyStatistic.chartByCountry = getChart(companyStatistic.chartByCountryData)
 
                 // chart data by industry
-                val industryName = collaboratorCompany.data.industry?.name
+                val industryName = collaboratorCompany.data.primaryIndustry?.name
 
                 if (!industryName.isNullOrBlank()) {
                     companyStatistic.chartByIndustryData.data.getOrPut(industryName) { ChartDataList(industryName, mutableListOf()) }

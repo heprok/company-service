@@ -21,6 +21,7 @@ import com.briolink.companyservice.common.jpa.read.repository.CompanyReadReposit
 import com.briolink.companyservice.common.jpa.read.repository.UserReadRepository
 import com.briolink.companyservice.updater.mapper.toEnum
 import com.briolink.lib.common.type.basic.ValueWithCount
+import com.briolink.lib.dictionary.dto.TagGetRequest
 import com.briolink.lib.dictionary.service.DictionaryService
 import com.briolink.lib.location.model.LocationMinInfo
 import com.briolink.lib.location.service.LocationService
@@ -44,7 +45,20 @@ class CompanyHandlerService(
             entityPrevCompany ?: CompanyReadEntity(domain.id, domain.slug, domain.name, domain.primaryCompanyType.toEnum())
 
         val companies = companyReadRepository.findByIdIsIn(domain.companyIds.toList()).associateBy { it.id }
-        val tags = dictionaryService.getTags(domain.tagIds).associateBy { it.id }
+        val tags =
+            if (domain.tagIds.isNotEmpty())
+                dictionaryService.findTags(
+                    TagGetRequest(
+                        ids = domain.tagIds.toList(),
+                        names = null,
+                        paths = null,
+                        types = null,
+                        withParent = true,
+                        limit = domain.tagIds.size,
+                        offset = 0
+                    )
+                ).associateBy { it.id }
+            else mapOf()
 
         company.apply {
             slug = domain.slug

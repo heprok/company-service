@@ -10,8 +10,8 @@ import com.briolink.lib.common.validation.ValidUUID
 import java.util.Currency
 import java.util.UUID
 
-fun MoneyInput.toMoney() = Money(value, Currency.getInstance(currencyIsoCode.name))
-fun MoneyRangeInput.toRangeMoney() = MoneyRange(start.toMoney(), end.toMoney())
+fun MoneyInput.toMoney() = Money(value, Currency.getInstance(currency.name))
+fun MoneyRangeInput.toRangeMoney() = MoneyRange(start?.toMoney(), end?.toMoney())
 
 fun IdOrNameWithCountInput.idIsUUID() = id.matches(ValidUUID.pattern.toRegex())
 

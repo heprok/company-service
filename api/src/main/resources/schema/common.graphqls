@@ -104,12 +104,12 @@ input FloatRangeInput {
 }
 
 input MoneyRangeInput {
-    start: MoneyInput!
-    end: MoneyInput!
+    start: MoneyInput
+    end: MoneyInput
 }
 
 input MoneyInput {
-    currencyIsoCode: CurrencyIsoCode!
+    currency: CurrencyIsoCode!
     value: Float!
 }
 

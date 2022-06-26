@@ -25,6 +25,6 @@ permission-service:
     url: http://192.168.0.60:8200
     version: 1
 dictionary-service:
-  api:f
+  api:
   url: http://192.168.0.60:8060/
   version: 1
