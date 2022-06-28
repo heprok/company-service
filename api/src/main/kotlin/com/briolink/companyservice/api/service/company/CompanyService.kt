@@ -312,7 +312,9 @@ class CompanyService(
     }
 
     private fun saveAndSendEvent(company: CompanyWriteEntity, isNew: Boolean = false): CompanyWriteEntity {
-        return companyWriteRepository.save(company).also {
+        val savedCompany = companyWriteRepository.save(company)
+        println(savedCompany.created)
+        return savedCompany.also {
             if (isNew) {
                 eventPublisher.publishAsync(com.briolink.companyservice.common.event.v1_0.CompanyCreatedEvent(it.toDomainV1()))
                 eventPublisher.publishAsync(com.briolink.companyservice.common.event.v2_0.CompanyCreatedEvent(it.toDomainV2()))
